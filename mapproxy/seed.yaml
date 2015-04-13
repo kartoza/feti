@@ -1,0 +1,30 @@
+# ---------------------------------------
+# MapProxy example seeding configuration.
+# ---------------------------------------
+#
+# This is a minimal MapProxy seeding configuration.
+# See full_seed_example.yaml and the documentation for more options.
+#
+
+seeds:
+  rw_seed:
+    caches: [rw_cache]
+    grids: [webmercator]
+    coverages: [jakarta]
+    levels:
+      to: 10
+    refresh_before:
+      hours: 6
+
+cleanups:
+  myclean1:
+    caches: [rw_cache]
+    remove_before:
+      hours: 6
+    levels:
+        to: 10
+
+coverages:
+  jakarta:
+    datasource: '/web/jakarta.shp'
+    srs: 'EPSG:4326'

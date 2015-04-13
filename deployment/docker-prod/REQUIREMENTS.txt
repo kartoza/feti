@@ -1,0 +1,14 @@
+Django>=1.7,<1.8
+psycopg2
+pytz
+django-braces
+django-model-utils
+django-pipeline>1.4
+nodeenv
+raven
+django-user-map
+django-forms-bootstrap
+# Django rest framework support
+djangorestframework==2.4.4
+markdown
+django-filter

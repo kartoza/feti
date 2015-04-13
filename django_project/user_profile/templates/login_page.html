@@ -1,0 +1,63 @@
+{% extends "flood_mapper/base.html" %}
+{% block header %}
+    <script>
+        $(document).ready(function () {
+            $('#login_id').addClass("active");
+        });
+
+    </script>
+    <title>User Login</title>
+{%  endblock %}
+
+{% block navigation-bar %}
+    {% include "flood_mapper/navigation_bar.html" %}
+{%  endblock %}
+
+{% block content %}
+
+<div class="col-lg-2 col-lg-offset-5">
+  <div style="padding-top:50px"></div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <i class="mdi-social-person"></i>
+                Welcome to JAKARTA FLOOD MAPS
+            </h3>
+        </div>
+        <div class="panel-body">
+          <form class="form" name="LoginForm" action="/accounts/login/" method="post">
+            {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+            {% endif %}
+            <div class="control-group">
+            <label class="control-label" for="username">Username</label>
+                <div class="controls">
+                    <input type="text" class="form-control" name="username" id="username" value="{{username}}" placeholder="Username">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="password">Password</label>
+                    <div class="controls">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                    </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-block btn-success">Login</button>
+                </div>
+            </div>
+            <div>Please contact admin@jakarta-flood-maps.com for an account.</div>
+          </form>
+        </div>
+    </div>
+    {% if error %}
+      <div class="alert alert-error">
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+          <strong>Error!</strong>
+          {{ error }}
+      </div>
+    {% endif %}
+</div>
+
+{% endblock %}
