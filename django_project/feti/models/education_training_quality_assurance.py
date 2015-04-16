@@ -12,8 +12,8 @@ class EducationTrainingQualityAssurance(models.Model):
     body_name = models.CharField(max_length=255)
     url = models.URLField()
 
-    def __unicode__(self)
-        return '%s (%s)' self.acronym, self.acronym
+    def __unicode__(self):
+        return '%s (%s)' % (self.acronym, self.acronym)
 
     class Meta:
         app_label = 'feti'
