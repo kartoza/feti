@@ -3,6 +3,8 @@
 
 from django.contrib import admin
 from feti.models.campus import Campus
+from feti.models.provider import Provider
+from feti.models.address import Address
 
 
 class CampusAdmin(admin.ModelAdmin):

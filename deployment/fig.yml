@@ -52,6 +52,8 @@ db:
   environment:
     - USERNAME=docker
     - PASS=docker
+  ports:
+    - "6543:5432"
 
 qgisserver:
   image: kartoza/qgis-server

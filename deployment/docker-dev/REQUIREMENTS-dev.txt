@@ -3,6 +3,7 @@ pep8
 pylint
 flake8
 factory_boy
+django-forms-bootstrap
 
 django-devserver
 
