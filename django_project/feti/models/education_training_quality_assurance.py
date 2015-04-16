@@ -17,4 +17,3 @@ class EducationTrainingQualityAssurance(models.Model):
 
     class Meta:
         app_label = 'feti'
-
