@@ -1,4 +1,5 @@
 SHELL := /bin/bash
+PROJECT_ID := feti
 
 # ----------------------------------------------------------------------------
 #    P R O D U C T I O N     C O M M A N D S
@@ -12,7 +13,7 @@ deploy: run migrate collectstatic
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Bringing up fresh instance "
-	@echo "You can access it on http://localhost:63100"
+	@echo "You can access it on http://localhost:49100"
 	@echo "------------------------------------------------------------------"
 
 build:
@@ -20,15 +21,15 @@ build:
 	@echo "------------------------------------------------------------------"
 	@echo "Building in production mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood build
+	@docker-compose -p $(PROJECT_ID) build
 
 web:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood up -d web
-	@fig -p jakartaflood run uwsgi python manage.py create_reports_directories
+	@docker-compose -p $(PROJECT_ID) up -d web
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py create_reports_directories
 	@dipall
 
 migrate:
@@ -36,17 +37,17 @@ migrate:
 	@echo "------------------------------------------------------------------"
 	@echo "Running migrate static in production mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood run uwsgi python manage.py migrate
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py migrate
 
 collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Collecting static in production mode"
 	@echo "------------------------------------------------------------------"
-	#@fig -p jakartaflood run uwsgi python manage.py collectstatic --noinput
+	#@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py collectstatic --noinput
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
-	@docker exec -t -i jakartaflood_uwsgi_1 python manage.py collectstatic --noinput
+	@docker exec -t -i $(PROJECT_ID)_uwsgi_1 python manage.py collectstatic --noinput
 
 kill:
 	@echo
@@ -54,49 +55,49 @@ kill:
 	@echo "Killing in production mode"
 	@echo "------------------------------------------------------------------"
 
-	@fig -p jakartaflood kill
+	@docker-compose -p $(PROJECT_ID) kill
 
 rm: kill
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Removing production instance!!! "
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood rm
+	@docker-compose -p $(PROJECT_ID) rm
 
 logs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing uwsgi logs in production mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood logs uwsgi
+	@docker-compose -p $(PROJECT_ID) logs uwsgi
 
 nginxlogs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing nginx logs in production mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood logs web
+	@docker-compose -p $(PROJECT_ID) logs web
 
 shell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood run uwsgi /bin/bash
+	@docker-compose -p $(PROJECT_ID) run uwsgi /bin/bash
 
 dbshell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i jakartaflood_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis
 
 sentry:
 	@echo
 	@echo "--------------------------"
 	@echo "Running sentry production mode"
 	@echo "--------------------------"
-	@fig  -p jakartaflood up -d sentry
+	@docker-compose  -p $(PROJECT_ID) up -d sentry
 	@dipall
 
 maillogs:
@@ -104,28 +105,28 @@ maillogs:
 	@echo "------------------------------------------------------------------"
 	@echo "Showing smtp logs in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i jakartaflood_smtp_1 tail -f /var/log/mail.log
+	@docker exec -t -i $(PROJECT_ID)_smtp_1 tail -f /var/log/mail.log
 
 mailerrorlogs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing smtp error logs in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i jakartaflood_smtp_1 tail -f /var/log/mail.err
+	@docker exec -t -i $(PROJECT_ID)_smtp_1 tail -f /var/log/mail.err
 
 mapproxylogs:
 	@echo
 	@echo "--------------------------"
 	@echo "Showing mapproxy logs in production mode"
 	@echo "--------------------------"
-	@fig -p jakartaflood logs mapproxy
+	@docker-compose -p $(PROJECT_ID) logs mapproxy
 
 seed:
 	@echo
 	@echo "--------------------------"
 	@echo "Seeding mapproxy in production mode"
 	@echo "--------------------------"
-	@fig -p jakartaflood run mapproxy /usr/local/bin/mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml
+	@docker-compose -p $(PROJECT_ID) run mapproxy /usr/local/bin/mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml
 
 map:
 	@echo
@@ -135,7 +136,7 @@ map:
 	@echo "--------------------------"
 	# Experimental way we had of getting it using QGIS Server
 	#wget -O map.pdf "http://172.17.0.6/cgi-bin/qgis_mapserv.fcgi?map=/web/jk-floods.qgs&SERVICE=wms&LAYERS=Rw&REQUEST=GetPrint&TEMPLATE=6Hour&map0:EXTENT=11862318.594,-714081.378,11922154.957,-675870.096&map0:ROTATION=0&FORMAT=pdf&DPI=300"
-	docker exec -t -i jakartaflood_cron_1 xvfb-run python /home/web/cron-scripts/pdf_report_generator.py
+	docker exec -t -i $(PROJECT_ID)_cron_1 xvfb-run python /home/web/cron-scripts/pdf_report_generator.py
 	@echo "--------------------------"
 	@echo "PDF Generated - written to reports"
 	@echo "--------------------------"
@@ -149,10 +150,10 @@ qgis:
 	@echo "------------------------------------------------------------------"
 	@xhost +; docker run --rm --name="qgis-desktop-2-8" \
 	-i -t \
-	--link jakartaflood_db_1:db \
-	--link jakartaflood_qgisserver_1:qgisserver \
-	--link jakartaflood_mapproxy_1:mapproxy \
-	--volumes-from jakartaflood_qgisserver_1 \
+	--link $(PROJECT_ID)_db_1:db \
+	--link $(PROJECT_ID)_qgisserver_1:qgisserver \
+	--link $(PROJECT_ID)_mapproxy_1:mapproxy \
+	--volumes-from $(PROJECT_ID)_qgisserver_1 \
 	-v ${HOME}:/home/$(USER) \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-e DISPLAY=unix$(DISPLAY) \
@@ -170,7 +171,7 @@ staging-deploy: staging-run staging-migrate staging-collectstatic
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Bringing up fresh staging instance "
-	@echo "You can access it on http://localhost:63101"
+	@echo "You can access it on http://localhost:59101"
 	@echo "------------------------------------------------------------------"
 
 staging-build:
@@ -178,14 +179,14 @@ staging-build:
 	@echo "------------------------------------------------------------------"
 	@echo "Building in staging mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging build
+	@docker-compose -p $(PROJECT_ID)-staging build
 
 staging-web:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running in staging mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging up -d stagingweb
+	@docker-compose -p $(PROJECT_ID)-staging up -d stagingweb
 	@dipall
 
 staging-migrate:
@@ -193,17 +194,17 @@ staging-migrate:
 	@echo "------------------------------------------------------------------"
 	@echo "Running migrate static in staging mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging run uwsgi python manage.py migrate
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py migrate
 
 staging-collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Collecting static in staging mode"
 	@echo "------------------------------------------------------------------"
-	#@fig -p jakartaflood-staging run uwsgi python manage.py collectstatic --noinput
+	#@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py collectstatic --noinput
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
-	@docker exec -t -i jakartafloodstaging_uwsgi_1 python manage.py collectstatic --noinput
+	@docker exec -t -i $(PROJECT_ID)staging_uwsgi_1 python manage.py collectstatic --noinput
 
 staging-kill:
 	@echo
@@ -211,42 +212,42 @@ staging-kill:
 	@echo "Killing in staging mode"
 	@echo "------------------------------------------------------------------"
 
-	@fig -p jakartaflood-staging kill
+	@docker-compose -p $(PROJECT_ID)-staging kill
 
 staging-rm: kill
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Removing staging instance!!! "
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging rm
+	@docker-compose -p $(PROJECT_ID)-staging rm
 
 staging-logs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing uwsgi logs in staging mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging logs uwsgi
+	@docker-compose -p $(PROJECT_ID)-staging logs uwsgi
 
 staging-nginxlogs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing nginx logs in staging mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging logs web
+	@docker-compose -p $(PROJECT_ID)-staging logs web
 
 staging-shell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in staging mode"
 	@echo "------------------------------------------------------------------"
-	@fig -p jakartaflood-staging run uwsgi /bin/bash
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi /bin/bash
 
 staging-dbshell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in staging database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i jakartafloodstaging_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)staging_db_1 psql -U docker -h localhost gis
 
 staging-qgis:
 	@echo
@@ -256,9 +257,9 @@ staging-qgis:
 	@echo "------------------------------------------------------------------"
 	@xhost +; docker run --rm --name="qgis-desktop-2-8.0" \
 	-i -t \
-	--link jakartafloodstaging_db_1:db \
-	--link jakartafloodstaging_qgisserver_1:qgisserver \
-	--volumes-from jakartaflood_qgisserver_1 \
+	--link $(PROJECT_ID)staging_db_1:db \
+	--link $(PROJECT_ID)staging_qgisserver_1:qgisserver \
+	--volumes-from $(PROJECT_ID)_qgisserver_1 \
 	-v ${HOME}:/home/$(USER) \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-e DISPLAY=unix$(DISPLAY) \

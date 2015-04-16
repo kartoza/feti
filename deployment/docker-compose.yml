@@ -119,7 +119,6 @@ web:
     - ./static:/home/web/static:ro
     - ./media:/home/web/media:ro
     - ./logs:/var/log/nginx
-    - ./reports:/home/web/archive
   links:
     - uwsgi:uwsgi
     - qgisserver:qgisserver
