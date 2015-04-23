@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 
 from feti.models.campus import Campus
+from feti.models.provider import Provider
 
 def landing_page(request):
     """Serves the FETI landing page.
@@ -23,6 +24,8 @@ def landing_page(request):
     """
     context = {
         'campuses': Campus.objects.all(),
+        'providers': Provider.objects.filter(),
+
     }
     return render(
         request,
