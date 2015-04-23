@@ -7,6 +7,7 @@ __copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
 
+
 class EducationTrainingQualityAssurance(models.Model):
     acronym = models.CharField(max_length=30)
     body_name = models.CharField(max_length=255)
