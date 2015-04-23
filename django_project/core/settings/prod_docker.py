@@ -8,7 +8,8 @@ ALLOWED_HOSTS = ['*']
 ADMINS = (
     ('Tim Sutton', 'tim@kartoza.com'),
     ('Ismail Sunni', 'ismail@kartoza.com'),
-    ('Christian Christelis', 'christian@kartoza.com'),)
+    ('Christian Christelis', 'christian@kartoza.com'),
+    ('Rizky Maulana Nugraha', 'lana.pcfre@gmail.com'))
 
 DATABASES = {
     'default': {
@@ -38,3 +39,12 @@ EMAIL_HOST_USER = 'noreply@kartoza.com'
 EMAIL_HOST_PASSWORD = 'docker'
 EMAIL_USE_TLS = False
 EMAIL_SUBJECT_PREFIX = '[feti]'
+
+# ELASTIC SEARCH
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://%s:9200/' % os.environ['HAYSTACK_HOST'],
+        'INDEX_NAME': 'haystack',
+    },
+}

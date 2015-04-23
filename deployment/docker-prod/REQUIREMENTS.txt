@@ -12,3 +12,6 @@ django-forms-bootstrap
 djangorestframework==2.4.4
 markdown
 django-filter
+# Django haystack support
+django-haystack
+elasticsearch
