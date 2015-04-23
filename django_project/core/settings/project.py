@@ -44,8 +44,8 @@ PIPELINE_JS = {
     },
     'appjs': {
         'source_filenames': (
-            'js/csrf-ajax.js',
             'feti/js/feti.js',
+            'js/csrf-ajax.js',
         ),
         'output_filename': 'js/appjs.js'
     }
