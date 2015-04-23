@@ -11,11 +11,24 @@
                         <i class="mdi-maps-map"></i>
                         FIND</a>
                 </li>
-                <li id="nav_flood_area_details">
+                {% if user.is_authenticated %}
+                <li id="nav_project_team">
                     <a href="/project-team/">
                         <i class="mdi-maps-map"></i>
-                        FIND</a>
+                        Project Team</a>
                 </li>
+                <li id="nav_logout">
+                    <a href="/accounts/logout/">
+                        <i class="mdi-maps-map"></i>
+                        Logout</a>
+                </li>
+                {% else %}
+                <li id="nav_login">
+                    <a href="/accounts/login/">
+                        <i class="mdi-maps-map"></i>
+                        Project Team Login</a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>
