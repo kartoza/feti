@@ -23,7 +23,6 @@ def landing_page(request):
     """
     context = {
         'campuses': Campus.objects.all(),
-        'all': 'GOLD'
     }
     return render(
         request,
