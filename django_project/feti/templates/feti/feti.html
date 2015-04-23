@@ -1,4 +1,4 @@
-{% extends "flood_mapper/base.html" %}
+{% extends "feti/base.html" %}
 {% block header %}
     <script>
         $(document).ready(function () {
@@ -14,7 +14,7 @@
 {% load bootstrap_tags %}
 
 {% block navigation-bar %}
-    {% include "flood_mapper/navigation_bar.html" %}
+    {% include "feti/navigation_bar.html" %}
 {%  endblock %}
 
 {% block content %}
@@ -22,7 +22,7 @@
         <div class="row">
             {#  map #}
             <div class="col-lg-8" style="margin:0; padding:0;">
-                {% include "flood_mapper/map.html" %}
+                {% include "feti/map.html" %}
             </div>
             {# side panel #}
             <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">

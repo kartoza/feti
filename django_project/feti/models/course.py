@@ -7,8 +7,8 @@ __copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
 from feti.models.education_training_quality_assurance import (
-    EducationTrainingQualityAssurance
-)
+    EducationTrainingQualityAssurance)
+
 
 class Course(models.Model):
     national_learners_records_database = models.CharField(
