@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import RequestContext
 
+from feti.models.campus import Campus
 
 def landing_page(request):
     """Serves the FETI landing page.
@@ -20,7 +21,10 @@ def landing_page(request):
     :returns: Returns the landing page.
     :rtype: HttpResponse
     """
+    context = {
+        'campuses': Campus.objects.all(),
+    }
     return render(
         request,
         'feti/feti.html',
-        context_instance=RequestContext(request, {}))
+        context_instance=RequestContext(request, context))
