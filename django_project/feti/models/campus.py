@@ -7,12 +7,17 @@ __copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
 
+# from feti.models.provider import Provider
+# from feti.models.campus_address import CampusAddress
+
 
 class Campus(models.Model):
-    id = models.AutoField(primary_key=True)
     """A campus where a set of courses are offered."""
+    id = models.AutoField(primary_key=True)
     campus = models.CharField(max_length=100, blank=True, null=True)
     location = models.PointField()
+    # provider = models.ForeignKey(Provider)
+    # campus_address = models.ForeignKey(CampusAddress)
 
     objects = models.GeoManager()
 
