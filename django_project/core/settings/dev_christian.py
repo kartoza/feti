@@ -7,9 +7,9 @@ DATABASES = {
         'NAME': 'gis',
         'USER': 'docker',
         'PASSWORD': 'docker',
-        'HOST': 'localhost',
+        'HOST': '0.0.0.0',
         # Set to empty string for default.
-        'PORT': '6543',
+        'PORT': '5432',
     }
 }
 

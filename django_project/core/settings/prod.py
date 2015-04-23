@@ -8,7 +8,7 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'flood_mapper_dev',
+        'NAME': 'feti_dev',
         'USER': '',
         'PASSWORD': '',
         'HOST': 'localhost',
