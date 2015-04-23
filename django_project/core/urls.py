@@ -11,7 +11,7 @@ urlpatterns = patterns(
     # Enable the admin:
     url(r'^accounts/login/$', 'user_profile.views.login'),
     url(r'^accounts/logout/$', 'user_profile.views.logout'),
-    url(r'^jkf-admin/', include(admin.site.urls)),
+    url(r'^feti-admin/', include(admin.site.urls)),
 
     # include application urls
     url(r'', include('feti.urls')),

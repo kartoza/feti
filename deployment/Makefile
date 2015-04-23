@@ -29,7 +29,6 @@ web:
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up -d web
-	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py create_reports_directories
 	@dipall
 
 migrate:

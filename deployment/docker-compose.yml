@@ -87,7 +87,6 @@ uwsgi:
     - ../django_project:/home/web/django_project
     - ./static:/home/web/static
     - ./media:/home/web/media
-    - ./reports:/home/web/reports
     - ./logs:/var/log/
   links:
     - smtp:smtp
@@ -109,6 +108,8 @@ cron:
     - /tmp/.X11-unix:/tmp/.X11-unix
   links:
     - db:db
+  ports:
+    - "5432:5432"
 
 web:
   image: nginx
