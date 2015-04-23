@@ -15,12 +15,14 @@ class Address(models.Model):
     address_line_2 = models.CharField(max_length=100)
     address_line_3 = models.CharField(max_length=100)
     town = models.CharField(max_length=100)
+
     postal_code_regex = RegexValidator(
         regex=r'^\d{4,4}$',
         message="Postal code consists of 4 digits.")
     postal_code = models.CharField(
         max_length=4,
         validators=[postal_code_regex])
+
     phone_regex = RegexValidator(
         regex=r'^\+\d{12,12}$',
         message="Phone number should have the following format: "

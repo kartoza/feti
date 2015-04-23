@@ -7,8 +7,8 @@ __copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
 
-# from feti.models.provider import Provider
-# from feti.models.campus_address import CampusAddress
+from feti.models.provider import Provider
+from feti.models.address import Address
 
 
 class Campus(models.Model):
@@ -16,8 +16,8 @@ class Campus(models.Model):
     id = models.AutoField(primary_key=True)
     campus = models.CharField(max_length=100, blank=True, null=True)
     location = models.PointField()
-    # provider = models.ForeignKey(Provider)
-    # campus_address = models.ForeignKey(CampusAddress)
+    address = models.ForeignKey(Address)
+    provider = models.ForeignKey(Provider)
 
     objects = models.GeoManager()
 
