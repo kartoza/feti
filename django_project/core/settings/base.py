@@ -83,8 +83,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.admin',
-    'django_forms_bootstrap',
-    'haystack'
+    'django_forms_bootstrap'
 )
 
 # AUTH_USER_MODEL = 'users.User'
