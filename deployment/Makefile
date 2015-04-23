@@ -38,6 +38,13 @@ migrate:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py migrate
 
+makemigrations:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running makemigrations in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
+
 collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"

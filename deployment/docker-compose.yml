@@ -110,8 +110,6 @@ cron:
     - /tmp/.X11-unix:/tmp/.X11-unix
   links:
     - db:db
-  ports:
-    - "5432:5432"
 
 web:
   image: nginx

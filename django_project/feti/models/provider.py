@@ -15,9 +15,12 @@ class Provider(models.Model):
     id = models.AutoField(primary_key=True)
     provider_address = models.ForeignKey(Address)
     primary_institution = models.CharField(max_length=100)
-    website = models.CharField(max_length=100)
+    website = models.URLField()
     status = models.BooleanField(default=PROVIDER_STATUS_PUBLIC)
     """public owned or private owned"""
+
+    def __unicode__(self):
+        return self.primary_institution
 
     class Meta:
         app_label = 'feti'
