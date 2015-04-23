@@ -15,6 +15,10 @@ ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
 RUN pip install uwsgi
 
+# Add patch for raven per issue:
+# https://github.com/getsentry/raven-python/pull/595
+ADD raven_contrib_django_apps-patch.py /usr/local/lib/python2.7/site-packages/raven/contrib/django/apps.py
+
 RUN apt-get update -y; apt-get -y --force-yes install yui-compressor
 
 # Open port 8080 as we will be running our uwsgi socket on that

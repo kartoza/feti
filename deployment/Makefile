@@ -45,6 +45,20 @@ makemigrations:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
 
+rebuildindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py rebuild_index
+
+updateindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py update_index
+
 collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"
