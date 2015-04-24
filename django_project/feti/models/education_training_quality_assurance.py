@@ -13,6 +13,8 @@ class EducationTrainingQualityAssurance(models.Model):
     body_name = models.CharField(max_length=255)
     url = models.URLField()
 
+    objects = models.GeoManager()
+
     def __unicode__(self):
         return '%s (%s)' % (self.acronym, self.acronym)
 

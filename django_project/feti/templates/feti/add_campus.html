@@ -1,12 +1,6 @@
 {% extends "flood_mapper/base.html" %}
 {% block header %}
-    <script>
-        $(document).ready(function(){
-            show_map();
-            update_rts_rws();
-        });
-    </script>
-    <title>Tambah laporan status banjir</title>
+    <title>Add Campus</title>
 {%  endblock %}
 
 {% load bootstrap_tags %}
@@ -18,25 +12,7 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-        <div class="col-lg-8" style="margin:0; padding:0;">
-            {% include "feti/map.html" %}
-        </div>
-        <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <i class="mdi-image-timer"></i>
-                        Tambah laporan banjir
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <form action="/project-team/add-campus/" method="post">
-                        {% csrf_token %}
-                        {{ form|as_bootstrap }}
-                        <button type="submit" class="btn btn-block btn-success">Tambah</button>
-                    </form>
-                </div>
-            </div>
+            {{ form }}
         </div>
     </div> <!-- /container -->
 {%  endblock %}

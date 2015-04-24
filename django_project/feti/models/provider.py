@@ -18,6 +18,7 @@ class Provider(models.Model):
     website = models.URLField()
     status = models.BooleanField(default=PROVIDER_STATUS_PUBLIC)
     """public owned or private owned"""
+    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.primary_institution

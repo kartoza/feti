@@ -33,6 +33,8 @@ class Address(models.Model):
         blank=True,
         null=True)
 
+    objects = models.GeoManager()
+
     def __unicode__(self):
         return '%s\n%s\n%s\n%s' % (
             self.address_line_1,

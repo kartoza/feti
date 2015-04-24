@@ -323,6 +323,8 @@ function zoomToFeature(e) {
 /*jslint unparam: true*/
 function onEachFeature(feature, layer) {
     'use strict';
+    feature.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
+    layer.bindPopup(feature.properties.address);
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
@@ -350,28 +352,43 @@ function set_offset() {
 
 }
 
-function add_rw_to_map(time_slice, selected_rw) {
+//function add_rw_to_map(time_slice, selected_rw) {
+//    'use strict';
+//    $.get('/api/locations/flooded/rw/' + time_slice + '/?format=json', function (data) {
+//        /*jslint unparam: true*/
+//        var layer, rw_layer;
+//        $.each(data, function (dummy, rw_id) {
+//            $.get('/api/rw/' + rw_id + '/?format=json', function (rw) {
+//                rw_layer = JSON.parse(rw.geometry);
+//                layer = L.geoJson(rw_layer, {
+//                    style: style,
+//                    onEachFeature: onEachFeature,
+//                    properties: {
+//                        rw_id: rw.id,
+//                        name: rw.name,
+//                        population: rw.population
+//                    }
+//                }).addTo(map);
+//                if (rw_id === selected_rw) {
+//                    map.fitBounds(layer.getBounds());
+//                }
+//            });
+//        });
+//        /*jslint unparam: false*/
+//    });
+//}
+
+
+function add_campus(campus_coordinates, campus_address) {
     'use strict';
-    $.get('/api/locations/flooded/rw/' + time_slice + '/?format=json', function (data) {
-        /*jslint unparam: true*/
-        var layer, rw_layer;
-        $.each(data, function (dummy, rw_id) {
-            $.get('/api/rw/' + rw_id + '/?format=json', function (rw) {
-                rw_layer = JSON.parse(rw.geometry);
-                layer = L.geoJson(rw_layer, {
-                    style: style,
-                    onEachFeature: onEachFeature,
-                    properties: {
-                        rw_id: rw.id,
-                        name: rw.name,
-                        population: rw.population
-                    }
-                }).addTo(map);
-                if (rw_id === selected_rw) {
-                    map.fitBounds(layer.getBounds());
-                }
-            });
-        });
-        /*jslint unparam: false*/
-    });
+    L.Icon.Default.imagePath = 'http://iconshow.me/media/images/Mixed/small-n-flat-icon/png2/512/';
+    var campus_point;
+    campus_point = JSON.parse(campus_coordinates);
+    L.geoJson(campus_point, {
+        style: style,
+        onEachFeature: onEachFeature,
+        properties: {
+            address: campus_address,
+        }
+    }).addTo(map);
 }

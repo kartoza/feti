@@ -22,10 +22,13 @@ def landing_page(request):
     :returns: Returns the landing page.
     :rtype: HttpResponse
     """
+    previous_search = ''
+    if request.POST:
+        previous_search = request.POST.get('previous_search')
     context = {
         'campuses': Campus.objects.all(),
         'providers': Provider.objects.filter(),
-
+        'previous_search': previous_search,
     }
     return render(
         request,

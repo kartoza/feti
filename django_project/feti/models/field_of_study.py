@@ -16,6 +16,8 @@ class FieldOfStudy(models.Model):
         blank=True,
         null=True)
 
+    objects = models.GeoManager()
+
     def __unicode__(self):
         return 'Field of Study Class (%s)' % self.field_of_study_class
 
