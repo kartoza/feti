@@ -79,6 +79,34 @@ INSERT INTO feti_nationalqualificationsframework(level, description, certificati
 drop table nqf;
 
 
+--Loading course table- whilst we have no dat for that
+---make default values where we do not have data
+ALTER TABLE feti_course
+   ALTER COLUMN field_of_study_id SET DEFAULT 1;
+
+ALTER TABLE feti_course
+   ALTER COLUMN national_certificate_vocational_id SET DEFAULT 1;
+
+ALTER TABLE feti_course
+   ALTER COLUMN national_graduate_school_in_education_id SET DEFAULT 1;
+
+ALTER TABLE feti_course
+   ALTER COLUMN national_qualifications_framework_id SET DEFAULT 1;
+
+INSERT INTO feti_course( education_training_quality_assurance_id, national_qualifications_framework_id) 
+select etqa_id,nqf_id from fet_sample_data;
+
+
+
+UPDATE fet_sample_data
+SET nqf_level_temp = regexp_replace(
+    nqf_level_temp, '[a-zA-Z]+', '', 'g')
+
+
+
+
+
+
 
 
 
