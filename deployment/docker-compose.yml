@@ -57,6 +57,7 @@ db:
   image: kartoza/postgis
   volumes:
     - ./pg/postgres_data:/var/lib/postgresql
+    - ./pg/setup_data:/home/setup
   environment:
     - USERNAME=docker
     - PASS=docker
