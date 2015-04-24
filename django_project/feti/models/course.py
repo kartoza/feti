@@ -43,11 +43,14 @@ class Course(models.Model):
         NationalCertificateVocational)
     field_of_study = models.ForeignKey(FieldOfStudy)
 
+    objects = models.GeoManager()
+
     def __unicode__(self):
         return '%s' % self.national_learners_records_database
 
     class Meta:
         app_label = 'feti'
+        managed = True
 
 
 

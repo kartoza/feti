@@ -21,5 +21,7 @@ class CourseProviderLink(models.Model):
             self.course.__unicode__(),
             self.campus.__unicode__())
 
+    objects = models.GeoManager()
+
     class Meta:
         app_label = 'feti'

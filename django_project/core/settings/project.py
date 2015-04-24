@@ -58,7 +58,7 @@ PIPELINE_CSS = {
             'feti/css/leaflet.css',
             'feti/css/material-wfont.min.css',
             'feti/css/ripples.min.css',
-            'feti/css/bnpb-theme.css',
+            'feti/css/feti-theme.css',
             'css/bootstrap-datetimepicker.min.css',
         ),
         'output_filename': 'css/contrib.css',

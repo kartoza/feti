@@ -5,6 +5,9 @@
             // add rw's to map
             show_map();
             $('#campus_details').addClass("active");
+            {% for campus in campuses %}
+                add_campus('{{ campus.location.geojson|safe }}', '');
+            {% endfor %}
         });
 
     </script>
@@ -26,6 +29,11 @@
             </div>
             {# side panel #}
             <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
+                <form method="post">
+                    {% csrf_token %}
+                    <input dir="ltr" maxlength="250" name="search_terms" value="{{ previous_search }}" type="text"></input>
+                    <button>SEARCH</button>
+                </form>
                 <div class="bs-component">
                     <div class="panel panel-primary">
                         {% for campus in campuses %}

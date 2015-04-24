@@ -1,5 +1,5 @@
 .navbar-bnpb.navbar {
-    background-color: #ffa500;
+    background-color: #1347A8;
     color: #FFFFFF;
     text-transform: uppercase;
     font-weight: bold;
@@ -26,12 +26,12 @@ body {
 }
 
 .btn-primary.btn-flat:not(.btn-link) {
-    color: #ffa500;
+    color: #1347A8;
 }
 .btn-primary:not(.btn-link):not(.btn-flat) {
-    background-color: #ffa500;
+    background-color: #1347A8;
     color: rgba(255, 255, 255, 0.84);
 }
 .open > .dropdown-toggle.btn-primary {
-    background-color: #ffa500;
+    background-color: #1347A8;
 }

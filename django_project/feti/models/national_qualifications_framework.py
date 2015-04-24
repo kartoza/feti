@@ -12,5 +12,7 @@ class NationalQualificationsFramework(models.Model):
     certification = models.CharField(max_length=4)
     link = models.URLField()
 
+    objects = models.GeoManager()
+
     class Meta:
         app_label = 'feti'

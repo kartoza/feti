@@ -11,5 +11,7 @@ class NationalGraduateSchoolInEducation(models.Model):
     level = models.CharField(max_length=2)
     description = models.CharField(max_length=100)
 
+    objects = models.GeoManager()
+
     class Meta:
         app_label = 'feti'
