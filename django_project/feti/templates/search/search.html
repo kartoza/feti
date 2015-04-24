@@ -1,3 +1,5 @@
+{% load feti_extras %}
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -19,9 +21,13 @@
 
             {% for result in page.object_list %}
                 <p>
-                    <a href="{{ result.object.website }}">
-                        {{ result.object.primary_institution }}
-                    </a>
+                    {% result.object|typenamestring %}
+                    {% comment %}
+                    {% ifequal result.object|typename "Provider" %}
+                        <a href="{{ result.object.website }}">
+                            {{ result.object.primary_institution }}
+                        </a>
+                    {% comment %}
                 </p>
             {% empty %}
                 <p>No results found.</p>
