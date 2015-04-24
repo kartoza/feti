@@ -8,7 +8,7 @@ __date__ = '23/04/15'
 class NationalQualificationsFramework(models.Model):
     """Model for National Qualifications Framework (NQF)"""
     level = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=50)
+    description = models.CharField(max_length=255)
     certification = models.CharField(max_length=4)
     link = models.URLField()
 
