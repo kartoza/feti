@@ -98,17 +98,17 @@ select etqa_id,nqf_id from fet_sample_data;
 
 
 
-UPDATE feti_sample_data
+UPDATE fet_sample_data
 SET nqf_level_temp = regexp_replace(
     nqf_level_temp, '[a-zA-Z]+', '', 'g')
 
 
 --creating table for provider and campus
 
-alter table feti_sample_data add column provider_id integer;
+alter table fet_sample_data add column provider_id integer;
 
-update feti_sample_data c set provider_id = b.id
-FROM (select row_number() over () AS id,a.provider_name from (select distinct provider_name from feti_sample_data order by provider_name) a) b
+update fet_sample_data c set provider_id = b.id
+FROM (select row_number() over () AS id,a.provider_name from (select distinct provider_name from fet_sample_data order by provider_name) a) b
 WHERE c.provider_name = b.provider_name;
 
 ALTER TABLE feti_provider
@@ -118,7 +118,7 @@ ALTER TABLE feti_provider
 
 
 
-INSERT INTO feti_provider(primary_institution) select provider_name from feti_sample_data;
+INSERT INTO feti_provider(primary_institution) select provider_name from fet_sample_data;
 
 --insert data into campus
 
@@ -127,7 +127,9 @@ ALTER TABLE feti_campus
 
 
 
-#INSERT INTO feti_campus(  address_id, provider_id,location) select  provider_id,provider_id,geom from fet_sample_data;
+INSERT INTO feti_campus(  address_id, provider_id,location) select  provider_id,provider_id,geom from fet_sample_data;
+
+
 
 
 
