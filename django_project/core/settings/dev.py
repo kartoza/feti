@@ -1,3 +1,5 @@
+from core.settings.utils import DJANGO_ROOT
+import os
 from .project import *  # noqa
 
 # Set debug to True for development
@@ -40,6 +42,13 @@ LOGGING = {
             'formatter': 'simple',
             'level': 'DEBUG',
         },
+        'applogfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(DJANGO_ROOT, 'APPNAME.log'),
+            'maxBytes': 1024*1024*15,  # 15MB
+            'backupCount': 10,
+        },
         # 'logfile': {
         #     'class': 'logging.FileHandler',
         #     'filename': '/tmp/app-dev.log',
@@ -51,6 +60,10 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'INFO',  # switch to DEBUG to show actual SQL
+        },
+        'feti': {
+            'handlers': ['applogfile'],
+            'level': 'DEBUG',
         },
         # example app logger
         # 'app.module': {

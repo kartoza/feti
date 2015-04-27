@@ -1,0 +1,1 @@
+{{ object.national_certificate_vocational_description }}
