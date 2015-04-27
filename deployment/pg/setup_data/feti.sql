@@ -127,7 +127,7 @@ ALTER TABLE feti_campus
 
 
 
-INSERT INTO feti_campus(  address_id, provider_id,location) select  provider_id,provider_id,geom from fet_sample_data;
+INSERT INTO feti_campus(  address_id, provider_id,location) select  provider_id,provider_id,geometry from fet_sample_data;
 
 
 

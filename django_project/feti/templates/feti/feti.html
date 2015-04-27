@@ -1,12 +1,13 @@
 {% extends "feti/base.html" %}
 {% block header %}
+{% load geojson_tags %}
     <script>
         $(document).ready(function () {
             // add rw's to map
             show_map();
             $('#campus_details').addClass("active");
             {% for campus in campuses %}
-                add_campus('{{ campus.location.geojson|safe }}', '');
+                add_campus({{ campus.location|geojsonfeature:"popup_content"|safe}});
             {% endfor %}
         });
 
@@ -23,7 +24,7 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            {#  map #}
+            {# map #}
             <div class="col-lg-8" style="margin:0; padding:0;">
                 {% include "feti/map.html" %}
             </div>

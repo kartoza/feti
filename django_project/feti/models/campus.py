@@ -23,3 +23,9 @@ class Campus(models.Model):
 
     class Meta:
         app_label = 'feti'
+
+    @property
+    def popup_content(self):
+      return '<p>{} : {}</p>'.format(
+          self.campus,
+          self.provider.primary_institution)

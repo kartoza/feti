@@ -15,3 +15,5 @@ django-filter
 # Django haystack support
 django-haystack
 elasticsearch
+django-leaflet==0.16.0
+django-geojson==2.8.0

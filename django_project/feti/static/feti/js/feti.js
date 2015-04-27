@@ -306,29 +306,17 @@ function zoomToFeature(e) {
     var rw_id, rw_name, layer;
     layer = e.target;
     map.fitBounds(layer.getBounds());
-    $('#select_rw').show();
-    $('#staff_details').hide();
-    $('#current_flood_depth_div').hide();
-    $('#flood_depth_over_time_div').hide();
-    $('#rw_fill').hide();
-    if (window.location.pathname === '/') {
-        toggle_side_panel();
-    }
-
-    rw_id = layer._options.properties.rw_id;
-    rw_name = layer._options.properties.name;
-    updateFloodAreaOptions(rw_id, rw_name);
 }
 
 /*jslint unparam: true*/
 function onEachFeature(feature, layer) {
     'use strict';
-    feature.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-    layer.bindPopup(feature.properties.address);
+    console.log(feature);
+    layer.bindPopup(feature.properties.popup_content);
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: zoomToFeature
+        dblclick: zoomToFeature
     });
 }
 /*jslint unparam: false*/
@@ -379,16 +367,31 @@ function set_offset() {
 //}
 
 
-function add_campus(campus_coordinates, campus_address) {
+function add_campus(campus_feature) {
     'use strict';
-    L.Icon.Default.imagePath = 'http://iconshow.me/media/images/Mixed/small-n-flat-icon/png2/512/';
-    var campus_point;
-    campus_point = JSON.parse(campus_coordinates);
-    L.geoJson(campus_point, {
+    var geojsonMarkerOptions = {
+        radius: 6,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+    var icon = L.icon({
+        iconUrl: 'leaf-green.png',
+        shadowUrl: 'leaf-shadow.png',
+
+        iconSize:     [1, 1], // size of the icon
+        shadowSize:   [50, 64], // size of the shadow
+        iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+        shadowAnchor: [4, 62],  // the same for the shadow
+        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+    L.geoJson(campus_feature, {
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
         style: style,
-        onEachFeature: onEachFeature,
-        properties: {
-            address: campus_address,
-        }
+        onEachFeature: onEachFeature
     }).addTo(map);
 }
