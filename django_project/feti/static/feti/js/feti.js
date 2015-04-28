@@ -53,7 +53,8 @@ function show_map() {
     'use strict';
     $('#navigationbar').css('height', window.innerHeight * 0.1);
     $('#map').css('height', window.innerHeight * 0.9);
-    map = L.map('map').setView([-33.9200, 18.8600], 8);
+    map = L.map('map').setView([-25.7461, 28.1881], 8);
+    //map = L.map('map').setView([-33.9200, 18.8600], 8);
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
