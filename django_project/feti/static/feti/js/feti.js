@@ -3,6 +3,7 @@
  */
 /*global $, jQuery, L, window, console*/
 var map;
+var campus_lookup = {};
 
 jQuery.download = function (url, data, method) {
     /* Taken from http://www.filamentgroup.com/lab/jquery-plugin-for-requesting-ajax-like-file-downloads.html*/
@@ -303,7 +304,7 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
     'use strict';
-    var rw_id, rw_name, layer;
+    var layer;
     layer = e.target;
     map.fitBounds(layer.getBounds());
 }
@@ -340,35 +341,10 @@ function set_offset() {
 
 }
 
-//function add_rw_to_map(time_slice, selected_rw) {
-//    'use strict';
-//    $.get('/api/locations/flooded/rw/' + time_slice + '/?format=json', function (data) {
-//        /*jslint unparam: true*/
-//        var layer, rw_layer;
-//        $.each(data, function (dummy, rw_id) {
-//            $.get('/api/rw/' + rw_id + '/?format=json', function (rw) {
-//                rw_layer = JSON.parse(rw.geometry);
-//                layer = L.geoJson(rw_layer, {
-//                    style: style,
-//                    onEachFeature: onEachFeature,
-//                    properties: {
-//                        rw_id: rw.id,
-//                        name: rw.name,
-//                        population: rw.population
-//                    }
-//                }).addTo(map);
-//                if (rw_id === selected_rw) {
-//                    map.fitBounds(layer.getBounds());
-//                }
-//            });
-//        });
-//        /*jslint unparam: false*/
-//    });
-//}
 
-
-function add_campus(campus_feature) {
+function add_campus(campus_json, campus_id) {
     'use strict';
+    var campus_feature;
     var geojsonMarkerOptions = {
         radius: 6,
         fillColor: "#ff7800",
@@ -377,21 +353,19 @@ function add_campus(campus_feature) {
         opacity: 1,
         fillOpacity: 0.8
     };
-    var icon = L.icon({
-        iconUrl: 'leaf-green.png',
-        shadowUrl: 'leaf-shadow.png',
-
-        iconSize:     [1, 1], // size of the icon
-        shadowSize:   [50, 64], // size of the shadow
-        iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-        shadowAnchor: [4, 62],  // the same for the shadow
-        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-    });
-    L.geoJson(campus_feature, {
+    campus_feature = L.geoJson(campus_json, {
         pointToLayer: function (feature, latlng) {
             return L.circleMarker(latlng, geojsonMarkerOptions);
         },
         style: style,
         onEachFeature: onEachFeature
     }).addTo(map);
+    campus_lookup[campus_id] = campus_feature;
+}
+
+
+function SelectFeature(campus_id){
+    var feature = campus_lookup[campus_id];
+    map.fitBounds(feature.getBounds());
+    SelectFeature(feature);
 }

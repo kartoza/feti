@@ -51,7 +51,7 @@ def landing_page(request):
                     course_dict[campus] = [course]
     else:
         for campus in [c for c in campuses]:
-            course_dict[campus] = course_dict[campus]
+            course_dict[campus] = campus.linked_courses()
 
     context = {
         'campuses': campuses,

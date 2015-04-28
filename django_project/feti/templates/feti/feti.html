@@ -7,7 +7,7 @@
             show_map();
             $('#campus_details').addClass("active");
             {% for campus in course_dict %}
-                add_campus({{ campus.location|geojsonfeature:"popup_content"|safe}});
+                add_campus({{ campus.location|geojsonfeature:"popup_content"|safe}}, {{ campus.id }});
             {% endfor %}
         });
 
@@ -39,7 +39,7 @@
                 <div class="bs-component">
                     <div class="panel panel-primary">
                         {% for campus, courses in course_dict.iteritems %}
-                            <div class="panel-heading">
+                            <div class="panel-heading" onclick="SelectFeature({{ campus.id }})">
                                 <h3 class="panel-title">
                                     <i class="mdi-image-timer"></i>
                                     {{ campus.campus }}

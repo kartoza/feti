@@ -35,4 +35,6 @@ class Campus(models.Model):
         from feti.models.course_provider_link import CourseProviderLink
 
         linked_courses = CourseProviderLink.objects.filter(campus=self)
-        return linked_courses or []
+        if not linked_courses:
+            return []
+        return [link.course for link in linked_courses]
