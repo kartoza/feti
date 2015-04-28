@@ -31,6 +31,10 @@ class Campus(models.Model):
           self.provider.primary_institution,
           self.address)
 
+    @property
+    def geom(self):
+        return self.location
+
     def linked_courses(self):
         from feti.models.course_provider_link import CourseProviderLink
 
@@ -38,3 +42,6 @@ class Campus(models.Model):
         if not linked_courses:
             return []
         return [link.course for link in linked_courses]
+
+    def __unicode__(self):
+        return u'%s' % self.campus

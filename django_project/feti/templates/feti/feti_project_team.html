@@ -3,11 +3,6 @@
 {% load geojson_tags %}
     <script>
         $(document).ready(function () {
-            show_map();
-            $('#campus_details').addClass("active");
-            {% for campus in course_dict %}
-                add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
-            {% endfor %}
         });
 
     </script>
