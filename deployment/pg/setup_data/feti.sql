@@ -102,8 +102,8 @@ ALTER TABLE fet_sample_data
 
 update fet_sample_data set etqa_id = 0 where etqa is null;
 
-INSERT INTO feti_course( education_training_quality_assurance_id) 
-select etqa_id from fet_sample_data;
+INSERT INTO feti_course( education_training_quality_assurance_id, course_description)
+select etqa_id, etqa from fet_sample_data;
 
 
 
@@ -146,5 +146,5 @@ ALTER TABLE feti_address
 
 insert into feti_address (id,address_line_1,phone) select distinct on (provider_id)provider_id,center_add,telephone_ from fet_sample_data;
 
-INSERT INTO feti_campus(address_id, provider_id,location) select  provider_id,provider_id,geometry from fet_sample_data;
+INSERT INTO feti_campus(address_id, provider_id,location, campus) select  provider_id,provider_id,geometry, CAST(provider_name AS varchar(100)) from fet_sample_data limit 1500;
 

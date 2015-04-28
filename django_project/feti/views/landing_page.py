@@ -27,7 +27,7 @@ def landing_page(request):
     :rtype: HttpResponse
     """
     search_terms = ''
-    campuses = Campus.objects.all()
+    campuses = Campus.objects.all()[:1500]
     courses = Course.objects.all()
     providers = Provider.objects.all()
     course_dict = dict()
@@ -38,9 +38,9 @@ def landing_page(request):
             Campus)
         courses = SearchQuerySet().filter(content=search_terms).models(
             Course)
-        for campus in [c.object for c in campuses]:
+        for campus in [c.object for c in campuses[:1500]]:
             course_dict[campus] = campus.linked_courses()
-        for course in [c.object for c in courses]:
+        for course in [c.object for c in courses[:1500]]:
             linked_campuses = CourseProviderLink.objects.filter(
                 course=course)
             for campus in [c.campus for c in linked_campuses]:
@@ -50,7 +50,7 @@ def landing_page(request):
                 else:
                     course_dict[campus] = [course]
     else:
-        for campus in [c for c in campuses]:
+        for campus in [c for c in campuses[:1500]]:
             course_dict[campus] = campus.linked_courses()
 
     context = {
