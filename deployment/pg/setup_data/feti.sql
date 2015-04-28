@@ -76,7 +76,7 @@ INSERT INTO feti_nationalcertificatevocational( national_certificate_vocational_
 drop table ncv;
 
 INSERT INTO feti_nationalqualificationsframework(level, description, certification, link) SELECT nqf_level, nqf_desc, nqf_cert, nqf_link FROM nqf;
---drop table nqf;
+drop table nqf;
 
 
 --Loading course table- whilst we have no dat for that
@@ -114,7 +114,7 @@ SET nqf_level_temp = regexp_replace(
 
 --creating table for provider and campus
 
---alter table fet_sample_data add column provider_id integer;
+alter table fet_sample_data add column provider_id integer;
 
 update fet_sample_data c set provider_id = b.id
 FROM (select row_number() over () AS id,a.provider_name from (select distinct provider_name from fet_sample_data order by provider_name) a) b
@@ -147,37 +147,4 @@ ALTER TABLE feti_address
 insert into feti_address (id,address_line_1,phone) select distinct on (provider_id)provider_id,center_add,telephone_ from fet_sample_data;
 
 INSERT INTO feti_campus(address_id, provider_id,location) select  provider_id,provider_id,geometry from fet_sample_data;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

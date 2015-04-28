@@ -7,6 +7,8 @@ INSTALLED_APPS += (
     'pipeline',
     'rest_framework',
     'haystack',
+    'leaflet',
+    'djgeojson'
 )
 
 # define template function (example for underscore)

@@ -39,12 +39,7 @@ def landing_page(request):
         courses = SearchQuerySet().filter(content=search_terms).models(
             Course)
         for campus in [c.object for c in campuses]:
-            linked_courses = CourseProviderLink.objects.filter(
-                campus=campus)
-            if linked_courses:
-                course_dict[campus] = [c.course for c in linked_courses]
-            else:
-                course_dict[campus] = []
+            course_dict[campus] = campus.linked_courses()
         for course in [c.object for c in courses]:
             linked_campuses = CourseProviderLink.objects.filter(
                 course=course)
@@ -54,6 +49,9 @@ def landing_page(request):
                         course_dict[campus].append(course)
                 else:
                     course_dict[campus] = [course]
+    else:
+        for campus in [c for c in campuses]:
+            course_dict[campus] = campus.linked_courses()
 
     context = {
         'campuses': campuses,

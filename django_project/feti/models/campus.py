@@ -23,3 +23,25 @@ class Campus(models.Model):
 
     class Meta:
         app_label = 'feti'
+
+    @property
+    def popup_content(self):
+      return '<p>{} : {}</p><p>{}</p>'.format(
+          self.campus,
+          self.provider.primary_institution,
+          self.address)
+
+    @property
+    def geom(self):
+        return self.location
+
+    def linked_courses(self):
+        from feti.models.course_provider_link import CourseProviderLink
+
+        linked_courses = CourseProviderLink.objects.filter(campus=self)
+        if not linked_courses:
+            return []
+        return [link.course for link in linked_courses]
+
+    def __unicode__(self):
+        return u'%s' % self.campus

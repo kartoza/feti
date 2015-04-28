@@ -3,6 +3,7 @@
  */
 /*global $, jQuery, L, window, console*/
 var map;
+var campus_lookup = {};
 
 jQuery.download = function (url, data, method) {
     /* Taken from http://www.filamentgroup.com/lab/jquery-plugin-for-requesting-ajax-like-file-downloads.html*/
@@ -273,7 +274,7 @@ function style(feature) {
         weight: 2,
         opacity: 1,
         color: 'blue',
-        dashArray: '3',
+        dashArray: '',
         fillOpacity: 0.5,
         fillColor: 'blue'
     };
@@ -303,32 +304,20 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
     'use strict';
-    var rw_id, rw_name, layer;
+    var layer;
     layer = e.target;
     map.fitBounds(layer.getBounds());
-    $('#select_rw').show();
-    $('#staff_details').hide();
-    $('#current_flood_depth_div').hide();
-    $('#flood_depth_over_time_div').hide();
-    $('#rw_fill').hide();
-    if (window.location.pathname === '/') {
-        toggle_side_panel();
-    }
-
-    rw_id = layer._options.properties.rw_id;
-    rw_name = layer._options.properties.name;
-    updateFloodAreaOptions(rw_id, rw_name);
 }
 
 /*jslint unparam: true*/
 function onEachFeature(feature, layer) {
     'use strict';
-    feature.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-    layer.bindPopup(feature.properties.address);
+    console.log(feature);
+    layer.bindPopup(feature.properties.popup_content);
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: zoomToFeature
+        dblclick: zoomToFeature
     });
 }
 /*jslint unparam: false*/
@@ -352,43 +341,31 @@ function set_offset() {
 
 }
 
-//function add_rw_to_map(time_slice, selected_rw) {
-//    'use strict';
-//    $.get('/api/locations/flooded/rw/' + time_slice + '/?format=json', function (data) {
-//        /*jslint unparam: true*/
-//        var layer, rw_layer;
-//        $.each(data, function (dummy, rw_id) {
-//            $.get('/api/rw/' + rw_id + '/?format=json', function (rw) {
-//                rw_layer = JSON.parse(rw.geometry);
-//                layer = L.geoJson(rw_layer, {
-//                    style: style,
-//                    onEachFeature: onEachFeature,
-//                    properties: {
-//                        rw_id: rw.id,
-//                        name: rw.name,
-//                        population: rw.population
-//                    }
-//                }).addTo(map);
-//                if (rw_id === selected_rw) {
-//                    map.fitBounds(layer.getBounds());
-//                }
-//            });
-//        });
-//        /*jslint unparam: false*/
-//    });
-//}
 
-
-function add_campus(campus_coordinates, campus_address) {
+function add_campus(campus_json, campus_id) {
     'use strict';
-    L.Icon.Default.imagePath = 'http://iconshow.me/media/images/Mixed/small-n-flat-icon/png2/512/';
-    var campus_point;
-    campus_point = JSON.parse(campus_coordinates);
-    L.geoJson(campus_point, {
+    var campus_feature;
+    var geojsonMarkerOptions = {
+        radius: 6,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+    campus_feature = L.geoJson(campus_json, {
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
         style: style,
-        onEachFeature: onEachFeature,
-        properties: {
-            address: campus_address,
-        }
+        onEachFeature: onEachFeature
     }).addTo(map);
+    campus_lookup[campus_id] = campus_feature;
+}
+
+
+function SelectFeature(campus_id){
+    var feature = campus_lookup[campus_id];
+    map.fitBounds(feature.getBounds());
+    SelectFeature(feature);
 }
