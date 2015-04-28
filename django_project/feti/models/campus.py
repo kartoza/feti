@@ -26,6 +26,13 @@ class Campus(models.Model):
 
     @property
     def popup_content(self):
-      return '<p>{} : {}</p>'.format(
+      return '<p>{} : {}</p><p>{}</p>'.format(
           self.campus,
-          self.provider.primary_institution)
+          self.provider.primary_institution,
+          self.address)
+
+    def linked_courses(self):
+        from feti.models.course_provider_link import CourseProviderLink
+
+        linked_courses = CourseProviderLink.objects.filter(campus=self)
+        return linked_courses or []
