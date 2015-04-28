@@ -28,7 +28,7 @@ class Address(models.Model):
         message="Phone number should have the following format: "
                 "'+27888888888'.")
     phone = models.CharField(
-        max_length=12,
+        max_length=100,
         validators=[phone_regex],
         blank=True,
         null=True)

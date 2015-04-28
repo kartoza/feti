@@ -76,7 +76,7 @@ INSERT INTO feti_nationalcertificatevocational( national_certificate_vocational_
 drop table ncv;
 
 INSERT INTO feti_nationalqualificationsframework(level, description, certification, link) SELECT nqf_level, nqf_desc, nqf_cert, nqf_link FROM nqf;
-drop table nqf;
+--drop table nqf;
 
 
 --Loading course table- whilst we have no dat for that
@@ -93,19 +93,28 @@ ALTER TABLE feti_course
 ALTER TABLE feti_course
    ALTER COLUMN national_qualifications_framework_id SET DEFAULT 1;
 
-INSERT INTO feti_course( education_training_quality_assurance_id, national_qualifications_framework_id) 
-select etqa_id,nqf_id from fet_sample_data;
+ALTER TABLE feti_course
+   ALTER COLUMN national_learners_records_database SET DEFAULT 123456789012345;
+
+
+ALTER TABLE fet_sample_data
+   ALTER COLUMN nqf_id SET DEFAULT 22;
+
+update fet_sample_data set etqa_id = 0 where etqa is null;
+
+INSERT INTO feti_course( education_training_quality_assurance_id) 
+select etqa_id from fet_sample_data;
 
 
 
 UPDATE fet_sample_data
 SET nqf_level_temp = regexp_replace(
-    nqf_level_temp, '[a-zA-Z]+', '', 'g')
+    nqf_level_temp, '[a-zA-Z]+', '', 'g');
 
 
 --creating table for provider and campus
 
-alter table fet_sample_data add column provider_id integer;
+--alter table fet_sample_data add column provider_id integer;
 
 update fet_sample_data c set provider_id = b.id
 FROM (select row_number() over () AS id,a.provider_name from (select distinct provider_name from fet_sample_data order by provider_name) a) b
@@ -118,16 +127,26 @@ ALTER TABLE feti_provider
 
 
 
-INSERT INTO feti_provider(primary_institution) select provider_name from fet_sample_data;
+INSERT INTO feti_provider(id, primary_institution) select distinct provider_id, provider_name  from fet_sample_data;
 
 --insert data into campus
 
 ALTER TABLE feti_campus
    ALTER COLUMN campus SET DEFAULT 'Main';
 
+ALTER TABLE feti_address
+   ALTER COLUMN address_line_2 SET DEFAULT 'NA';
+ALTER TABLE feti_address
+   ALTER COLUMN address_line_3 SET DEFAULT 'NA';
+ALTER TABLE feti_address
+   ALTER COLUMN town SET DEFAULT 'NA';
+ALTER TABLE feti_address
+   ALTER COLUMN postal_code SET DEFAULT 0000;
 
 
-INSERT INTO feti_campus(  address_id, provider_id,location) select  provider_id,provider_id,geom from fet_sample_data;
+insert into feti_address (id,address_line_1,phone) select distinct on (provider_id)provider_id,center_add,telephone_ from fet_sample_data;
+
+INSERT INTO feti_campus(address_id, provider_id,location) select  provider_id,provider_id,geometry from fet_sample_data;
 
 
 
