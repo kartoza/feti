@@ -144,38 +144,7 @@ ALTER TABLE feti_address
    ALTER COLUMN postal_code SET DEFAULT 0000;
 
 
-INSERT INTO feti_campus(  address_id, provider_id,location) select  provider_id,provider_id,geom from fet_sample_data;
+insert into feti_address (id,address_line_1,phone) select distinct on (provider_id)provider_id,center_add,telephone_ from fet_sample_data;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+INSERT INTO feti_campus(address_id, provider_id,location) select  provider_id,provider_id,geometry from fet_sample_data;
 
