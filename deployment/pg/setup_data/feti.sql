@@ -146,5 +146,10 @@ ALTER TABLE feti_address
 
 insert into feti_address (id,address_line_1,phone) select distinct on (provider_id)provider_id,center_add,telephone_ from fet_sample_data;
 
-INSERT INTO feti_campus(address_id, provider_id,location, campus) select  provider_id,provider_id,geometry, CAST(provider_name AS varchar(100)) from fet_sample_data limit 1500;
+
+INSERT INTO feti_campus(address_id, provider_id,location) select distinct  provider_id,provider_id,geometry from fet_sample_data;
+
+
+
+
 
