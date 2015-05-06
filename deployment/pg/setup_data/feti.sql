@@ -152,7 +152,7 @@ insert into feti_address (id,address_line_1,phone) select distinct on (provider_
 
 
 
-INSERT INTO feti_campus(id,campus,address_id, provider_id,location) select distinct  provider_id,provider_name,provider_id,provider_id,geometry from fet_sample_data
+INSERT INTO feti_campus(id,campus,address_id, provider_id,location) select distinct  provider_id,substring(provider_name, 0, 99), provider_id,provider_id,geometry from fet_sample_data;
 
 
 insert into feti_courseproviderlink (campus_id,course_id) select distinct provider_id,course_id from fet_sample_data;
