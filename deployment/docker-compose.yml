@@ -2,12 +2,12 @@
 # Production server with UWSGI configured to run on port 8080
 #
 # Usage:
-# fig -f fig-.yml <command>
+# docker-compose -f docker-compose-*.yml <command>
 #
 # Typical useage:
 #
-# fig build
-# fig up -d web
+# docker-compose build
+# docker-compose up -d web
 #
 # See accompanying Make commands for easy collectstatic etc.
 # Our main nginx service
@@ -62,7 +62,7 @@ db:
     - USERNAME=docker
     - PASS=docker
   ports:
-    - "6543:5432"
+    - "6543:5433"
 
 qgisserver:
   image: kartoza/qgis-server
@@ -111,7 +111,7 @@ cron:
   environment:
     - PGPASSWORD=docker
     - PGUSER=docker
-    - PGPORT=5432
+    - PGPORT=5433
     - PGHOST=db
     - PGDATABASE=gis
   volumes:
