@@ -39,7 +39,8 @@ COPY etqa FROM '/home/setup/etqa.csv' WITH (
    HEADER true
    );
 
- ALTER TABLE etqa ADD COLUMN "id" SERIAL PRIMARY KEY;
+ 
+ALTER TABLE etqa ADD COLUMN "id" SERIAL PRIMARY KEY;
 alter table fet_sample_data add column nated_id serial;
 alter table fet_sample_data add column nqf_id integer;
 
@@ -79,7 +80,7 @@ INSERT INTO feti_nationalqualificationsframework(level, description, certificati
 drop table nqf;
 
 
---Loading course table- whilst we have no dat for that
+--Loading course table- whilst we have no data for that
 ---make default values where we do not have data
 ALTER TABLE feti_course
    ALTER COLUMN field_of_study_id SET DEFAULT 1;
@@ -102,9 +103,13 @@ ALTER TABLE fet_sample_data
 
 update fet_sample_data set etqa_id = 0 where etqa is null;
 
-INSERT INTO feti_course( education_training_quality_assurance_id, course_description)
-select etqa_id, etqa from fet_sample_data;
+alter table fet_sample_data add column course_id integer;
 
+update fet_sample_data c set course_id = b.id
+FROM (select row_number() over () AS id,a.etqa from (select distinct etqa from fet_sample_data order by etqa) a) b
+WHERE c.etqa = b.etqa;
+
+INSERT INTO feti_course( id,education_training_quality_assurance_id, course_description) select distinct course_id,etqa_id, etqa from fet_sample_data;
 
 
 UPDATE fet_sample_data
@@ -131,8 +136,7 @@ INSERT INTO feti_provider(id, primary_institution) select distinct provider_id, 
 
 --insert data into campus
 
-ALTER TABLE feti_campus
-   ALTER COLUMN campus SET DEFAULT 'Main';
+-- substitute provider_namne into campus ALTER TABLE feti_campus ALTER COLUMN campus SET DEFAULT 'Main';
 
 ALTER TABLE feti_address
    ALTER COLUMN address_line_2 SET DEFAULT 'NA';
@@ -147,9 +151,8 @@ ALTER TABLE feti_address
 insert into feti_address (id,address_line_1,phone) select distinct on (provider_id)provider_id,center_add,telephone_ from fet_sample_data;
 
 
-INSERT INTO feti_campus(address_id, provider_id,location) select distinct  provider_id,provider_id,geometry from fet_sample_data;
+
+INSERT INTO feti_campus(id,campus,address_id, provider_id,location) select distinct  provider_id,substring(provider_name, 0, 99), provider_id,provider_id,geometry from fet_sample_data;
 
 
-
-
-
+insert into feti_courseproviderlink (campus_id,course_id) select distinct provider_id,course_id from fet_sample_data;
