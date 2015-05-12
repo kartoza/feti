@@ -160,6 +160,19 @@ function add_campus(campus_json, campus_id) {
 
 function SelectFeature(campus_id){
     var feature = campus_lookup[campus_id];
-    map.fitBounds(feature.getBounds());
-    SelectFeature(feature);
+    map.fitBounds(feature.getBounds(), {animate:true});
+}
+
+function CampusItemToggle(el){
+    var panel = $(el).closest('.panel-primary').find('.panel-collapse');
+    panel.toggleClass('collapse');
+    var icon = $(el).find("i");
+    if(panel.hasClass('collapse')){
+        icon.removeClass('mdi-navigation-expand-less');
+        icon.addClass('mdi-navigation-expand-more');
+    }
+    else{
+        icon.removeClass('mdi-navigation-expand-more');
+        icon.addClass('mdi-navigation-expand-less');
+    }
 }
