@@ -1,7 +1,6 @@
 # coding=utf-8
 """FETI landing page view."""
 from feti.models.course import Course
-from feti.models.course_provider_link import CourseProviderLink
 from haystack.query import SearchQuerySet
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
@@ -14,7 +13,6 @@ from django.http import HttpResponse
 from django.template import RequestContext
 
 from feti.models.campus import Campus
-from feti.models.provider import Provider
 
 
 def landing_page(request):
@@ -29,7 +27,6 @@ def landing_page(request):
     search_terms = ''
     campuses = Campus.objects.all()[:1500]
     courses = Course.objects.all()
-    providers = Provider.objects.all()
     course_dict = dict()
     errors = None
     if request.POST:
@@ -41,9 +38,7 @@ def landing_page(request):
         for campus in [c.object for c in campuses[:1500]]:
             course_dict[campus] = campus.linked_courses()
         for course in [c.object for c in courses[:1500]]:
-            linked_campuses = CourseProviderLink.objects.filter(
-                course=course)
-            for campus in [c.campus for c in linked_campuses]:
+            for campus in course.campuses.all():
                 if campus in course_dict:
                     if course not in course_dict[campus]:
                         course_dict[campus].append(course)
@@ -55,7 +50,6 @@ def landing_page(request):
 
     context = {
         'campuses': campuses,
-        'providers': providers,
         'courses': courses,
         'course_dict': course_dict,
         'search_terms': search_terms,
