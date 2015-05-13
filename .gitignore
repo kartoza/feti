@@ -70,6 +70,7 @@ target/
 
 # Virtual env
 venv
+nenv
 
 # Node
 django_project/static
@@ -95,3 +96,12 @@ mapproxy/cache_data/
 
 # logs in docker containers
 reports
+
+# static folders
+django_project/feti/static/admin/
+django_project/feti/static/css/
+django_project/feti/static/fonts/
+django_project/feti/static/gis/
+django_project/feti/static/js/
+django_project/feti/static/leaflet/
+django_project/feti/static/rest_framework/
