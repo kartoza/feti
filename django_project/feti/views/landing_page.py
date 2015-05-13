@@ -29,8 +29,8 @@ def landing_page(request):
     courses = Course.objects.all()
     course_dict = dict()
     errors = None
-    if request.POST:
-        search_terms = request.POST.get('search_terms')
+    if request.GET:
+        search_terms = request.GET.get('search_terms')
         campuses = SearchQuerySet().filter(content=search_terms).models(
             Campus)
         courses = SearchQuerySet().filter(content=search_terms).models(

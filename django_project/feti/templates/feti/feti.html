@@ -29,7 +29,7 @@
             </div>
             {# side panel #}
             <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
-                <form method="post">
+                <form method="get">
                     {% csrf_token %}
                     <input dir="ltr" maxlength="250" name="search_terms"
                            value="{{ search_terms }}" type="text" />
@@ -54,6 +54,10 @@
                                     </div>
                                     {% endfor %}
                                 </div>
+                            </div>
+                        {% empty %}
+                            <div class="panel-body">
+                                No results found for "{{ search_terms }}"
                             </div>
                         {% endfor %}
                     </div>
