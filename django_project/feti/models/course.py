@@ -1,6 +1,5 @@
 # coding=utf-8
 """Model class for Education and Training Quality Assurance (ETQA)."""
-from feti.models.campus import Campus
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -23,7 +22,6 @@ from feti.models.field_of_study import FieldOfStudy
 class Course(models.Model):
 
     id = models.AutoField(primary_key=True)
-    campuses = models.ManyToManyField(Campus)
     nlrd_regex = RegexValidator(
         regex=r'^\d{15,15}$',
         message="National Learners Records Database: "

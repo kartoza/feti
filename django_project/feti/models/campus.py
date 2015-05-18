@@ -1,5 +1,6 @@
 # coding=utf-8
 """Model class for WMS Resource"""
+
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"
@@ -9,6 +10,7 @@ from django.contrib.gis.db import models
 
 from feti.models.provider import Provider
 from feti.models.address import Address
+from feti.models.course import Course
 
 
 class Campus(models.Model):
@@ -18,6 +20,7 @@ class Campus(models.Model):
     location = models.PointField()
     address = models.ForeignKey(Address)
     provider = models.ForeignKey(Provider)
+    courses = models.ManyToManyField(Course)
 
     objects = models.GeoManager()
 
@@ -36,7 +39,7 @@ class Campus(models.Model):
         return self.location
 
     def linked_courses(self):
-        return self.course_set.all()
+        return self.courses.all()
 
     def __unicode__(self):
         return u'%s' % self.campus

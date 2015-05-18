@@ -38,7 +38,7 @@ def landing_page(request):
         for campus in [c.object for c in campuses[:1500]]:
             course_dict[campus] = campus.linked_courses()
         for course in [c.object for c in courses[:1500]]:
-            for campus in course.campuses.all():
+            for campus in course.campus_set.all():
                 if campus in course_dict:
                     if course not in course_dict[campus]:
                         course_dict[campus].append(course)
