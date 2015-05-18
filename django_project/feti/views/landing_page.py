@@ -36,7 +36,7 @@ def landing_page(request):
         courses = SearchQuerySet().filter(content=search_terms).models(
             Course)
         for campus in [c.object for c in campuses[:1500]]:
-            course_dict[campus] = campus.linked_courses()
+            course_dict[campus] = campus.courses.all()
         for course in [c.object for c in courses[:1500]]:
             for campus in course.campus_set.all():
                 if campus in course_dict:
@@ -46,7 +46,7 @@ def landing_page(request):
                     course_dict[campus] = [course]
     else:
         for campus in [c for c in campuses[:1500]]:
-            course_dict[campus] = campus.linked_courses()
+            course_dict[campus] = campus.courses.all()
 
     context = {
         'campuses': campuses,

@@ -29,17 +29,23 @@ class Campus(models.Model):
 
     @property
     def popup_content(self):
-        return '<p>{} : {}</p><p>{}</p>'.format(
+        courses_string = '</li><li>'.join([c.course_description for c in
+                                           self.courses.all()])
+
+        return ('<p>{} : {}</p>'
+                '<p>{}</p>'
+                '<p>Courses : '
+                '<br/>'
+                '<ul><li>{}</li></ul>'
+                '</p>').format(
             self.campus,
             self.provider.primary_institution,
-            self.address)
+            self.address,
+            courses_string)
 
     @property
     def geom(self):
         return self.location
-
-    def linked_courses(self):
-        return self.courses.all()
 
     def __unicode__(self):
         return u'%s' % self.campus
