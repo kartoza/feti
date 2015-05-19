@@ -33,6 +33,7 @@ PIPELINE_JS = {
             'js/bootstrap.js',
             'js/moment.min.js',
             'feti/js/leaflet.js',
+            'feti/js/leaflet.markercluster.js',
             'feti/js/material.min.js',
             'feti/js/ripples.min.js',
             'feti/js/validate.js',
@@ -56,6 +57,8 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/bootstrap.min.css',
             'feti/css/leaflet.css',
+            'feti/css/MarkerCluster.Default.css',
+            'feti/css/MarkerCluster.css',
             'feti/css/material-wfont.min.css',
             'feti/css/ripples.min.css',
             'feti/css/feti-theme.css',
