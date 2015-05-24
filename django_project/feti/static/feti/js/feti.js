@@ -4,8 +4,8 @@
 /*global $, jQuery, L, window, console*/
 var map;
 var campus_lookup = [];
-var campus_features = [];
-var campus_layer;
+var campus_cluster_group;
+var campus_marker = [];
 var highlighted_feature;
 
 jQuery.download = function (url, data, method) {
@@ -62,22 +62,8 @@ function show_map() {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // create geoJson Layer
-    var geojsonMarkerOptions = {
-        radius: 6,
-        fillColor: "#ff7800",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-    campus_layer = L.geoJson(null,{
-        pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
-        },
-        style: style,
-        onEachFeature: onEachFeature
-    }).addTo(map);
+    // create cluster layer
+    campus_cluster_group = L.markerClusterGroup().addTo(map);
 
 }
 
@@ -97,44 +83,28 @@ function style(feature) {
 
 function highlightFeature(e) {
     'use strict';
-    var layer = e.target;
-    layer.setStyle({
+    var marker = e.target;
+    marker.setStyle({
         weight: 5,
         color: 'white',
         dashArray: '',
         fillOpacity: 0.3,
         fillColor: 'blue'
     });
-    if (!L.Browser.ie && !L.Browser.opera) {
-        layer.bringToFront();
-    }
 }
 
 function resetHighlight(e) {
     'use strict';
-    var layer = e.target;
-    layer.setStyle(style(e));
+    var marker = e.target;
+    marker.setStyle(style(e));
 }
 
 function zoomToFeature(e) {
     'use strict';
-    var layer;
-    layer = e.target;
-    map.fitBounds(layer.getBounds());
+    var marker;
+    marker = e.target;
+    map.fitBounds(marker.getBounds());
 }
-
-/*jslint unparam: true*/
-function onEachFeature(feature, layer) {
-    'use strict';
-    layer.bindPopup(feature.properties.popup_content);
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        dblclick: zoomToFeature
-    });
-    campus_features[feature.properties.id] = layer;
-}
-/*jslint unparam: false*/
 
 function set_offset() {
     'use strict';
@@ -159,8 +129,23 @@ function set_offset() {
 function add_campus(campus_json, campus_id) {
     'use strict';
     campus_json.features[0].properties.id = campus_id;
-    campus_layer.addData(campus_json);
     campus_lookup[campus_id] = campus_json;
+
+    // create markers
+    var feature = campus_json.features[0];
+    var coordinate = feature.geometry.coordinates;
+    var latlon = {lat: coordinate[1], lon: coordinate[0]};
+    var marker = L.circleMarker(latlon, style(null));
+    campus_marker[campus_id] = marker;
+    marker.addTo(campus_cluster_group);
+
+    // setup marker
+    marker.bindPopup(feature.properties.popup_content);
+    marker.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        dblclick: zoomToFeature
+    });
 }
 
 
@@ -170,14 +155,16 @@ function SelectFeature(campus_id){
         var coordinate = feature.geometry.coordinates;
         feature.properties.selected = true;
         var e = {
-            target: campus_features[feature.properties.id]
+            target: campus_marker[campus_id]
         };
         if(highlighted_feature){
             resetHighlight(highlighted_feature);
         }
         highlightFeature(e);
         highlighted_feature=e;
-        map.panTo({lat: coordinate[1], lon: coordinate[0]}, {animate: true});
+        campus_cluster_group.zoomToShowLayer(e.target, function(){
+            map.panTo({lat: coordinate[1], lon: coordinate[0]}, {animate: true});
+        });
         openCampusPopup(campus_id);
     }
     catch(e){
@@ -200,6 +187,6 @@ function CampusItemToggle(el){
 }
 
 function openCampusPopup(campus_id){
-    var feature = campus_features[campus_id];
-    feature.openPopup()
+    var marker = campus_marker[campus_id];
+    marker.openPopup();
 }
