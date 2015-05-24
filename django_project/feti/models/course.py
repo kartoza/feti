@@ -1,5 +1,6 @@
 # coding=utf-8
 """Model class for Education and Training Quality Assurance (ETQA)."""
+
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"

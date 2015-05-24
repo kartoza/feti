@@ -1,5 +1,6 @@
 # coding=utf-8
 """Model class for WMS Resource"""
+
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"
@@ -9,6 +10,7 @@ from django.contrib.gis.db import models
 
 from feti.models.provider import Provider
 from feti.models.address import Address
+from feti.models.course import Course
 
 
 class Campus(models.Model):
@@ -18,6 +20,7 @@ class Campus(models.Model):
     location = models.PointField()
     address = models.ForeignKey(Address)
     provider = models.ForeignKey(Provider)
+    courses = models.ManyToManyField(Course)
 
     objects = models.GeoManager()
 
@@ -26,22 +29,23 @@ class Campus(models.Model):
 
     @property
     def popup_content(self):
-      return '<p>{} : {}</p><p>{}</p>'.format(
-          self.campus,
-          self.provider.primary_institution,
-          self.address)
+        courses_string = '</li><li>'.join([c.course_description for c in
+                                           self.courses.all()])
+
+        return ('<p>{} : {}</p>'
+                '<p>{}</p>'
+                '<p>Courses : '
+                '<br/>'
+                '<ul><li>{}</li></ul>'
+                '</p>').format(
+            self.campus,
+            self.provider.primary_institution,
+            self.address,
+            courses_string)
 
     @property
     def geom(self):
         return self.location
-
-    def linked_courses(self):
-        from feti.models.course_provider_link import CourseProviderLink
-
-        linked_courses = CourseProviderLink.objects.filter(campus=self)
-        if not linked_courses:
-            return []
-        return [link.course for link in linked_courses]
 
     def __unicode__(self):
         return u'%s' % self.campus

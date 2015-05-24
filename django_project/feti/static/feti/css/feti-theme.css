@@ -35,3 +35,7 @@ body {
 .open > .dropdown-toggle.btn-primary {
     background-color: #1347A8;
 }
+
+.campus-heading{
+    cursor: pointer;
+}

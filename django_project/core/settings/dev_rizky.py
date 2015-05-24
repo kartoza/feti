@@ -103,7 +103,8 @@ LOGGING = {
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'ENGINE': 'feti.search_backends.fuzzy_elastic_search_engine'
+                  '.FuzzyElasticSearchEngine',
         'URL': 'http://localhost:9200/',
         'INDEX_NAME': 'haystack',
     },

@@ -3,7 +3,10 @@
  */
 /*global $, jQuery, L, window, console*/
 var map;
-var campus_lookup = {};
+var campus_lookup = [];
+var campus_features = [];
+var campus_layer;
+var highlighted_feature;
 
 jQuery.download = function (url, data, method) {
     /* Taken from http://www.filamentgroup.com/lab/jquery-plugin-for-requesting-ajax-like-file-downloads.html*/
@@ -59,6 +62,23 @@ function show_map() {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    // create geoJson Layer
+    var geojsonMarkerOptions = {
+        radius: 6,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+    campus_layer = L.geoJson(null,{
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
+        style: style,
+        onEachFeature: onEachFeature
+    }).addTo(map);
+
 }
 
 /*jslint unparam: true*/
@@ -106,13 +126,13 @@ function zoomToFeature(e) {
 /*jslint unparam: true*/
 function onEachFeature(feature, layer) {
     'use strict';
-    console.log(feature);
     layer.bindPopup(feature.properties.popup_content);
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
         dblclick: zoomToFeature
     });
+    campus_features[feature.properties.id] = layer;
 }
 /*jslint unparam: false*/
 
@@ -138,28 +158,48 @@ function set_offset() {
 
 function add_campus(campus_json, campus_id) {
     'use strict';
-    var campus_feature;
-    var geojsonMarkerOptions = {
-        radius: 6,
-        fillColor: "#ff7800",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-    campus_feature = L.geoJson(campus_json, {
-        pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
-        },
-        style: style,
-        onEachFeature: onEachFeature
-    }).addTo(map);
-    campus_lookup[campus_id] = campus_feature;
+    campus_json.features[0].properties.id = campus_id;
+    campus_layer.addData(campus_json);
+    campus_lookup[campus_id] = campus_json;
 }
 
 
 function SelectFeature(campus_id){
-    var feature = campus_lookup[campus_id];
-    map.fitBounds(feature.getBounds());
-    SelectFeature(feature);
+    try{
+        var feature = campus_lookup[campus_id].features[0];
+        var coordinate = feature.geometry.coordinates;
+        feature.properties.selected = true;
+        var e = {
+            target: campus_features[feature.properties.id]
+        };
+        if(highlighted_feature){
+            resetHighlight(highlighted_feature);
+        }
+        highlightFeature(e);
+        highlighted_feature=e;
+        map.panTo({lat: coordinate[1], lon: coordinate[0]}, {animate: true});
+        openCampusPopup(campus_id);
+    }
+    catch(e){
+        console.log(e);
+    }
+}
+
+function CampusItemToggle(el){
+    var panel = $(el).closest('.panel-primary').find('.panel-collapse');
+    panel.toggleClass('collapse');
+    var icon = $(el).find("i");
+    if(panel.hasClass('collapse')){
+        icon.removeClass('mdi-navigation-expand-less');
+        icon.addClass('mdi-navigation-expand-more');
+    }
+    else{
+        icon.removeClass('mdi-navigation-expand-more');
+        icon.addClass('mdi-navigation-expand-less');
+    }
+}
+
+function openCampusPopup(campus_id){
+    var feature = campus_features[campus_id];
+    feature.openPopup()
 }
