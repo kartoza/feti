@@ -51,4 +51,4 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-DEBUG = True
+DEBUG = False
