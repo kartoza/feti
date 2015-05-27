@@ -29,7 +29,7 @@ web:
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up -d web
-	@dipall
+	# @dipall
 
 migrate:
 	@echo
@@ -118,7 +118,7 @@ sentry:
 	@echo "Running sentry production mode"
 	@echo "--------------------------"
 	@docker-compose  -p $(PROJECT_ID) up -d sentry
-	@dipall
+	# @dipall
 
 maillogs:
 	@echo
@@ -207,7 +207,7 @@ staging-web:
 	@echo "Running in staging mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID)-staging up -d stagingweb
-	@dipall
+	# @dipall
 
 staging-migrate:
 	@echo
