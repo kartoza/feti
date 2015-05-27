@@ -23,6 +23,7 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
         #     ['fuzzy_like_this'] = {
         #     'like_text': query_string,
         # }
-        search_kwargs['query']['filtered']['query']['query_string']\
-            ['fuzziness'] = 2
+        if 'query_string' in search_kwargs['query']['filtered']['query']:
+            search_kwargs['query']['filtered']['query']['query_string']\
+                ['fuzziness'] = 2
         return search_kwargs
