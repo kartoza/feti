@@ -8,6 +8,7 @@
             {% for campus in course_dict %}
                 add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
             {% endfor %}
+            map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
         });
 
     </script>
