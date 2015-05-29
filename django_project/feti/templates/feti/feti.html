@@ -29,12 +29,6 @@
             </div>
             {# side panel #}
             <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
-                <form method="get">
-                    {% csrf_token %}
-                    <input dir="ltr" maxlength="250" name="search_terms"
-                           value="{{ search_terms }}" type="text" />
-                    <button>SEARCH</button>
-                </form>
                 <div class="bs-component">
                     <div class="panel">
                         {% for campus, courses in course_dict.iteritems %}
@@ -57,7 +51,11 @@
                             </div>
                         {% empty %}
                             <div class="panel-body">
-                                No results found for "{{ search_terms }}"
+                                {% if search_terms %}
+                                    No results found for "{{ search_terms }}"
+                                {% else %}
+                                    No terms provided
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>
