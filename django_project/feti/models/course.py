@@ -52,6 +52,13 @@ class Course(models.Model):
     def __unicode__(self):
         return '%s' % self.national_learners_records_database
 
+    @property
+    def course_description(self):
+        if self.course_description:
+            return self.course_description
+        else:
+            return 'Description to follow.'
+
     class Meta:
         app_label = 'feti'
         managed = True

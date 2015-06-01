@@ -51,5 +51,12 @@ class Campus(models.Model):
     def geom(self):
         return self.location
 
+    @property
+    def campus(self):
+        if self.campus:
+            return self.campus
+        else:
+            return 'Unknown campus'
+
     def __unicode__(self):
         return u'%s' % self.campus
