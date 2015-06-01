@@ -53,7 +53,7 @@ class Course(models.Model):
         return '%s' % self.national_learners_records_database
 
     @property
-    def course_description(self):
+    def description(self):
         if self.course_description:
             return self.course_description
         else:
