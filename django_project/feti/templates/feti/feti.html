@@ -39,13 +39,14 @@
                                     <h3 class="panel-title">
                                         <i class="mdi-navigation-expand-more"
                                                 ></i>
-                                        {{ campus.campus }}
+                                        {{ campus.campus.strip }}
                                     </h3>
                                 </div>
                                 <div class="panel-collapse collapse">
                                     {% for course in courses %}
                                     <div class="panel-body">
-                                        {{ course.course_description }}
+                                        {{ course.course_description.strip }} :
+                                        {{course.field_of_study.field_of_study_description.strip }}
                                     </div>
                                     {% endfor %}
                                 </div>

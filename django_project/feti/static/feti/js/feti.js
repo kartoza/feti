@@ -180,7 +180,7 @@ function SelectFeature(campus_id){
         }
         highlightFeature(e);
         highlighted_feature=e;
-        map.panTo({lat: coordinate[1], lon: coordinate[0]}, {animate: true});
+        zoomToFeature(e);
         openCampusPopup(campus_id);
     }
     catch(e){
