@@ -29,8 +29,11 @@ class Campus(models.Model):
 
     @property
     def popup_content(self):
-        courses_string = '</li><li>'.join([c.course_description for c
-                                           in self.courses.all()])
+        courses_string = '</li><li>'.join(
+            [
+                (c.course_description + ' : ' +
+                 c.field_of_study.field_of_study_description)
+                for c in self.courses.all()])
 
         result = (u'<p>{} : {}</p>'
                   u'<p>{}</p>'
