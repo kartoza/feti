@@ -261,7 +261,7 @@ CREATE TABLE courses(
 );
 
 COPY courses FROM '/home/setup/courses.csv' DELIMITER ',' CSV HEADER;
-select * from courses where nqf_level is not null;
+
 
 -- Cleaning the nqf_level column
 ALTER TABLE courses ADD COLUMN nqf_level_clean character varying(255);
@@ -369,7 +369,6 @@ drop function if exists code_field(search_field VARCHAR(50));
 /*
 COURSE
 */
-select * from courses;
 drop table if exists course;
 CREATE TABLE course AS
 SELECT id, qual_code as nlrd, etqa_id, qual_name as descriptor, nqf_level, 0 AS "nated_id", 0 AS "ncv_id", fos_id
@@ -533,10 +532,31 @@ update nqf set nqf_cert = '####' where nqf_cert is null;
 insert into feti_nationalqualificationsframework
 select * from nqf;
 
-select * from course;
 insert into feti_course 
 select id, nlrd, descriptor, etqa_id, fos_id, nated_id, ncv_id, nqf_level from course;
 
 
 insert into feti_campus_courses (campus_id, course_id)
 select campus_id, course_id from course_provider_link group by campus_id, course_id;
+
+-- select * from course c, feti_campus_courses where  feti_campus_courses.campus_id = 192 and feti_campus_courses.course_id = c.id order by c.id;
+drop table if exists course_provider_link;
+drop table if exists campus_b;
+drop table if exists temp_nqf;
+drop table if exists address;
+drop table if exists addresse_centre;
+drop table if exists course;
+drop table if exists course_master_id1;
+drop table if exists courses;
+drop table if exists etqa;
+drop table if exists etqa_courses;
+drop table if exists feti;
+drop table if exists feti_b;
+drop table if exists fos;
+drop table if exists nated;
+drop table if exists ncv;
+drop table if exists nqf;
+drop table if exists provider;
+drop table if exists provider_b;
+drop table if exists provider_etqa;
+drop table if exists provider_master_id1;
