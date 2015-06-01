@@ -1,4 +1,5 @@
-﻿/*
+﻿--
+/*
 DROP
 */
 drop table if exists course_provider_link;
