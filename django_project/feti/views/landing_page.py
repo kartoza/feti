@@ -1,18 +1,20 @@
 # coding=utf-8
 """FETI landing page view."""
-from collections import OrderedDict
-from feti.models.course import Course
-from haystack.query import SearchQuerySet
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.template import RequestContext
-
-from feti.models.campus import Campus
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
+
+from collections import OrderedDict
+from haystack.query import SearchQuerySet
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template import RequestContext
+
+from feti.models.campus import Campus
+from feti.models.course import Course
 
 
 def landing_page(request):
@@ -54,7 +56,7 @@ def landing_page(request):
     # sort the campus alphabetically
     def campus_key(item):
         return '%s : %s' % (
-            item[0].campus.provider.primary_institution,
+            item[0].provider.primary_institution,
             item[0].campus.strip().lower())
     course_dict = OrderedDict(sorted(course_dict.items(), key=campus_key))
 
