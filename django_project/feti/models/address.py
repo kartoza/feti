@@ -11,16 +11,17 @@ from django.core.validators import RegexValidator
 
 class Address(models.Model):
     """The campus' address of the campus."""
-    address_line_1 = models.CharField(max_length=100)
-    address_line_2 = models.CharField(max_length=100)
-    address_line_3 = models.CharField(max_length=100)
-    town = models.CharField(max_length=100)
+    address_line_1 = models.CharField(max_length=100, blank=True, null=True)
+    address_line_2 = models.CharField(max_length=100, blank=True, null=True)
+    address_line_3 = models.CharField(max_length=100, blank=True, null=True)
+    town = models.CharField(max_length=100, blank=True, null=True)
 
     postal_code_regex = RegexValidator(
         regex=r'^\d{4,4}$',
         message="Postal code consists of 4 digits.")
     postal_code = models.CharField(
         max_length=4,
+        blank=True, null=True,
         validators=[postal_code_regex])
 
     phone_regex = RegexValidator(

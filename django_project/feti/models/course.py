@@ -27,22 +27,25 @@ class Course(models.Model):
         message="National Learners Records Database: "
                 "'123456789012345'.")
     national_learners_records_database = models.CharField(
-        max_length=15,
+        max_length=50,
+        # max_length=15,
         validators=[nlrd_regex],
-        help_text='National Learners` Records Database (NLRD)')
+        help_text='National Learners` Records Database (NLRD)',
+        blank=True,
+        null=True)
     course_description = models.CharField(
-        max_length=100,
+        max_length=255,
         blank=True,
         null=True)
     education_training_quality_assurance = models.ForeignKey(
-        EducationTrainingQualityAssurance)
+        EducationTrainingQualityAssurance, blank=True, null=True)
     national_qualifications_framework = models.ForeignKey(
-        NationalQualificationsFramework)
+        NationalQualificationsFramework, blank=True, null=True)
     national_graduate_school_in_education = models.ForeignKey(
-        NationalGraduateSchoolInEducation)
+        NationalGraduateSchoolInEducation, blank=True, null=True)
     national_certificate_vocational = models.ForeignKey(
-        NationalCertificateVocational)
-    field_of_study = models.ForeignKey(FieldOfStudy)
+        NationalCertificateVocational, blank=True, null=True)
+    field_of_study = models.ForeignKey(FieldOfStudy, blank=True, null=True)
 
     objects = models.GeoManager()
 

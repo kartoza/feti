@@ -14,7 +14,8 @@ class Provider(models.Model):
 
     id = models.AutoField(primary_key=True)
     #provider_address = models.ForeignKey(Address)
-    primary_institution = models.CharField(max_length=255)
+    primary_institution = models.CharField(
+        max_length=255, blank=True, null=True)
     website = models.URLField()
     status = models.BooleanField(default=PROVIDER_STATUS_PUBLIC)
     """public owned or private owned"""
