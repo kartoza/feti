@@ -16,8 +16,8 @@ from feti.models.course import Course
 class Campus(models.Model):
     """A campus where a set of courses are offered."""
     id = models.AutoField(primary_key=True)
-    campus = models.CharField(max_length=100, blank=True, null=True)
-    location = models.PointField()
+    campus = models.CharField(max_length=150, blank=True, null=True)
+    location = models.PointField(blank=True, null=True)
     address = models.ForeignKey(Address)
     provider = models.ForeignKey(Provider)
     courses = models.ManyToManyField(Course)
