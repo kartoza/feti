@@ -40,14 +40,14 @@
                                         <i class="mdi-navigation-expand-more"
                                                 ></i>
                                         {{ campus.provider.primary_institution }} -
-                                        {{ campus.campus.strip }}
+                                        {{ campus.campus_name.strip }}
                                     </h3>
                                 </div>
                                 <div class="panel-collapse collapse">
                                     {% for course in courses %}
                                     <div class="panel-body">
                                         {{ course.education_training_quality_assurance.body_name.strip }} :
-                                        {{ course.course_description.strip }}
+                                        {{ course.description.strip }}
                                     </div>
                                     {% endfor %}
                                 </div>
