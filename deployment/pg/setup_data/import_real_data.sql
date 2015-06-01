@@ -60,7 +60,6 @@ CREATE TABLE provider_etqa
 
 COPY provider_etqa FROM '/home/setup/provider_ETQA.csv' DELIMITER ',' CSV HEADER;
 
-
 delete from provider_etqa where id >= 910 and id < 919;
 delete from provider_etqa where id > 919 and id <= 931;
 
@@ -103,7 +102,7 @@ centre as campus, f.no_street || ' ' || f.street_name as address1, f.suburb as a
 provider_etqa.geom as location,
 provider_name as primary_institution
 from provider_etqa, feti_b f
-where provider_id = f.id order by id;
+where provider_etqa.id = f.id order by id;
 
 alter table campus_b add primary key (id);
 update campus_b set primary_institution = address1 where primary_institution is null;
@@ -541,6 +540,7 @@ insert into feti_campus_courses (campus_id, course_id)
 select campus_id, course_id from course_provider_link group by campus_id, course_id;
 
 -- select * from course c, feti_campus_courses where  feti_campus_courses.campus_id = 192 and feti_campus_courses.course_id = c.id order by c.id;
+
 drop table if exists course_provider_link;
 drop table if exists campus_b;
 drop table if exists temp_nqf;
