@@ -7,6 +7,9 @@ var campus_lookup = [];
 var campus_features = [];
 var campus_layer;
 var highlighted_feature;
+var fit_bounds_options = {
+    maxZoom: 10
+};
 
 jQuery.download = function (url, data, method) {
     /* Taken from http://www.filamentgroup.com/lab/jquery-plugin-for-requesting-ajax-like-file-downloads.html*/
@@ -120,7 +123,7 @@ function zoomToFeature(e) {
     'use strict';
     var layer;
     layer = e.target;
-    map.fitBounds(layer.getBounds());
+    map.fitBounds(layer.getBounds(), fit_bounds_options);
 }
 
 /*jslint unparam: true*/
@@ -177,7 +180,7 @@ function SelectFeature(campus_id){
         }
         highlightFeature(e);
         highlighted_feature=e;
-        map.panTo({lat: coordinate[1], lon: coordinate[0]}, {animate: true});
+        zoomToFeature(e);
         openCampusPopup(campus_id);
     }
     catch(e){

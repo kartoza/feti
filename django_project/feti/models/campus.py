@@ -29,19 +29,23 @@ class Campus(models.Model):
 
     @property
     def popup_content(self):
-        courses_string = '</li><li>'.join([c.course_description for c in
-                                           self.courses.all()])
+        courses_string = '</li><li>'.join(
+            [
+                (c.course_description + ' : ' +
+                 c.field_of_study.field_of_study_description)
+                for c in self.courses.all()])
 
-        return ('<p>{} : {}</p>'
-                '<p>{}</p>'
-                '<p>Courses : '
-                '<br/>'
-                '<ul><li>{}</li></ul>'
-                '</p>').format(
+        result = (u'<p>{} : {}</p>'
+                  u'<p>{}</p>'
+                  u'<p>Courses : '
+                  u'<br/>'
+                  u'<ul><li>{}</li></ul>'
+                  u'</p>').format(
             self.campus,
-            self.provider.primary_institution,
+            self.provider,
             self.address,
             courses_string)
+        return result
 
     @property
     def geom(self):

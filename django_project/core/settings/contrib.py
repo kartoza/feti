@@ -43,3 +43,5 @@ LEAFLET_CONFIG = {
         )]
 
 }
+
+HAYSTACK_DEFAULT_OPERATOR = 'OR'

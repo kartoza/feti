@@ -14,6 +14,7 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
     def build_search_kwargs(self, query_string, **kwargs):
         """Build search kwargs with fuzziness.
         """
+        query_string = query_string.replace(' AND ', ' ')
         search_kwargs = super(FuzzyElasticBackend, self).build_search_kwargs(
             query_string, **kwargs)
         # RM : add fuzzines args
@@ -23,6 +24,10 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
         #     ['fuzzy_like_this'] = {
         #     'like_text': query_string,
         # }
-        search_kwargs['query']['filtered']['query']['query_string']\
-            ['fuzziness'] = 2
+        if 'query_string' in search_kwargs['query']['filtered']['query']:
+            search_kwargs['query']['filtered']['query']['query_string']\
+                ['fuzziness'] = 2
+        if 'query_string' in search_kwargs['query']['filtered']['query']:
+            search_kwargs['query']['filtered']['query']['query_string']\
+                ['default_operator'] = 'OR'
         return search_kwargs

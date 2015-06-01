@@ -7,9 +7,20 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li id="nav_find">
-                    <a href="/">
-                        <i class="mdi-maps-map"></i>
-                        FIND</a>
+                    <form id="form-search" method="get"
+                          action="/"
+                          class="navbar-form">
+                        {% csrf_token %}
+                        <span>
+                            <i class="mdi-action-search"></i>
+                            <input dir="ltr" maxlength="250"
+                                   name="search_terms"
+                                   value="{{ search_terms }}"
+                                   type="text"
+                                   placeholder="Search"/>
+                        </span>
+                        <input type="submit" value="FIND"/>
+                    </form>
                 </li>
                 {% if user.is_authenticated %}
                 <li id="nav_project_team">
