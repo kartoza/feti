@@ -1,4 +1,4 @@
-﻿--
+﻿
 /*
 DROP
 */
@@ -20,6 +20,53 @@ DROP TABLE IF EXISTS courses;
 DROP TABLE IF EXISTS provider_courses;
 DROP TABLE IF EXISTS etqa_courses;
 DROP TABLE IF EXISTS provider_etqa;
+
+drop table if exists query;
+drop table if exists etqa_status;
+
+create table query (
+	provider_master_id1 integer NOT NULL,
+	provider_etqa_master_id integer,
+	provider_etqa_master_status  character varying(255),
+	provider_etqa_master_provider_etqa_id integer,
+	provider_id integer,
+	provider_name character varying(255),
+	group_provider character varying(255),
+	postal_address character varying(255),
+	centre_address character varying(255),
+	telephone_no character varying(255),
+	house_number character varying(255),
+	street_name character varying(255),
+	suburb  character varying(255),
+	city character varying(255),
+	postal_code character varying(255),
+	provider_etqa_id integer,
+	etqas_providers_id integer,
+	etqas_providers_etqa character varying(255),
+	etqas_providers_researcher  character varying(255),
+	etqas_provider_status  character varying(255),
+	course_master_id1 integer,
+	courses_etqa_master_id integer,
+	courses_etqa_master_courses_id integer,
+	qualifications_id integer,
+	qual_code  character varying(255),
+	qual_name character varying(255),
+	nqf_level character varying(255),
+	qual_type character varying(255),
+	descriptor  character varying(255),
+	specialisation character varying(255),
+	field character varying(255),
+	courses_id character varying(255),
+	etqas_id character varying(255),
+	etqa_id character varying(255),
+	etqas_courses_etqa character varying(255),
+	etqas_courses_researcher character varying(255)
+);
+
+COPY query FROM '/home/setup/combined_master_query.csv' DELIMITER ',' CSV HEADER;
+
+create table etqa_status as
+select provider_id, etqas_provider_status from query group by provider_id, etqas_provider_status;
 
 /*
 PROVIDER ETQA
@@ -94,18 +141,30 @@ select f.id, centre, f.no_street, f.street_name, f.suburb, f.city, f.postal_code
 /*
 CAMPUS_B
 */
-DROP TABLE if exists campus_b;
-create table campus_b as
-select provider_id as id, 0 as provider_id,
-provider_id as campus_address_id,
-centre as campus, f.no_street || ' ' || f.street_name as address1, f.suburb as address2, '' as address3, COALESCE(f.city, f.suburb) as town, f.postal_code, telephone as phone,
+-- select provider_id as id, 0 as provider_id,
+-- provider_id as campus_address_id,
+DROP TABLE if exists campus_dup;
+create table campus_dup as
+select provider_etqa.id as id, 0 as provider_id, etqas_provider_status as status,
+provider_etqa.id as campus_address_id,
+centre as campus, f.no_street || ' ' || f.street_name as address1, f.suburb as address2, ''::text as address3, COALESCE(f.city, f.suburb) as town, f.postal_code, telephone as phone,
 provider_etqa.geom as location,
 provider_name as primary_institution
-from provider_etqa, feti_b f
-where provider_etqa.id = f.id order by id;
+from provider_etqa, feti_b f, etqa_status
+where provider_etqa.id = f.id
+and provider_etqa.provider_id = etqa_status.provider_id
+order by id;
+
+drop table if exists campus_b;
+create table campus_b as
+select id, provider_id, status, campus_address_id, campus, address1, address2, address3, town, postal_code, phone, location, primary_institution
+from campus_dup group by id, provider_id, status, campus_address_id, campus, address1, address2, address3, town, postal_code, phone, location, primary_institution;
+drop table if exists campus_dup;
 
 alter table campus_b add primary key (id);
 update campus_b set primary_institution = address1 where primary_institution is null;
+
+
 /*
 PROVIDER_B
 */
@@ -118,8 +177,24 @@ create table provider_b (
 );
 alter table provider_b add primary key(id);
 
+CREATE OR REPLACE FUNCTION clean_status(status VARCHAR(50)) 
+RETURNS boolean
+AS
+$BODY$
+BEGIN
+RETURN CASE
+	WHEN status = 'Private' THEN False
+	WHEN status = 'Public' THEN True
+	ELSE True
+END;
+END
+$BODY$
+LANGUAGE PLPGSQL;
+
 insert into provider_b (primary_institution, status)
-select distinct primary_institution, True from campus_b;
+select distinct primary_institution, clean_status(status) from campus_b;
+
+drop function if exists clean_status(status VARCHAR(50)) ;
 
 CREATE OR REPLACE FUNCTION get_fk(provider_name varchar(150)) 
 RETURNS integer
@@ -132,6 +207,7 @@ update campus_b set provider_id=get_fk(primary_institution);
 drop function if exists get_fk(provider_name varchar(150));
 
 alter table campus_b drop column primary_institution;
+alter table campus_b drop column status;
 ALTER TABLE campus_b ADD FOREIGN KEY(provider_id) REFERENCES provider_b;
 
 
@@ -383,17 +459,6 @@ ALTER TABLE course ADD FOREIGN KEY(nated_id) REFERENCES nated;
 ALTER TABLE course ADD FOREIGN KEY(ncv_id) REFERENCES ncv;
 ALTER TABLE course ADD FOREIGN KEY(fos_id) REFERENCES fos;
 
-
-/*
-COURSE_PROVIDER_LINK
-
-CREATE TABLE COURSE_PROVIDER_LINK(
-	id serial,
-	campus_id
-);
-*/
-
-
 /*
 COURSE MASTER ID1
 */
@@ -412,11 +477,11 @@ CREATE TABLE course_master_id1
 
 COPY course_master_id1 FROM '/home/setup/courses_ETQA_master.csv' DELIMITER ',' CSV HEADER;
 
+
 /*
 course_provider_link
 */
---select p1.id, p2.id from provider_courses p1, provider_etqa p2 where p1.id = p2.id;
--- problem 1049 rows only
+
 drop table if exists course_provider_link;
 CREATE TABLE course_provider_link (
 	id serial primary key,
@@ -451,13 +516,23 @@ CREATE TABLE provider_master_id1
 
 COPY provider_master_id1 FROM '/home/setup/provider_ETQA_master.csv' DELIMITER ',' CSV HEADER;
 
+-- USING QUALIFICATIONS_ID
+/*
 insert into course_provider_link (campus_id, course_id)
-select a1.provider_id, a4.id
-from provider_etqa a1, provider_master_id1 a2, course_master_id1 a3, courses a4
-where a1.provider_id = a2.provider_etqa_id
-and a2.provider_master_id = a3.course_master_id
-and a3.courses_id = a4.id;
-
+select provider_etqa.id as provider_id_alias, courses.id as id_course
+from provider_master_id1, provider_etqa, courses
+where provider_etqa.id = provider_master_id1.provider_etqa_id
+and provider_master_id1.qualifications_id = courses.qualifications_id
+order by id_course; --7967 rows
+*/
+-- USING RELATIONS
+insert into course_provider_link (campus_id, course_id)
+select provider_etqa.id as provider_id_alias, courses.id as id_course
+from provider_etqa, provider_master_id1, course_master_id1, courses
+where provider_etqa.id = provider_master_id1.provider_etqa_id
+and provider_master_id1.provider_master_id = course_master_id1.course_master_id
+and course_master_id1.courses_id = courses.id
+order by id_course; --7934 rows
 
 ALTER TABLE course_provider_link ADD FOREIGN KEY(campus_id) REFERENCES campus_b;
 ALTER TABLE course_provider_link ADD FOREIGN KEY(course_id) REFERENCES course;
@@ -479,7 +554,7 @@ COPY etqa_courses FROM '/home/setup/ETQAs_Courses.csv' DELIMITER ',' CSV HEADER;
 /*
 PROVIDER COURSES
 */
-/*
+
 CREATE TABLE provider_courses
 (
   provider_id integer NOT NULL,
@@ -500,11 +575,11 @@ CREATE TABLE provider_courses
 );
 
 COPY provider_courses FROM '/home/setup/providers_courses.csv' DELIMITER ',' CSV HEADER;
-*/
 
 /*
 mapping to the django tables
 */
+
 truncate feti_courseproviderlink, feti_campus, feti_provider, feti_address CASCADE;
 
 insert into feti_address
@@ -535,11 +610,10 @@ select * from nqf;
 insert into feti_course 
 select id, nlrd, descriptor, etqa_id, fos_id, nated_id, ncv_id, nqf_level from course;
 
-
+truncate feti_campus_courses;
 insert into feti_campus_courses (campus_id, course_id)
 select campus_id, course_id from course_provider_link group by campus_id, course_id;
 
--- select * from course c, feti_campus_courses where  feti_campus_courses.campus_id = 192 and feti_campus_courses.course_id = c.id order by c.id;
 
 drop table if exists course_provider_link;
 drop table if exists campus_b;
@@ -552,12 +626,16 @@ drop table if exists courses;
 drop table if exists etqa;
 drop table if exists etqa_courses;
 drop table if exists feti;
+drop table if exists query;
+drop table if exists tmp;
+drop table if exists etqa_status;
 drop table if exists feti_b;
 drop table if exists fos;
 drop table if exists nated;
 drop table if exists ncv;
 drop table if exists nqf;
 drop table if exists provider;
+drop table if exists provider_courses;
 drop table if exists provider_b;
 drop table if exists provider_etqa;
 drop table if exists provider_master_id1;
