@@ -22,6 +22,13 @@ class Campus(models.Model):
     provider = models.ForeignKey(Provider)
     courses = models.ManyToManyField(Course)
 
+    # Decreasing the number of links needed to other models for descriptions.
+    _long_description = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
     objects = models.GeoManager()
 
     class Meta:
@@ -62,5 +69,16 @@ class Campus(models.Model):
         else:
             return 'Unknown campus'
 
+    @property
+    def long_description(self):
+        return self._long_descripiton
+
     def __unicode__(self):
         return u'%s' % self.campus_name
+
+    def save(self, *args, **kwargs):
+        self._long_description = '%s - %s' % (
+            self.provider.primary_institution.strip(),
+            self.campus_name.strip()
+        )
+        super(Campus, self).save(*args, **kwargs)

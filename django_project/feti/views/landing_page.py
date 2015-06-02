@@ -55,9 +55,8 @@ def landing_page(request):
 
     # sort the campus alphabetically
     def campus_key(item):
-        return '%s : %s' % (
-            item[0].provider.primary_institution,
-            item[0].campus.strip().lower())
+        return item[0].long_description
+
     course_dict = OrderedDict(sorted(course_dict.items(), key=campus_key))
 
     context = {
