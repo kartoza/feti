@@ -47,6 +47,13 @@ class Course(models.Model):
         NationalCertificateVocational, blank=True, null=True)
     field_of_study = models.ForeignKey(FieldOfStudy, blank=True, null=True)
 
+    # Decreasing the number of links needed to other models for descriptions.
+    _long_description = models.CharField(
+        max_length=510,
+        blank=True,
+        null=True
+    )
+
     objects = models.GeoManager()
 
     def __unicode__(self):
@@ -58,6 +65,17 @@ class Course(models.Model):
             return self.course_description
         else:
             return 'Description to follow.'
+
+    def save(self, *args, **kwargs):
+        self._long_description = '%s : %s' % (
+            self.education_training_quality_assurance.body_name.strip() or '',
+            self.description.strip() or ''
+        )
+        super(Course, self).save(*args, **kwargs)
+
+    @property
+    def long_description(self):
+        return self._long_description
 
     class Meta:
         app_label = 'feti'

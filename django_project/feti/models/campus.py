@@ -22,6 +22,17 @@ class Campus(models.Model):
     provider = models.ForeignKey(Provider)
     courses = models.ManyToManyField(Course)
 
+    # Decreasing the number of links needed to other models for descriptions.
+    _long_description = models.CharField(
+        max_length=510,
+        blank=True,
+        null=True
+    )
+    # Manage campuses that we think have too little
+    # data to be considered complete
+    _complete = models.BooleanField(
+        default=True)
+
     objects = models.GeoManager()
 
     class Meta:
@@ -32,21 +43,18 @@ class Campus(models.Model):
         courses_string = '</li><li>'.join(
             [
                 (
-                    c.education_training_quality_assurance.body_name.strip() +
-                    ' : ' +
-                    c.description or '' +
+                    c.long_description or '' +
                     ' - ' +
                     c.field_of_study.field_of_study_description or '')
                 for c in self.courses.all()])
 
-        result = (u'<p>{} : {}</p>'
+        result = (u'<p>{}</p>'
                   u'<p>{}</p>'
                   u'<p>Courses : '
                   u'<br/>'
                   u'<ul><li>{}</li></ul>'
                   u'</p>').format(
-            self.campus_name or '',
-            self.provider.primary_institution or '',
+            self.long_description or '',
             self.address.__unicode__() or '',
             courses_string or '')
         return result
@@ -62,5 +70,25 @@ class Campus(models.Model):
         else:
             return 'Unknown campus'
 
+    @property
+    def long_description(self):
+        return self._long_description
+
+    @property
+    def incomplete(self):
+        return not self._complete
+
     def __unicode__(self):
         return u'%s' % self.campus_name
+
+    def save(self, *args, **kwargs):
+        self._long_description = '%s - %s' % (
+            self.provider.primary_institution.strip(),
+            self.campus_name.strip()
+        )
+        if not self.courses.count() or not self.location or not self.campus:
+            # Only mark campuses without courses as incomplete
+            self._complete = False
+        else:
+            self._complete = True
+        super(Campus, self).save(*args, **kwargs)

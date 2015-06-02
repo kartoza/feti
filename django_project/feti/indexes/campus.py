@@ -8,11 +8,11 @@ __date__ = '24/04/15'
 
 class CampusIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    campus = indexes.CharField(model_attr='campus')
-    provider_primary_institution = indexes.CharField()
+    long_description = indexes.CharField(model_attr='_long_description')
+    # provider_primary_institution = indexes.CharField()
 
-    def prepare_provider_primary_institution(self, obj):
-        return obj.provider.primary_institution
+    # def prepare_provider_primary_institution(self, obj):
+    #     return obj.provider.primary_institution
 
     class Meta:
         app_label = 'feti'

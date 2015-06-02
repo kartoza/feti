@@ -39,15 +39,13 @@
                                     <h3 class="panel-title">
                                         <i class="mdi-navigation-expand-more"
                                                 ></i>
-                                        {{ campus.provider.primary_institution }} -
-                                        {{ campus.campus_name.strip }}
+                                        {{ campus.long_description }}
                                     </h3>
                                 </div>
                                 <div class="panel-collapse collapse">
                                     {% for course in courses %}
                                     <div class="panel-body">
-                                        {{ course.education_training_quality_assurance.body_name.strip }} :
-                                        {{ course.description.strip }}
+                                        {{ course.long_description }}
                                     </div>
                                     {% endfor %}
                                 </div>

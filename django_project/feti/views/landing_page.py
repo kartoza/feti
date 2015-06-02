@@ -26,8 +26,11 @@ def landing_page(request):
     :returns: Returns the landing page.
     :rtype: HttpResponse
     """
+    # sort the campus alphabetically
+    def campus_key(item):
+        return item[0].long_description
+
     search_terms = ''
-    campuses = Campus.objects.all()[:1500]
     course_dict = OrderedDict()
     errors = None
     if request.GET:
@@ -37,28 +40,29 @@ def landing_page(request):
                 Campus)
             courses = SearchQuerySet().filter(content=search_terms).models(
                 Course)
-            for campus in [c.object for c in campuses[:1500]]:
+            for campus in [c.object for c in campuses]:
+                if campus.incomplete:
+                    continue
                 course_dict[campus] = campus.courses.all()
-            for course in [c.object for c in courses[:1500]]:
+            for course in [c.object for c in courses]:
                 for campus in course.campus_set.all():
                     if campus in course_dict:
                         if course not in course_dict[campus]:
                             course_dict[campus].append(course)
                     else:
                         course_dict[campus] = [course]
+            course_dict = OrderedDict(
+                sorted(course_dict.items(), key=campus_key))
         else:
-            for campus in [c for c in campuses[:1500]]:
+            campuses = Campus.objects.filter(_complete=True).order_by(
+                '_long_description')
+            for campus in campuses:
                 course_dict[campus] = campus.courses.all()
     else:
-        for campus in [c for c in campuses[:1500]]:
+        campuses = Campus.objects.filter(_complete=True).order_by(
+            '_long_description')
+        for campus in campuses:
             course_dict[campus] = campus.courses.all()
-
-    # sort the campus alphabetically
-    def campus_key(item):
-        return '%s : %s' % (
-            item[0].provider.primary_institution,
-            item[0].campus.strip().lower())
-    course_dict = OrderedDict(sorted(course_dict.items(), key=campus_key))
 
     context = {
         'course_dict': course_dict,
