@@ -49,7 +49,7 @@ class Course(models.Model):
 
     # Decreasing the number of links needed to other models for descriptions.
     _long_description = models.CharField(
-        max_length=255,
+        max_length=510,
         blank=True,
         null=True
     )

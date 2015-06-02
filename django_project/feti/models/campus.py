@@ -24,7 +24,7 @@ class Campus(models.Model):
 
     # Decreasing the number of links needed to other models for descriptions.
     _long_description = models.CharField(
-        max_length=255,
+        max_length=510,
         blank=True,
         null=True
     )
@@ -39,21 +39,18 @@ class Campus(models.Model):
         courses_string = '</li><li>'.join(
             [
                 (
-                    c.education_training_quality_assurance.body_name.strip() +
-                    ' : ' +
-                    c.description or '' +
+                    c.long_description or '' +
                     ' - ' +
                     c.field_of_study.field_of_study_description or '')
                 for c in self.courses.all()])
 
-        result = (u'<p>{} : {}</p>'
+        result = (u'<p>{}</p>'
                   u'<p>{}</p>'
                   u'<p>Courses : '
                   u'<br/>'
                   u'<ul><li>{}</li></ul>'
                   u'</p>').format(
-            self.campus_name or '',
-            self.provider.primary_institution or '',
+            self.long_description or '',
             self.address.__unicode__() or '',
             courses_string or '')
         return result
@@ -71,7 +68,7 @@ class Campus(models.Model):
 
     @property
     def long_description(self):
-        return self._long_descripiton
+        return self._long_description
 
     def __unicode__(self):
         return u'%s' % self.campus_name
