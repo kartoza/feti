@@ -32,9 +32,9 @@ class Campus(models.Model):
         courses_string = '</li><li>'.join(
             [
                 (
-                    c.education_training_quality_assurance.body_name.strip +
+                    c.education_training_quality_assurance.body_name.strip() +
                     ' : ' +
-                    c.course_description or '' +
+                    c.description or '' +
                     ' - ' +
                     c.field_of_study.field_of_study_description or '')
                 for c in self.courses.all()])
