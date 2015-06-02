@@ -22,7 +22,7 @@ urlpatterns = patterns(
     # url(
     #     r'^project-team/add-campus/$',
     #     'feti.views.add_campus.add_campus'
-    ),
+    # ),
     url(
         r'^search/',
         include('haystack.urls')
