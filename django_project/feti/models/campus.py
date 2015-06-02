@@ -28,6 +28,10 @@ class Campus(models.Model):
         blank=True,
         null=True
     )
+    # Manage campuses that we think have too little
+    # data to be considered complete
+    _complete = models.BooleanField(
+        default=True)
 
     objects = models.GeoManager()
 
@@ -70,6 +74,10 @@ class Campus(models.Model):
     def long_description(self):
         return self._long_description
 
+    @property
+    def incomplete(self):
+        return not self._complete
+
     def __unicode__(self):
         return u'%s' % self.campus_name
 
@@ -78,4 +86,9 @@ class Campus(models.Model):
             self.provider.primary_institution.strip(),
             self.campus_name.strip()
         )
+        if not self.courses.count():
+            # Only mark campuses without courses as incomplete
+            self._complete = False
+        else:
+            self._complete = True
         super(Campus, self).save(*args, **kwargs)

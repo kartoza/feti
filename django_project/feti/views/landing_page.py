@@ -41,6 +41,8 @@ def landing_page(request):
             courses = SearchQuerySet().filter(content=search_terms).models(
                 Course)
             for campus in [c.object for c in campuses]:
+                if campus.incomplete:
+                    continue
                 course_dict[campus] = campus.courses.all()
             for course in [c.object for c in courses]:
                 for campus in course.campus_set.all():
@@ -52,11 +54,13 @@ def landing_page(request):
             course_dict = OrderedDict(
                 sorted(course_dict.items(), key=campus_key))
         else:
-            campuses = Campus.objects.all().order_by('_long_description')
+            campuses = Campus.objects.filter(_complete=True).order_by(
+                '_long_description')
             for campus in campuses:
                 course_dict[campus] = campus.courses.all()
     else:
-        campuses = Campus.objects.all().order_by('_long_description')
+        campuses = Campus.objects.filter(_complete=True).order_by(
+            '_long_description')
         for campus in campuses:
             course_dict[campus] = campus.courses.all()
 
