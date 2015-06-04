@@ -8,7 +8,9 @@ __date__ = '24/04/15'
 
 class CourseIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    long_description = indexes.CharField(model_attr='_long_description')
+    long_description = indexes.CharField(
+        model_attr='_long_description',
+        null=True)
     # national_learners_records_database = indexes.CharField(
     #     model_attr='national_learners_records_database', null=True)
 

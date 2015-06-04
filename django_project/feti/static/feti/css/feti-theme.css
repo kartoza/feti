@@ -80,3 +80,64 @@ body {
     border-radius: 0 4px 4px 0;
     height: 33px;
 }
+
+/* Share control */
+#share-control-button{
+    background-color: #FFFFFF;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    font: bold 15px 'Lucida Console', Monaco, monospace;
+}
+
+#share-control-button:hover{
+    background-color: #f4f4f4;
+}
+
+#share-control-action{
+    background-color: #FFFFFF;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.popup-field{
+    border-bottom: 1px dashed #cccccc;
+    padding: 8px;
+}
+
+.popup-field:last-child{
+    border-bottom: none;
+    padding: 0px;
+}
+
+#share-link-url{
+    width: 200px;
+}
+
+#share-link-copy-button, #share-link-copy-button.zeroclipboard-is-active{
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+#share-link-copy-button:hover, #share-link-copy-button.zeroclipboard-is-hover{
+    background-color: #f4f4f4;
+}
+
+#share-control-popup-close-button{
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 8px;
+    font: bold 15px 'Lucida Console', Monaco, monospace;
+}
+
+#share-control-popup-close-button:hover{
+    background-color: #f4f4f4;
+}

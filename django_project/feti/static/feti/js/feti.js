@@ -81,6 +81,8 @@ function show_map() {
         onEachFeature: onEachFeature
     }).addTo(map);
 
+    // Add share control
+    map.addControl(new L.Control.Share());
 }
 
 /*jslint unparam: true*/
