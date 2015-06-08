@@ -8,6 +8,7 @@
             {% for campus in course_dict %}
                 add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
             {% endfor %}
+            map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
         });
 
     </script>
@@ -29,26 +30,34 @@
             </div>
             {# side panel #}
             <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
-                <form method="post">
-                    {% csrf_token %}
-                    <input dir="ltr" maxlength="250" name="search_terms"
-                           value="{{ search_terms }}" type="text"></input>
-                    <button>SEARCH</button>
-                </form>
                 <div class="bs-component">
-                    <div class="panel panel-primary">
+                    <div class="panel">
                         {% for campus, courses in course_dict.iteritems %}
-                            <div class="panel-heading" onclick="SelectFeature({{ campus.id }})">
-                                <h3 class="panel-title">
-                                    <i class="mdi-image-timer"></i>
-                                    {{ campus.campus }}
-                                </h3>
+                            <div class="panel-primary">
+                                <div class="campus-heading panel-heading"
+                                     onclick="SelectFeature({{ campus.id }}); CampusItemToggle(this);">
+                                    <h3 class="panel-title">
+                                        <i class="mdi-navigation-expand-more"
+                                                ></i>
+                                        {{ campus.long_description }}
+                                    </h3>
+                                </div>
+                                <div class="panel-collapse collapse">
+                                    {% for course in courses %}
+                                    <div class="panel-body">
+                                        {{ course.long_description }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
                             </div>
-                            {% for course in courses %}
+                        {% empty %}
                             <div class="panel-body">
-                                {{ course.course_description }}
+                                {% if search_terms %}
+                                    No results found for "{{ search_terms }}"
+                                {% else %}
+                                    No terms provided
+                                {% endif %}
                             </div>
-                            {% endfor %}
                         {% endfor %}
                     </div>
                 </div>

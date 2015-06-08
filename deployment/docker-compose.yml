@@ -105,22 +105,22 @@ uwsgi:
     - db:db
     - elasticsearch:elasticsearch
 
-cron:
-  build: docker-cron
-  hostname: cron
-  environment:
-    - PGPASSWORD=docker
-    - PGUSER=docker
-    - PGPORT=5433
-    - PGHOST=db
-    - PGDATABASE=gis
-  volumes:
-    - ../maps:/home/web/maps
-    - ./reports:/home/web/reports
-    - ./cron-scripts:/home/web/cron-scripts
-    - /tmp/.X11-unix:/tmp/.X11-unix
-  links:
-    - db:db
+#cron:
+#  build: docker-cron
+#  hostname: cron
+#  environment:
+#    - PGPASSWORD=docker
+#    - PGUSER=docker
+#    - PGPORT=5432
+#    - PGHOST=db
+#    - PGDATABASE=gis
+#  volumes:
+#    - ../maps:/home/web/maps
+#    - ./reports:/home/web/reports
+#    - ./cron-scripts:/home/web/cron-scripts
+#    - /tmp/.X11-unix:/tmp/.X11-unix
+#  links:
+#    - db:db
 
 web:
   image: nginx
@@ -135,7 +135,7 @@ web:
     - uwsgi:uwsgi
     - qgisserver:qgisserver
     - mapproxy:mapproxy
-    - cron:cron
+#    - cron:cron
   ports:
     - "63100:8080"
 
@@ -154,6 +154,6 @@ stagingweb:
     - uwsgi:uwsgi
     - qgisserver:qgisserver
     - mapproxy:mapproxy
-    - cron:cron
+#    - cron:cron
   ports:
     - "63101:8080"

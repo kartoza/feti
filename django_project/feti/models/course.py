@@ -1,5 +1,6 @@
 # coding=utf-8
 """Model class for Education and Training Quality Assurance (ETQA)."""
+
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"
@@ -26,27 +27,55 @@ class Course(models.Model):
         message="National Learners Records Database: "
                 "'123456789012345'.")
     national_learners_records_database = models.CharField(
-        max_length=15,
+        max_length=50,
+        # max_length=15,
         validators=[nlrd_regex],
-        help_text='National Learners` Records Database (NLRD)')
+        help_text='National Learners` Records Database (NLRD)',
+        blank=True,
+        null=True)
     course_description = models.CharField(
-        max_length=100,
+        max_length=255,
         blank=True,
         null=True)
     education_training_quality_assurance = models.ForeignKey(
-        EducationTrainingQualityAssurance)
+        EducationTrainingQualityAssurance, blank=True, null=True)
     national_qualifications_framework = models.ForeignKey(
-        NationalQualificationsFramework)
+        NationalQualificationsFramework, blank=True, null=True)
     national_graduate_school_in_education = models.ForeignKey(
-        NationalGraduateSchoolInEducation)
+        NationalGraduateSchoolInEducation, blank=True, null=True)
     national_certificate_vocational = models.ForeignKey(
-        NationalCertificateVocational)
-    field_of_study = models.ForeignKey(FieldOfStudy)
+        NationalCertificateVocational, blank=True, null=True)
+    field_of_study = models.ForeignKey(FieldOfStudy, blank=True, null=True)
+
+    # Decreasing the number of links needed to other models for descriptions.
+    _long_description = models.CharField(
+        max_length=510,
+        blank=True,
+        null=True
+    )
 
     objects = models.GeoManager()
 
     def __unicode__(self):
         return '%s' % self.national_learners_records_database
+
+    @property
+    def description(self):
+        if self.course_description:
+            return self.course_description
+        else:
+            return 'Description to follow.'
+
+    def save(self, *args, **kwargs):
+        self._long_description = '%s : %s' % (
+            self.education_training_quality_assurance.body_name.strip() or '',
+            self.description.strip() or ''
+        )
+        super(Course, self).save(*args, **kwargs)
+
+    @property
+    def long_description(self):
+        return self._long_description
 
     class Meta:
         app_label = 'feti'

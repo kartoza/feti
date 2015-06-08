@@ -35,3 +35,48 @@ body {
 .open > .dropdown-toggle.btn-primary {
     background-color: #1347A8;
 }
+
+.campus-heading{
+    cursor: pointer;
+}
+
+/* navbar search */
+#form-search span{
+    width: 300px;
+    background-color: #FFFFFF;
+    padding: 8px;
+    border-bottom: 1px solid #FFFFFF;
+    -webkit-border-radius: 4px 0 0 4px;
+    -moz-border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
+}
+
+#form-search span > *{
+    display: inline-block;
+    background-color: #FFFFFF;
+    color: #000000;
+    border: none;
+}
+
+#form-search input::-webkit-input-placeholder{
+    color: #616161;
+}
+#form-search input:-moz-placeholder{
+    color: #616161;
+}
+#form-search input::-moz-placeholder{
+    color: #616161;
+}
+#form-search input:-ms-input-placeholder {
+    color: #616161;
+}
+
+#form-search input[type=submit]{
+    background-color: #1e6bff;
+    color: #FFFFFF;
+    border: none;
+    -webkit-border-radius: 0 4px 4px 0;
+    -moz-border-radius: 0 4px 4px 0;
+    border-radius: 0 4px 4px 0;
+    height: 33px;
+}

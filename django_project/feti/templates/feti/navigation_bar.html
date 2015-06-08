@@ -1,31 +1,50 @@
 <nav class="navbar navbar-bnpb navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Further Education and Training Institute</a>
+            <a class="navbar-brand" href="/" role="button">
+                Further Education and Training Institute</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li id="nav_find">
-                    <a href="/">
-                        <i class="mdi-maps-map"></i>
-                        FIND</a>
+                    <form id="form-search" method="get"
+                          action="/"
+                          class="navbar-form">
+                        <span>
+                            <i class="mdi-action-search"></i>
+                            <input dir="ltr" maxlength="250"
+                                   name="search_terms"
+                                   value="{{ search_terms }}"
+                                   type="text"
+                                   placeholder="Search"/>
+                        </span>
+                        <input type="submit" value="FIND"/>
+                    </form>
                 </li>
+                {% if request.get_full_path = "/accounts/login/" %}
+                    <li id="nav_find_page">
+                        <!--<a href="/project-team/">-->
+                        <a href="/" role="button">
+                            <i class="mdi-maps-map"></i>
+                            Find</a>
+                    </li>
+                {% endif %}
                 {% if user.is_authenticated %}
                 <li id="nav_project_team">
                     <!--<a href="/project-team/">-->
-                    <a href="/feti-admin/">
+                    <a href="/feti-admin/" role="button">
                         <i class="mdi-maps-map"></i>
-                        Project Team</a>
+                        Project Team Admin</a>
                 </li>
                 <li id="nav_logout">
-                    <a href="/accounts/logout/">
+                    <a href="/accounts/logout/" role="button">
                         <i class="mdi-maps-map"></i>
                         Logout</a>
                 </li>
                 {% else %}
                 <li id="nav_login">
-                    <a href="/accounts/login/">
+                    <a href="/accounts/login/" role="button">
                         <i class="mdi-maps-map"></i>
                         Project Team Login</a>
                 </li>

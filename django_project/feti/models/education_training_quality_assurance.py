@@ -11,7 +11,7 @@ from django.contrib.gis.db import models
 class EducationTrainingQualityAssurance(models.Model):
     acronym = models.CharField(max_length=30)
     body_name = models.CharField(max_length=255)
-    url = models.URLField()
+    url = models.URLField(blank=True, null=True)
 
     objects = models.GeoManager()
 

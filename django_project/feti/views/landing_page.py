@@ -1,20 +1,20 @@
 # coding=utf-8
 """FETI landing page view."""
-from feti.models.course import Course
-from feti.models.course_provider_link import CourseProviderLink
-from haystack.query import SearchQuerySet
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
+from collections import OrderedDict
+from haystack.query import SearchQuerySet
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import RequestContext
 
 from feti.models.campus import Campus
-from feti.models.provider import Provider
+from feti.models.course import Course
 
 
 def landing_page(request):
@@ -26,37 +26,45 @@ def landing_page(request):
     :returns: Returns the landing page.
     :rtype: HttpResponse
     """
+    # sort the campus alphabetically
+    def campus_key(item):
+        return item[0].long_description
+
     search_terms = ''
-    campuses = Campus.objects.all()[:1500]
-    courses = Course.objects.all()
-    providers = Provider.objects.all()
-    course_dict = dict()
+    course_dict = OrderedDict()
     errors = None
-    if request.POST:
-        search_terms = request.POST.get('search_terms')
-        campuses = SearchQuerySet().filter(content=search_terms).models(
-            Campus)
-        courses = SearchQuerySet().filter(content=search_terms).models(
-            Course)
-        for campus in [c.object for c in campuses[:1500]]:
-            course_dict[campus] = campus.linked_courses()
-        for course in [c.object for c in courses[:1500]]:
-            linked_campuses = CourseProviderLink.objects.filter(
-                course=course)
-            for campus in [c.campus for c in linked_campuses]:
-                if campus in course_dict:
-                    if course not in course_dict[campus]:
-                        course_dict[campus].append(course)
-                else:
-                    course_dict[campus] = [course]
+    if request.GET:
+        search_terms = request.GET.get('search_terms')
+        if search_terms:
+            campuses = SearchQuerySet().filter(content=search_terms).models(
+                Campus)
+            courses = SearchQuerySet().filter(content=search_terms).models(
+                Course)
+            for campus in [c.object for c in campuses]:
+                if campus.incomplete:
+                    continue
+                course_dict[campus] = campus.courses.all()
+            for course in [c.object for c in courses]:
+                for campus in course.campus_set.all():
+                    if campus in course_dict:
+                        if course not in course_dict[campus]:
+                            course_dict[campus].append(course)
+                    else:
+                        course_dict[campus] = [course]
+            course_dict = OrderedDict(
+                sorted(course_dict.items(), key=campus_key))
+        else:
+            campuses = Campus.objects.filter(_complete=True).order_by(
+                '_long_description')
+            for campus in campuses:
+                course_dict[campus] = campus.courses.all()
     else:
-        for campus in [c for c in campuses[:1500]]:
-            course_dict[campus] = campus.linked_courses()
+        campuses = Campus.objects.filter(_complete=True).order_by(
+            '_long_description')
+        for campus in campuses:
+            course_dict[campus] = campus.courses.all()
 
     context = {
-        'campuses': campuses,
-        'providers': providers,
-        'courses': courses,
         'course_dict': course_dict,
         'search_terms': search_terms,
         'errors': errors

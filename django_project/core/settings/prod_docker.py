@@ -44,10 +44,11 @@ EMAIL_SUBJECT_PREFIX = '[feti]'
 # ELASTIC SEARCH
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'ENGINE': 'feti.search_backends.fuzzy_elastic_search_engine'
+                  '.FuzzyElasticSearchEngine',
         'URL': 'http://%s:9200/' % os.environ['HAYSTACK_HOST'],
         'INDEX_NAME': 'haystack',
     },
 }
 
-DEBUG = True
+DEBUG = False
