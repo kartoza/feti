@@ -586,7 +586,7 @@ insert into feti_address
 select * from address;
 
 insert into feti_provider
-select id, primary_institution, '', True from provider_b;
+select id, primary_institution, '', status from provider_b;
 
 insert into feti_campus
 select id, campus, location, campus_address_id, provider_id, campus, True from campus_b;
