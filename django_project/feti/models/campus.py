@@ -40,12 +40,12 @@ class Campus(models.Model):
 
     @property
     def popup_content(self):
-        courses_string = '</li><li>'.join(
+        courses_string = u'</li><li>'.join(
             [
                 (
-                    c.long_description or '' +
-                    ' - ' +
-                    c.field_of_study.field_of_study_description or '')
+                    c.long_description or u'' +
+                    u' - ' +
+                    c.field_of_study.field_of_study_description or u'')
                 for c in self.courses.all()])
 
         result = (u'<p>{}</p>'
@@ -54,9 +54,9 @@ class Campus(models.Model):
                   u'<br/>'
                   u'<ul><li>{}</li></ul>'
                   u'</p>').format(
-            self.long_description or '',
-            self.address.__unicode__() or '',
-            courses_string or '')
+            self.long_description or u'',
+            self.address.__unicode__() or u'',
+            courses_string or u'')
         return result
 
     @property
