@@ -589,7 +589,7 @@ insert into feti_provider
 select id, primary_institution, '', True from provider_b;
 
 insert into feti_campus
-select id, campus, location, campus_address_id, provider_id from campus_b;
+select id, campus, location, campus_address_id, provider_id, campus, True from campus_b;
 
 
 
@@ -608,7 +608,7 @@ insert into feti_nationalqualificationsframework
 select * from nqf;
 
 insert into feti_course 
-select id, nlrd, descriptor, etqa_id, fos_id, nated_id, ncv_id, nqf_level from course;
+select id, nlrd, descriptor, etqa_id, fos_id, nated_id, ncv_id, nqf_level, descriptor from course;
 
 truncate feti_campus_courses;
 insert into feti_campus_courses (campus_id, course_id)
