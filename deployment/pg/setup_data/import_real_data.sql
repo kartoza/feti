@@ -447,17 +447,61 @@ COURSE
 */
 drop table if exists course;
 CREATE TABLE course AS
-SELECT id, qual_code as nlrd, etqa_id, qual_name as descriptor, nqf_level, 0 AS "nated_id", 0 AS "ncv_id", fos_id
+SELECT id, qual_code as nlrd, etqa_id AS etqa_id_old, qual_name as descriptor, nqf_level, 0 AS "nated_id", 0 AS "ncv_id", fos_id
 FROM courses;
 UPDATE course SET "nated_id" = NULL;
 UPDATE course SET "ncv_id" = NULL;
 --UPDATE course SET "fos_id" = NULL;
 alter table course add primary key(id);
-ALTER TABLE course ADD FOREIGN KEY(etqa_id) REFERENCES etqa;
 ALTER TABLE course ADD FOREIGN KEY(nqf_level) REFERENCES nqf;
 ALTER TABLE course ADD FOREIGN KEY(nated_id) REFERENCES nated;
 ALTER TABLE course ADD FOREIGN KEY(ncv_id) REFERENCES ncv;
 ALTER TABLE course ADD FOREIGN KEY(fos_id) REFERENCES fos;
+
+alter table course add column etqa_id integer;
+CREATE OR REPLACE FUNCTION code_etqa(etqa_id_old INTEGER)
+RETURNS INTEGER
+AS
+$BODY$
+BEGIN
+   RETURN CASE
+               WHEN etqa_id_old = 1 THEN 1
+               WHEN etqa_id_old = 2 THEN 10
+               WHEN etqa_id_old = 3 THEN 11
+               WHEN etqa_id_old = 4 THEN 12
+               WHEN etqa_id_old = 5 THEN 13
+               WHEN etqa_id_old = 6 THEN 14
+               WHEN etqa_id_old = 7 THEN 15
+               WHEN etqa_id_old = 8 THEN 16
+               WHEN etqa_id_old = 9 THEN 17
+               WHEN etqa_id_old = 10 THEN 18
+               WHEN etqa_id_old = 11 THEN 19
+               WHEN etqa_id_old = 12 THEN 2
+               WHEN etqa_id_old = 13 THEN 20
+               WHEN etqa_id_old = 14 THEN 21
+               WHEN etqa_id_old = 15 THEN 22
+               WHEN etqa_id_old = 16 THEN 23
+               WHEN etqa_id_old = 17 THEN 24
+               WHEN etqa_id_old = 18 THEN 25
+               WHEN etqa_id_old = 19 THEN 26
+               WHEN etqa_id_old = 20 THEN 3
+               WHEN etqa_id_old = 21 THEN 4
+               WHEN etqa_id_old = 22 THEN 5
+               WHEN etqa_id_old = 23 THEN 6
+               WHEN etqa_id_old = 24 THEN 7
+               WHEN etqa_id_old = 25 THEN 8
+               WHEN etqa_id_old = 26 THEN 9
+               WHEN etqa_id_old = 27 THEN 27
+               WHEN etqa_id_old = 28 THEN 28
+               ELSE null
+          END;
+END
+$BODY$
+LANGUAGE PLPGSQL;
+update course set etqa_id = code_etqa(etqa_id_old);
+drop function if exists code_etqa(etqa_id_old INTEGER);
+
+ALTER TABLE course ADD FOREIGN KEY(etqa_id) REFERENCES etqa;
 
 /*
 COURSE MASTER ID1
