@@ -1,7 +1,10 @@
+{% load staticfiles %}
 <nav class="navbar navbar-bnpb navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="/" role="button">
+                <img src='{% static "feti/css/images/logo_ipss.png" %}'>
+                <img src='{% static "feti/css/images/logo_uwc.png" %}'>
                 Further Education and Training Institute</a>
         </div>
 
@@ -22,14 +25,6 @@
                         <input type="submit" value="FIND"/>
                     </form>
                 </li>
-                {% if request.get_full_path = "/accounts/login/" %}
-                    <li id="nav_find_page">
-                        <!--<a href="/project-team/">-->
-                        <a href="/" role="button">
-                            <i class="mdi-maps-map"></i>
-                            Find</a>
-                    </li>
-                {% endif %}
                 {% if user.is_authenticated %}
                 <li id="nav_project_team">
                     <!--<a href="/project-team/">-->
