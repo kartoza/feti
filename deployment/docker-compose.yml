@@ -11,14 +11,6 @@
 #
 # See accompanying Make commands for easy collectstatic etc.
 
-# Our docker-gen service reloads nginx with dynamically generated
-# templates each time a container is brought up / down
-# See https://registry.hub.docker.com/u/jwilder/nginx-proxy/
-# This one uses a template for nginx proxying (see above for http)
-#
-# Note: Currently this is experimental and not being used.
-#
-
 smtp:
   image: catatnight/postfix
   hostname: postfix
@@ -38,7 +30,7 @@ elasticsearch:
 db:
   image: kartoza/postgis
   volumes:
-    #- ./pg/postgres_data:/var/lib/postgresql
+    - ./pg/postgres_data:/var/lib/postgresql
     - ./pg_setup_data:/home/setup
   environment:
     - USERNAME=docker
