@@ -37,25 +37,37 @@ class Campus(models.Model):
 
     class Meta:
         app_label = 'feti'
+        verbose_name_plural = 'Campuses'
 
     @property
-    def popup_content(self):
-        courses_string = u'</li><li>'.join(
-            [
-                (
-                    c.long_description or u'' +
-                    u' - ' +
-                    c.field_of_study.field_of_study_description or u'')
-                for c in self.courses.all()])
+    def popup_content(self, related_course=None):
+        if not related_course:
+            related_course = self.courses.all()
+        courses_string = u''
+        for c in related_course:
+            desc = c.long_description or u''
+            if c.field_of_study and \
+                    c.field_of_study.field_of_study_description:
+                desc += u' - '
+                desc += c.field_of_study.field_of_study_description
+            courses_string += u'<li>' + desc + u'</li>'
 
-        result = (u'<p>{}</p>'
-                  u'<p>{}</p>'
-                  u'<p>Courses : '
-                  u'<br/>'
-                  u'<ul><li>{}</li></ul>'
-                  u'</p>').format(
+        address = self.address.__unicode__() or u'' if self.address else u''
+
+        popup_format =(
+            u'<p>{}</p>'
+            u'<p>{}</p>')
+
+        if related_course:
+            popup_format += (
+                u'<p>Courses : '
+                u'<br/>'
+                u'<ul><li>{}</li></ul>'
+                u'</p>')
+
+        result = popup_format.format(
             self.long_description or u'',
-            self.address.__unicode__() or u'',
+            address,
             courses_string or u'')
         return result
 

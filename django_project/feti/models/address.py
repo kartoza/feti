@@ -45,3 +45,4 @@ class Address(models.Model):
 
     class Meta:
         app_label = 'feti'
+        verbose_name_plural = 'Addresses'
