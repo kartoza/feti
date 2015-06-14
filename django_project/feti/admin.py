@@ -11,10 +11,10 @@ from feti.models.course_provider_link import CourseProviderLink
 
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
-    list_display = ('campus', 'location',)
-    list_filter = ['campus', 'location',]
+    list_display = ('campus', '_complete',)
+    list_filter = ['campus', '_complete',]
     search_fields = ['campus',]
-    exclude = ('_long_description',)
+    exclude = ('_long_description', '_complete')
 
 
 class AddressAdmin(admin.ModelAdmin):
