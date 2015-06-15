@@ -45,12 +45,13 @@ class Campus(models.Model):
             related_course = self.courses.all()
         courses_string = u''
         for c in related_course:
-            desc = c.long_description or u''
+            desc = c.long_description.strip() or u''
             if c.field_of_study and \
                     c.field_of_study.field_of_study_description:
                 desc += u' - '
                 desc += c.field_of_study.field_of_study_description
-            courses_string += u'<li>' + desc + u'</li>'
+            if desc:
+                courses_string += u'<li>' + desc + u'</li>'
 
         address = self.address.__unicode__() or u'' if self.address else u''
 
@@ -62,7 +63,7 @@ class Campus(models.Model):
             popup_format += (
                 u'<p>Courses : '
                 u'<br/>'
-                u'<ul><li>{}</li></ul>'
+                u'<ul>{}</ul>'
                 u'</p>')
 
         result = popup_format.format(

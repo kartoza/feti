@@ -8,7 +8,12 @@
             {% for campus in course_dict %}
                 add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
             {% endfor %}
-            map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
+            try{
+                map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
+            }
+            catch(e){
+
+            }
             initSearchTermChanged();
         });
 
@@ -66,5 +71,10 @@
         </div>
     </div>
     <!-- /container -->
+
+    {# share button #}
+    <div id="share-control-wrapper" style="display: none;">
+        {% include "feti/share_control.html" %}
+    </div>
 {% endblock %}
 
