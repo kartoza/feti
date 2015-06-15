@@ -229,6 +229,3 @@ function initSearchTermChanged(){
         search_clear.hide();
     });
 }
-function onSearchTextChanged(e){
-    console.log(e)
-}
