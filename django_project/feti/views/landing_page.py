@@ -28,7 +28,7 @@ def landing_page(request):
     """
     # sort the campus alphabetically
     def campus_key(item):
-        return item[0].long_description
+        return item[0].long_description.strip().lower()
 
     search_terms = ''
     course_dict = OrderedDict()
@@ -51,8 +51,6 @@ def landing_page(request):
                             course_dict[campus].append(course)
                     else:
                         course_dict[campus] = [course]
-            course_dict = OrderedDict(
-                sorted(course_dict.items(), key=campus_key))
         else:
             campuses = Campus.objects.filter(_complete=True).order_by(
                 '_long_description')
@@ -63,6 +61,9 @@ def landing_page(request):
             '_long_description')
         for campus in campuses:
             course_dict[campus] = campus.courses.all()
+
+    course_dict = OrderedDict(
+        sorted(course_dict.items(), key=campus_key))
 
     context = {
         'course_dict': course_dict,
