@@ -10,14 +10,6 @@
 # docker-compose up -d web
 #
 # See accompanying Make commands for easy collectstatic etc.
-# Our main nginx service
-nginx:
-  image: nginx
-  hostname: nginx
-  volumes:
-    - ./nginx-conf:/etc/nginx/conf.d
-  ports:
-    - "80:80"
 
 # Our docker-gen service reloads nginx with dynamically generated
 # templates each time a container is brought up / down
@@ -26,16 +18,6 @@ nginx:
 #
 # Note: Currently this is experimental and not being used.
 #
-dockergen:
-  image: jwilder/docker-gen
-  hostname: docker-gen
-  volumes_from:
-    - nginx
-  volumes:
-    - /var/run/docker.sock:/tmp/docker.sock
-    - ./nginx-templates:/etc/docker-gen/templates
-  # see https://github.com/jwilder/docker-gen/blob/master/README.md#usage
-  command: -notify-sighup deployment_nginx_1 -watch -only-exposed /etc/docker-gen/templates/nginx-uwsgi.tmpl /etc/nginx/conf.d/uwsgi-proxies.conf
 
 smtp:
   image: catatnight/postfix
@@ -56,13 +38,32 @@ elasticsearch:
 db:
   image: kartoza/postgis
   volumes:
-    - ./pg/postgres_data:/var/lib/postgresql
-    - ./pg/setup_data:/home/setup
+    #- ./pg/postgres_data:/var/lib/postgresql
+    - ./pg_setup_data:/home/setup
   environment:
     - USERNAME=docker
     - PASS=docker
+  # TODO: Why are exposing ports to the host? This is
+  # TODO: an anti-pattern - TS
   ports:
     - "6543:5433"
+
+dbbackups:
+  image: kartoza/pg-backups
+  hostname: pg-backups
+  volumes:
+    - ./backups:/backups
+  links:
+    - db:db
+  environment:
+    - DUMPPREFIX=PG_FETI
+    # These are all defaults anyway, but setting explicitly in
+    # case we ever want to ever use different credentials
+    - PGUSER=docker
+    - PGPASSWORD=docker
+    - PGPORT=5432
+    - PGHOST=db
+    - PGDATABASE=gis
 
 qgisserver:
   image: kartoza/qgis-server
@@ -105,23 +106,6 @@ uwsgi:
     - db:db
     - elasticsearch:elasticsearch
 
-#cron:
-#  build: docker-cron
-#  hostname: cron
-#  environment:
-#    - PGPASSWORD=docker
-#    - PGUSER=docker
-#    - PGPORT=5432
-#    - PGHOST=db
-#    - PGDATABASE=gis
-#  volumes:
-#    - ../maps:/home/web/maps
-#    - ./reports:/home/web/reports
-#    - ./cron-scripts:/home/web/cron-scripts
-#    - /tmp/.X11-unix:/tmp/.X11-unix
-#  links:
-#    - db:db
-
 web:
   image: nginx
   hostname: nginx
@@ -135,7 +119,6 @@ web:
     - uwsgi:uwsgi
     - qgisserver:qgisserver
     - mapproxy:mapproxy
-#    - cron:cron
   ports:
     - "63100:8080"
 

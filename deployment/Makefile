@@ -29,6 +29,7 @@ web:
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up -d web
+	@docker-compose -p $(PROJECT_ID) up -d dbbackups
 	# @dipall
 
 migrate:
@@ -68,6 +69,11 @@ collectstatic:
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
 	@docker exec -t -i $(PROJECT_ID)_uwsgi_1 python manage.py collectstatic --noinput
+	#
+	# RM : this is needed to copy some library over
+	# I don't know a better way to do this
+	sudo cp ../django_project/feti/static/feti/js/ZeroClipboard.swf static/js/
+
 
 kill:
 	@echo

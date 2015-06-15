@@ -9,7 +9,7 @@ __date__ = '24/04/15'
 
 class EducationTrainingQualityAssuranceIndex(indexes.SearchIndex,
                                              indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.EdgeNgramField(document=True, use_template=True)
     acronym = indexes.CharField(model_attr='acronym')
     body_name = indexes.CharField(model_attr='body_name')
 

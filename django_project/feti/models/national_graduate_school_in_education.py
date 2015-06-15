@@ -13,5 +13,8 @@ class NationalGraduateSchoolInEducation(models.Model):
 
     objects = models.GeoManager()
 
+    def __unicode__(self):
+        return 'National Graduate School in Education Level (%s)' % self.level
+
     class Meta:
         app_label = 'feti'
