@@ -6,7 +6,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'test_db',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '5433',
         'USER': 'postgres',
         'PASSWORD': ''
     }

@@ -19,7 +19,7 @@ DATABASES = {
         'USER': os.environ['DATABASE_USERNAME'],
         'PASSWORD': os.environ['DATABASE_PASSWORD'],
         'HOST': os.environ['DATABASE_HOST'],
-        'PORT': 5432,
+        'PORT': 5433,
         'TEST_NAME': 'unittests',
     }
 }
@@ -27,7 +27,7 @@ DATABASES = {
 MEDIA_ROOT = '/home/web/media'
 STATIC_ROOT = '/home/web/static'
 
-# See fig.yml file for postfix container definition
+# See docker-compose.yml file for postfix container definition
 #
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.
