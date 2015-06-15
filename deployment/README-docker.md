@@ -28,7 +28,7 @@ sudo chmod -R a+rwX static
 ```
 
 Now point your browser at the ip of the web container on port 8080 or to the
-host port mapping as defined in the fig.yml file.
+host port mapping as defined in the docker-compose.yml file.
 
 
 To make a superuser account do:
@@ -41,7 +41,7 @@ exit
 
 ## Staging
 
-The procedure is exactly the same as production, but you should preceed 
+The procedure is exactly the same as production, but you should preceed
 each command with 'staging' e.g. ``make staging-deploy``.
 
 **Note:** VERY IMPORTANT - for staging deployment you should use a **separate
@@ -62,7 +62,7 @@ for details.
 
 #### Arbitrary commands
 
-Running arbitrary management commands is easy 
+Running arbitrary management commands is easy
 
 
 ## Setup nginx reverse proxy
@@ -71,8 +71,8 @@ You should create a new nginx virtual host - please see
 ``*-nginx.conf`` in the deployment directory for examples. There is
 one provided for production and one for staging.
 
-Simply add the example file (renaming them as needed) to your 
-``/etc/nginx/sites-enabled/`` directory and then modify the contents to 
+Simply add the example file (renaming them as needed) to your
+``/etc/nginx/sites-enabled/`` directory and then modify the contents to
 match your local filesystem paths. Then use
 
 ```
@@ -89,11 +89,11 @@ sudo /etc/init.d/nginx restart
 
 ### Managing containers
 
-Please refer to the general [fig documentation](http://www.fig.sh/cli.hyml)
-for further notes on how to manage the infrastructure using fig.
+Please refer to the general [docker-compose documentation](http://docs.docker.com/compose/)
+for further notes on how to manage the infrastructure using docker-compose.
 
 # Configuration options
 
 You can configure the base port used and various other options like the
-image organisation namespace and postgis user/pass by editing the ``fig*.yml``
+image organisation namespace and postgis user/pass by editing the ``docker-compose*.yml``
 files.

@@ -2,12 +2,12 @@
 # Production server with UWSGI configured to run on port 8080
 #
 # Usage:
-# fig -f fig-.yml <command>
+# docker-compose -f docker-compose-*.yml <command>
 #
 # Typical useage:
 #
-# fig build
-# fig up -d web
+# docker-compose build
+# docker-compose up -d web
 #
 # See accompanying Make commands for easy collectstatic etc.
 
@@ -46,7 +46,7 @@ db:
   # TODO: Why are exposing ports to the host? This is
   # TODO: an anti-pattern - TS
   ports:
-    - "6543:5432"
+    - "6543:5433"
 
 dbbackups:
   image: kartoza/pg-backups

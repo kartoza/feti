@@ -23,7 +23,7 @@ RUN pip install -r /REQUIREMENTS-dev.txt
 
 WORKDIR /home/web/django_project
 # Entrypoint is preferred but we use CMD
-# as fig run does not currently correctly
+# as 'docker-compose run' does not currently run correctly
 # overload entrypoint
 CMD ["/start.sh"]
 
