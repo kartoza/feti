@@ -85,6 +85,10 @@ body {
     height: 33px;
 }
 
+#search-clear {
+    cursor: pointer;
+}
+
 /* Share control */
 #share-control-button{
     background-color: #FFFFFF;

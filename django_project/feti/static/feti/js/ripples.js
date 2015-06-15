@@ -127,6 +127,7 @@ window.ripples = {
 
             // Let ripple fade out (with CSS)
             setTimeout(function() {
+                $ripple.parentNode.parentNode.click();
                 $ripple.remove();
             }, rippleOutTime);
         };

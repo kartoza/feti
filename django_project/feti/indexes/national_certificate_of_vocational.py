@@ -9,7 +9,7 @@ __date__ = '24/04/15'
 
 class NationalCertificateVocationalIndex(indexes.SearchIndex,
                                          indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.EdgeNgramField(document=True, use_template=True)
 
     class Meta:
         app_label = 'feti'

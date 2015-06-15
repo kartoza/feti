@@ -37,11 +37,15 @@ class Address(models.Model):
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return '%s\n%s\n%s\n%s' % (
-            self.address_line_1,
-            self.address_line_2,
-            self.address_line_3,
-            self.postal_code)
+        address_string = u'%s\n%s\n%s\n%s' % (
+            self.address_line_1 or u'',
+            self.address_line_2 or u'',
+            self.address_line_3 or u'',
+            self.postal_code or u'')
+        if not address_string.strip():
+            address_string = 'N/A'
+        return address_string
 
     class Meta:
         app_label = 'feti'
+        verbose_name_plural = 'Addresses'
