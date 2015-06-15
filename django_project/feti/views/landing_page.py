@@ -1,5 +1,6 @@
 # coding=utf-8
 """FETI landing page view."""
+from haystack.inputs import AutoQuery
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -36,21 +37,29 @@ def landing_page(request):
     if request.GET:
         search_terms = request.GET.get('search_terms')
         if search_terms:
-            campuses = SearchQuerySet().filter(content=search_terms).models(
-                Campus)
-            courses = SearchQuerySet().filter(content=search_terms).models(
-                Course)
-            for campus in [c.object for c in campuses]:
-                if campus.incomplete:
-                    continue
-                course_dict[campus] = campus.courses.all()
-            for course in [c.object for c in courses]:
-                for campus in course.campus_set.all():
-                    if campus in course_dict:
-                        if course not in course_dict[campus]:
-                            course_dict[campus].append(course)
-                    else:
-                        course_dict[campus] = [course]
+
+            results = SearchQuerySet().filter(
+                long_description=AutoQuery(search_terms)).models(Campus,
+                                                                 Course)
+
+            for result in results:
+                if result.score > 1:
+                    # get model
+                    model = result.model
+                    object = result.object
+                    if model == Campus and isinstance(object, Campus):
+                        campus = object
+                        if campus.incomplete:
+                            continue
+                        course_dict[campus] = campus.courses.all()
+                    if model == Course and isinstance(object, Course):
+                        course = object
+                        for campus in course.campus_set.all():
+                            if campus in course_dict:
+                                if course not in course_dict[campus]:
+                                    course_dict[campus].append(course)
+                            else:
+                                course_dict[campus] = [course]
         else:
             campuses = Campus.objects.filter(_complete=True).order_by(
                 '_long_description')

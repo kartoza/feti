@@ -7,7 +7,7 @@ __date__ = '24/04/15'
 
 
 class ProviderIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.EdgeNgramField(document=True, use_template=True)
     primary_institution = indexes.CharField(model_attr='primary_institution')
     website = indexes.CharField(model_attr='website')
     status = indexes.BooleanField(model_attr='status')
