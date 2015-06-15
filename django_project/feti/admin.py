@@ -1,14 +1,14 @@
 # coding=utf-8
 """Model Admin Class."""
 
-from django.contrib import admin
+from django.contrib.gis import admin
 from feti.models.campus import Campus
 from feti.models.address import Address
 from feti.models.provider import Provider
 from feti.models.course_provider_link import CourseProviderLink
 
 
-class CampusAdmin(admin.ModelAdmin):
+class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
     list_display = ('campus', 'location',)
     list_filter = ['campus', 'location',]
