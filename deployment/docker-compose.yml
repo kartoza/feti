@@ -38,18 +38,18 @@ elasticsearch:
 db:
   image: kartoza/postgis
   volumes:
-    #- ./pg/postgres_data:/var/lib/postgresql
-    - ./pg_setup_data:/home/setup
+    - ./pg/postgres_data:/var/lib/postgresql
+    - ./setup_data:/home/setup
   environment:
     - USERNAME=docker
     - PASS=docker
   # TODO: Why are exposing ports to the host? This is
   # TODO: an anti-pattern - TS
   ports:
-    - "6543:5433"
+    - "6543:5432"
 
 dbbackups:
-  image: kartoza/pg-backups
+  image: kartoza/pg-backup
   hostname: pg-backups
   volumes:
     - ./backups:/backups
