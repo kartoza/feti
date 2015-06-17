@@ -67,9 +67,20 @@ class Course(models.Model):
             return 'Description to follow.'
 
     def save(self, *args, **kwargs):
-        self._long_description = '%s : %s' % (
-            self.education_training_quality_assurance.body_name.strip() or '',
-            self.description.strip() or ''
+        if self.education_training_quality_assurance.acronym.strip():
+            seta = u'%s (%s)' % (
+                self.education_training_quality_assurance.body_name.strip() or
+                u'',
+                self.education_training_quality_assurance.acronym.strip() or
+                u''
+            )
+        else:
+            seta = self.education_training_quality_assurance.body_name.strip()
+
+        self._long_description = u'%s : %s' % (
+            self.description.strip() or u'',
+            seta,
+
         )
         super(Course, self).save(*args, **kwargs)
 
