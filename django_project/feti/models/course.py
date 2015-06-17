@@ -57,7 +57,12 @@ class Course(models.Model):
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return '%s' % self.national_learners_records_database
+        course_string = u''
+        if self.national_learners_records_database:
+            course_string = u'[%s]' % self.national_learners_records_database
+        if self.long_description:
+            course_string += u' %s' % self.long_description
+        return course_string
 
     @property
     def description(self):
