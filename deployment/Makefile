@@ -29,7 +29,7 @@ web:
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up -d web
-	@docker-compose -p $(PROJECT_ID) up -d dbbackups
+	# @docker-compose -p $(PROJECT_ID) up -d dbbackups
 	# @dipall
 
 migrate:
