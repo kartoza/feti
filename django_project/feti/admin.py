@@ -6,22 +6,21 @@ from feti.models.campus import Campus
 from feti.models.address import Address
 from feti.models.course import Course
 from feti.models.provider import Provider
-from feti.models.course_provider_link import CourseProviderLink
 
 
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
-    list_display = ('campus', '_complete',)
-    list_filter = ['campus', '_complete',]
-    search_fields = ['campus',]
+    list_display = ('campus', 'provider', '_complete',)
+    list_filter = ['provider', '_complete']
+    search_fields = ['campus', 'provider__primary_institution']
     exclude = ('_long_description', '_complete')
 
 
 class AddressAdmin(admin.ModelAdmin):
     """Admin Class for Address Model."""
-    list_display = ('address_line_1', 'postal_code', 'phone', )
-    list_filter = ['address_line_1', 'postal_code', 'phone', ]
-    search_fields = ['address_line_1', 'postal_code', 'phone', ]
+    list_display = ('address_line_1', 'town', 'postal_code', 'phone', )
+    list_filter = ['town', 'postal_code', ]
+    search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
 
 
 class ProviderAdmin(admin.ModelAdmin):
