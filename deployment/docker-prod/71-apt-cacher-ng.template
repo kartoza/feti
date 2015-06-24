@@ -1,4 +1,5 @@
-Acquire::http { Proxy "http://192.168.1.111:3142"; };
+# Always comment out these lines before committing!
+#Acquire::http { Proxy "http://192.168.1.111:3142"; };
 #Acquire::http { Proxy "http://192.168.2.9:3142"; };
 #Acquire::http { Proxy "http://192.168.0.131:3142"; };
 #Acquire::http { Proxy "http://192.168.1.13:3142"; };

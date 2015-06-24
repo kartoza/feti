@@ -9,7 +9,7 @@
 #         'USER': os.environ['DATABASE_USERNAME'],
 #         'PASSWORD': os.environ['DATABASE_PASSWORD'],
 #         'HOST': os.environ['DATABASE_HOST'],
-#         'PORT': 5432,
+#         'PORT': 5433,
 #         'TEST_NAME': 'unittests',
 #     }
 # }
