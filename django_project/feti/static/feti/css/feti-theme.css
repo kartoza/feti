@@ -40,8 +40,17 @@ body {
     background-color: #1347A8;
 }
 
-.campus-heading{
+.provider-heading {
     cursor: pointer;
+}
+
+.course-list-item {
+    cursor: pointer;
+    border-bottom: 1px solid #AAAAAA;
+}
+
+.course-list-item:last-child{
+    border-bottom: none;
 }
 
 /* navbar search */
