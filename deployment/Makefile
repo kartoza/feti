@@ -29,7 +29,7 @@ web:
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up -d web
-	@docker-compose -p $(PROJECT_ID) up -d dbbackups
+	# @docker-compose -p $(PROJECT_ID) up -d dbbackups
 	# @dipall
 
 migrate:
@@ -184,6 +184,13 @@ qgis:
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-e DISPLAY=unix$(DISPLAY) \
 	kartoza/qgis-desktop:2.8.0; xhost -
+
+reload:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Reload django project in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)_uwsgi_1 uwsgi --reload  /tmp/django.pid
 
 
 
