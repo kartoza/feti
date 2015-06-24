@@ -2,6 +2,7 @@
 {% block header %}
 {% load geojson_tags %}
     <script>
+        window.L_PREFER_CANVAS = true;
         $(document).ready(function () {
             show_map();
             $('#campus_details').addClass("active");
