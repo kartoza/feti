@@ -27,7 +27,7 @@ DATABASES = {
 MEDIA_ROOT = '/home/web/media'
 STATIC_ROOT = '/home/web/static'
 
-# See fig.yml file for postfix container definition
+# See docker-compose.yml file for postfix container definition
 #
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.

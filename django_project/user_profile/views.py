@@ -10,6 +10,7 @@ from django.contrib.auth import (
     login as django_login,
     authenticate,
     logout as django_logout)
+from django.core.urlresolvers import reverse
 
 
 def login(request):
@@ -19,7 +20,7 @@ def login(request):
     username = ''
     error = ''
     if request.method == 'POST':
-        next = request.POST.get('next')
+        redirect_url = request.POST.get('next')
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -28,21 +29,21 @@ def login(request):
         if user is not None:
             if user.is_active:
                 django_login(request, user)
-                return redirect(next)
+                return redirect(redirect_url)
         error = 'invalid username or password'
     elif request.method == 'GET':
-        next = request.GET.get('next')
+        redirect_url = request.GET.get('next')
     else:
-        next = '/'
+        redirect_url = reverse('admin:index')
 
-    if not next:
-        next = '/'
+    if not redirect_url:
+        redirect_url = reverse('admin:index')
 
     return render_to_response(
         'login_page.html',
         {
             'username': username,
-            'next': next,
+            'next': redirect_url,
             'error': error
         },
         context_instance=RequestContext(request))

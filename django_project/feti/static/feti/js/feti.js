@@ -81,6 +81,8 @@ function show_map() {
         onEachFeature: onEachFeature
     }).addTo(map);
 
+    // Add share control
+    map.addControl(new L.Control.Share());
 }
 
 /*jslint unparam: true*/
@@ -204,4 +206,28 @@ function CampusItemToggle(el){
 function openCampusPopup(campus_id){
     var feature = campus_features[campus_id];
     feature.openPopup()
+}
+
+/* Search bar logic */
+function initSearchTermChanged(){
+    var terms = $("#search-terms").val();
+    var search_clear = $("#search-clear");
+    var search_terms = $("#search-terms");
+    if(search_terms.val().length == 0){
+        search_clear.hide();
+    }
+    search_terms.keyup(function(e){
+        var terms = search_terms.val()
+        if(terms.length==0){
+            search_clear.hide();
+        }
+        else{
+            search_clear.show();
+        }
+    });
+    search_clear.click(function(e){
+        e.preventDefault();
+        search_terms.val("");
+        search_clear.hide();
+    });
 }

@@ -7,7 +7,7 @@ __date__ = '24/04/15'
 
 
 class AddressIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.EdgeNgramField(document=True, use_template=True)
     town = indexes.CharField(model_attr='town', null=True)
 
     class Meta:

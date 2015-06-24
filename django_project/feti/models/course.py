@@ -57,7 +57,12 @@ class Course(models.Model):
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return '%s' % self.national_learners_records_database
+        course_string = u''
+        if self.national_learners_records_database:
+            course_string = u'[%s]' % self.national_learners_records_database
+        if self.long_description:
+            course_string += u' %s' % self.long_description
+        return course_string
 
     @property
     def description(self):
@@ -67,9 +72,20 @@ class Course(models.Model):
             return 'Description to follow.'
 
     def save(self, *args, **kwargs):
-        self._long_description = '%s : %s' % (
-            self.education_training_quality_assurance.body_name.strip() or '',
-            self.description.strip() or ''
+        if self.education_training_quality_assurance.acronym.strip():
+            seta = u'%s (%s)' % (
+                self.education_training_quality_assurance.body_name.strip() or
+                u'',
+                self.education_training_quality_assurance.acronym.strip() or
+                u''
+            )
+        else:
+            seta = self.education_training_quality_assurance.body_name.strip()
+
+        self._long_description = u'%s : %s' % (
+            self.description.strip() or u'',
+            seta,
+
         )
         super(Course, self).save(*args, **kwargs)
 

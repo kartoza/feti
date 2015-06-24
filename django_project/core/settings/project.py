@@ -39,12 +39,14 @@ PIPELINE_JS = {
             'feti/js/validate.js',
             'js/bootstrap-datetimepicker.min.js',
             'feti/js/jquery.flot.min.js',
-            'feti/js/jquery.flot.time.min.js'
+            'feti/js/jquery.flot.time.min.js',
+            'feti/js/ZeroClipboard.js',
         ),
         'output_filename': 'js/contrib.js',
     },
     'appjs': {
         'source_filenames': (
+            'feti/js/leaflet.control.share.js',
             'feti/js/feti.js',
             'js/csrf-ajax.js',
         ),

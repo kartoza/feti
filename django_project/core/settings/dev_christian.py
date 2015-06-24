@@ -9,7 +9,7 @@ DATABASES = {
         'PASSWORD': 'docker',
         'HOST': '0.0.0.0',
         # Set to empty string for default.
-        'PORT': '5432',
+        'PORT': '5433',
     }
 }
 

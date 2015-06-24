@@ -59,13 +59,13 @@ git clone git://github.com/kartoza/feti.git
 
 ### Build your docker images and run them
 
-You need to have http://docker.io and http://www.fig.sh/ installed first.
+You need to have http://docker.io and http://docs.docker.com/compose/ installed first. (docker-compose is the replacement of fig http://fig.sh which was deprecated)
 
 Note you need at least docker 1.2 - use
 the [installation notes](http://docs.docker.com/installation/ubuntulinux/)
 on the official docker page to get it set up.
 
-Fig will build and deploy the docker images for you. Note if you are using
+Docker-compose will build and deploy the docker images for you. Note if you are using
 ``apt-cacher-ng`` (we recommend it as it will dramatically speed up build
 times), be sure to edit ``docker-prod/71-apt-cacher-ng`` and comment out
 existing lines, adding your own server. Alternatively if you wish to fetch
@@ -78,10 +78,10 @@ commented out in your hosts:
 
 ```
 cd deployment
-fig build
-fig up -d uwsgi
-fig run migrate
-fig run collectstatic
+docker-compose build
+docker-compose up -d uwsgi
+docker-compose run migrate
+docker-compose run collectstatic
 ```
 
 ### Setup nginx reverse proxy
@@ -131,7 +131,3 @@ python manage.py runserver --settings=core.settings.dev_${USER}
 
 **Note:** You can also develop in docker using the instructions provided in
 [README-dev.md](https://github.com/kartoza/jakarta-flood-maps/blob/develop/README-dev.md).
-
-
-
-

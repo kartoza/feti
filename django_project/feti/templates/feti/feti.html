@@ -2,13 +2,19 @@
 {% block header %}
 {% load geojson_tags %}
     <script>
+        window.L_PREFER_CANVAS = true;
         $(document).ready(function () {
             show_map();
             $('#campus_details').addClass("active");
-            {% for campus in course_dict %}
+            {% for campus in campuses %}
                 add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
             {% endfor %}
-            map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
+            try{
+                map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
+            }
+            catch(e){
+
+            }
         });
 
     </script>
@@ -32,21 +38,24 @@
             <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
                 <div class="bs-component">
                     <div class="panel">
-                        {% for campus, courses in course_dict.iteritems %}
+                        {% for provider, campus_dict in provider_dict.iteritems %}
                             <div class="panel-primary">
-                                <div class="campus-heading panel-heading"
-                                     onclick="SelectFeature({{ campus.id }}); CampusItemToggle(this);">
+                                <div class="provider-heading panel-heading"
+                                     onclick="CampusItemToggle(this);">
                                     <h3 class="panel-title">
                                         <i class="mdi-navigation-expand-more"
                                                 ></i>
-                                        {{ campus.long_description }}
+                                        {{ provider.primary_institution }}
                                     </h3>
                                 </div>
                                 <div class="panel-collapse collapse">
-                                    {% for course in courses %}
-                                    <div class="panel-body">
-                                        {{ course.long_description }}
-                                    </div>
+                                    {% for campus, courses in campus_dict.iteritems %}
+                                        {% for course in courses %}
+                                        <div class="course-list-item panel-body"
+                                             onclick="SelectFeature({{ campus.id }});">
+                                            {{ course.long_description }}
+                                        </div>
+                                        {% endfor %}
                                     {% endfor %}
                                 </div>
                             </div>
@@ -65,5 +74,10 @@
         </div>
     </div>
     <!-- /container -->
+
+    {# share button #}
+    <div id="share-control-wrapper" style="display: none;">
+        {% include "feti/share_control.html" %}
+    </div>
 {% endblock %}
 
