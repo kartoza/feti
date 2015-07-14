@@ -158,3 +158,15 @@ body {
 #share-control-popup-close-button:hover{
     background-color: #f4f4f4;
 }
+#share-control-pdf-button{
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 8px;
+    font: bold 15px 'Lucida Console', Monaco, monospace;
+}
+
+#share-control-pdf-button:hover{
+    background-color: #f4f4f4;
+}

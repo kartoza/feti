@@ -16,6 +16,7 @@ L.Control.Share = L.Control.extend({
 
         $("#share-control-button", container).on('click', this.shareButtonClick);
         $("#share-control-popup-close-button", container).on('click', this.closePopupClick);
+        $("#share-control-pdf-button", container).on('click', this.downloadPDF);
 
         // set clipboard handler
         var client = new ZeroClipboard($("#share-link-copy-button", container));
@@ -67,6 +68,30 @@ L.Control.Share = L.Control.extend({
     closePopupClick: function(e){
         $("#share-control-button").css('display', 'block');
         $("#share-control-action").css('display', 'none');
+    },
+    downloadPDF: function(e){
+        leafletImage(map, function(error, canvas) {
+            var img = canvas.toDataURL();
+            var doc = new jsPDF();
+            var map = $('#map');
+            var height = map.height();
+            var width = map.width();
+            height = 180*height/width;
+            width = 180;
+            doc.fromHTML(
+                $('#navbar-header').get(0),
+                0,
+                0,
+                {
+                 'width': 180 // max width of content on PDF
+                }
+                );
+            doc.setFontSize(24);
+
+            doc.text(35, 25, "FETI");
+            doc.addImage(img, 'JPEG', 15, 40, width, height);
+            doc.save('Further Education and Training Institute.pdf');
+        });
     }
 });
 

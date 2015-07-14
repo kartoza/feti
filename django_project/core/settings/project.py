@@ -34,6 +34,7 @@ PIPELINE_JS = {
             'js/moment.min.js',
             'feti/js/leaflet.js',
             'feti/js/leaflet-image.js',
+            'feti/js/jspdf.js',
             'feti/js/material.min.js',
             'feti/js/ripples.min.js',
             'feti/js/validate.js',
