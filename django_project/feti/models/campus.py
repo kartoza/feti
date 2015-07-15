@@ -40,7 +40,16 @@ class Campus(models.Model):
         verbose_name_plural = 'Campuses'
 
     @property
-    def popup_content(self, related_course=None):
+    def related_course(self):
+        return self._related_course
+
+    @related_course.setter
+    def related_course(self, value):
+        self._related_course = value
+
+    @property
+    def popup_content(self):
+        related_course = self.related_course
         if not related_course:
             related_course = self.courses.all()
         courses_string = u''
@@ -55,7 +64,7 @@ class Campus(models.Model):
 
         address = self.address.__unicode__() or u'' if self.address else u''
 
-        popup_format =(
+        popup_format = (
             u'<p>{}</p>'
             u'<p>{}</p>')
 
