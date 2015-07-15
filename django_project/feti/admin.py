@@ -49,6 +49,9 @@ class CourseAdmin(admin.ModelAdmin):
     exclude = ('_long_description',)
 
 
+admin.site.site_header = 'Feti Administration'
+admin.site.site_title = 'Feti Administration'
+admin.site.index_template = 'admin/feti_admin.html'
 admin.site.register(Campus, CampusAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Provider, ProviderAdmin)
