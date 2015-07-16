@@ -52,6 +52,19 @@ class Address(models.Model):
             address_string = 'N/A'
         return address_string
 
+    @property
+    def address_line(self):
+        address_list = [
+            self.address_line_1,
+            self.address_line_2,
+            self.address_line_3
+        ]
+        concat_list = [l for l in address_list if l and l.strip()]
+        address_string = u', \n'.join(concat_list)
+        if not address_string.strip():
+            address_string = 'N/A'
+        return address_string
+
     class Meta:
         app_label = 'feti'
         verbose_name_plural = 'Addresses'

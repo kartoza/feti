@@ -7,6 +7,7 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
+from django.template import Context, loader
 
 from feti.models.provider import Provider
 from feti.models.address import Address
@@ -24,6 +25,12 @@ class Campus(models.Model):
 
     # Decreasing the number of links needed to other models for descriptions.
     _long_description = models.CharField(
+        max_length=510,
+        blank=True,
+        null=True
+    )
+    # Decreasing the number of links needed to get popup material
+    _campus_popup = models.CharField(
         max_length=510,
         blank=True,
         null=True
@@ -54,30 +61,19 @@ class Campus(models.Model):
             related_course = self.courses.all()
         courses_string = u''
         for c in related_course:
-            desc = c.long_description.strip() or u''
-            if c.field_of_study and \
-                    c.field_of_study.field_of_study_description:
-                desc += u' - '
-                desc += c.field_of_study.field_of_study_description
-            if desc:
-                courses_string += u'<li>' + desc + u'</li>'
-
-        address = self.address.__unicode__() or u'' if self.address else u''
+            courses_string += u'<li>' + c.course_popup + u'</li>'
 
         popup_format = (
-            u'<p>{}</p>'
-            u'<p>{}</p>')
+            u'<div>{}</div>')
 
         if related_course:
             popup_format += (
                 u'<p>Courses : '
-                u'<br/>'
-                u'<ul>{}</ul>'
+                u'<div class="course-list"><ul>{}</ul></div>'
                 u'</p>')
 
         result = popup_format.format(
-            self.long_description or u'',
-            address,
+            self.campus_popup or u'',
             courses_string or u'')
         return result
 
@@ -97,6 +93,10 @@ class Campus(models.Model):
         return self._long_description
 
     @property
+    def campus_popup(self):
+        return self._campus_popup
+
+    @property
     def incomplete(self):
         return not self._complete
 
@@ -104,7 +104,8 @@ class Campus(models.Model):
         return u'%s' % self.campus_name
 
     def save(self, *args, **kwargs):
-        self._long_description = '%s - %s' % (
+        # set up long description
+        self._long_description = u'%s - %s' % (
             self.provider.primary_institution.strip(),
             self.campus_name.strip()
         )
@@ -113,4 +114,22 @@ class Campus(models.Model):
             self._complete = False
         else:
             self._complete = True
+
+        # set up campus popup
+        template = loader.get_template('feti/campus_popup.html')
+        provider_name = self.provider.primary_institution if self.provider \
+            else ''
+        campus_name = self.address.town if self.address else 'N/A'
+        address_full = self.address.address_line if self.address else 'N/A'
+        website = self.provider.website if self.provider else 'N/A'
+        phone = self.address.phone if self.address else 'N/A'
+        variable = {
+            'provider': provider_name,
+            'campus': campus_name,
+            'address_full': address_full,
+            'website': website,
+            'phone': phone
+        }
+        self._campus_popup = template.render(Context(variable))
+
         super(Campus, self).save(*args, **kwargs)
