@@ -15,7 +15,7 @@ urlpatterns = patterns(
     url(r'^feti-admin/', include(admin.site.urls)),
 
     # include application urls
-    url(r'', include('feti.urls')),
+    url(r'', include('feti.urls', namespace='feti')),
 
 )
 
