@@ -17,7 +17,7 @@ addons:
 
 install:
   - pip install coveralls
-  - pip install -r REQUIREMENTS-dev.txt
+  - pip install -r deployment/docker-prod/REQUIREMENTS.txt
   - nodeenv -p --node=0.10.31
   - npm -g install yuglify
 
