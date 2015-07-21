@@ -10,8 +10,8 @@ urlpatterns = patterns(
 
     # Enable the admin:
     url(r'^accounts/login/$', 'user_profile.views.login'),
-    url(r'^feti-admin/logout/$', 'user_profile.views.logout'),
-    url(r'^feti-admin/login/$', 'user_profile.views.login'),
+    url(r'^feti-admin/logout/$', 'user_profile.views.logout', name='logout'),
+    url(r'^feti-admin/login/$', 'user_profile.views.login', name='login'),
     url(r'^feti-admin/', include(admin.site.urls)),
 
     # include application urls
