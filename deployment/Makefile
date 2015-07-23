@@ -238,6 +238,10 @@ staging-collectstatic:
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
 	@docker exec -t -i $(PROJECT_ID)staging_uwsgi_1 python manage.py collectstatic --noinput
+	#
+	# RM : this is needed to copy some library over
+	# I don't know a better way to do this
+	sudo cp ../django_project/feti/static/feti/js/ZeroClipboard.swf static/js/
 
 staging-kill:
 	@echo

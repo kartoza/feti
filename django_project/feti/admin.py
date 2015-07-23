@@ -13,7 +13,7 @@ class CampusAdmin(admin.OSMGeoAdmin):
     list_display = ('campus', 'provider', '_complete',)
     list_filter = ['provider', '_complete']
     search_fields = ['campus', 'provider__primary_institution']
-    exclude = ('_long_description', '_complete')
+    exclude = ('_long_description', '_complete', '_campus_popup')
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -46,9 +46,11 @@ class CourseAdmin(admin.ModelAdmin):
                    'field_of_study']
     search_fields = ['national_learners_records_database',
                      'course_description']
-    exclude = ('_long_description',)
+    exclude = ('_long_description', '_course_popup')
 
 
+admin.site.site_header = 'Feti Administration'
+admin.site.site_title = 'Feti Administration'
 admin.site.register(Campus, CampusAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Provider, ProviderAdmin)

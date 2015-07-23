@@ -53,7 +53,7 @@
                                         {% for course in courses %}
                                         <div class="course-list-item panel-body"
                                              onclick="SelectFeature({{ campus.id }});">
-                                            {{ course.long_description }}
+                                            {{ course.course_popup|safe }}
                                         </div>
                                         {% endfor %}
                                     {% endfor %}

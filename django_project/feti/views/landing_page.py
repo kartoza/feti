@@ -35,6 +35,7 @@ def update_campus_dict(provider_dict, provider, campus):
         if campus not in provider_dict[provider]:
             provider_dict[provider][campus] = []
 
+
 def landing_page(request):
     """Serves the FETI landing page.
 
@@ -51,6 +52,7 @@ def landing_page(request):
     search_terms = ''
     provider_dict = OrderedDict()
     errors = None
+    campuses = []
     if request.GET:
         search_terms = request.GET.get('search_terms')
         if search_terms:
@@ -58,7 +60,6 @@ def landing_page(request):
             results = SearchQuerySet().filter(
                 long_description=AutoQuery(search_terms)).models(Campus,
                                                                  Course)
-            campuses = []
 
             for result in results:
                 if result.score > 1:
@@ -103,6 +104,9 @@ def landing_page(request):
 
     provider_dict = OrderedDict(
         sorted(provider_dict.items(), key=provider_key))
+
+    for c in campuses:
+        c.related_course = provider_dict[c.provider][c]
 
     context = {
         'campuses': campuses,
