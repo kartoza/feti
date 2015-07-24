@@ -32,6 +32,8 @@ elasticsearch:
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
+  ports:
+    - "9200:9200"
 
 db:
   image: kartoza/postgis
@@ -41,6 +43,10 @@ db:
   environment:
     - USERNAME=docker
     - PASS=docker
+  # TODO: Why are exposing ports to the host? This is
+  # TODO: an anti-pattern - TS
+  ports:
+    - "6543:5432"
 
 dbbackups:
   image: kartoza/pg-backup
@@ -115,22 +121,3 @@ web:
     - mapproxy:mapproxy
   ports:
     - "63100:8080"
-
-# Exactly the same as web but for staging we use a different port.
-stagingweb:
-  image: nginx
-  hostname: nginx
-  volumes:
-    - ./sites-enabled:/etc/nginx/conf.d:ro
-    # I dont use volumes_from as I want to use the ro modifier
-    - ./static:/home/web/static:ro
-    - ./media:/home/web/media:ro
-    - ./logs:/var/log/nginx
-    - ./reports:/home/web/reports
-  links:
-    - uwsgi:uwsgi
-    - qgisserver:qgisserver
-    - mapproxy:mapproxy
-#    - cron:cron
-  ports:
-    - "63101:8080"
