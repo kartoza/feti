@@ -158,3 +158,9 @@ body {
 #share-control-popup-close-button:hover{
     background-color: #f4f4f4;
 }
+
+/* Popup related */
+.course-list{
+    max-height: 200px;
+    overflow-y: auto;
+}
