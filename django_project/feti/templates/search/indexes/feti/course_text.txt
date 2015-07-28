@@ -1,3 +1,4 @@
 {{ object.national_learners_records_database }}
 {{ object.field_of_study.field_of_study_description }}
 {{ object.course_description }}
+{{ object.long_description }}
