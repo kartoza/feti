@@ -6,6 +6,7 @@ from feti.indexes.provider import ProviderIndex
 from feti.indexes.address import AddressIndex
 from feti.indexes.campus import CampusIndex
 from feti.indexes.course import CourseIndex
+from feti.indexes.campus_course import CampusCourseIndex
 # from feti.indexes.education_training_quality_assurance \
 #     import EducationTrainingQualityAssuranceIndex
 from feti.indexes.field_of_study import FieldOfStudyIndex

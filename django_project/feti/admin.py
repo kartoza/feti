@@ -2,30 +2,38 @@
 """Model Admin Class."""
 
 from django.contrib.gis import admin
-from feti.models.campus import Campus
 from feti.models.address import Address
+from feti.models.campus import Campus
 from feti.models.course import Course
 from feti.models.provider import Provider
 
 
+class AddressAdmin(admin.ModelAdmin):
+    """Admin Class for Address Model."""
+    list_display = ('id', 'address_line_1', 'town', 'postal_code', 'phone',)
+    list_filter = ['town', 'postal_code', ]
+    search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
+    exclude = ('campus_fk', )
+
+
+class AddressAdminInline(admin.StackedInline):
+    """Stacked Inline Admin Class to be included in Campus Admin"""
+    model = Address
+    fk_name = 'campus_fk'
+
+
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
+    inlines = [AddressAdminInline]
     list_display = ('campus', 'provider', '_complete',)
     list_filter = ['provider', '_complete']
     search_fields = ['campus', 'provider__primary_institution']
-    exclude = ('_long_description', '_complete', '_campus_popup')
-
-
-class AddressAdmin(admin.ModelAdmin):
-    """Admin Class for Address Model."""
-    list_display = ('address_line_1', 'town', 'postal_code', 'phone', )
-    list_filter = ['town', 'postal_code', ]
-    search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
+    exclude = ('_long_description', '_complete', '_campus_popup', 'address')
 
 
 class ProviderAdmin(admin.ModelAdmin):
     """Admin Class for Provider Model."""
-    list_display = ('primary_institution', 'website', 'status', )
+    list_display = ('primary_institution', 'website', 'status',)
     list_filter = ['primary_institution', 'website', 'status', ]
     search_fields = ['primary_institution', 'website', 'status', ]
 

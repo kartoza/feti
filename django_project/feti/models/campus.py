@@ -10,7 +10,6 @@ from django.contrib.gis.db import models
 from django.template import Context, loader
 
 from feti.models.provider import Provider
-from feti.models.address import Address
 from feti.models.course import Course
 
 
@@ -19,7 +18,7 @@ class Campus(models.Model):
     id = models.AutoField(primary_key=True)
     campus = models.CharField(max_length=150, blank=True, null=True)
     location = models.PointField(blank=True, null=True)
-    address = models.ForeignKey(Address)
+    address = models.ForeignKey('Address')
     provider = models.ForeignKey(Provider)
     courses = models.ManyToManyField(Course)
 
@@ -131,5 +130,24 @@ class Campus(models.Model):
             'phone': phone
         }
         self._campus_popup = template.render(Context(variable))
+
+        # save the key in address
+        self.address_fk = self.address
+        self.address_fk.campus_fk = self
+        self.address_fk.save()
+
+        # save campus course link
+        from feti.models.campus_course_entry import CampusCourseEntry
+        entries = []
+        for course in self.courses.all():
+            try:
+                link = CampusCourseEntry.objects.get(
+                    campus=self, course=course)
+            except CampusCourseEntry.DoesNotExist:
+                link = CampusCourseEntry.objects.create(
+                    campus=self, course=course)
+                entries.append(CampusCourseEntry(campus=self, course=course))
+
+        CampusCourseEntry.objects.bulk_create(entries)
 
         super(Campus, self).save(*args, **kwargs)

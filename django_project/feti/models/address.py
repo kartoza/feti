@@ -34,6 +34,11 @@ class Address(models.Model):
         blank=True,
         null=True)
 
+    # Foreign key link to campus
+    # needed for inline admin interface
+    campus_fk = models.OneToOneField(
+        'Campus', related_name='address_fk', null=True)
+
     objects = models.GeoManager()
 
     def __unicode__(self):
@@ -67,4 +72,4 @@ class Address(models.Model):
 
     class Meta:
         app_label = 'feti'
-        verbose_name_plural = 'Addresses'
+        verbose_name_plural = 'Addreses'
