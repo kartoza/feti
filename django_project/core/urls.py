@@ -8,6 +8,8 @@ from django.contrib import admin
 urlpatterns = patterns(
     '',
 
+    # grappelli URLS
+    url(r'^grappelli/', include('grappelli.urls')),
     # Enable the admin:
     url(r'^accounts/login/$', 'user_profile.views.login'),
     url(r'^feti-admin/logout/$', 'user_profile.views.logout', name='logout'),

@@ -17,9 +17,11 @@ class Campus(models.Model):
     """A campus where a set of courses are offered."""
     id = models.AutoField(primary_key=True)
     campus = models.CharField(max_length=150, blank=True, null=True)
-    location = models.PointField(blank=True, null=True)
-    address = models.ForeignKey('Address')
-    provider = models.ForeignKey(Provider)
+    # default to south africa capital coordinate
+    location = models.PointField(blank=True, null=True,
+                                 default='POINT(28.034088 -26.195246)')
+    address = models.ForeignKey('Address', null=True, blank=True)
+    provider = models.ForeignKey(Provider, related_name='campuses')
     courses = models.ManyToManyField(Course)
 
     # Decreasing the number of links needed to other models for descriptions.
@@ -104,10 +106,25 @@ class Campus(models.Model):
 
     def save(self, *args, **kwargs):
         # set up long description
-        self._long_description = u'%s - %s' % (
-            self.provider.primary_institution.strip(),
-            self.campus_name.strip()
-        )
+        if self.provider:
+            self._long_description = u'%s - %s' % (
+                self.provider.primary_institution.strip(),
+                self.campus_name.strip()
+            )
+
+        # saves to ensure many to many relations works
+        # we do this because the address admin inline only works for
+        # address_fk. So we filled address relation manually
+        if not self.address:
+            self.address = self.address_fk
+
+        try:
+            self.address
+        except Exception as e:
+            if e.__class__.__name__ == 'RelatedObjectDoesNotExist':
+                self.address = self.address_fk
+                self.address_fk.save()
+
         if not self.courses.count() or not self.location or not self.campus:
             # Only mark campuses without courses as incomplete
             self._complete = False
@@ -132,9 +149,12 @@ class Campus(models.Model):
         self._campus_popup = template.render(Context(variable))
 
         # save the key in address
-        self.address_fk = self.address
-        self.address_fk.campus_fk = self
-        self.address_fk.save()
+        try:
+            self.address_fk = self.address
+            self.address_fk.campus_fk = self
+            self.address_fk.save()
+        except self.address.DoesNotExist:
+            pass
 
         # save campus course link
         from feti.models.campus_course_entry import CampusCourseEntry

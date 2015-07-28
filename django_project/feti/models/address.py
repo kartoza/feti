@@ -25,9 +25,9 @@ class Address(models.Model):
         validators=[postal_code_regex])
 
     phone_regex = RegexValidator(
-        regex=r'^\+\d{12,12}$',
+        regex=r'^\+?(\d)+(\d(-)?)*(\d)+$',
         message="Phone number should have the following format: "
-                "'+27888888888'.")
+                "'+27888888888 or 021-777-777'.")
     phone = models.CharField(
         max_length=100,
         validators=[phone_regex],
