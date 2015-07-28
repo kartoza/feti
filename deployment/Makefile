@@ -46,6 +46,13 @@ makemigrations:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
 
+updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py updatelongdescription
+
 rebuildindex:
 	@echo
 	@echo "------------------------------------------------------------------"
