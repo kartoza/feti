@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 <!-- LOADING -->
-{% load admin_static i18n admin_modify admin_urls grp_tags %}
+{% load admin_static i18n admin_modify admin_urls grp_tags pipeline %}
 
 <!-- STYLESHEETS -->
 {% block stylesheets %}
@@ -13,6 +13,7 @@
     {{ block.super }}
     {% url 'admin:jsi18n' as jsi18nurl %}
     <script type="text/javascript" src="{{ jsi18nurl|default:'../../../jsi18n/' }}"></script>
+    {% javascript 'grappelli_override' %}
     <script type="text/javascript" charset="utf-8">
         (function($) {
             $(document).ready(function() {
@@ -198,7 +199,6 @@
             {% block inline_field_sets %}
                 {% for inline_admin_formset in inline_admin_formsets %}
                     <br/>
-                    {{ inline_admin_formset.opts.template }}
                     {% include inline_admin_formset.opts.template %}
                 {% endfor %}
             {% endblock %}

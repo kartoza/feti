@@ -50,6 +50,12 @@ PIPELINE_JS = {
             'js/csrf-ajax.js',
         ),
         'output_filename': 'js/appjs.js'
+    },
+    'grappelli_override': {
+        'source_filenames': (
+            'feti/js/grappelli_override.js',
+        ),
+        'output_filename': 'js/grappelli_override.min.js'
     }
 }
 

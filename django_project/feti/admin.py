@@ -3,6 +3,7 @@
 
 from django.contrib.gis import admin
 from django.core.urlresolvers import reverse
+from django.forms.models import BaseInlineFormSet
 from django.utils.html import format_html_join
 from django.utils.safestring import mark_safe
 from feti.custom_admin.geodjango import OSMGeoStackedInline
@@ -58,9 +59,19 @@ class CampusAdmin(admin.OSMGeoAdmin):
     provider_url.short_description = 'Provider'
 
 
+class CampusAdminInlineFormset(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        kwargs['initial'] = [
+            {'campus': 'Campus Name'}
+        ]
+        super(CampusAdminInlineFormset, self).__init__(*args, **kwargs)
+
+
 class CampusAdminInline(OSMGeoStackedInline):
     """Inline Admin Class for campus"""
     model = Campus
+    formset = CampusAdminInlineFormset
+    show_change_link = True
     inlines = [AddressAdminInline]
     extra = 0
     list_display = ('campus', 'provider', '_complete',)
