@@ -138,9 +138,11 @@ L.Control.Share = L.Control.extend({
         $("#share-control-action").css('display', 'none');
     },
     downloadPDF: function(e){
+        $('#share-control-popup-close-button').click();
         generate_pdf(false);
     },
     downloadFullPDF: function(e){
+        $('#share-control-popup-close-button').click();
         generate_pdf(false);
     }
 });
