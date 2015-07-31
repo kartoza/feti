@@ -1,0 +1,17 @@
+<style>
+    ul.related-model{
+        overflow-y: auto;
+        max-height: 200px;
+    }
+</style>
+<ul class="related-model">
+    {% for p in providers %}
+    <li>
+        <a href="{% url 'admin:feti_provider_change' p.id %}">
+            {{ p }}
+        </a>
+    </li>
+    {% empty %}
+        No providers
+    {% endfor %}
+</ul>

@@ -4,7 +4,9 @@
 from django.contrib.gis import admin
 from django.core.urlresolvers import reverse
 from django.forms.models import BaseInlineFormSet
-from django.utils.html import format_html_join
+from django.template.context import Context
+from django.template.loader import get_template
+from django.utils.html import format_html_join, format_html
 from django.utils.safestring import mark_safe
 from feti.custom_admin.geodjango import OSMGeoStackedInline
 from feti.models.address import Address
@@ -139,6 +141,20 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ['national_learners_records_database',
                      'course_description']
     exclude = ('_long_description', '_course_popup')
+    readonly_fields = ['related_providers']
+
+    def related_providers(self, instance):
+        template = get_template('admin/related_providers.html')
+        providers = []
+        for c in instance.campus_set.all():
+            if c.provider not in providers:
+                providers.append(c.provider)
+        context = Context({
+            'providers': providers
+        })
+        return mark_safe(template.render(context).replace('\n', ''))
+    related_providers.allow_tags = True
+    related_providers.short_description = 'Related providers'
 
 
 admin.site.site_header = 'Feti Administration'
