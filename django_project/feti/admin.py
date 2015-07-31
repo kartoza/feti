@@ -38,10 +38,11 @@ class CampusAdmin(admin.OSMGeoAdmin):
     readonly_fields = ['provider_url']
     fieldsets = (
         ('General Information', {
-            'fields': ('provider_url', 'campus', 'location', 'courses')
+            'fields': ('provider_url', 'provider', 'campus', 'location',
+                       'courses')
         }),
     )
-    exclude = ('provider', '_long_description', '_complete',
+    exclude = ('_long_description', '_complete',
                '_campus_popup', 'address')
     filter_horizontal = ['courses']
     related_lookup_fields = {
@@ -59,18 +60,9 @@ class CampusAdmin(admin.OSMGeoAdmin):
     provider_url.short_description = 'Provider'
 
 
-class CampusAdminInlineFormset(BaseInlineFormSet):
-    def __init__(self, *args, **kwargs):
-        kwargs['initial'] = [
-            {'campus': 'Campus Name'}
-        ]
-        super(CampusAdminInlineFormset, self).__init__(*args, **kwargs)
-
-
 class CampusAdminInline(OSMGeoStackedInline):
     """Inline Admin Class for campus"""
     model = Campus
-    formset = CampusAdminInlineFormset
     show_change_link = True
     inlines = [AddressAdminInline]
     extra = 0

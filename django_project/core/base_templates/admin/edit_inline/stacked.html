@@ -136,12 +136,15 @@
 
         $("#{{ inline_admin_formset.formset.prefix }}-group").grp_inline({
             prefix: "{{ inline_admin_formset.formset.prefix }}",
-            onBeforeAdded: function(form){
-                console.log(form);
+            onBeforeAdded: function(form, index){
             },
             onAfterRemoved: function(inline) {},
-            onAfterAdded: function(form) {
-                console.log(form);
+            onAfterAdded: function(form, index) {
+                // RM: emptying map element before it is reinitialized
+                var id = '#id_campuses-'+index+'-location_map>.olMapViewport:eq(0)';
+                console.log($(id, form));
+                $(id, form).remove();
+
                 grappelli.reinitDateTimeFields(form);
                 grappelli.updateSelectFilter(form);
                 $.each(related_lookup_fields_fk, function() {

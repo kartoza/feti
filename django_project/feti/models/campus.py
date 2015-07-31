@@ -106,24 +106,21 @@ class Campus(models.Model):
 
     def save(self, *args, **kwargs):
         # set up long description
+        from_inline = False
+        try:
+            self.address_fk
+            self.address
+        except Exception as e:
+            from_inline = True
+
+        if from_inline:
+            super(Campus, self).save(*args, **kwargs)
+
         if self.provider:
             self._long_description = u'%s - %s' % (
                 self.provider.primary_institution.strip(),
                 self.campus_name.strip()
             )
-
-        # saves to ensure many to many relations works
-        # we do this because the address admin inline only works for
-        # address_fk. So we filled address relation manually
-        if not self.address:
-            self.address = self.address_fk
-
-        try:
-            self.address
-        except Exception as e:
-            if e.__class__.__name__ == 'RelatedObjectDoesNotExist':
-                self.address = self.address_fk
-                self.address_fk.save()
 
         if not self.courses.count() or not self.location or not self.campus:
             # Only mark campuses without courses as incomplete
@@ -161,11 +158,8 @@ class Campus(models.Model):
         entries = []
         for course in self.courses.all():
             try:
-                link = CampusCourseEntry.objects.get(
-                    campus=self, course=course)
+                CampusCourseEntry.objects.get(campus=self, course=course)
             except CampusCourseEntry.DoesNotExist:
-                link = CampusCourseEntry.objects.create(
-                    campus=self, course=course)
                 entries.append(CampusCourseEntry(campus=self, course=course))
 
         CampusCourseEntry.objects.bulk_create(entries)

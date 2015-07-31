@@ -21,7 +21,7 @@
             onBeforeRemoved: function(form) {},     // Function called before a form is removed
             onBeforeDeleted: function(form) {},     // Function called before a form is deleted
             onAfterInit: function(form) {},         // Function called after a form has been initialized
-            onAfterAdded: function(form) {},        // Function called after a form has been added
+            onAfterAdded: function(form, index) {},        // Function called after a form has been added
             onAfterRemoved: function(inline) {},    // Function called after a form has been removed
             onAfterDeleted: function(form) {}       // Function called after a form has been deleted
         };
@@ -72,6 +72,24 @@
                 dependency_ids_updated.push(id.replace(replace_regex, replace_with));
             });
             $(this).data('dependency_ids', dependency_ids_updated);
+        });
+        // RM : update all the possible __prefix__ in the script generated
+        // Important fix for GeoAdmin map
+        elem.find('script, style').each(function(){
+            var node = $(this);
+            var inner_script = node.html().replace(replace_regex, replace_with);
+            node.html(inner_script);
+        });
+    };
+
+    executeJavascript = function(elem){
+        elem.find('script').each(function(){
+            var node = $(this);
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.appendChild(document.createTextNode(node.html()));
+            node.replaceWith(script);
+
         });
     };
 
@@ -144,8 +162,10 @@
             }
             // prepopulate fields
             initPrepopulatedFields(form, options);
+            // execute inside javascript
+            executeJavascript(form);
             // callback
-            options.onAfterAdded(form);
+            options.onAfterAdded(form, index);
         });
     };
     
