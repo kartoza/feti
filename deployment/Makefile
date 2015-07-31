@@ -46,6 +46,13 @@ makemigrations:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
 
+updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py updatelongdescription
+
 rebuildindex:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -229,6 +236,27 @@ staging-migrate:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py migrate
 
+staging-updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatelongdescription
+
+staging-rebuildindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py rebuild_index
+
+staging-updateindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py update_index
+
 staging-collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -336,6 +364,27 @@ dev-migrate:
 	@echo "Running migrate static in dev mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev run uwsgi python manage.py migrate
+
+dev-updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py updatelongdescription
+
+dev-rebuildindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py rebuild_index
+
+dev-updateindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py update_index
 
 dev-collectstatic:
 	@echo
