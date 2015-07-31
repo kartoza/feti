@@ -1,5 +1,6 @@
 # coding=utf-8
 """Model class for WMS Resource"""
+from feti.models.address import Address
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -115,6 +116,9 @@ class Campus(models.Model):
 
         if from_inline:
             super(Campus, self).save(*args, **kwargs)
+            # create new address placeholder
+            self.address_fk = Address.objects.create()
+            self.address = self.address_fk
 
         if self.provider:
             self._long_description = u'%s - %s' % (

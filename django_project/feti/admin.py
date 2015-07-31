@@ -17,8 +17,27 @@ class AddressAdmin(admin.ModelAdmin):
     """Admin Class for Address Model."""
     list_display = ('id', 'address_line_1', 'town', 'postal_code', 'phone',)
     list_filter = ['town', 'postal_code', ]
+    readonly_fields = ['campus_url', 'provider_url']
     search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
     exclude = ('campus_fk', )
+
+    def campus_url(self, instance):
+        return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
+            instance.campus_fk,
+            reverse('admin:feti_campus_change', args=(
+                instance.campus_fk.id,)),
+        )
+    campus_url.allow_tags = True
+    campus_url.short_description = 'Campus'
+
+    def provider_url(self, instance):
+        return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
+            instance.campus_fk.provider,
+            reverse('admin:feti_campus_change', args=(
+                instance.campus_fk.provider.id,)),
+        )
+    provider_url.allow_tags = True
+    provider_url.short_description = 'Provider'
 
 
 class AddressAdminInline(admin.StackedInline):
@@ -51,10 +70,10 @@ class CampusAdmin(admin.OSMGeoAdmin):
     }
 
     def provider_url(self, instance):
-        return mark_safe('<a href="{}">{}</a>').format(
+        return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
+            instance.provider,
             reverse('admin:feti_provider_change', args=(
                 instance.provider.id,)),
-            instance.provider
         )
     provider_url.allow_tags = True
     provider_url.short_description = 'Provider'
@@ -66,15 +85,27 @@ class CampusAdminInline(OSMGeoStackedInline):
     show_change_link = True
     inlines = [AddressAdminInline]
     extra = 0
+    readonly_fields = ['address_url']
+    fieldsets = (
+        (None, {
+            'fields': ('campus', 'location', 'address_url', 'courses')
+        }),
+    )
     list_display = ('campus', 'provider', '_complete',)
     list_filter = ['provider', '_complete']
     search_fields = ['campus', 'provider__primary_institution']
     exclude = ('_long_description', '_complete', '_campus_popup', 'address')
     filter_horizontal = ['courses']
 
-    def get_formset(self, request, obj=None, **kwargs):
-        return super(CampusAdminInline, self).get_formset(request, obj=obj,
-                                                          **kwargs)
+    def address_url(self, instance):
+        return mark_safe('{}<br/><a href="{}">Go to Edit '
+                         'page</a>').format(
+            instance.address_fk.address_line,
+            reverse('admin:feti_address_change', args=(
+                instance.address_fk.id,))
+        )
+    address_url.allow_tags = True
+    address_url.short_description = 'Address'
 
 
 class ProviderAdmin(admin.OSMGeoAdmin):
@@ -113,7 +144,6 @@ class CourseAdmin(admin.ModelAdmin):
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
 admin.site.site_title = 'Feti Administration'
-admin.site.register(Campus, CampusAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
