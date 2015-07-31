@@ -139,7 +139,10 @@ class CourseAdmin(admin.ModelAdmin):
                    'national_certificate_vocational',
                    'field_of_study']
     search_fields = ['national_learners_records_database',
-                     'course_description']
+                     'course_description',
+                     'education_training_quality_assurance__acronym',
+                     'education_training_quality_assurance__body_name',
+                     'national_qualifications_framework__description']
     exclude = ('_long_description', '_course_popup')
     readonly_fields = ['related_providers']
 

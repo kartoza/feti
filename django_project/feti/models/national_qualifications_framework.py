@@ -15,7 +15,7 @@ class NationalQualificationsFramework(models.Model):
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return '%s' % self.description
+        return 'NQF Level %s : %s' % (self.level, self.description)
 
     class Meta:
         app_label = 'feti'
