@@ -111,7 +111,6 @@ web:
     - ./logs:/var/log/nginx
   links:
     - uwsgi:uwsgi
-    - mapproxy:mapproxy
   ports:
     - "63100:8080"
 
@@ -128,6 +127,5 @@ stagingweb:
     - ./reports:/home/web/reports
   links:
     - uwsgi:uwsgi
-    - mapproxy:mapproxy
   ports:
     - "63101:8080"
