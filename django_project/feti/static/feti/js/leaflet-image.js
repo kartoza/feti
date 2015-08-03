@@ -186,7 +186,6 @@ module.exports = function leafletImage(map, callback) {
                 ctx.strokeStyle=child.getAttribute('stroke');
                 ctx.fillStyle = child.getAttribute('fill');
                 ctx.stroke(new Path2D(child.getAttribute('d')));
-                ctx.fill();
                 ctx.closePath();
             }
         }
