@@ -19,23 +19,23 @@ class AddressAdmin(admin.ModelAdmin):
     """Admin Class for Address Model."""
     list_display = ('id', 'address_line_1', 'town', 'postal_code', 'phone',)
     list_filter = ['town', 'postal_code', ]
-    readonly_fields = ['campus_url', 'provider_url']
+    readonly_fields = ['provider_url']
     search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
     exclude = ('campus_fk', )
 
-    def campus_url(self, instance):
-        return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
-            instance.campus_fk,
-            reverse('admin:feti_campus_change', args=(
-                instance.campus_fk.id,)),
-        )
-    campus_url.allow_tags = True
-    campus_url.short_description = 'Campus'
+    # def campus_url(self, instance):
+    #     return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
+    #         instance.campus_fk,
+    #         reverse('admin:feti_campus_change', args=(
+    #             instance.campus_fk.id,)),
+    #     )
+    # campus_url.allow_tags = True
+    # campus_url.short_description = 'Campus'
 
     def provider_url(self, instance):
         return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
             instance.campus_fk.provider,
-            reverse('admin:feti_campus_change', args=(
+            reverse('admin:feti_provider_change', args=(
                 instance.campus_fk.provider.id,)),
         )
     provider_url.allow_tags = True
