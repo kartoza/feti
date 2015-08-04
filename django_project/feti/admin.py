@@ -3,10 +3,8 @@
 
 from django.contrib.gis import admin
 from django.core.urlresolvers import reverse
-from django.forms.models import BaseInlineFormSet
 from django.template.context import Context
 from django.template.loader import get_template
-from django.utils.html import format_html_join, format_html
 from django.utils.safestring import mark_safe
 from feti.custom_admin.geodjango import OSMGeoStackedInline
 from feti.models.address import Address
@@ -22,15 +20,6 @@ class AddressAdmin(admin.ModelAdmin):
     readonly_fields = ['provider_url']
     search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
     exclude = ('campus_fk', )
-
-    # def campus_url(self, instance):
-    #     return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
-    #         instance.campus_fk,
-    #         reverse('admin:feti_campus_change', args=(
-    #             instance.campus_fk.id,)),
-    #     )
-    # campus_url.allow_tags = True
-    # campus_url.short_description = 'Campus'
 
     def provider_url(self, instance):
         return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
@@ -87,10 +76,10 @@ class CampusAdminInline(OSMGeoStackedInline):
     show_change_link = True
     inlines = [AddressAdminInline]
     extra = 0
-    readonly_fields = ['address_url']
+    readonly_fields = ['campus_url']
     fieldsets = (
         (None, {
-            'fields': ('campus', 'location', 'address_url', 'courses')
+            'fields': ('campus', 'location', 'campus_url', 'courses')
         }),
     )
     list_display = ('campus', 'provider', '_complete',)
@@ -99,15 +88,15 @@ class CampusAdminInline(OSMGeoStackedInline):
     exclude = ('_long_description', '_complete', '_campus_popup', 'address')
     filter_horizontal = ['courses']
 
-    def address_url(self, instance):
+    def campus_url(self, instance):
         return mark_safe('{}<br/><a href="{}">Go to Edit '
                          'page</a>').format(
             instance.address_fk.address_line,
-            reverse('admin:feti_address_change', args=(
-                instance.address_fk.id,))
+            reverse('admin:feti_campus_change', args=(
+                instance.id,))
         )
-    address_url.allow_tags = True
-    address_url.short_description = 'Address'
+    campus_url.allow_tags = True
+    campus_url.short_description = 'Address'
 
 
 class ProviderAdmin(admin.OSMGeoAdmin):
@@ -163,6 +152,6 @@ class CourseAdmin(admin.ModelAdmin):
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
 admin.site.site_title = 'Feti Administration'
-admin.site.register(Address, AddressAdmin)
+admin.site.register(Campus, CampusAdmin)
 admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
