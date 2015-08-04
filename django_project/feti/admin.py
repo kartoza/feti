@@ -33,6 +33,7 @@ class AddressAdmin(admin.ModelAdmin):
 
 class AddressAdminInline(admin.StackedInline):
     """Stacked Inline Admin Class to be included in Campus Admin"""
+    inline_classes = ('grp-collapse', 'grp-open')
     model = Address
     fk_name = 'campus_fk'
     max_num = 1
@@ -48,17 +49,21 @@ class CampusAdmin(admin.OSMGeoAdmin):
     readonly_fields = ['provider_url']
     fieldsets = (
         ('General Information', {
-            'fields': ('provider_url', 'provider', 'campus', 'location',
+            'fields': ('provider_url', 'campus', 'location',
                        'courses')
         }),
     )
     exclude = ('_long_description', '_complete',
-               '_campus_popup', 'address')
+               '_campus_popup', 'address', 'provider')
     filter_horizontal = ['courses']
     related_lookup_fields = {
         'fk': ['provider'],
         'm2m': ['courses']
     }
+
+    def has_add_permission(self, request):
+        # disable add permission so we always add this from providers menu
+        return False
 
     def provider_url(self, instance):
         return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
