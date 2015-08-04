@@ -82,9 +82,16 @@ function show_map() {
         opacity: 1,
         fillOpacity: 0.8
     };
+    var markerIcon = L.ExtraMarkers.icon({
+        icon: 'fa-graduation-cap',
+        markerColor: 'blue',
+        iconColor: 'white',
+        shape: 'circle',
+        prefix: 'fa'
+    });
     campus_layer = L.geoJson(null, {
         pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
+            return L.marker(latlng, {icon: markerIcon});
         },
         style: style,
         onEachFeature: onEachFeature

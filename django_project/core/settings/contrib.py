@@ -8,7 +8,8 @@ INSTALLED_APPS += (
     'rest_framework',
     'haystack',
     'leaflet',
-    'djgeojson'
+    'djgeojson',
+    'nested_inline',
 )
 
 # define template function (example for underscore)
@@ -46,3 +47,5 @@ LEAFLET_CONFIG = {
 
 HAYSTACK_DEFAULT_OPERATOR = 'AND'
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+GRAPPELLI_ADMIN_TITLE = 'Feti Administration'

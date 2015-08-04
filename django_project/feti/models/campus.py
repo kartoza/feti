@@ -1,5 +1,6 @@
 # coding=utf-8
 """Model class for WMS Resource"""
+from feti.models.address import Address
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -17,9 +18,11 @@ class Campus(models.Model):
     """A campus where a set of courses are offered."""
     id = models.AutoField(primary_key=True)
     campus = models.CharField(max_length=150, blank=True, null=True)
-    location = models.PointField(blank=True, null=True)
-    address = models.ForeignKey('Address')
-    provider = models.ForeignKey(Provider)
+    # default to south africa capital coordinate
+    location = models.PointField(blank=True, null=True,
+                                 default='POINT(28.034088 -26.195246)')
+    address = models.ForeignKey('Address', null=True, blank=True)
+    provider = models.ForeignKey(Provider, related_name='campuses')
     courses = models.ManyToManyField(Course)
 
     # Decreasing the number of links needed to other models for descriptions.
@@ -104,10 +107,25 @@ class Campus(models.Model):
 
     def save(self, *args, **kwargs):
         # set up long description
-        self._long_description = u'%s - %s' % (
-            self.provider.primary_institution.strip(),
-            self.campus_name.strip()
-        )
+        from_inline = False
+        try:
+            self.address_fk
+            self.address
+        except Exception as e:
+            from_inline = True
+
+        if from_inline:
+            super(Campus, self).save(*args, **kwargs)
+            # create new address placeholder
+            self.address_fk = Address.objects.create()
+            self.address = self.address_fk
+
+        if self.provider:
+            self._long_description = u'%s - %s' % (
+                self.provider.primary_institution.strip(),
+                self.campus_name.strip()
+            )
+
         if not self.courses.count() or not self.location or not self.campus:
             # Only mark campuses without courses as incomplete
             self._complete = False
@@ -132,20 +150,20 @@ class Campus(models.Model):
         self._campus_popup = template.render(Context(variable))
 
         # save the key in address
-        self.address_fk = self.address
-        self.address_fk.campus_fk = self
-        self.address_fk.save()
+        try:
+            self.address_fk = self.address
+            self.address_fk.campus_fk = self
+            self.address_fk.save()
+        except self.address.DoesNotExist:
+            pass
 
         # save campus course link
         from feti.models.campus_course_entry import CampusCourseEntry
         entries = []
         for course in self.courses.all():
             try:
-                link = CampusCourseEntry.objects.get(
-                    campus=self, course=course)
+                CampusCourseEntry.objects.get(campus=self, course=course)
             except CampusCourseEntry.DoesNotExist:
-                link = CampusCourseEntry.objects.create(
-                    campus=self, course=course)
                 entries.append(CampusCourseEntry(campus=self, course=course))
 
         CampusCourseEntry.objects.bulk_create(entries)

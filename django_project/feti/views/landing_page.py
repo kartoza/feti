@@ -58,7 +58,7 @@ def landing_page(request):
         if search_terms:
 
             results = SearchQuerySet().filter(
-                content=AutoQuery(search_terms)).models(
+                text=AutoQuery(search_terms)).models(
                 CampusCourseEntry)
 
             for result in results:

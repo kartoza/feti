@@ -98,13 +98,8 @@ mapproxy/cache_data/
 reports
 
 # static folders
-django_project/feti/static/admin/
-django_project/feti/static/css/
-django_project/feti/static/fonts/
-django_project/feti/static/gis/
-django_project/feti/static/js/
-django_project/feti/static/leaflet/
-django_project/feti/static/rest_framework/
+django_project/feti/static/*
+!django_project/feti/static/feti/
 
 # Apt cacher
 deployment/docker-prod/71-apt-cacher-ng
