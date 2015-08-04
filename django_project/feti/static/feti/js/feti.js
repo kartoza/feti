@@ -10,6 +10,20 @@ var highlighted_feature;
 var fit_bounds_options = {
     maxZoom: 10
 };
+var markerIcon = L.ExtraMarkers.icon({
+    icon: 'fa-graduation-cap',
+    markerColor: 'blue',
+    iconColor: 'white',
+    shape: 'circle',
+    prefix: 'fa'
+});
+var highlightMarkerIcon = L.ExtraMarkers.icon({
+    icon: 'fa-graduation-cap',
+    markerColor: 'red',
+    iconColor: 'white',
+    shape: 'circle',
+    prefix: 'fa'
+});
 
 jQuery.download = function (url, data, method) {
     /* Taken from http://www.filamentgroup.com/lab/jquery-plugin-for-requesting-ajax-like-file-downloads.html*/
@@ -74,24 +88,10 @@ function show_map() {
     });
 
     // create geoJson Layer
-    var geojsonMarkerOptions = {
-        radius: 6,
-        fillColor: "#ff7800",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-    var markerIcon = L.ExtraMarkers.icon({
-        icon: 'fa-graduation-cap',
-        markerColor: 'blue',
-        iconColor: 'white',
-        shape: 'circle',
-        prefix: 'fa'
-    });
     campus_layer = L.geoJson(null, {
         pointToLayer: function (feature, latlng) {
-            return L.marker(latlng, {icon: markerIcon});
+            var marker = L.marker(latlng, {icon: markerIcon});
+            return L.featureGroup([marker]);
         },
         style: style,
         onEachFeature: onEachFeature
@@ -118,13 +118,6 @@ function style(feature) {
 function highlightFeature(e) {
     'use strict';
     var layer = e.target;
-    layer.setStyle({
-        weight: 5,
-        color: 'white',
-        dashArray: '',
-        fillOpacity: 0.3,
-        fillColor: 'blue'
-    });
     if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
     }
@@ -132,14 +125,14 @@ function highlightFeature(e) {
 
 function resetHighlight(e) {
     'use strict';
+    //var marker = e.target;
+    //marker.setIcon(markerIcon);
     var layer = e.target;
-    layer.setStyle(style(e));
 }
 
 function zoomToFeature(e) {
     'use strict';
-    var layer;
-    layer = e.target;
+    var layer = e.target;
     map.fitBounds(layer.getBounds(), fit_bounds_options);
 }
 
