@@ -167,5 +167,17 @@ class Campus(models.Model):
                 entries.append(CampusCourseEntry(campus=self, course=course))
 
         CampusCourseEntry.objects.bulk_create(entries)
+        # delete entry not in course
+        campus_course_entries = CampusCourseEntry.objects.filter(campus=self)
+        course_ids = [c.id for c in self.courses.all()]
+        for entry in campus_course_entries:
+            if entry.course.id not in course_ids:
+                entry.delete()
 
         super(Campus, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # delete campus course entries
+        from feti.models.campus_course_entry import CampusCourseEntry
+        CampusCourseEntry.objects.filter(campus=self).delete()
+        super(Campus, self).delete(*args, **kwargs)
