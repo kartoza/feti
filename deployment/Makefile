@@ -53,6 +53,13 @@ updatelongdescription:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py updatelongdescription
 
+updatecampuscourseentries:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatecampuscourseentries in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py updatecampuscourseentries
+
 rebuildindex:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -243,6 +250,13 @@ staging-updatelongdescription:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatelongdescription
 
+staging-updatecampuscourseentries:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatecampuscourseentries in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatecampuscourseentries
+
 staging-rebuildindex:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -371,6 +385,13 @@ dev-updatelongdescription:
 	@echo "Running updatelongdescription in dev mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py updatelongdescription
+
+dev-updatecampuscourseentries:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatecampuscourseentries in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py updatecampuscourseentries
 
 dev-rebuildindex:
 	@echo
