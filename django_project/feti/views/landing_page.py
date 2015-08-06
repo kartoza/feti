@@ -1,5 +1,6 @@
 # coding=utf-8
 """FETI landing page view."""
+from feti.models.campus_course_entry import CampusCourseEntry
 from haystack.inputs import AutoQuery
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
@@ -15,7 +16,6 @@ from django.http import HttpResponse
 from django.template import RequestContext
 
 from feti.models.campus import Campus
-from feti.models.course import Course
 
 
 def update_course_dict(campus_dict, campus, course):
@@ -35,6 +35,7 @@ def update_campus_dict(provider_dict, provider, campus):
         if campus not in provider_dict[provider]:
             provider_dict[provider][campus] = []
 
+
 def landing_page(request):
     """Serves the FETI landing page.
 
@@ -51,14 +52,14 @@ def landing_page(request):
     search_terms = ''
     provider_dict = OrderedDict()
     errors = None
+    campuses = []
     if request.GET:
         search_terms = request.GET.get('search_terms')
         if search_terms:
 
             results = SearchQuerySet().filter(
-                long_description=AutoQuery(search_terms)).models(Campus,
-                                                                 Course)
-            campuses = []
+                text=AutoQuery(search_terms)).models(
+                CampusCourseEntry)
 
             for result in results:
                 if result.score > 1:
@@ -66,29 +67,19 @@ def landing_page(request):
                     model = result.model
                     # get objects
                     object_instance = result.object
-                    # if we got campus model
-                    if model == Campus and isinstance(object_instance, Campus):
-                        campus = object_instance
-                        if campus.incomplete:
-                            continue
-                        if campus not in campuses:
-                            campuses.append(campus)
-                        provider = campus.provider
-                        update_campus_dict(provider_dict, provider, campus)
-                        for course in campus.courses.all():
-                            update_course_dict(
-                                provider_dict[provider], campus, course)
-                    if model == Course and isinstance(object_instance, Course):
-                        course = object_instance
-                        for campus in course.campus_set.all():
-                            if campus.incomplete:
-                                continue
-                            if campus not in campuses:
-                                campuses.append(campus)
-                            provider = campus.provider
-                            update_campus_dict(provider_dict, provider, campus)
-                            update_course_dict(
-                                provider_dict[provider], campus, course)
+
+                    campus = object_instance.campus
+                    if campus.incomplete:
+                        continue
+                    if campus not in campuses:
+                        campuses.append(campus)
+
+                    provider = campus.provider
+                    update_campus_dict(provider_dict, provider, campus)
+
+                    course = object_instance.course
+                    update_course_dict(
+                        provider_dict[provider], campus, course)
 
     if not request.GET or not search_terms:
         campuses = Campus.objects.filter(_complete=True).order_by(
@@ -103,6 +94,9 @@ def landing_page(request):
 
     provider_dict = OrderedDict(
         sorted(provider_dict.items(), key=provider_key))
+
+    for c in campuses:
+        c.related_course = provider_dict[c.provider][c]
 
     context = {
         'campuses': campuses,

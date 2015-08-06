@@ -10,6 +10,20 @@ var highlighted_feature;
 var fit_bounds_options = {
     maxZoom: 10
 };
+var markerIcon = L.ExtraMarkers.icon({
+    icon: 'fa-graduation-cap',
+    markerColor: 'blue',
+    iconColor: 'white',
+    shape: 'circle',
+    prefix: 'fa'
+});
+var highlightMarkerIcon = L.ExtraMarkers.icon({
+    icon: 'fa-graduation-cap',
+    markerColor: 'red',
+    iconColor: 'white',
+    shape: 'circle',
+    prefix: 'fa'
+});
 
 jQuery.download = function (url, data, method) {
     /* Taken from http://www.filamentgroup.com/lab/jquery-plugin-for-requesting-ajax-like-file-downloads.html*/
@@ -60,22 +74,24 @@ function show_map() {
     $('#navigationbar').css('height', window.innerHeight * 0.1);
     $('#map').css('height', window.innerHeight * 0.9);
     map = L.map('map').setView([-33.9200, 18.8600], 8);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', {
+        attribution: 'Tiles by <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        subdomains: '1234'
     }).addTo(map);
 
+    // make popup center on open
+    map.on('popupopen', function (e) {
+        var px = map.project(e.popup._latlng); // find the pixel location on the map where the popup anchor is
+        px.y -= e.popup._container.clientHeight / 2; // find the height of
+        // the popup container, divide by 2, subtract from the Y axis of marker location
+        map.panTo(map.unproject(px), {animate: true}); // pan to new center
+    });
+
     // create geoJson Layer
-    var geojsonMarkerOptions = {
-        radius: 6,
-        fillColor: "#ff7800",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-    campus_layer = L.geoJson(null,{
+    campus_layer = L.geoJson(null, {
         pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
+            var marker = L.marker(latlng, {icon: markerIcon});
+            return L.featureGroup([marker]);
         },
         style: style,
         onEachFeature: onEachFeature
@@ -102,13 +118,6 @@ function style(feature) {
 function highlightFeature(e) {
     'use strict';
     var layer = e.target;
-    layer.setStyle({
-        weight: 5,
-        color: 'white',
-        dashArray: '',
-        fillOpacity: 0.3,
-        fillColor: 'blue'
-    });
     if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
     }
@@ -116,14 +125,14 @@ function highlightFeature(e) {
 
 function resetHighlight(e) {
     'use strict';
+    //var marker = e.target;
+    //marker.setIcon(markerIcon);
     var layer = e.target;
-    layer.setStyle(style(e));
 }
 
 function zoomToFeature(e) {
     'use strict';
-    var layer;
-    layer = e.target;
+    var layer = e.target;
     map.fitBounds(layer.getBounds(), fit_bounds_options);
 }
 
@@ -168,64 +177,64 @@ function add_campus(campus_json, campus_id) {
 }
 
 
-function SelectFeature(campus_id){
-    try{
+function SelectFeature(campus_id) {
+    try {
         var feature = campus_lookup[campus_id].features[0];
         var coordinate = feature.geometry.coordinates;
         feature.properties.selected = true;
         var e = {
             target: campus_features[feature.properties.id]
         };
-        if(highlighted_feature){
+        if (highlighted_feature) {
             resetHighlight(highlighted_feature);
         }
         highlightFeature(e);
-        highlighted_feature=e;
+        highlighted_feature = e;
         zoomToFeature(e);
         openCampusPopup(campus_id);
     }
-    catch(e){
+    catch (e) {
         console.log(e);
     }
 }
 
-function CampusItemToggle(el){
+function CampusItemToggle(el) {
     var panel = $(el).closest('.panel-primary').find('.panel-collapse');
     panel.toggleClass('collapse');
     var icon = $(el).find("i");
-    if(panel.hasClass('collapse')){
+    if (panel.hasClass('collapse')) {
         icon.removeClass('mdi-navigation-expand-less');
         icon.addClass('mdi-navigation-expand-more');
     }
-    else{
+    else {
         icon.removeClass('mdi-navigation-expand-more');
         icon.addClass('mdi-navigation-expand-less');
     }
 }
 
-function openCampusPopup(campus_id){
+function openCampusPopup(campus_id) {
     var feature = campus_features[campus_id];
     feature.openPopup()
 }
 
 /* Search bar logic */
-function initSearchTermChanged(){
+function initSearchTermChanged() {
     var terms = $("#search-terms").val();
     var search_clear = $("#search-clear");
     var search_terms = $("#search-terms");
-    if(search_terms.val().length == 0){
+    if (search_terms.val().length == 0) {
         search_clear.hide();
     }
-    search_terms.keyup(function(e){
+    search_terms.keyup(function (e) {
         var terms = search_terms.val()
-        if(terms.length==0){
+        if (terms.length == 0) {
             search_clear.hide();
         }
-        else{
+        else {
             search_clear.show();
         }
     });
-    search_clear.click(function(e){
+    search_clear.click(function (e) {
         e.preventDefault();
         search_terms.val("");
         search_clear.hide();

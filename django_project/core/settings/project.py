@@ -33,12 +33,15 @@ PIPELINE_JS = {
             'js/bootstrap.js',
             'js/moment.min.js',
             'feti/js/leaflet.js',
+            'feti/js/leaflet-image.js',
+            'feti/js/jspdf.js',
             'feti/js/material.min.js',
             'feti/js/ripples.min.js',
             'feti/js/validate.js',
             'js/bootstrap-datetimepicker.min.js',
             'feti/js/jquery.flot.min.js',
             'feti/js/jquery.flot.time.min.js',
+            'feti/leaflet-extra-markers/leaflet.extra-markers.js',
             'feti/js/ZeroClipboard.js',
         ),
         'output_filename': 'js/contrib.js',
@@ -50,6 +53,12 @@ PIPELINE_JS = {
             'js/csrf-ajax.js',
         ),
         'output_filename': 'js/appjs.js'
+    },
+    'grappelli_override': {
+        'source_filenames': (
+            'feti/js/grappelli_override.js',
+        ),
+        'output_filename': 'js/grappelli_override.min.js'
     }
 }
 
@@ -62,6 +71,8 @@ PIPELINE_CSS = {
             'feti/css/ripples.min.css',
             'feti/css/feti-theme.css',
             'css/bootstrap-datetimepicker.min.css',
+            'feti/leaflet-extra-markers/leaflet.extra-markers.css',
+            'feti/font-awesome/css/font-awesome.css',
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {

@@ -46,6 +46,20 @@ makemigrations:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
 
+updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py updatelongdescription
+
+updatecampuscourseentries:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatecampuscourseentries in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py updatecampuscourseentries
+
 rebuildindex:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -229,6 +243,34 @@ staging-migrate:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py migrate
 
+staging-updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatelongdescription
+
+staging-updatecampuscourseentries:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatecampuscourseentries in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatecampuscourseentries
+
+staging-rebuildindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py rebuild_index
+
+staging-updateindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py update_index
+
 staging-collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -238,6 +280,10 @@ staging-collectstatic:
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
 	@docker exec -t -i $(PROJECT_ID)staging_uwsgi_1 python manage.py collectstatic --noinput
+	#
+	# RM : this is needed to copy some library over
+	# I don't know a better way to do this
+	sudo cp ../django_project/feti/static/feti/js/ZeroClipboard.swf static/js/
 
 staging-kill:
 	@echo
@@ -292,6 +338,142 @@ staging-qgis:
 	-i -t \
 	--link $(PROJECT_ID)staging_db_1:db \
 	--link $(PROJECT_ID)staging_qgisserver_1:qgisserver \
+	--volumes-from $(PROJECT_ID)_qgisserver_1 \
+	-v ${HOME}:/home/$(USER) \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	-e DISPLAY=unix$(DISPLAY) \
+	kartoza/qgis-desktop:2.8; xhost -
+
+# ----------------------------------------------------------------------------
+#    D E V     C O M M A N D S
+# ----------------------------------------------------------------------------
+
+dev-run: dev-build dev-web
+
+dev-deploy: dev-run dev-migrate dev-collectstatic
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Bringing up fresh dev instance "
+	@echo "You can access it on http://localhost:63101"
+	@echo "------------------------------------------------------------------"
+
+dev-build:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Building in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev build
+
+dev-web:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev up -d web
+	# @dipall
+
+dev-migrate:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running migrate static in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev run uwsgi python manage.py migrate
+
+dev-updatelongdescription:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatelongdescription in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py updatelongdescription
+
+dev-updatecampuscourseentries:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running updatecampuscourseentries in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py updatecampuscourseentries
+
+dev-rebuildindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py rebuild_index
+
+dev-updateindex:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-dev run uwsgi python manage.py update_index
+
+dev-collectstatic:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Collecting static in dev mode"
+	@echo "------------------------------------------------------------------"
+	#@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev run uwsgi python manage.py collectstatic --noinput
+	#We need to run collect static in the same context as the running
+	# uwsgi container it seems so I use docker exec here
+	@docker exec -t -i $(PROJECT_ID)dev_uwsgi_1 python manage.py collectstatic --noinput
+	#
+	# RM : this is needed to copy some library over
+	# I don't know a better way to do this
+	sudo cp ../django_project/feti/static/feti/js/ZeroClipboard.swf static/js/
+
+dev-kill:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Killing in dev mode"
+	@echo "------------------------------------------------------------------"
+
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev kill
+
+dev-rm: kill
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Removing dev instance!!! "
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev rm
+
+dev-logs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Showing uwsgi logs in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev logs uwsgi
+
+dev-nginxlogs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Showing nginx logs in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev logs web
+
+dev-shell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in dev mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -f docker-compose-dev.yml -p $(PROJECT_ID)-dev run uwsgi /bin/bash
+
+dev-dbshell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in dev database"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)dev_db_1 psql -U docker -h localhost gis
+
+dev-qgis:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running QGIS desktop in dev mode"
+	@echo "Make sure you have started the services with make run first"
+	@echo "------------------------------------------------------------------"
+	@xhost +; docker run --rm --name="qgis-desktop-2-8.0" \
+	-i -t \
+	--link $(PROJECT_ID)dev_db_1:db \
+	--link $(PROJECT_ID)dev_qgisserver_1:qgisserver \
 	--volumes-from $(PROJECT_ID)_qgisserver_1 \
 	-v ${HOME}:/home/$(USER) \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \

@@ -13,7 +13,8 @@ urlpatterns = patterns(
     '',
     url(
         r'^$',
-        'feti.views.landing_page.landing_page'
+        'feti.views.landing_page.landing_page',
+        name='landing_page'
     ),
     # url(
     #     r'^project-team/$',

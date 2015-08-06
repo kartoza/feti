@@ -13,16 +13,16 @@ class Provider(models.Model):
     PROVIDER_STATUS_PUBLIC = True
 
     id = models.AutoField(primary_key=True)
-    #provider_address = models.ForeignKey(Address)
+    # provider_address = models.ForeignKey(Address)
     primary_institution = models.CharField(
         max_length=255, blank=True, null=True)
-    website = models.URLField()
+    website = models.URLField(blank=True, null=True)
     status = models.BooleanField(default=PROVIDER_STATUS_PUBLIC)
     """public owned or private owned"""
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return self.primary_institution
+        return self.primary_institution or 'N/A'
 
     class Meta:
         app_label = 'feti'

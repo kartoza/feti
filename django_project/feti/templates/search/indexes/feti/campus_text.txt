@@ -1,1 +1,2 @@
 {{ object.campus }}
+{{ object.long_description }}

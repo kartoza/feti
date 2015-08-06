@@ -32,8 +32,6 @@ elasticsearch:
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
-  ports:
-    - "9200:9200"
 
 db:
   image: kartoza/postgis
@@ -43,10 +41,6 @@ db:
   environment:
     - USERNAME=docker
     - PASS=docker
-  # TODO: Why are exposing ports to the host? This is
-  # TODO: an anti-pattern - TS
-  ports:
-    - "6543:5432"
 
 dbbackups:
   image: kartoza/pg-backup
@@ -65,24 +59,24 @@ dbbackups:
     - PGHOST=db
     - PGDATABASE=gis
 
-qgisserver:
-  image: kartoza/qgis-server
-  hostname: qgis-server
-  volumes:
-    - ../maps:/web
-    - ./logs/qgisserver:/var/log/apache2
-  links:
-    - db:db
+#qgisserver:
+#  image: kartoza/qgis-server
+#  hostname: qgis-server
+#  volumes:
+#    - ../maps:/web
+#    - ./logs/qgisserver:/var/log/apache2
+#  links:
+#    - db:db
 
-mapproxy:
-  image: kartoza/mapproxy
-  hostname: mapproxy
-  volumes:
-    - ../mapproxy:/mapproxy
-  volumes_from:
-    - qgisserver
-  links:
-    - qgisserver:qgisserver
+#mapproxy:
+#  image: kartoza/mapproxy
+#  hostname: mapproxy
+#  volumes:
+#    - ../mapproxy:/mapproxy
+#  volumes_from:
+#    - qgisserver
+#  links:
+#    - qgisserver:qgisserver
 
 uwsgi:
   build: docker-prod
@@ -117,8 +111,6 @@ web:
     - ./logs:/var/log/nginx
   links:
     - uwsgi:uwsgi
-    - qgisserver:qgisserver
-    - mapproxy:mapproxy
   ports:
     - "63100:8080"
 
@@ -135,8 +127,5 @@ stagingweb:
     - ./reports:/home/web/reports
   links:
     - uwsgi:uwsgi
-    - qgisserver:qgisserver
-    - mapproxy:mapproxy
-#    - cron:cron
   ports:
     - "63101:8080"

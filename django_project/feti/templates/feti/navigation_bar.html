@@ -36,18 +36,18 @@
                 {% if user.is_authenticated %}
                 <li id="nav_project_team">
                     <!--<a href="/project-team/">-->
-                    <a href="/feti-admin/" role="button">
+                    <a href="{% url 'admin:index' %}" role="button">
                         <i class="mdi-maps-map"></i>
                         Project Team Admin</a>
                 </li>
                 <li id="nav_logout">
-                    <a href="/accounts/logout/" role="button">
+                    <a href="{% url 'logout' %}" role="button">
                         <i class="mdi-maps-map"></i>
                         Logout</a>
                 </li>
                 {% else %}
                 <li id="nav_login">
-                    <a href="/accounts/login/" role="button">
+                    <a href="{% url 'login' %}" role="button">
                         <i class="mdi-maps-map"></i>
                         Project Team Login</a>
                 </li>

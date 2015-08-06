@@ -25,14 +25,19 @@ class Address(models.Model):
         validators=[postal_code_regex])
 
     phone_regex = RegexValidator(
-        regex=r'^\+\d{12,12}$',
+        regex=r'^\+?(\d)+(\d(-)?)*(\d)+$',
         message="Phone number should have the following format: "
-                "'+27888888888'.")
+                "'+27888888888 or 021-777-777'.")
     phone = models.CharField(
         max_length=100,
         validators=[phone_regex],
         blank=True,
         null=True)
+
+    # Foreign key link to campus
+    # needed for inline admin interface
+    campus_fk = models.OneToOneField(
+        'Campus', related_name='address_fk', null=True)
 
     objects = models.GeoManager()
 
@@ -52,6 +57,19 @@ class Address(models.Model):
             address_string = 'N/A'
         return address_string
 
+    @property
+    def address_line(self):
+        address_list = [
+            self.address_line_1,
+            self.address_line_2,
+            self.address_line_3
+        ]
+        concat_list = [l for l in address_list if l and l.strip()]
+        address_string = u', \n'.join(concat_list)
+        if not address_string.strip():
+            address_string = 'N/A'
+        return address_string
+
     class Meta:
         app_label = 'feti'
-        verbose_name_plural = 'Addresses'
+        verbose_name_plural = 'Addreses'
