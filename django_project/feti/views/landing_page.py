@@ -50,11 +50,13 @@ def landing_page(request):
         return item[0].primary_institution.strip().lower()
 
     search_terms = ''
+    private_institutes = 'on'
     provider_dict = OrderedDict()
     errors = None
     campuses = []
     if request.GET:
         search_terms = request.GET.get('search_terms')
+        private_institutes = request.GET.get('private_institutes') or 'off'
         if search_terms:
 
             results = SearchQuerySet().filter(
@@ -69,6 +71,11 @@ def landing_page(request):
                     object_instance = result.object
 
                     campus = object_instance.campus
+                    if private_institutes == 'off':
+                        if (
+                                campus.provider.status ==
+                                campus.provider.PROVIDER_STATUS_PRIVATE):
+                            continue
                     if campus.incomplete:
                         continue
                     if campus not in campuses:
@@ -102,6 +109,7 @@ def landing_page(request):
         'campuses': campuses,
         'provider_dict': provider_dict,
         'search_terms': search_terms,
+        'private_institutes': private_institutes,
         'errors': errors
     }
     return render(
