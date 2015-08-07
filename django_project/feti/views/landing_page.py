@@ -62,7 +62,7 @@ def landing_page(request):
                 CampusCourseEntry)
 
             for result in results:
-                if result.score > 1:
+                if result.score > 2:
                     # get model
                     model = result.model
                     # get objects
