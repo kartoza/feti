@@ -29,8 +29,16 @@
                                    placeholder="Search"/>
                             <i id="search-clear"
                                class="mdi-navigation-close"></i>
+
                         </span>
                         <input type="submit" value="FIND"/>
+                        <label for="private-institutes">
+                            Include private institutes
+                        </label>
+                        <input type="checkbox"
+                               id="private-institutes"
+                               name="private_institutes"
+                               {% ifequal private_institutes 'on' %}checked="true"{% endifequal %}>
                     </form>
                 </li>
                 {% if user.is_authenticated %}
