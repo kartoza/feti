@@ -34,7 +34,7 @@ elasticsearch:
     - HAYSTACK_PORT=9200
 
 db:
-  image: kartoza/postgis
+  image: kartoza/postgis:9.3
   volumes:
     - ./pg/postgres_data:/var/lib/postgresql
     - ./setup_data:/home/setup
