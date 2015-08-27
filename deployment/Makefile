@@ -226,14 +226,14 @@ staging-build:
 	@echo "------------------------------------------------------------------"
 	@echo "Building in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging build
+	@docker-compose -p $(PROJECT_ID)staging build
 
 staging-web:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging up -d stagingweb
+	@docker-compose -p $(PROJECT_ID)staging up -d stagingweb
 	# @dipall
 
 staging-migrate:
@@ -241,35 +241,35 @@ staging-migrate:
 	@echo "------------------------------------------------------------------"
 	@echo "Running migrate static in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py migrate
+	@docker-compose -p $(PROJECT_ID)staging run uwsgi python manage.py migrate
 
 staging-updatelongdescription:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running updatelongdescription in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatelongdescription
+	@docker-compose -p $(PROJECT_ID)staging run uwsgi python manage.py updatelongdescription
 
 staging-updatecampuscourseentries:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running updatecampuscourseentries in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py updatecampuscourseentries
+	@docker-compose -p $(PROJECT_ID)staging run uwsgi python manage.py updatecampuscourseentries
 
 staging-rebuildindex:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running rebuild_index in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py rebuild_index
+	@docker-compose -p $(PROJECT_ID)staging run uwsgi python manage.py rebuild_index
 
 staging-updateindex:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running update_index in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging run uwsgi python manage.py update_index
+	@docker-compose -p $(PROJECT_ID)staging run uwsgi python manage.py update_index
 
 staging-collectstatic:
 	@echo
@@ -291,35 +291,35 @@ staging-kill:
 	@echo "Killing in staging mode"
 	@echo "------------------------------------------------------------------"
 
-	@docker-compose -p $(PROJECT_ID)-staging kill
+	@docker-compose -p $(PROJECT_ID)staging kill
 
 staging-rm: kill
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Removing staging instance!!! "
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging rm
+	@docker-compose -p $(PROJECT_ID)staging rm
 
 staging-logs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing uwsgi logs in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging logs uwsgi
+	@docker-compose -p $(PROJECT_ID)staging logs uwsgi
 
 staging-nginxlogs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing nginx logs in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging logs web
+	@docker-compose -p $(PROJECT_ID)staging logs web
 
 staging-shell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging --rm run uwsgi /bin/bash
+	@docker-compose -p $(PROJECT_ID)staging --rm run uwsgi /bin/bash
 
 staging-dbshell:
 	@echo
