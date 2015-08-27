@@ -20,7 +20,8 @@
 #
 
 smtp:
-  read_only: true
+  restart: always
+#  read_only: true
   image: catatnight/postfix
   hostname: postfix
   environment:
@@ -29,14 +30,15 @@ smtp:
     - smtp_user=noreply:docker
 
 elasticsearch:
-  read_only: true
+  restart: always
+#  read_only: true
   image: elasticsearch
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
 
 db:
-  read_only: true
+  restart: always
   image: kartoza/postgis:9.3
   volumes:
     - ./pg/postgres_data:/var/lib/postgresql
@@ -46,7 +48,7 @@ db:
     - PASS=docker
 
 dbbackups:
-  read_only: true
+  restart: always
   image: kartoza/pg-backup
   hostname: pg-backups
   volumes:
@@ -64,7 +66,7 @@ dbbackups:
     - PGDATABASE=gis
 
 uwsgi:
-  read_only: true
+  restart: always
   build: docker-prod
   hostname: uwsgi
   environment:
