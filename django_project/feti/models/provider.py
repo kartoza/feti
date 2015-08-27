@@ -26,3 +26,5 @@ class Provider(models.Model):
 
     class Meta:
         app_label = 'feti'
+        ordering = ['primary_institution']
+        verbose_name = "Primary institute"
