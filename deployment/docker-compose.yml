@@ -89,7 +89,7 @@ uwsgi:
     - elasticsearch:elasticsearch
 
 web:
-#  read_only: true
+  # read_only: true
   restart: always
   image: nginx
   hostname: nginx
@@ -106,7 +106,7 @@ web:
 
 # Exactly the same as web but for staging we use a different port.
 stagingweb:
-  read_only: true
+  # read_only: true
   restart: always
   image: nginx
   hostname: nginx
