@@ -89,7 +89,7 @@ uwsgi:
     - elasticsearch:elasticsearch
 
 web:
-  read_only: true
+#  read_only: true
   restart: always
   image: nginx
   hostname: nginx
