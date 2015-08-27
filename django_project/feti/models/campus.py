@@ -104,6 +104,10 @@ class Campus(models.Model):
     def incomplete(self):
         return not self._complete
 
+    @property
+    def primary_institution(self):
+        return self.provider
+
     def __unicode__(self):
         return u'%s' % self.campus_name
 
