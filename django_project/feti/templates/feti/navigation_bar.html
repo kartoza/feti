@@ -39,6 +39,21 @@
                                id="private-institutes"
                                name="private_institutes"
                                {% ifequal private_institutes 'on' %}checked="true"{% endifequal %}>
+                        <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle"
+                                      id="field-of-study-id"
+                                      name="field_of_study"
+                                      type="button"
+                                      data-toggle="dropdown">
+                                  ---------<span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                  <li><a href="#">---------</a></li>
+                                {% for field_of_study in fields_of_study %}
+                                  <li><a href="#">{{ field_of_study.field_of_study_description }}</a></li>
+                                {% endfor %}
+                              </ul>
+                        </div>
                     </form>
                 </li>
                 {% if user.is_authenticated %}
