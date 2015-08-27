@@ -15,6 +15,7 @@ class Provider(models.Model):
     id = models.AutoField(primary_key=True)
     # provider_address = models.ForeignKey(Address)
     primary_institution = models.CharField(
+        "Primary Institute",
         max_length=255, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     status = models.BooleanField(default=PROVIDER_STATUS_PUBLIC)
