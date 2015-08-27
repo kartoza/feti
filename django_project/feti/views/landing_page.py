@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 
 from feti.models.campus import Campus
+from feti.models.field_of_study import FieldOfStudy
 
 
 def update_course_dict(campus_dict, campus, course):
@@ -57,11 +58,18 @@ def landing_page(request):
     if request.GET:
         search_terms = request.GET.get('search_terms')
         private_institutes = request.GET.get('private_institutes') or 'off'
+        field_of_study_id = request.GET.get('field_of_study') or 0
         if search_terms:
 
             results = SearchQuerySet().filter(
                 text=AutoQuery(search_terms)).models(
                 CampusCourseEntry)
+
+            try:
+                field_of_study = FieldOfStudy.objects.get(
+                    field_of_study_id)
+            except ObjectDoesNotExist:
+                field_of_study = None
 
             for result in results:
                 if result.score > 2:
@@ -85,6 +93,9 @@ def landing_page(request):
                     update_campus_dict(provider_dict, provider, campus)
 
                     course = object_instance.course
+                    if field_of_study:
+                        if course.field_of_study != field_of_study:
+                            continue
                     update_course_dict(
                         provider_dict[provider], campus, course)
 
@@ -110,7 +121,8 @@ def landing_page(request):
         'provider_dict': provider_dict,
         'search_terms': search_terms,
         'private_institutes': private_institutes,
-        'errors': errors
+        'errors': errors,
+        'fields_of_study': FieldOfStudy.objects.all(),
     }
     return render(
         request,

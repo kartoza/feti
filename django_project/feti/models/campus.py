@@ -46,7 +46,8 @@ class Campus(models.Model):
 
     class Meta:
         app_label = 'feti'
-        verbose_name_plural = 'Campuses'
+        ordering = ['campus']
+        verbose_name = 'Provider'
 
     @property
     def related_course(self):

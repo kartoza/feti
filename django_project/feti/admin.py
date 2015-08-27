@@ -28,7 +28,7 @@ class AddressAdmin(admin.ModelAdmin):
                 instance.campus_fk.provider.id,)),
         )
     provider_url.allow_tags = True
-    provider_url.short_description = 'Provider'
+    provider_url.short_description = 'Primary institute'
 
 
 class AddressAdminInline(admin.StackedInline):
@@ -72,7 +72,7 @@ class CampusAdmin(admin.OSMGeoAdmin):
                 instance.provider.id,)),
         )
     provider_url.allow_tags = True
-    provider_url.short_description = 'Provider'
+    provider_url.short_description = 'Primary institute'
 
 
 class CampusAdminInline(OSMGeoStackedInline):
