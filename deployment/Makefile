@@ -123,14 +123,14 @@ shell:
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) run uwsgi /bin/bash
+	@docker-compose -p $(PROJECT_ID) run --rm uwsgi /bin/bash
 
 dbshell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis
+	@docker exec   --rm -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis
 
 sentry:
 	@echo
@@ -319,14 +319,14 @@ staging-shell:
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in staging mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID)-staging run uwsgi /bin/bash
+	@docker-compose -p $(PROJECT_ID)-staging --rm run uwsgi /bin/bash
 
 staging-dbshell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in staging database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)staging_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)staging_db_1 --rm psql -U docker -h localhost gis
 
 staging-qgis:
 	@echo
