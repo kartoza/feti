@@ -344,6 +344,15 @@ staging-qgis:
 	-e DISPLAY=unix$(DISPLAY) \
 	kartoza/qgis-desktop:2.8; xhost -
 
+
+staging-reload:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Reload django project in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)staging_uwsgi_1 uwsgi --reload  /tmp/django.pid
+
+
 # ----------------------------------------------------------------------------
 #    D E V     C O M M A N D S
 # ----------------------------------------------------------------------------
