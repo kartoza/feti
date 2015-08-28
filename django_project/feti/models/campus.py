@@ -17,12 +17,13 @@ from feti.models.course import Course
 class Campus(models.Model):
     """A campus where a set of courses are offered."""
     id = models.AutoField(primary_key=True)
-    campus = models.CharField(max_length=150, blank=True, null=True)
+    campus = models.CharField('Provider', max_length=150, blank=True, null=True)
     # default to south africa capital coordinate
     location = models.PointField(blank=True, null=True,
                                  default='POINT(28.034088 -26.195246)')
     address = models.ForeignKey('Address', null=True, blank=True)
-    provider = models.ForeignKey(Provider, related_name='campuses')
+    provider = models.ForeignKey(
+        Provider, related_name='campuses')
     courses = models.ManyToManyField(Course)
 
     # Decreasing the number of links needed to other models for descriptions.
@@ -102,6 +103,10 @@ class Campus(models.Model):
     @property
     def incomplete(self):
         return not self._complete
+
+    @property
+    def primary_institution(self):
+        return self.provider
 
     def __unicode__(self):
         return u'%s' % self.campus_name

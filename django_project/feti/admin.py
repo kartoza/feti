@@ -43,8 +43,8 @@ class AddressAdminInline(admin.StackedInline):
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
     inlines = [AddressAdminInline]
-    list_display = ('campus', 'provider', '_complete',)
-    list_filter = ['provider', '_complete']
+    list_display = ('campus', 'primary_institution', '_complete',)
+    list_filter = ['provider__primary_institution', '_complete']
     search_fields = ['campus', 'provider__primary_institution']
     readonly_fields = ['provider_url']
     fieldsets = (
@@ -72,7 +72,7 @@ class CampusAdmin(admin.OSMGeoAdmin):
                 instance.provider.id,)),
         )
     provider_url.allow_tags = True
-    provider_url.short_description = 'Primary institute'
+    provider_url.short_description = 'Primary institute url'
 
 
 class CampusAdminInline(OSMGeoStackedInline):
