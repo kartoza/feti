@@ -52,24 +52,23 @@ def landing_page(request):
 
     search_terms = ''
     private_institutes = 'on'
+    field_of_study_id = 0
     provider_dict = OrderedDict()
     errors = None
     campuses = []
     if request.GET:
         search_terms = request.GET.get('search_terms')
         private_institutes = request.GET.get('private_institutes') or 'off'
-        field_of_study_id = request.GET.get('field_of_study') or 0
+        field_of_study_id = request.GET.get('field_of_study_id') or 0
+        try:
+            field_of_study_id = int(field_of_study_id)
+        except ValueError:
+            field_of_study_id = 0
         if search_terms:
 
             results = SearchQuerySet().filter(
                 text=AutoQuery(search_terms)).models(
                 CampusCourseEntry)
-
-            try:
-                field_of_study = FieldOfStudy.objects.get(
-                    field_of_study_id)
-            except ObjectDoesNotExist:
-                field_of_study = None
 
             for result in results:
                 if result.score > 2:
@@ -86,16 +85,19 @@ def landing_page(request):
                             continue
                     if campus.incomplete:
                         continue
+
+                    course = object_instance.course
+                    if field_of_study_id:
+                        if not course.field_of_study:
+                            continue
+                        if course.field_of_study.id != field_of_study_id:
+                            continue
+
                     if campus not in campuses:
                         campuses.append(campus)
 
                     provider = campus.provider
                     update_campus_dict(provider_dict, provider, campus)
-
-                    course = object_instance.course
-                    if field_of_study:
-                        if course.field_of_study != field_of_study:
-                            continue
                     update_course_dict(
                         provider_dict[provider], campus, course)
 
@@ -123,6 +125,7 @@ def landing_page(request):
         'private_institutes': private_institutes,
         'errors': errors,
         'fields_of_study': FieldOfStudy.objects.all(),
+        'field_of_study_id': field_of_study_id
     }
     return render(
         request,

@@ -39,20 +39,17 @@
                                id="private-institutes"
                                name="private_institutes"
                                {% ifequal private_institutes 'on' %}checked="true"{% endifequal %}>
-                        <div class="dropdown">
-                              <button class="btn btn-primary dropdown-toggle"
+                         <div class="form-group">
+                              <select class="form-control"
                                       id="field-of-study-id"
-                                      name="field_of_study"
-                                      type="button"
-                                      data-toggle="dropdown">
-                                  ---------<span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                  <li><a href="#">---------</a></li>
-                                {% for field_of_study in fields_of_study %}
-                                  <li><a href="#">{{ field_of_study.field_of_study_description }}</a></li>
-                                {% endfor %}
-                              </ul>
+                                      name="field_of_study_id">
+                                      <option
+                                        value="0"
+                                        {% ifequal field_of_study_id 0 %} selected="selected" {%  endifequal %}>any</option>
+                                    {% for field_of_study in fields_of_study %}
+                                      <option  {% ifequal field_of_study_id field_of_study.id %} selected="selected" {%  endifequal %} value="{{ field_of_study.id }}">{{ field_of_study.field_of_study_description }}</option>
+                                    {% endfor %}
+                              </select>
                         </div>
                     </form>
                 </li>
