@@ -63,6 +63,9 @@
                             <div class="panel-body">
                                 {% if search_terms %}
                                     No results found for "{{ search_terms }}"
+                                    {% if field_of_study_id %}
+                                      in the selected field of study.
+                                    {% endif %}
                                 {% else %}
                                     No terms provided
                                 {% endif %}

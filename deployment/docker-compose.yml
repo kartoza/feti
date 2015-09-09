@@ -20,7 +20,7 @@
 #
 
 smtp:
-  restart: always
+  restart: on-failure:5
 #  read_only: true
   image: catatnight/postfix
   hostname: postfix
@@ -30,7 +30,7 @@ smtp:
     - smtp_user=noreply:docker
 
 elasticsearch:
-  restart: always
+  restart: on-failure:5
 #  read_only: true
   image: elasticsearch
   hostname: elasticsearch
@@ -38,7 +38,7 @@ elasticsearch:
     - HAYSTACK_PORT=9200
 
 db:
-  restart: always
+  restart: on-failure:5
   image: kartoza/postgis:9.3
   volumes:
     - ./pg/postgres_data:/var/lib/postgresql
@@ -48,7 +48,7 @@ db:
     - PASS=docker
 
 dbbackups:
-  restart: always
+  restart: on-failure:5
   image: kartoza/pg-backup
   hostname: pg-backups
   volumes:
@@ -66,7 +66,7 @@ dbbackups:
     - PGDATABASE=gis
 
 uwsgi:
-  restart: always
+  restart: on-failure:5
   build: docker-prod
   hostname: uwsgi
   environment:
@@ -90,7 +90,7 @@ uwsgi:
 
 web:
   # read_only: true
-  restart: always
+  restart: on-failure:5
   image: nginx
   hostname: nginx
   volumes:
@@ -103,21 +103,3 @@ web:
     - uwsgi:uwsgi
   ports:
     - "63100:8080"
-
-# Exactly the same as web but for staging we use a different port.
-stagingweb:
-  # read_only: true
-  restart: always
-  image: nginx
-  hostname: nginx
-  volumes:
-    - ./sites-enabled:/etc/nginx/conf.d:ro
-    # I dont use volumes_from as I want to use the ro modifier
-    - ./static:/home/web/static:ro
-    - ./media:/home/web/media:ro
-    - ./logs:/var/log/nginx
-    - ./reports:/home/web/reports
-  links:
-    - uwsgi:uwsgi
-  ports:
-    - "63101:8080"

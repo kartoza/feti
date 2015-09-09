@@ -171,6 +171,11 @@ class Campus(models.Model):
                 CampusCourseEntry.objects.get(campus=self, course=course)
             except CampusCourseEntry.DoesNotExist:
                 entries.append(CampusCourseEntry(campus=self, course=course))
+            except CampusCourseEntry.MultipleObjectsReturned:
+                redundant = CampusCourseEntry.objects.filter(
+                    campus=self, course=course)[1:]
+                for campus_course_entries in redundant:
+                    campus_course_entries.delete()
 
         CampusCourseEntry.objects.bulk_create(entries)
         # delete entry not in course
