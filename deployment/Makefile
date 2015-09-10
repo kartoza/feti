@@ -130,7 +130,7 @@ dbshell:
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production database"
 	@echo "------------------------------------------------------------------"
-	@docker exec   --rm -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis
 
 sentry:
 	@echo

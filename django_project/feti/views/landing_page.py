@@ -102,6 +102,9 @@ def landing_page(request):
                         provider_dict[provider], campus, course)
 
     if not request.GET or not search_terms:
+        search_terms = ''
+        private_institutes = 'on'
+        field_of_study_id = 0
         campuses = Campus.objects.filter(_complete=True).order_by(
             '_long_description')
         for campus in campuses:
@@ -124,7 +127,8 @@ def landing_page(request):
         'search_terms': search_terms,
         'private_institutes': private_institutes,
         'errors': errors,
-        'fields_of_study': FieldOfStudy.objects.all(),
+        'fields_of_study': FieldOfStudy.objects.all().order_by(
+            'field_of_study_description'),
         'field_of_study_id': field_of_study_id
     }
     return render(
