@@ -25,7 +25,7 @@ def login(request):
         password = request.POST.get('password')
 
         user = authenticate(username=username, password=password)
-        print user
+
         if user is not None:
             if user.is_active:
                 django_login(request, user)

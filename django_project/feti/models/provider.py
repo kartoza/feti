@@ -23,7 +23,7 @@ class Provider(models.Model):
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return self.primary_institution or 'N/A'
+        return self.primary_institution.title() or 'N/A'
 
     class Meta:
         app_label = 'feti'

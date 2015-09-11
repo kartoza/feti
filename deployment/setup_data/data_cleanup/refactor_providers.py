@@ -1,7 +1,7 @@
 __author__ = 'christian'
 
 import csv
-# import logging
+import logging
 from feti.models.campus import Campus as Provider
 from feti.models.provider import Provider as PrimaryInstitute
 
@@ -30,6 +30,7 @@ logging.info('Every duplicate is only listed once')
 message = 'We should not want to remove a new institute.'
 for original_id in original_providers:
     assert original_id not in new_providers, message
+
 logging.info('No original (where duplicates are moved to) is being removed.')
 
 for original_id, new_id, pi_id in zip(
@@ -60,19 +61,22 @@ for original_id, new_id, pi_id in zip(
         print 'Primary institute does not exist.'
         logging.info(
             'Primary institute does not exist.')
-        continue
+        pi = None
+        #continue
     if provider_new.provider != pi:
         print 'Destination primary institute does not exist'
         logging.info('Destination primary institute does not exist')
     for course in provider_old.courses.all():
-        course.campus = provider_new
-        course.save()
+        provider_new.courses.add(course)
+        provider_old.courses.remove(course)
+        provider_new.save()
+        provider_old.save()
     if provider_old.courses.all():
-        print 'Could not remove all courses from primary institute %s' % (
+        print 'Could not remove all campuses from provider %s' % (
             original_id)
         logging.info(
-            'Could not remove all courses from primary institute %s' %
+            'Could not remove all campuses from provider %s' %
             original_id)
         continue
-    provider_new.delete()
+    provider_old.delete()
 

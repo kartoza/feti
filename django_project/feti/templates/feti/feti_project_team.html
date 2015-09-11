@@ -36,7 +36,7 @@
                             <div class="panel-heading" onclick="SelectFeature({{ campus.id }})">
                                 <h3 class="panel-title">
                                     <i class="mdi-image-timer"></i>
-                                    {{ campus.campus }}
+                                    {{ campus.campus|titlecase }}
                                 </h3>
                             </div>
                             {% for course in courses %}
