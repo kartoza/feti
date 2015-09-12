@@ -6,6 +6,7 @@ __date__ = '04/2015'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
+from django.template import Context, loader
 from django.contrib.gis.db import models
 from django.core.validators import RegexValidator
 from feti.models.education_training_quality_assurance import (
@@ -53,11 +54,22 @@ class Course(models.Model):
         blank=True,
         null=True
     )
+    # Decreasing the number of links needed to get popup material
+    _course_popup = models.CharField(
+        max_length=510,
+        blank=True,
+        null=True
+    )
 
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return '%s' % self.national_learners_records_database
+        course_string = u''
+        if self.national_learners_records_database:
+            course_string = u'[%s]' % self.national_learners_records_database
+        if self.long_description:
+            course_string += u' %s' % self.long_description
+        return course_string
 
     @property
     def description(self):
@@ -67,15 +79,41 @@ class Course(models.Model):
             return 'Description to follow.'
 
     def save(self, *args, **kwargs):
-        self._long_description = '%s : %s' % (
-            self.education_training_quality_assurance.body_name.strip() or '',
-            self.description.strip() or ''
+        # Set up long description
+        if self.education_training_quality_assurance.acronym.strip():
+            seta = u'%s (%s)' % (
+                self.education_training_quality_assurance.body_name.strip() or
+                u'',
+                self.education_training_quality_assurance.acronym.strip() or
+                u''
+            )
+        else:
+            seta = self.education_training_quality_assurance.body_name.strip()
+
+        self._long_description = u'%s : %s' % (
+            self.description.strip() or u'',
+            seta,
+
         )
+
+        # set up popup material
+        template = loader.get_template('feti/course_popup.html')
+        description = self.course_description
+        variable = {
+            'description': description,
+            'seta': seta
+        }
+        self._course_popup = template.render(Context(variable))
+
         super(Course, self).save(*args, **kwargs)
 
     @property
     def long_description(self):
         return self._long_description
+
+    @property
+    def course_popup(self):
+        return self._course_popup
 
     class Meta:
         app_label = 'feti'

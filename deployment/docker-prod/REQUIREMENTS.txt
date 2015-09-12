@@ -1,4 +1,4 @@
-Django>=1.7,<1.8
+Django==1.8
 psycopg2
 pytz
 django-braces
@@ -17,3 +17,5 @@ django-haystack
 elasticsearch
 django-leaflet==0.16.0
 django-geojson==2.8.0
+django-nested-inline
+django-grappelli

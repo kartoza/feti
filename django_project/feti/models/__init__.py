@@ -8,6 +8,7 @@ __copyright__ = 'kartoza.com'
 from feti.models.address import Address
 from feti.models.campus import Campus
 from feti.models.course import Course
+from feti.models.campus_course_entry import CampusCourseEntry
 from feti.models.course_provider_link import CourseProviderLink
 from feti.models.education_training_quality_assurance import (
     EducationTrainingQualityAssurance)

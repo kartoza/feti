@@ -40,8 +40,17 @@ body {
     background-color: #1347A8;
 }
 
-.campus-heading{
+.provider-heading {
     cursor: pointer;
+}
+
+.course-list-item {
+    cursor: pointer;
+    border-bottom: 1px solid #AAAAAA;
+}
+
+.course-list-item:last-child{
+    border-bottom: none;
 }
 
 /* navbar search */
@@ -148,4 +157,35 @@ body {
 
 #share-control-popup-close-button:hover{
     background-color: #f4f4f4;
+}
+#share-control-pdf-button{
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 8px;
+    font: bold 15px 'Lucida Console', Monaco, monospace;
+}
+
+#share-control-pdf-button:hover{
+    background-color: #f4f4f4;
+}
+
+#share-control-full-pdf-button{
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 8px;
+    font: bold 15px 'Lucida Console', Monaco, monospace;
+}
+
+#share-control-full-pdf-button:hover{
+    background-color: #f4f4f4;
+}
+
+/* Popup related */
+.course-list{
+    max-height: 200px;
+    overflow-y: auto;
 }
