@@ -1,0 +1,72 @@
+/* FETI */
+.navbar-bnpb.navbar {
+    background-color: #fff;
+    color: #333;
+    font-weight: normal;
+    text-transform: none;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+}
+.navbar-bnpb.navbar .navbar-brand {
+	font-weight: bold;
+	color: #333;
+}
+.navbar-header img:nth-child(2) {
+	margin-right: 20px;
+}
+.navbar .navbar-nav > li > a {
+    color: rgba(0, 0, 0, 0.84);
+}
+.navbar .navbar-nav > li > a:hover, 
+.navbar .navbar-nav > li > a:focus {
+    color: rgba(0, 0, 0, 0.94);
+}
+.panel, .panel-heading {
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+#side_panel {
+	padding: 0;
+	background: #4285f4;
+}
+#form-search span {
+	border: 1px solid #ccc;
+}
+#form-search input[type="submit"] {
+    background-color: #4285f4;
+	margin-right: 10px;
+}
+.panel-collapse {
+	background: #3873d5;
+}
+.course-list-item {
+    border-bottom: 1px solid #e1ebfd;
+    color: #fff;
+	padding: 15px 15px 15px 35px;
+}
+[class*="panel-"] > .panel-heading {
+  color: rgba(255, 255, 255, 0.99);
+}
+.panel-primary > .panel-heading {
+  background-color: #4285f4;
+}
+.leaflet-popup-content {
+	margin: 0;
+}
+.leaflet-header {
+	color: #fff;
+	background: #4285f4;
+	padding: 15px 30px 10px 30px;
+	font-size: 24px;
+	line-height: 25px;
+}
+.leaflet-place, .leaflet-content {
+	padding: 18px 30px;
+	border-bottom: 1px solid #dcdddd;
+}
+.leaflet-courses {
+	padding: 18px 30px;
+}
