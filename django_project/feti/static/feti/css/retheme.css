@@ -48,25 +48,72 @@
 	padding: 15px 15px 15px 35px;
 }
 [class*="panel-"] > .panel-heading {
-  color: rgba(255, 255, 255, 0.99);
+  	color: rgba(255, 255, 255, 0.99);
 }
 .panel-primary > .panel-heading {
-  background-color: #4285f4;
+  	background-color: #4285f4;
+}
+.leaflet-popup-content-wrapper {
+	padding: 0 0 20px 0;
 }
 .leaflet-popup-content {
 	margin: 0;
 }
+.leaflet-popup-content p {
+	padding-left: 30px;
+	font-weight: bold;
+}
 .leaflet-header {
 	color: #fff;
 	background: #4285f4;
-	padding: 15px 30px 10px 30px;
-	font-size: 24px;
-	line-height: 25px;
+	padding: 15px 30px 10px;
+	-webkit-border-top-left-radius: 12px;
+	-webkit-border-top-right-radius: 12px;
+	-moz-border-radius-topleft: 12px;
+	-moz-border-radius-topright: 12px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	min-width: 300px;
+}
+.leaflet-header h3 {
+	font-size: 20px;
+	line-height: 22px;
+	margin: 0;
 }
 .leaflet-place, .leaflet-content {
-	padding: 18px 30px;
+	padding: 12px 30px;
 	border-bottom: 1px solid #dcdddd;
 }
-.leaflet-courses {
-	padding: 18px 30px;
+.leaflet-content i {
+	font-size: 14px;
+	margin-right: 5px;
 }
+.leaflet-courses {
+	padding: 12px 30px;
+}
+.course-list {
+	padding-right: 20px;
+}
+#nav-find {
+	position: relative;
+}
+#private-institutes, .form-control-wrapper, #form-search label {
+	display: none;
+}
+/* #form-search {
+	position: absolute;
+	z-index: 999;
+	max-width: 400px;
+	height: auto;
+	top: 25px;
+	left: -400px;
+	-moz-border-radius: 12px;
+	-webkit-border-radius: 12px;
+	border-radius: 12px;
+	background: #fff;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	color: #333;
+	padding: 20px;
+} */

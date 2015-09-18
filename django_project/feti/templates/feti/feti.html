@@ -9,12 +9,6 @@
             {% for campus in campuses %}
                 add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
             {% endfor %}
-            try{
-                map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
-            }
-            catch(e){
-
-            }
         });
 
     </script>
@@ -31,11 +25,11 @@
     <div class="container-fluid">
         <div class="row">
             {# map #}
-            <div class="col-lg-8" style="margin:0; padding:0;">
+            <div class="col-xs-8" style="margin:0; padding:0;">
                 {% include "feti/map.html" %}
             </div>
             {# side panel #}
-            <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
+            <div class="col-xs-4" id="side_panel" style="padding-top: 10px;">
                 <div class="bs-component">
                     <div class="panel">
                         {% for provider, campus_dict in provider_dict.iteritems %}
