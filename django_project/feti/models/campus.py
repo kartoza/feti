@@ -68,13 +68,16 @@ class Campus(models.Model):
             courses_string += u'<li>' + c.course_popup + u'</li>'
 
         popup_format = (
-            u'<div>{}</div>')
+            u'<div class="leaflet-popup-content">{}</div>')
 
         if related_course:
             popup_format += (
-                u'<p>Courses : '
-                u'<div class="course-list"><ul>{}</ul></div>'
-                u'</p>')
+                u'<div class="leaflet-courses">'
+                u'<p>Courses : </p>'
+                u'<ul>'
+                u'{}'
+                u'</ul>'
+                u'</div>')
 
         result = popup_format.format(
             self.campus_popup or u'',

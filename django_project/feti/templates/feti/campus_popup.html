@@ -1,13 +1,11 @@
-<p>
-    <div>
-        <h3>{{ provider }}</h3>
-    </div>
-    <div>
-        <strong>Campus: {{ campus }}</strong>
-    </div>
-</p>
-<p>
-    <div>{{ address_full }}</div>
-    <div>Website: {{ website }}</div>
-    <div>Phone: {{ phone }}</div>
-</p>
+<div class="leaflet-header">
+     <h3>{{ provider }}</h3>
+</div>
+<div class="leaflet-place">
+        <strong>Provider: {{ campus }}</strong>
+</div>
+<div class="leaflet-content">
+    <div><i class="fa fa-map-marker"></i> {{ address_full }} </div>
+    <div><i class="fa fa-link"></i> Website: {{ website }} </div>
+    <div><i class="fa fa-phone"></i> Phone: {{ phone }}</div>
+</div>
