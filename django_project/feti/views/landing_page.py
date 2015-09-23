@@ -1,7 +1,5 @@
 # coding=utf-8
 """FETI landing page view."""
-from feti.models.campus_course_entry import CampusCourseEntry
-from haystack.inputs import AutoQuery
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -10,6 +8,7 @@ __copyright__ = 'kartoza.com'
 
 from collections import OrderedDict
 from haystack.query import SearchQuerySet
+from haystack.inputs import AutoQuery
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -17,6 +16,7 @@ from django.template import RequestContext
 
 from feti.models.campus import Campus
 from feti.models.field_of_study import FieldOfStudy
+from feti.models.campus_course_entry import CampusCourseEntry
 
 
 def update_course_dict(campus_dict, campus, course):
@@ -102,18 +102,9 @@ def landing_page(request):
                         provider_dict[provider], campus, course)
 
     if not request.GET or not search_terms:
-        search_terms = ''
-        private_institutes = 'on'
-        field_of_study_id = 0
-        campuses = Campus.objects.filter(_complete=True).order_by(
-            '_long_description')
-        for campus in campuses:
-            if campus.incomplete:
-                continue
-            provider = campus.provider
-            update_campus_dict(provider_dict, provider, campus)
-            for course in campus.courses.all():
-                update_course_dict(provider_dict[provider], campus, course)
+        return render(
+            request,
+            'feti_rendered.html')
 
     provider_dict = OrderedDict(
         sorted(provider_dict.items(), key=provider_key))

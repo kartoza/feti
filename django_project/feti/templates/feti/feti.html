@@ -18,7 +18,11 @@
 {% load bootstrap_tags %}
 
 {% block navigation-bar %}
-    {% include "feti/navigation_bar.html" %}
+    {% if navigation_bar %}
+        {{ navigation_bar|safe }}
+    {% else %}
+        {% include "feti/navigation_bar.html" %}
+    {% endif %}
 {%  endblock %}
 
 {% block content %}
