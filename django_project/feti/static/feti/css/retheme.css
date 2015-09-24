@@ -12,8 +12,8 @@
 	font-weight: bold;
 	color: #333;
 }
-.navbar-header img:nth-child(2) {
-	margin-right: 20px;
+.navbar-header img {
+	margin-right: 10px;
 }
 .navbar .navbar-nav > li > a {
     color: rgba(0, 0, 0, 0.84);
@@ -41,6 +41,9 @@
 }
 .panel-collapse {
 	background: #3873d5;
+}
+.panel-primary {
+	border-bottom: 1px solid #356ac3;
 }
 .course-list-item {
     border-bottom: 1px solid #e1ebfd;
@@ -97,23 +100,46 @@
 #nav-find {
 	position: relative;
 }
-#private-institutes, .form-control-wrapper, #form-search label {
+#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label, .material-input {
 	display: none;
 }
-/* #form-search {
+.navbar .navbar-form *::-moz-placeholder {
+    color: rgba(0, 0, 0, 0.84);
+}
+#navigation_bar  #form-search {
 	position: absolute;
 	z-index: 999;
 	max-width: 400px;
 	height: auto;
-	top: 25px;
+	top: 0;
 	left: -400px;
 	-moz-border-radius: 12px;
 	-webkit-border-radius: 12px;
 	border-radius: 12px;
 	background: #fff;
-	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
-	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
-	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
 	color: #333;
-	padding: 20px;
-} */
+	padding: 0 20px;
+} 
+#navigation_bar  form-search:hover .form-group,
+#navigation_bar #form-search:focus .form-group {
+	display: block;
+	color: rgba(0, 0, 0, 0.84);
+	margin-top: 10px;
+	padding-bottom: 20px;
+}
+#navigation_bar #form-search:hover label, #navigation_bar #form-search:hover #private-institutes,
+#navigation_bar #form-search:focus label, #navigation_bar #form-search:focus #private-institutes {
+	display: inline-block;
+	color: rgba(0, 0, 0, 0.84);
+	margin-top: 10px;
+	margin-right: 10px;
+}
+#form-search select {
+	border: 1px solid #999;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	color: rgba(0, 0, 0, 0.84);
+}
+
+theme.css
