@@ -34,7 +34,7 @@ var markerPrivateInstitutionIcon = L.ExtraMarkers.icon({
 var highlightMarkerPrivateInstitutionIcon = L.ExtraMarkers.icon({
     icon: 'fa-graduation-cap',
     markerColor: 'white',
-    iconColor: 'blue',
+    iconColor: 'red',
     shape: 'circle',
     prefix: 'fa'
 });
@@ -99,6 +99,24 @@ function show_map() {
         px.y -= e.popup._container.clientHeight / 2; // find the height of
         // the popup container, divide by 2, subtract from the Y axis of marker location
         map.panTo(map.unproject(px), {animate: true}); // pan to new center
+        var icon;
+        var marker = e.popup._source;
+        if (marker._public_institute) {
+            icon = highlightMarkerIcon;
+        } else {
+            icon = highlightMarkerPrivateInstitutionIcon;
+        }
+        marker.setIcon(icon);
+    });
+    map.on('popupclose', function(e) {
+        var icon;
+        var marker = e.popup._source;
+        if (marker._public_institute) {
+            icon = markerIcon;
+        } else {
+            icon = markerPrivateInstitutionIcon;
+        }
+        marker.setIcon(icon);
     });
 
     // create geoJson Layer
@@ -113,6 +131,7 @@ function show_map() {
             var marker = L.marker(latlng, {
                 icon: icon
             });
+            marker._public_institute = feature.properties.public_institute;
             return L.featureGroup([marker]);
         },
         style: style,
@@ -237,7 +256,7 @@ function CampusItemToggle(el) {
 
 function openCampusPopup(campus_id) {
     var feature = campus_features[campus_id];
-    feature.openPopup()
+    feature.openPopup();
 }
 
 /* Search bar logic */
