@@ -23,14 +23,14 @@ from feti.models.field_of_study import FieldOfStudy
 class Course(models.Model):
 
     id = models.AutoField(primary_key=True)
-    nlrd_regex = RegexValidator(
-        regex=r'^\d{15,15}$',
-        message="National Learners Records Database: "
-                "'123456789012345'.")
+    # nlrd_regex = RegexValidator(
+    #     regex=r'^\d{15,15}$',
+    #     message="National Learners Records Database: "
+    #             "'123456789012345'.")
     national_learners_records_database = models.CharField(
         max_length=50,
         # max_length=15,
-        validators=[nlrd_regex],
+        # validators=[nlrd_regex],
         help_text='National Learners` Records Database (NLRD)',
         blank=True,
         null=True)
