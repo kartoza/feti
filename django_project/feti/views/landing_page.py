@@ -102,9 +102,17 @@ def landing_page(request):
                         provider_dict[provider], campus, course)
 
     if not request.GET or not search_terms:
+        context = {
+            'search_terms': '',
+            'private_institutes': 'on',
+            'fields_of_study': FieldOfStudy.objects.all().order_by(
+                'field_of_study_description'),
+            'field_of_study_id': 0
+        }
         return render(
             request,
-            'feti_rendered.html')
+            'feti_rendered.html',
+            context_instance=RequestContext(request, context))
 
     provider_dict = OrderedDict(
         sorted(provider_dict.items(), key=provider_key))
