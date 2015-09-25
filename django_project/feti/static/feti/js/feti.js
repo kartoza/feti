@@ -19,8 +19,22 @@ var markerIcon = L.ExtraMarkers.icon({
 });
 var highlightMarkerIcon = L.ExtraMarkers.icon({
     icon: 'fa-graduation-cap',
+    markerColor: 'white',
+    iconColor: 'blue',
+    shape: 'circle',
+    prefix: 'fa'
+});
+var markerPrivateInstitutionIcon = L.ExtraMarkers.icon({
+    icon: 'fa-graduation-cap',
     markerColor: 'red',
     iconColor: 'white',
+    shape: 'circle',
+    prefix: 'fa'
+});
+var highlightMarkerPrivateInstitutionIcon = L.ExtraMarkers.icon({
+    icon: 'fa-graduation-cap',
+    markerColor: 'white',
+    iconColor: 'red',
     shape: 'circle',
     prefix: 'fa'
 });
@@ -85,12 +99,39 @@ function show_map() {
         px.y -= e.popup._container.clientHeight / 2; // find the height of
         // the popup container, divide by 2, subtract from the Y axis of marker location
         map.panTo(map.unproject(px), {animate: true}); // pan to new center
+        var icon;
+        var marker = e.popup._source;
+        if (marker._public_institute) {
+            icon = highlightMarkerIcon;
+        } else {
+            icon = highlightMarkerPrivateInstitutionIcon;
+        }
+        marker.setIcon(icon);
+    });
+    map.on('popupclose', function(e) {
+        var icon;
+        var marker = e.popup._source;
+        if (marker._public_institute) {
+            icon = markerIcon;
+        } else {
+            icon = markerPrivateInstitutionIcon;
+        }
+        marker.setIcon(icon);
     });
 
     // create geoJson Layer
     campus_layer = L.geoJson(null, {
         pointToLayer: function (feature, latlng) {
-            var marker = L.marker(latlng, {icon: markerIcon});
+            var icon;
+            if (feature.properties.public_institute) {
+                icon = markerIcon;
+            } else {
+                icon = markerPrivateInstitutionIcon;
+            }
+            var marker = L.marker(latlng, {
+                icon: icon
+            });
+            marker._public_institute = feature.properties.public_institute;
             return L.featureGroup([marker]);
         },
         style: style,
@@ -169,9 +210,10 @@ function set_offset() {
 }
 
 
-function add_campus(campus_json, campus_id) {
+function add_campus(campus_json, campus_id, public_institute) {
     'use strict';
     campus_json.features[0].properties.id = campus_id;
+    campus_json.features[0].properties.public_institute = public_institute;
     campus_layer.addData(campus_json);
     campus_lookup[campus_id] = campus_json;
 }
@@ -214,7 +256,7 @@ function CampusItemToggle(el) {
 
 function openCampusPopup(campus_id) {
     var feature = campus_features[campus_id];
-    feature.openPopup()
+    feature.openPopup();
 }
 
 /* Search bar logic */
