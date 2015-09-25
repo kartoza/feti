@@ -6,6 +6,6 @@
 </div>
 <div class="leaflet-content">
     <div><i class="fa fa-map-marker"></i> {{ address_full }} </div>
-    <div><i class="fa fa-link"></i> Website: {{ website }} </div>
+    <div><i class="fa fa-link"></i> Website: {% if website %}<a href="{{ website }}" target="_blank">{{ website }}</a>{% endif %} </div>
     <div><i class="fa fa-phone"></i> Phone: {{ phone }}</div>
 </div>
