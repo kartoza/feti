@@ -93,6 +93,8 @@
 }
 .leaflet-courses {
 	padding: 12px 30px;
+	max-height: 150px;
+	overflow-y: scroll;
 }
 .course-list {
 	padding-right: 20px;
@@ -120,7 +122,7 @@
 	color: #333;
 	padding: 0 20px;
 } 
-#navigation_bar  form-search:hover .form-group,
+#navigation_bar #form-search:hover .form-group,
 #navigation_bar #form-search:focus .form-group {
 	display: block;
 	color: rgba(0, 0, 0, 0.84);
@@ -142,4 +144,44 @@
 	color: rgba(0, 0, 0, 0.84);
 }
 
-theme.css
+/** Admin **/
+header#grp-header #grp-navigation {
+    background-image: none;
+    background-color: #fff;
+    color: #000;
+}
+header#grp-header #grp-navigation ul#grp-user-tools {
+    border-left: 1px solid #ddd;
+}
+header#grp-header #grp-navigation ul#grp-user-tools > li {
+    border-left: 1px solid #dedede;
+    border-right: 1px solid #fefefe;
+}
+header#grp-header #grp-navigation a {
+    color: #000;
+}
+header#grp-header #grp-navigation a:hover {
+    color: #000;
+	opacity: 0.75;
+}
+#grp-context-navigation {
+    background: #4285f4;
+    border-bottom: none;
+}
+
+header#grp-header #grp-navigation ul li.grp-collapse.grp-open > ul li {
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #fff;
+}
+header#grp-header #grp-navigation ul li.grp-collapse.grp-open > ul {
+    background: #f4f4f4;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #fff;
+}
+#grp-breadcrumbs > ul {
+    text-shadow: none;
+	color: #fff;
+}
+#grp-breadcrumbs > ul a {
+ 	color: #fff;
+}
