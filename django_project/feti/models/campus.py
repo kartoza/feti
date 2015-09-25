@@ -34,7 +34,7 @@ class Campus(models.Model):
     )
     # Decreasing the number of links needed to get popup material
     _campus_popup = models.CharField(
-        max_length=510,
+        max_length=1020,
         blank=True,
         null=True
     )
