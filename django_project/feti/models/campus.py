@@ -157,7 +157,7 @@ class Campus(models.Model):
         phone = 'N/A'
         if self.address:
             if self.address.phone:
-                phone = self.address.phones
+                phone = self.address.phone
         variable = {
             'provider': provider_name,
             'campus': campus_name,
