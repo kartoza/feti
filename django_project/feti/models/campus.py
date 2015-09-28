@@ -145,10 +145,19 @@ class Campus(models.Model):
         template = loader.get_template('feti/campus_popup.html')
         provider_name = self.provider.primary_institution if self.provider \
             else ''
-        campus_name = self.address.town if self.address else 'N/A'
-        address_full = self.address.address_line if self.address else 'N/A'
-        website = self.provider.website if self.provider else 'N/A'
-        phone = self.address.phone if self.address else 'N/A'
+        campus_name = self.campus_name if self.campus_name else 'N/A'
+        address_full = 'N/A'
+        if self.address:
+            if self.address.address_line:
+                address_full = self.address.address_line
+        website = 'N/A'
+        if self.provider:
+            if self.provider.website:
+                website = self.provider.website
+        phone = 'N/A'
+        if self.address:
+            if self.address.phone:
+                phone = self.address.phones
         variable = {
             'provider': provider_name,
             'campus': campus_name,
