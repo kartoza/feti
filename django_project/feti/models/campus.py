@@ -137,7 +137,7 @@ class Campus(models.Model):
                 self.campus_name.strip()
             )
 
-        if not self.courses.count() or not self.location or not self.campus:
+        if not self.courses.count() or not self.location:
             # Only mark campuses without courses as incomplete
             self._complete = False
         else:

@@ -2,7 +2,9 @@
      <h3>{{ provider }}</h3>
 </div>
 <div class="leaflet-place">
+    {% if campus != 'Unknown campus' %}
         <strong>Campus: {{ campus }}</strong>
+    {% endif %}
 </div>
 <div class="leaflet-content">
     <div><i class="fa fa-map-marker"></i> {{ address_full }} </div>
