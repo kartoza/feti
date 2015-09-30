@@ -21,7 +21,9 @@ class Provider(models.Model):
         "Primary institution",
         max_length=255, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    status = models.BooleanField(default=PROVIDER_STATUS_PUBLIC)
+    status = models.BooleanField(
+        "Public primary institution",
+        default=PROVIDER_STATUS_PUBLIC)
     """public owned or private owned"""
     objects = models.GeoManager()
 
