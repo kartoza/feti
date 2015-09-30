@@ -9,6 +9,9 @@ __copyright__ = 'kartoza.com'
 from django.template import Context, loader
 from django.contrib.gis.db import models
 from django.core.validators import RegexValidator
+from django.db.models.signals import post_save
+from django.core import management
+
 from feti.models.education_training_quality_assurance import (
     EducationTrainingQualityAssurance)
 from feti.models.national_qualifications_framework import (
@@ -120,5 +123,9 @@ class Course(models.Model):
         managed = True
 
 
+def regenerate_landing_page(sender, instance, **kwargs):
+    management.call_command('full_front_page')
 
+
+post_save.connect(regenerate_landing_page, sender=Course, dispatch_uid="course_landing_page")
 
