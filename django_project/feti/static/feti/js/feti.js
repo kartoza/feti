@@ -140,6 +140,26 @@ function show_map() {
 
     // Add share control
     map.addControl(new L.Control.Share());
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+            var public_marker = markerIcon.createIcon();
+            public_marker.style.transform = "translate(15px, 0px)";
+            var private_marker = markerPrivateInstitutionIcon.createIcon();
+            private_marker.style.transform = "translate(60px, 0px)";
+            div.innerHTML += (
+                "<div class='legend leaflet-control info'>" +
+                "<div class='legend-title'>Public - Private" +
+                "</div>" +
+                "<br>" +
+                "<br>" +
+                public_marker.outerHTML +
+                private_marker.outerHTML +
+                "</div>");
+
+        return div;
+        };
+    legend.addTo(map);
 }
 
 /*jslint unparam: true*/
