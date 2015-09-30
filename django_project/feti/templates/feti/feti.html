@@ -9,6 +9,25 @@
             {% for campus in campuses %}
                 add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }}, {{ campus.provider.status|yesno:"true,false" }});
             {% endfor %}
+
+                $( "#field-of-study-id" ).change(function() {
+                  $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").addClass("shown");
+                });
+
+                $(  "#field-of-study-id" ).focus(function() {
+                 $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").addClass("shown");
+                });
+
+            });
+            $(document).mouseup(function (e)
+        {
+            var container = $("#navigation_bar #form-search");
+
+            if (!container.is(e.target) // if the target of the click isn't the container...
+                && container.has(e.target).length === 0) // ... nor a descendant of the container
+            {
+                $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").removeClass("shown");
+            }
         });
 
     </script>
