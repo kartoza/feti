@@ -1,6 +1,5 @@
 # coding=utf-8
 """Model class for WMS Resource"""
-from feti.models.address import Address
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -14,6 +13,7 @@ from django.core import management
 
 from feti.models.provider import Provider
 from feti.models.course import Course
+from feti.models.address import Address
 
 
 class Campus(models.Model):
