@@ -1,0 +1,197 @@
+/* FETI */
+.navbar-bnpb.navbar {
+    background-color: #fff;
+    color: #333;
+    font-weight: normal;
+    text-transform: none;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.22);
+	height: 90px;
+}
+.navbar-bnpb.navbar .navbar-brand {
+	font-weight: bold;
+	color: #333;
+}
+.navbar-header img {
+	margin-right: 10px;
+	height: 60px;
+}
+.navbar .navbar-nav > li > a {
+    color: rgba(0, 0, 0, 0.84);
+}
+.navbar .navbar-nav > li > a:hover, 
+.navbar .navbar-nav > li > a:focus, 
+.navbar .navbar-nav > li > a:active,
+.navbar .navbar-nav > li > a:target {
+    color: #4285F4;
+	background: #fff;
+}
+.panel, .panel-heading {
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+#side_panel {
+	padding: 0;
+	background: #4285f4;
+}
+#form-search span {
+	border: 1px solid #ccc;
+}
+#form-search input[type="submit"] {
+    background-color: #4285f4;
+	margin-right: 10px;
+}
+.panel-collapse {
+	background: #3873d5;
+}
+.panel-primary {
+	border-bottom: 1px solid #356ac3;
+}
+.course-list-item {
+    border-bottom: 1px solid #e1ebfd;
+    color: #fff;
+	padding: 15px 15px 15px 35px;
+}
+[class*="panel-"] > .panel-heading {
+  	color: rgba(255, 255, 255, 0.99);
+}
+.panel-primary > .panel-heading {
+  	background-color: #4285f4;
+}
+.leaflet-popup-content-wrapper {
+	padding: 0 0 20px 0;
+}
+.leaflet-popup-content {
+	margin: 0;
+}
+.leaflet-popup-content p {
+	padding-left: 30px;
+	font-weight: bold;
+}
+.leaflet-header {
+	color: #fff;
+	background: #4285f4;
+	padding: 15px 30px 10px;
+	-webkit-border-top-left-radius: 12px;
+	-webkit-border-top-right-radius: 12px;
+	-moz-border-radius-topleft: 12px;
+	-moz-border-radius-topright: 12px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	min-width: 300px;
+}
+.leaflet-header h3 {
+	font-size: 20px;
+	line-height: 22px;
+	margin: 0;
+}
+.leaflet-place, .leaflet-content {
+	padding: 12px 30px;
+	border-bottom: 1px solid #dcdddd;
+}
+.leaflet-content i {
+	font-size: 14px;
+	margin-right: 5px;
+}
+.leaflet-courses {
+	padding: 12px 30px;
+	max-height: 150px;
+	overflow-y: scroll;
+}
+.course-list {
+	padding-right: 20px;
+}
+#nav-find {
+	position: relative;
+}
+#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label, .material-input {
+	display: none;
+}
+.navbar .navbar-form *::-moz-placeholder {
+    color: rgba(0, 0, 0, 0.84);
+}
+#navigation_bar  #form-search {
+	position: absolute;
+	z-index: 999;
+	max-width: 400px;
+	height: auto;
+	top: 13px;
+	left: -400px;
+	-moz-border-radius: 12px;
+	-webkit-border-radius: 12px;
+	border-radius: 12px;
+	background: #fff;
+	color: #333;
+	padding: 0 20px;
+} 
+#navigation_bar #form-search:hover .form-group,
+#navigation_bar #form-search:focus .form-group,
+#navigation_bar #form-search .form-group.shown {
+	display: block;
+	color: rgba(0, 0, 0, 0.84);
+	margin-top: 10px;
+	padding-bottom: 20px;
+}
+#navigation_bar #form-search:hover label, #navigation_bar #form-search:hover #private-institutes,
+#navigation_bar #form-search:focus label, #navigation_bar #form-search:focus #private-institutes,
+#navigation_bar #form-search label.shown, #navigation_bar #form-search #private-institutes.shown {
+	display: inline-block;
+	color: rgba(0, 0, 0, 0.84);
+	margin-top: 10px;
+	margin-right: 10px;
+}
+#form-search select {
+	border: 1px solid #999;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	color: rgba(0, 0, 0, 0.84);
+}
+.navbar .navbar-nav > li > a {
+    padding-bottom: 35px;
+    padding-top: 35px;
+}
+/** Admin **/
+header#grp-header #grp-navigation {
+    background-image: none;
+    background-color: #fff;
+    color: #000;
+}
+header#grp-header #grp-navigation ul#grp-user-tools {
+    border-left: 1px solid #ddd;
+}
+header#grp-header #grp-navigation ul#grp-user-tools > li {
+    border-left: 1px solid #dedede;
+    border-right: 1px solid #fefefe;
+}
+header#grp-header #grp-navigation a {
+    color: #000;
+}
+header#grp-header #grp-navigation a:hover {
+    color: #000;
+	opacity: 0.75;
+}
+#grp-context-navigation {
+    background: #4285f4;
+    border-bottom: none;
+}
+
+header#grp-header #grp-navigation ul li.grp-collapse.grp-open > ul li {
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #fff;
+}
+header#grp-header #grp-navigation ul li.grp-collapse.grp-open > ul {
+    background: #f4f4f4;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #fff;
+}
+#grp-breadcrumbs > ul {
+    text-shadow: none;
+	color: #fff;
+}
+#grp-breadcrumbs > ul a {
+ 	color: #fff;
+}

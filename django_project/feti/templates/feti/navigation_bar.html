@@ -9,8 +9,8 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="/" role="button">
                 <img src='{% static "feti/css/images/logo_ipss.png" %}'>
-                <img src='{% static "feti/css/images/logo_uwc.png" %}'>
-                Further Education and Training Institute</a>
+                <!--<img src='{% static "feti/css/images/logo_uwc.png" %}'>-->
+                Western Cape Post-School Provision</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -29,8 +29,28 @@
                                    placeholder="Search"/>
                             <i id="search-clear"
                                class="mdi-navigation-close"></i>
+
                         </span>
                         <input type="submit" value="FIND"/>
+                        <label for="private-institutes">
+                            Include private institutes
+                        </label>
+                        <input type="checkbox"
+                               id="private-institutes"
+                               name="private_institutes"
+                               {% ifequal private_institutes 'on' %}checked="true"{% endifequal %}>
+                         <div class="form-group">
+                              <select class="form-control"
+                                      id="field-of-study-id"
+                                      name="field_of_study_id">
+                                      <option
+                                        value="0"
+                                        {% ifequal field_of_study_id 0 %} selected="selected" {%  endifequal %}>any</option>
+                                    {% for field_of_study in fields_of_study %}
+                                      <option  {% ifequal field_of_study_id field_of_study.id %} selected="selected" {%  endifequal %} value="{{ field_of_study.id }}">{{ field_of_study.field_of_study_description }}</option>
+                                    {% endfor %}
+                              </select>
+                        </div>
                     </form>
                 </li>
                 {% if user.is_authenticated %}
@@ -38,7 +58,7 @@
                     <!--<a href="/project-team/">-->
                     <a href="{% url 'admin:index' %}" role="button">
                         <i class="mdi-maps-map"></i>
-                        Project Team Admin</a>
+                        Admin</a>
                 </li>
                 <li id="nav_logout">
                     <a href="{% url 'logout' %}" role="button">
@@ -49,7 +69,7 @@
                 <li id="nav_login">
                     <a href="{% url 'login' %}" role="button">
                         <i class="mdi-maps-map"></i>
-                        Project Team Login</a>
+                        Login</a>
                 </li>
                 {% endif %}
             </ul>

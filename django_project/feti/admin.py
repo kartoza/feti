@@ -28,7 +28,7 @@ class AddressAdmin(admin.ModelAdmin):
                 instance.campus_fk.provider.id,)),
         )
     provider_url.allow_tags = True
-    provider_url.short_description = 'Provider'
+    provider_url.short_description = 'Primary institute'
 
 
 class AddressAdminInline(admin.StackedInline):
@@ -43,8 +43,8 @@ class AddressAdminInline(admin.StackedInline):
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
     inlines = [AddressAdminInline]
-    list_display = ('campus', 'provider', '_complete',)
-    list_filter = ['provider', '_complete']
+    list_display = ('id', 'campus', 'primary_institution', '_complete',)
+    list_filter = ['provider__primary_institution', '_complete']
     search_fields = ['campus', 'provider__primary_institution']
     readonly_fields = ['provider_url']
     fieldsets = (
@@ -72,7 +72,7 @@ class CampusAdmin(admin.OSMGeoAdmin):
                 instance.provider.id,)),
         )
     provider_url.allow_tags = True
-    provider_url.short_description = 'Provider'
+    provider_url.short_description = 'Primary institute url'
 
 
 class CampusAdminInline(OSMGeoStackedInline):
@@ -109,13 +109,13 @@ class ProviderAdmin(admin.OSMGeoAdmin):
     inlines = [CampusAdminInline]
     fieldsets = (
         ('General', {
-            'fields': ['primary_institution', 'website']
+            'fields': ['primary_institution', 'website', 'status']
         }),
     )
-    list_display = ('primary_institution', 'website', 'status',)
-    list_filter = ['primary_institution', 'website', 'status', ]
-    search_fields = ['primary_institution', 'website', 'status', ]
-    exclude = ['status']
+    list_display = ('id', 'primary_institution', 'website',)
+    list_filter = ['primary_institution', 'website',]
+    search_fields = ['primary_institution', 'website',]
+    # exclude = ['status']
 
 
 class CourseAdmin(admin.ModelAdmin):

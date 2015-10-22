@@ -7,13 +7,26 @@
             show_map();
             $('#campus_details').addClass("active");
             {% for campus in campuses %}
-                add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }});
+                add_campus({{ campus|geojsonfeature:"popup_content"|safe }}, {{ campus.id }}, {{ campus.provider.status|yesno:"true,false" }});
             {% endfor %}
-            try{
-                map.fitBounds(campus_layer.getBounds(), fit_bounds_options);
-            }
-            catch(e){
 
+                $( "#field-of-study-id" ).change(function() {
+                  $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").addClass("shown");
+                });
+
+                $(  "#field-of-study-id" ).focus(function() {
+                 $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").addClass("shown");
+                });
+
+            });
+            $(document).mouseup(function (e)
+        {
+            var container = $("#navigation_bar #form-search");
+
+            if (!container.is(e.target) // if the target of the click isn't the container...
+                && container.has(e.target).length === 0) // ... nor a descendant of the container
+            {
+                $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").removeClass("shown");
             }
         });
 
@@ -24,18 +37,22 @@
 {% load bootstrap_tags %}
 
 {% block navigation-bar %}
-    {% include "feti/navigation_bar.html" %}
+    {% if navigation_bar %}
+        {{ navigation_bar|safe }}
+    {% else %}
+        {% include "feti/navigation_bar.html" %}
+    {% endif %}
 {%  endblock %}
 
 {% block content %}
     <div class="container-fluid">
         <div class="row">
             {# map #}
-            <div class="col-lg-8" style="margin:0; padding:0;">
+            <div class="col-xs-8" style="margin:0; padding:0;">
                 {% include "feti/map.html" %}
             </div>
             {# side panel #}
-            <div class="col-lg-4" id="side_panel" style="padding-top: 10px;">
+            <div class="col-xs-4" id="side_panel" style="padding-top: 10px;">
                 <div class="bs-component">
                     <div class="panel">
                         {% for provider, campus_dict in provider_dict.iteritems %}
@@ -63,6 +80,9 @@
                             <div class="panel-body">
                                 {% if search_terms %}
                                     No results found for "{{ search_terms }}"
+                                    {% if field_of_study_id %}
+                                      in the selected field of study.
+                                    {% endif %}
                                 {% else %}
                                     No terms provided
                                 {% endif %}
