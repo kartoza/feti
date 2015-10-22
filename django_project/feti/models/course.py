@@ -9,6 +9,9 @@ __copyright__ = 'kartoza.com'
 from django.template import Context, loader
 from django.contrib.gis.db import models
 from django.core.validators import RegexValidator
+from django.db.models.signals import post_save
+from django.core import management
+
 from feti.models.education_training_quality_assurance import (
     EducationTrainingQualityAssurance)
 from feti.models.national_qualifications_framework import (
@@ -23,14 +26,14 @@ from feti.models.field_of_study import FieldOfStudy
 class Course(models.Model):
 
     id = models.AutoField(primary_key=True)
-    nlrd_regex = RegexValidator(
-        regex=r'^\d{15,15}$',
-        message="National Learners Records Database: "
-                "'123456789012345'.")
+    # nlrd_regex = RegexValidator(
+    #     regex=r'^\d{15,15}$',
+    #     message="National Learners Records Database: "
+    #             "'123456789012345'.")
     national_learners_records_database = models.CharField(
         max_length=50,
         # max_length=15,
-        validators=[nlrd_regex],
+        # validators=[nlrd_regex],
         help_text='National Learners` Records Database (NLRD)',
         blank=True,
         null=True)
@@ -120,5 +123,9 @@ class Course(models.Model):
         managed = True
 
 
+def regenerate_landing_page(sender, instance, **kwargs):
+    management.call_command('full_front_page')
 
+
+post_save.connect(regenerate_landing_page, sender=Course, dispatch_uid="course_landing_page")
 

@@ -70,6 +70,7 @@ PIPELINE_CSS = {
             'feti/css/material-wfont.min.css',
             'feti/css/ripples.min.css',
             'feti/css/feti-theme.css',
+            'feti/css/retheme.css',
             'css/bootstrap-datetimepicker.min.css',
             'feti/leaflet-extra-markers/leaflet.extra-markers.css',
             'feti/font-awesome/css/font-awesome.css',

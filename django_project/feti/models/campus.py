@@ -1,6 +1,5 @@
 # coding=utf-8
 """Model class for WMS Resource"""
-from feti.models.address import Address
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -9,20 +8,24 @@ __copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
 from django.template import Context, loader
+from django.db.models.signals import post_save
+from django.core import management
 
 from feti.models.provider import Provider
 from feti.models.course import Course
+from feti.models.address import Address
 
 
 class Campus(models.Model):
     """A campus where a set of courses are offered."""
     id = models.AutoField(primary_key=True)
-    campus = models.CharField(max_length=150, blank=True, null=True)
+    campus = models.CharField('Provider', max_length=150, blank=True, null=True)
     # default to south africa capital coordinate
     location = models.PointField(blank=True, null=True,
                                  default='POINT(28.034088 -26.195246)')
     address = models.ForeignKey('Address', null=True, blank=True)
-    provider = models.ForeignKey(Provider, related_name='campuses')
+    provider = models.ForeignKey(
+        Provider, related_name='campuses')
     courses = models.ManyToManyField(Course)
 
     # Decreasing the number of links needed to other models for descriptions.
@@ -33,7 +36,7 @@ class Campus(models.Model):
     )
     # Decreasing the number of links needed to get popup material
     _campus_popup = models.CharField(
-        max_length=510,
+        max_length=1020,
         blank=True,
         null=True
     )
@@ -46,7 +49,8 @@ class Campus(models.Model):
 
     class Meta:
         app_label = 'feti'
-        verbose_name_plural = 'Campuses'
+        ordering = ['campus']
+        verbose_name = 'Provider'
 
     @property
     def related_course(self):
@@ -66,13 +70,16 @@ class Campus(models.Model):
             courses_string += u'<li>' + c.course_popup + u'</li>'
 
         popup_format = (
-            u'<div>{}</div>')
+            u'<div class="leaflet-popup-content">{}</div>')
 
         if related_course:
             popup_format += (
-                u'<p>Courses : '
-                u'<div class="course-list"><ul>{}</ul></div>'
-                u'</p>')
+                u'<div class="leaflet-courses">'
+                u'<p>Courses : </p>'
+                u'<ul>'
+                u'{}'
+                u'</ul>'
+                u'</div>')
 
         result = popup_format.format(
             self.campus_popup or u'',
@@ -102,6 +109,10 @@ class Campus(models.Model):
     def incomplete(self):
         return not self._complete
 
+    @property
+    def primary_institution(self):
+        return self.provider
+
     def __unicode__(self):
         return u'%s' % self.campus_name
 
@@ -126,7 +137,7 @@ class Campus(models.Model):
                 self.campus_name.strip()
             )
 
-        if not self.courses.count() or not self.location or not self.campus:
+        if not self.courses.count() or not self.location:
             # Only mark campuses without courses as incomplete
             self._complete = False
         else:
@@ -136,10 +147,19 @@ class Campus(models.Model):
         template = loader.get_template('feti/campus_popup.html')
         provider_name = self.provider.primary_institution if self.provider \
             else ''
-        campus_name = self.address.town if self.address else 'N/A'
-        address_full = self.address.address_line if self.address else 'N/A'
-        website = self.provider.website if self.provider else 'N/A'
-        phone = self.address.phone if self.address else 'N/A'
+        campus_name = self.campus_name if self.campus_name else 'N/A'
+        address_full = 'N/A'
+        if self.address:
+            if self.address.address_line:
+                address_full = self.address.address_line
+        website = 'N/A'
+        if self.provider:
+            if self.provider.website:
+                website = self.provider.website
+        phone = 'N/A'
+        if self.address:
+            if self.address.phone:
+                phone = self.address.phone
         variable = {
             'provider': provider_name,
             'campus': campus_name,
@@ -165,6 +185,11 @@ class Campus(models.Model):
                 CampusCourseEntry.objects.get(campus=self, course=course)
             except CampusCourseEntry.DoesNotExist:
                 entries.append(CampusCourseEntry(campus=self, course=course))
+            except CampusCourseEntry.MultipleObjectsReturned:
+                redundant = CampusCourseEntry.objects.filter(
+                    campus=self, course=course)[1:]
+                for campus_course_entries in redundant:
+                    campus_course_entries.delete()
 
         CampusCourseEntry.objects.bulk_create(entries)
         # delete entry not in course
@@ -181,3 +206,11 @@ class Campus(models.Model):
         from feti.models.campus_course_entry import CampusCourseEntry
         CampusCourseEntry.objects.filter(campus=self).delete()
         super(Campus, self).delete(*args, **kwargs)
+
+
+
+def regenerate_landing_page(sender, instance, **kwargs):
+    management.call_command('full_front_page')
+
+
+post_save.connect(regenerate_landing_page, sender=Campus, dispatch_uid="campus_landing_page")

@@ -1,7 +1,5 @@
 # coding=utf-8
 """FETI landing page view."""
-from feti.models.campus_course_entry import CampusCourseEntry
-from haystack.inputs import AutoQuery
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -10,12 +8,15 @@ __copyright__ = 'kartoza.com'
 
 from collections import OrderedDict
 from haystack.query import SearchQuerySet
+from haystack.inputs import AutoQuery
 
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import RequestContext
 
 from feti.models.campus import Campus
+from feti.models.field_of_study import FieldOfStudy
+from feti.models.campus_course_entry import CampusCourseEntry
 
 
 def update_course_dict(campus_dict, campus, course):
@@ -50,11 +51,19 @@ def landing_page(request):
         return item[0].primary_institution.strip().lower()
 
     search_terms = ''
+    private_institutes = 'on'
+    field_of_study_id = 0
     provider_dict = OrderedDict()
     errors = None
     campuses = []
     if request.GET:
         search_terms = request.GET.get('search_terms')
+        private_institutes = request.GET.get('private_institutes') or 'off'
+        field_of_study_id = request.GET.get('field_of_study_id') or 0
+        try:
+            field_of_study_id = int(field_of_study_id)
+        except ValueError:
+            field_of_study_id = 0
         if search_terms:
 
             results = SearchQuerySet().filter(
@@ -62,35 +71,48 @@ def landing_page(request):
                 CampusCourseEntry)
 
             for result in results:
-                if result.score > 1:
+                if result.score > 2:
                     # get model
                     model = result.model
                     # get objects
                     object_instance = result.object
 
                     campus = object_instance.campus
+                    if private_institutes == 'off':
+                        if (
+                                campus.provider.status ==
+                                campus.provider.PROVIDER_STATUS_PRIVATE):
+                            continue
                     if campus.incomplete:
                         continue
+
+                    course = object_instance.course
+                    if field_of_study_id:
+                        if not course.field_of_study:
+                            continue
+                        if course.field_of_study.id != field_of_study_id:
+                            continue
+
                     if campus not in campuses:
                         campuses.append(campus)
 
                     provider = campus.provider
                     update_campus_dict(provider_dict, provider, campus)
-
-                    course = object_instance.course
                     update_course_dict(
                         provider_dict[provider], campus, course)
 
     if not request.GET or not search_terms:
-        campuses = Campus.objects.filter(_complete=True).order_by(
-            '_long_description')
-        for campus in campuses:
-            if campus.incomplete:
-                continue
-            provider = campus.provider
-            update_campus_dict(provider_dict, provider, campus)
-            for course in campus.courses.all():
-                update_course_dict(provider_dict[provider], campus, course)
+        context = {
+            'search_terms': '',
+            'private_institutes': 'on',
+            'fields_of_study': FieldOfStudy.objects.all().order_by(
+                'field_of_study_description'),
+            'field_of_study_id': 0
+        }
+        return render(
+            request,
+            'feti_rendered.html',
+            context_instance=RequestContext(request, context))
 
     provider_dict = OrderedDict(
         sorted(provider_dict.items(), key=provider_key))
@@ -102,7 +124,11 @@ def landing_page(request):
         'campuses': campuses,
         'provider_dict': provider_dict,
         'search_terms': search_terms,
-        'errors': errors
+        'private_institutes': private_institutes,
+        'errors': errors,
+        'fields_of_study': FieldOfStudy.objects.all().order_by(
+            'field_of_study_description'),
+        'field_of_study_id': field_of_study_id
     }
     return render(
         request,
