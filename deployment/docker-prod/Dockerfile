@@ -15,6 +15,9 @@ ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
 RUN pip install uwsgi
 
+# Problems with current version on pip
+RUN pip install git+https://github.com/django-haystack/django-haystack
+
 # Add patch for raven per issue:
 # https://github.com/getsentry/raven-python/pull/595
 WORKDIR /home
