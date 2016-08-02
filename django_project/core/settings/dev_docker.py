@@ -6,13 +6,22 @@ print os.environ
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ['DATABASE_NAME'],
-        'USER': os.environ['DATABASE_USERNAME'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD'],
-        'HOST': os.environ['DATABASE_HOST'],
-        'PORT': 5433,
+        'NAME': 'gis',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'db',
+        'PORT': 5432,
         'TEST_NAME': 'unittests',
     }
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'feti.search_backends.fuzzy_elastic_search_engine'
+                  '.FuzzyElasticSearchEngine',
+        'URL': 'http://localhost:9200/',
+        'INDEX_NAME': 'haystack',
+    },
 }
 
 LOGGING = {
