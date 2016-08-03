@@ -1,9 +1,9 @@
 # coding=utf-8
-__author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
-__date__ = '24/04/15'
-
 from datetime import date
 from haystack.generic_views import SearchView
+
+__author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
+__date__ = '24/04/15'
 
 
 class MySearchView(SearchView):

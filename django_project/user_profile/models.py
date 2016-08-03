@@ -13,5 +13,3 @@ class Official(models.Model):
     phone = models.CharField(
         validators=[phone_regex], blank=True, max_length=15
     )
-
-

@@ -1,5 +1,4 @@
 # noinspection PyUnresolvedReferences
-from core.settings.utils import DJANGO_ROOT
 from .prod import *  # noqa
 import os
 print os.environ

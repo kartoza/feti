@@ -7,8 +7,10 @@ __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '24/04/15'
 
 
-class NationalGraduateSchoolInEducationIndex(indexes.SearchIndex,
-                                         indexes.Indexable):
+class NationalGraduateSchoolInEducationIndex(
+    indexes.SearchIndex,
+    indexes.Indexable
+):
     text = indexes.EdgeNgramField(document=True, use_template=True)
 
     class Meta:

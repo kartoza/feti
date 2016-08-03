@@ -1,14 +1,15 @@
 # coding=utf-8
 """Model class for Education and Training Quality Assurance (ETQA)."""
-__author__ = 'Christian Christelis <christian@kartoza.com>'
-__date__ = '04/2015'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
 
 from django.contrib.gis.db import models
 
 from feti.models.campus import Campus
 from feti.models.course import Course
+
+__author__ = 'Christian Christelis <christian@kartoza.com>'
+__date__ = '04/2015'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 class CourseProviderLink(models.Model):

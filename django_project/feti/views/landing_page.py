@@ -1,22 +1,20 @@
 # coding=utf-8
 """FETI landing page view."""
-
-__author__ = 'Christian Christelis <christian@kartoza.com>'
-__date__ = '04/2015'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from collections import OrderedDict
 from haystack.query import SearchQuerySet
 from haystack.inputs import AutoQuery
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse  # noqa
 from django.template import RequestContext
 
-from feti.models.campus import Campus
 from feti.models.field_of_study import FieldOfStudy
 from feti.models.campus_course_entry import CampusCourseEntry
+
+__author__ = 'Christian Christelis <christian@kartoza.com>'
+__date__ = '04/2015'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 def update_course_dict(campus_dict, campus, course):
@@ -73,7 +71,7 @@ def landing_page(request):
             for result in results:
                 if result.score > 2:
                     # get model
-                    model = result.model
+                    model = result.model  # noqa
                     # get objects
                     object_instance = result.object
 

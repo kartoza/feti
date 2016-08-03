@@ -1,27 +1,29 @@
 #
 # Production server with UWSGI configured to run on port 8080
 #
-# Usage:
-# docker-compose -f docker-compose-*.yml <command>
-#
-# Typical useage:
-#
 # docker-compose build
 # docker-compose up -d web
 #
 # See accompanying Make commands for easy collectstatic etc.
 
-# Our docker-gen service reloads nginx with dynamically generated
-# templates each time a container is brought up / down
-# See https://registry.hub.docker.com/u/jwilder/nginx-proxy/
-# This one uses a template for nginx proxying (see above for http)
-#
-# Note: Currently this is experimental and not being used.
-#
+# Our main nginx service - this is for testing only - normally
+# You would use a standalone nginx instance running on the host!
+nginx:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-nginx
+  image: nginx
+  hostname: nginx
+  volumes:
+    - ./nginx-conf:/etc/nginx/conf.d
+  ports:
+    - "0.0.0.0:80:80"
+  restart: on-failure:5
 
 smtp:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-smtp
   restart: on-failure:5
-#  read_only: true
+  #  read_only: true
   image: catatnight/postfix
   hostname: postfix
   environment:
@@ -30,24 +32,30 @@ smtp:
     - smtp_user=noreply:docker
 
 elasticsearch:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-elasticsearch
   restart: on-failure:5
-#  read_only: true
+  #  read_only: true
   image: elasticsearch
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
 
 db:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-db
   restart: on-failure:5
   image: kartoza/postgis:9.4-2.1
   volumes:
-    - ./pg/postgres_data:/var/lib/postgresql
+    #- ./pg/postgres_data:/var/lib/postgresql
     - ./setup_data:/home/setup
   environment:
     - USERNAME=docker
     - PASS=docker
 
 dbbackups:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-dbbackups
   restart: on-failure:5
   image: kartoza/pg-backup:9.4
   hostname: pg-backups
@@ -66,8 +74,10 @@ dbbackups:
     - PGDATABASE=gis
 
 uwsgi:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-uwsgi
   restart: on-failure:5
-  build: docker-prod
+  build: docker
   hostname: uwsgi
   environment:
     - DATABASE_NAME=gis
@@ -88,7 +98,10 @@ uwsgi:
     - db:db
     - elasticsearch:elasticsearch
 
+# This is normally the main entry point for a production server
 web:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-web
   # read_only: true
   restart: on-failure:5
   image: nginx
@@ -103,3 +116,36 @@ web:
     - uwsgi:uwsgi
   ports:
     - "63100:8080"
+
+# This is the entry point for a development server.
+# Run with --no-deps to run attached to the services
+# from produ environment if wanted
+devweb:
+  # Note you cannot scale if you use conteiner_name
+  container_name: feti-dev-web
+  build: docker
+  dockerfile: Dockerfile-dev
+  hostname: uwsgi
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+    - PYTHONPATH=/home/web/django_project
+    - VIRTUAL_HOST=feti.kartoza.com
+    - VIRTUAL_PORT=8080
+  volumes:
+    - ../django_project:/home/web/django_project
+    - ./static:/home/web/static
+    - ./media:/home/web/media
+    - ./reports:/home/web/reports
+    - ./logs:/var/log/
+  links:
+    - smtp:smtp
+    - db:db
+  ports:
+    # for django test server
+    - "63102:8080"
+    # for ssh
+    - "63103:22"
