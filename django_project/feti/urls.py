@@ -6,6 +6,7 @@ from django.conf.urls import patterns, url, include
 from feti.forms.search import DefaultSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
+from feti.views.landing_page import LandingPage
 
 sqs = SearchQuerySet()
 
@@ -13,7 +14,7 @@ urlpatterns = patterns(
     '',
     url(
         r'^$',
-        'feti.views.landing_page.landing_page',
+        LandingPage.as_view(),
         name='landing_page'
     ),
     # url(

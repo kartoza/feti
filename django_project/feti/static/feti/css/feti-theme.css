@@ -189,3 +189,7 @@ body {
     max-height: 200px;
     overflow-y: auto;
 }
+
+.hero-spacer {
+    margin-top: 50px;
+}
