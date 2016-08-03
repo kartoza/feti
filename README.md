@@ -1,6 +1,7 @@
 # Welcome to the FETI code base!
 
 [![Join the chat at https://gitter.im/kartoza/feti](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kartoza/feti?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/kartoza/feti.svg?branch=develop)](https://travis-ci.org/kartoza/feti)
 
 FETI is a django application for mapping acadamic institutes and their courses
 in the Western Cape.
