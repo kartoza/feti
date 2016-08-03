@@ -1,31 +1,22 @@
-__author__ = 'christian'
-
 # coding=utf-8
 """FETI landing page view."""
+
+import os
+from collections import OrderedDict
+
+from django.template.loader import render_to_string
+from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.utils.translation import activate
+
+from feti.models.field_of_study import FieldOfStudy
+
+from feti.models.campus import Campus
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-
-import os
-from collections import OrderedDict
-from haystack.query import SearchQuerySet
-from haystack.inputs import AutoQuery
-
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
-from django.utils.translation import activate
-
-from feti.models.campus import Campus
-from feti.models.field_of_study import FieldOfStudy
-from feti.models.campus_course_entry import CampusCourseEntry
-
-from feti.models.campus import Campus
 
 
 def update_course_dict(campus_dict, campus, course):
@@ -98,4 +89,3 @@ class Command(BaseCommand):
 
         with open(new_template_location, 'w') as new_template:
             new_template.write(rendered_landing_page.encode("UTF-8"))
-

@@ -33,8 +33,8 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
         #     'like_text': query_string,
         # }
         if 'query_string' in search_kwargs['query']['filtered']['query']:
-            search_kwargs['query']['filtered']['query']['query_string']\
-                ['fuzziness'] = 2
+            search_kwargs['query']['filtered']['query']['query_string'][
+                'fuzziness'] = 2
         # if 'query_string' in search_kwargs['query']['filtered']['query']:
         #     search_kwargs['query']['filtered']['query']['query_string']\
         #         ['default_operator'] = 'OR'

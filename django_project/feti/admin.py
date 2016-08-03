@@ -113,8 +113,8 @@ class ProviderAdmin(admin.OSMGeoAdmin):
         }),
     )
     list_display = ('id', 'primary_institution', 'website',)
-    list_filter = ['primary_institution', 'website',]
-    search_fields = ['primary_institution', 'website',]
+    list_filter = ['primary_institution', 'website', ]
+    search_fields = ['primary_institution', 'website', ]
     # exclude = ['status']
 
 

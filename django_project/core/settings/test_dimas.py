@@ -6,10 +6,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'test_db',
         'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        # Set to empty string for default.
-        'PORT': '',
+        'TEST_NAME': 'unittests',
     }
 }
 

@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.contrib.gis.db import models
-#from feti.models.address import Address
+# from feti.models.address import Address
 from django.db.models.signals import post_save
 from django.core import management
 
@@ -40,5 +40,8 @@ def regenerate_landing_page(sender, instance, **kwargs):
     management.call_command('full_front_page')
 
 
-post_save.connect(regenerate_landing_page, sender=Provider, dispatch_uid="promary_institution_landing_page")
-
+post_save.connect(
+    regenerate_landing_page,
+    sender=Provider,
+    dispatch_uid="promary_institution_landing_page"
+)

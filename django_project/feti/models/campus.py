@@ -1,11 +1,6 @@
 # coding=utf-8
 """Model class for WMS Resource"""
 
-__author__ = 'Christian Christelis <christian@kartoza.com>'
-__date__ = '04/2015'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.contrib.gis.db import models
 from django.template import Context, loader
 from django.db.models.signals import post_save
@@ -14,6 +9,11 @@ from django.core import management
 from feti.models.provider import Provider
 from feti.models.course import Course
 from feti.models.address import Address
+
+__author__ = 'Christian Christelis <christian@kartoza.com>'
+__date__ = '04/2015'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 class Campus(models.Model):
@@ -122,7 +122,7 @@ class Campus(models.Model):
         try:
             self.address_fk
             self.address
-        except Exception as e:
+        except Exception as e:  # noqa
             from_inline = True
 
         if from_inline:

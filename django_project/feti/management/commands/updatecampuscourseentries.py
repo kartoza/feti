@@ -1,13 +1,10 @@
 # coding=utf-8
 from feti.models.campus import Campus
 from feti.models.campus_course_entry import CampusCourseEntry
-from feti.models.course import Course
+from django.core.management.base import BaseCommand
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '16/07/15'
-
-
-from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):

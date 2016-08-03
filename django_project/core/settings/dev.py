@@ -46,7 +46,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(DJANGO_ROOT, 'APPNAME.log'),
-            'maxBytes': 1024*1024*15,  # 15MB
+            'maxBytes': 1024 * 1024 * 15,  # 15MB
             'backupCount': 10,
         },
         # 'logfile': {

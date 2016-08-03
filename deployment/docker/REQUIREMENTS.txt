@@ -1,4 +1,4 @@
-Django==1.8
+Django==1.8.14
 psycopg2
 pytz
 django-braces
