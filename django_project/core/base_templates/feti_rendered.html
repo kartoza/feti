@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <link href="/static/css/bootstrap.min.99d2b8992e26.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/css/leaflet.72a6fd27d5e5.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/css/material-wfont.min.0d0b02cc6e13.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/css/ripples.min.e49b93f293b1.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/css/feti-theme.9f0d7e7575c3.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/css/retheme.6b62fb62bfc8.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/css/bootstrap-datetimepicker.min.766bbb0899ba.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/leaflet-extra-markers/leaflet.extra-markers.777babb8d2bc.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="/static/feti/font-awesome/css/font-awesome.8e12157da5fc.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <script type="text/javascript" src="/static/js/jquery-1.11.1.min.8101d596b2b8.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/bootstrap.0a82d6a23048.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/moment.min.3fa95b749982.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/leaflet.57ff70669f76.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/leaflet-image.cf5f4de3e61a.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/jspdf.85fcd46db8c0.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/material.min.f3455860e561.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/ripples.min.c74fd1243fc9.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/validate.d41d8cd98f00.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.min.54df1bb5f67c.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/jquery.flot.min.9927ea93540a.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/jquery.flot.time.min.0881020d81c9.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/leaflet-extra-markers/leaflet.extra-markers.2805dc411db0.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/ZeroClipboard.a50cf20034f6.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/feti/js/leaflet.control.share.eee32f2511f0.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/feti/js/feti.b4436b18127f.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/csrf-ajax.d84fc96b858b.js" charset="utf-8"></script>
+
+    <meta charset="UTF-8">
+
+  <script>
+    $(document).ready(function() {
+        $.material.init();
+        set_offset();
+    });
+  </script>
+
+  
+
+    <script>
+        window.L_PREFER_CANVAS = true;
+        $(document).ready(function () {
+            show_map();
+            $('#campus_details').addClass("active");
+            
+
+                $( "#field-of-study-id" ).change(function() {
+                  $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").addClass("shown");
+                });
+
+                $(  "#field-of-study-id" ).focus(function() {
+                 $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").addClass("shown");
+                });
+
+            });
+            $(document).mouseup(function (e)
+        {
+            var container = $("#navigation_bar #form-search");
+
+            if (!container.is(e.target) // if the target of the click isn't the container...
+                && container.has(e.target).length === 0) // ... nor a descendant of the container
+            {
+                $("#navigation_bar #private-institutes, #navigation_bar #form-search .form-group, #navigation_bar #form-search label").removeClass("shown");
+            }
+        });
+
+    </script>
+    <title>Further Education and Training Institute</title>
+
+</head>
+<body>
+
+<div id="navigation_bar">
+  
+    
+        {% include "feti/navigation_bar.html" %}
+    
+
+</div>
+<div id="content">
+    
+    <div class="container-fluid">
+        <div class="row">
+            
+            <div class="col-xs-8" style="margin:0; padding:0;">
+                <div class="col-xs-8 affix" id="map">
+</div>
+
+
+            </div>
+            
+            <div class="col-xs-4" id="side_panel" style="padding-top: 10px;">
+                <div class="bs-component">
+                    <div class="panel">
+                        
+                            <div class="panel-body">
+                                
+                                    No terms provided
+                                
+                            </div>
+                        
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+    <!-- /container -->
+
+    
+    <div id="share-control-wrapper" style="display: none;">
+        <div id="share-control">
+    <div id="share-control-button" class="leaflet-bar">
+        <span class="mdi-social-share"></span>
+        <span>Share</span>
+    </div>
+    <div id="share-control-action" class="leaflet-bar" style="display: none;">
+        <div id="share-link-field" class="popup-field">
+            <span>Share link:</span>
+            <input id="share-link-url" type="text" />
+            <span id="share-link-copy-button"
+                  class="mdi-content-content-copy"></span>
+        </div>
+        <div class="popup-field">
+            <div id="share-control-pdf-button">
+                <span class="mdi-navigation-arrow-drop-down-circle"></span>
+                <span>Download summary PDF</span>
+            </div>
+        </div>
+        <div class="popup-field">
+            <div id="share-control-full-pdf-button">
+                <span class="mdi-navigation-arrow-drop-down-circle"></span>
+                <span>Download full PDF</span>
+            </div>
+        </div>
+        <div class="popup-field">
+            <div id="share-control-popup-close-button">
+                <span class="mdi-navigation-close"></span>
+                <span>Close</span>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+</div>
+</body>
+</html>
