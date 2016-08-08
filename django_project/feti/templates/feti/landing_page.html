@@ -7,9 +7,6 @@
 {% endblock title %}
 
 {% block js_head %}
-    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
 {% endblock %}
 
 {% block css_head %}
@@ -176,6 +173,8 @@
 {% block js_inline %}
     <script type='template' id='map-template'>
         <div class="row" id="feti-map"></div>
+        <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
+        <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
+        <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
     </script>
-    <script type="text/javascript" src="{% static 'feti/js/feti-main.js' %}" charset="utf-8"></script>
 {% endblock %}
