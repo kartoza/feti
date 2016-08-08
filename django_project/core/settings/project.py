@@ -25,11 +25,10 @@ INSTALLED_APPS += (
     # 'user_profile',
 )
 
-
 PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
-            'js/jquery-1.11.1.min.js',
+            'js/jquery-1.11.3.min.js',
             'js/bootstrap.js',
             'js/moment.min.js',
             'feti/js/Leaflet/1.0.0-rc1/leaflet.js',
@@ -41,7 +40,8 @@ PIPELINE_JS = {
             'feti/js/jquery.flot.time.min.js',
             'feti/leaflet-extra-markers/leaflet.extra-markers.js',
             'feti/js/ZeroClipboard.js',
-            'feti/js/backbone-min.js',
+            'feti/js/underscore-1.8.3.min.js',
+            'feti/js/backbone-1.2.3.min.js',
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -49,6 +49,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'feti/js/leaflet.control.share.js',
             'feti/js/feti.js',
+            'feti/js/feti-backbone/feti-main.js',
             'js/csrf-ajax.js',
         ),
         'output_filename': 'js/appjs.js'

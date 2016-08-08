@@ -17,12 +17,12 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: "Lato","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 700;
 }
 
 .topnav {
-    font-size: 14px; 
+    font-size: 14px;
 }
 
 .lead {
@@ -70,7 +70,7 @@ h6 {
     text-align: center;
 }
 
-@media(max-width:767px) {
+@media (max-width: 767px) {
     .intro-message {
         padding-bottom: 15%;
     }
@@ -143,17 +143,17 @@ h6 {
     margin-top: 0;
 }
 
-@media(max-width:1199px) {
+@media (max-width: 1199px) {
     ul.banner-social-buttons {
         float: left;
         margin-top: 15px;
     }
 }
 
-@media(max-width:767px) {
+@media (max-width: 767px) {
     .banner h2 {
         margin: 0;
-        text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+        text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6);
         font-size: 3em;
     }
 
@@ -169,7 +169,7 @@ h6 {
 }
 
 footer {
-    padding-top:5px;
+    padding-top: 5px;
     padding-bottom: 15px;
     background-color: #214971;
 }
@@ -179,7 +179,7 @@ p.copyright, p.login-link, p.login-link a {
     color: white;
 }
 
-p.login-link :hover{
+p.login-link :hover {
     text-decoration: none;
 }
 
@@ -188,6 +188,17 @@ p.login-link :hover{
     background-color: #eeeeee;
 }
 
-#feti-map {
+#feti-map-wrapper {
     height: 600px;
 }
+
+#feti-map {
+    height: 100%;
+}
+
+#feti-pro, #feti-providers {
+    height: 100%;
+    max-height: 100%;
+    overflow-y: scroll;
+}
+
