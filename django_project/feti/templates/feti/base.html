@@ -8,22 +8,21 @@
 
     <meta charset="UTF-8">
 
-  <script>
-    $(document).ready(function() {
-        $.material.init();
-        set_offset();
-    });
-  </script>
+    <script>
+        $(document).ready(function() {
+            $.material.init();
+            set_offset();
+        });
+    </script>
 
-  {% block header %}
-    <title></title>
-  {% endblock %}
+    <title>{% block title %}{% endblock title %}</title>
+
 </head>
 <body>
 
 <div id="navigation_bar">
-  {% block navigation-bar %}
-  {% endblock %}
+    {% block navigation-bar %}
+    {% endblock %}
 </div>
 <div id="content">
     {% block content %}
