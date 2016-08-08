@@ -197,3 +197,55 @@ p.login-link :hover{
 #feti-map {
     height: 600px;
 }
+
+.map-category {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-top: -10px;
+    height: 55px;
+    background-color: #1d68b3;
+}
+
+.map-category .row {
+    color: white;
+    font-size: 14pt;
+    text-align: center;
+}
+
+.map-option {
+    padding-top: 6px;
+}
+
+.map-question {
+    padding-top: 13px;
+    text-align: right
+}
+
+.m-button {
+    float: left;
+    width: 170px;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-weight: lighter;
+	-moz-border-radius:25px;
+	-webkit-border-radius:25px;
+	border-radius:25px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:16px;
+	padding:10px 16px;
+	text-decoration:none;
+}
+.m-button:hover {
+	background-color:#155ba2;
+}
+
+.m-button.active {
+    background-color:#155ba2;
+}
+
+.m-button:active {
+	position:relative;
+	top:1px;
+}
