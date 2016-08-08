@@ -85,8 +85,8 @@
 
     <div class="content-section-b">
         <div class="container">
-            <div class="container-fluid">
-                <div class="row" id="feti-map"></div>
+            <div class="container-fluid" id="map-container">
+                {# <div class="row" id="feti-map"></div> #}
             </div>
         </div>
         <!-- /.container -->
@@ -146,12 +146,8 @@
 {%  endblock %}
 
 {% block js_inline %}
-    <script type="text/javascript">
-
-        var fetiMap = L.map('feti-map').setView([-29, 20], 6);
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(fetiMap);
-
+    <script type='template' id='map-template'>
+        <div class="row" id="feti-map"></div>
     </script>
+    <script type="text/javascript" src="{% static 'feti/js/feti-main.js' %}" charset="utf-8"></script>
 {% endblock %}

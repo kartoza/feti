@@ -77,6 +77,7 @@ h6 {
 
     .intro-message > h1 {
         font-size: 3em;
+        width: 300px;
     }
 
     ul.intro-social-buttons > li {
@@ -91,6 +92,11 @@ h6 {
 
     .intro-divider {
         width: 100%;
+    }
+
+    #feti-map {
+        margin-left: 20px;
+        margin-right: 20px;
     }
 }
 

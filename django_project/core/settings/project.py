@@ -41,6 +41,7 @@ PIPELINE_JS = {
             'feti/js/jquery.flot.time.min.js',
             'feti/leaflet-extra-markers/leaflet.extra-markers.js',
             'feti/js/ZeroClipboard.js',
+            'feti/js/underscore-min.js',
             'feti/js/backbone-min.js',
         ),
         'output_filename': 'js/contrib.js',
@@ -48,7 +49,6 @@ PIPELINE_JS = {
     'appjs': {
         'source_filenames': (
             'feti/js/leaflet.control.share.js',
-            'feti/js/feti.js',
             'js/csrf-ajax.js',
         ),
         'output_filename': 'js/appjs.js'
