@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'grappelli',
     'django.contrib.admin',
     'django_forms_bootstrap',
     'django.contrib.sites'
