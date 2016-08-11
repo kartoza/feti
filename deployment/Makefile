@@ -168,7 +168,7 @@ dbshell:
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)-db psql -U docker -h localhost gis
 
 sentry:
 	@echo
@@ -214,7 +214,7 @@ map:
 	@echo "--------------------------"
 	# Experimental way we had of getting it using QGIS Server
 	#wget -O map.pdf "http://172.17.0.6/cgi-bin/qgis_mapserv.fcgi?map=/web/jk-floods.qgs&SERVICE=wms&LAYERS=Rw&REQUEST=GetPrint&TEMPLATE=6Hour&map0:EXTENT=11862318.594,-714081.378,11922154.957,-675870.096&map0:ROTATION=0&FORMAT=pdf&DPI=300"
-	docker exec -t -i $(PROJECT_ID)_cron_1 xvfb-run python /home/web/cron-scripts/pdf_report_generator.py
+	docker exec -t -i $(PROJECT_ID)_cron xvfb-run python /home/web/cron-scripts/pdf_report_generator.py
 	@echo "--------------------------"
 	@echo "PDF Generated - written to reports"
 	@echo "--------------------------"
@@ -228,10 +228,10 @@ qgis:
 	@echo "------------------------------------------------------------------"
 	@xhost +; docker run --rm --name="qgis-desktop-2-8" \
 	-i -t \
-	--link $(PROJECT_ID)_db_1:db \
-	--link $(PROJECT_ID)_qgisserver_1:qgisserver \
-	--link $(PROJECT_ID)_mapproxy_1:mapproxy \
-	--volumes-from $(PROJECT_ID)_qgisserver_1 \
+	--link $(PROJECT_ID)_db:db \
+	--link $(PROJECT_ID)_qgisserver:qgisserver \
+	--link $(PROJECT_ID)_mapproxy:mapproxy \
+	--volumes-from $(PROJECT_ID)_qgisserver \
 	-v ${HOME}:/home/$(USER) \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-e DISPLAY=unix$(DISPLAY) \
@@ -242,7 +242,7 @@ reload:
 	@echo "------------------------------------------------------------------"
 	@echo "Reload django project in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)_uwsgi_1 uwsgi --reload  /tmp/django.pid
+	@docker exec -t -i $(PROJECT_ID)_uwsgi uwsgi --reload  /tmp/django.pid
 
 dbrestore:
 	@echo

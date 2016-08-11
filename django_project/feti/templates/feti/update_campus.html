@@ -1,0 +1,27 @@
+{% extends "feti/base.html" %}
+{% load crispy_forms_tags %}
+{% block header %}
+    <script>
+        $(document).ready(function () {
+            $('#login_id').addClass("active");
+        });
+
+    </script>
+    <title>User Login</title>
+{% endblock %}
+
+{% block navigation-bar %}
+    {% include "feti/navigation_bar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="col-lg-8 col-lg-offset-2">
+        <div style="padding-top:50px"></div>
+        <section id="forms">
+            <div class='container'>
+                {% crispy form %}
+            </div>
+        </section>
+    </div>
+
+{% endblock %}

@@ -66,7 +66,7 @@ class GeoStackedInline(admin.StackedInline):
         if isinstance(db_field, models.GeometryField):
             # Setting the widget with the newly defined widget.
             kwargs['widget'] = self.get_map_widget(db_field)
-            return db_field.formfield(**kwargs)
+            return super(GeoStackedInline, self).formfield_for_dbfield(db_field, **kwargs)
         else:
             return super(GeoStackedInline, self).formfield_for_dbfield(db_field, **kwargs)
 
