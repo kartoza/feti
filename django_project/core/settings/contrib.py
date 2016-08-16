@@ -10,6 +10,7 @@ INSTALLED_APPS += (
     'leaflet',
     'djgeojson',
     'nested_inline',
+    'crispy_forms',
 )
 
 # These get enabled in prod.py
@@ -47,3 +48,4 @@ HAYSTACK_DEFAULT_OPERATOR = 'AND'
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 GRAPPELLI_ADMIN_TITLE = 'Feti Administration'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

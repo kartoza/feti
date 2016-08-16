@@ -22,7 +22,7 @@ DATABASES = {
 # Project apps
 INSTALLED_APPS += (
     'feti',
-    # 'user_profile',
+    'user_profile',
 )
 
 
