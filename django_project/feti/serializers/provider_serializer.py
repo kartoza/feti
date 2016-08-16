@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from feti.models.course import Course
+from feti.models.provider import Provider
 
 __author__ = 'irwan'
 
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Course
+        model = Provider

@@ -6,6 +6,7 @@ from django.conf.urls import patterns, url, include
 from feti.forms.search import DefaultSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
+from feti.views.campus import UpdateCampusView
 from feti.views.landing_page import LandingPage
 from feti.views.api import ApiCampuss, ApiCourses
 
@@ -42,4 +43,8 @@ urlpatterns = patterns(
             searchqueryset=sqs,
             form_class=DefaultSearchForm),
         name='haystack_search'),
+    url(regex='^campus/(?P<pk>\d+)/update/$',
+        view=UpdateCampusView.as_view(),
+        name='update_campus'),
+)
 ) + api_urls

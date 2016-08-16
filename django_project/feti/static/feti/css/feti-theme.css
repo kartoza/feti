@@ -193,3 +193,7 @@ body {
 .hero-spacer {
     margin-top: 50px;
 }
+
+select[multiple].form-control, select[multiple].form-control.focus, select[multiple].form-control:focus{
+    height: 500px;
+}
