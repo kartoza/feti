@@ -1,99 +1,152 @@
-{% extends "base.html" %}
+{% extends 'feti_base.html' %}
+{% load staticfiles %}
+{% load pipeline %}
+
 {% block title %}
-    Landing Page
+    FETI
 {% endblock title %}
+
+{% block js_head %}
+{% endblock %}
+
+{% block css_head %}
+    {% stylesheet 'landing_page' %}
+{% endblock %}
+
 {% block content %}
-    <!-- Page Content -->
-    <div class="container">
+    <!-- Header -->
+    <a name="about"></a>
+    <div class="intro-header">
+        <div class="container">
 
-        <!-- Jumbotron Header -->
-        <div class="jumbotron hero-spacer">
-            <h1>Feti Landing Page</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, ipsam, eligendi, in quo sunt possimus non incidunt odit vero aliquid similique quaerat nam nobis illo aspernatur vitae fugiat numquam repellat.</p>
-            <p><a class="btn btn-primary btn-large">Call to action!</a>
-            </p>
-        </div>
-
-        <hr>
-
-        <!-- Title -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Latest Features</h3>
-            </div>
-        </div>
-        <!-- /.row -->
-
-        <!-- Page Features -->
-        <div class="row text-center">
-
-            <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
-                    <div class="caption">
-                        <h3>Feature Label</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Open</a> <a href="#" class="btn btn-default">More Info</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
-                    <div class="caption">
-                        <h3>Feature Label</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Open</a> <a href="#" class="btn btn-default">More Info</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
-                    <div class="caption">
-                        <h3>Feature Label</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Open</a> <a href="#" class="btn btn-default">More Info</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
-                    <div class="caption">
-                        <h3>Feature Label</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Open</a> <a href="#" class="btn btn-default">More Info</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!-- /.row -->
-
-        <hr>
-
-        <!-- Footer -->
-        <footer>
             <div class="row">
                 <div class="col-lg-12">
-                    <p>Copyright &copy; Your Website 2014</p>
+                    <div class="intro-message">
+                        <h1>WE HELP YOU TO FIND YOUR CAREER</h1>
+                        <h2><span class="count">23527</span> COURSES FOUND</h2>
+                    </div>
                 </div>
             </div>
-        </footer>
+
+        </div>
+        <!-- /.container -->
 
     </div>
-    <!-- /.container -->
+    <!-- /.intro-header -->
 
+    <!-- Page Content -->
+    <div class="content-section-a">
+        <div class="container">
+            <div class="row intro-section">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-10">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">INTRO SECTION</h2>
+                    <p class="lead">
+                        Duis sit amet est eleifend, gravida nulla ac, egestas metus.
+                        Integer ullamcorper metus a ipsum tempus, ut euismod velit elementum.
+                        Cras magna nunc, tempor nec elementum vel, fermentum a ligula. In vel turpis turpis. Donec at
+                        pellentesque nunc.
+                        Fusce dictum neque in mi mattis, rhoncus sollicitudin sem facilisis.
+                        Aliquam dapibus, libero sit amet ultricies ullamcorper, lacus neque pulvinar est, et pulvinar
+                        elit est sit amet nisl.
+                        Quisque hendrerit volutpat sem, sit amet scelerisque erat convallis ut. Integer elementum libero
+                        non risus sodales, eget euismod est fringilla.
+                        Maecenas ac nisi in diam porttitor semper. Donec blandit aliquam commodo. Donec enim ipsum,
+                        viverra sit amet nibh quis, suscipit pharetra turpis.
+                    </p>
+                </div>
+                <div class="col-sm-1"></div>
+            </div>
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.content-section-a -->
+
+    <div class="content-section-b">
+        <div class="container">
+            <div class="map-category">
+                <div class="row">
+                    <div class="col-sm-4 map-question">
+                        What are you looking for?
+                    </div>
+                    <div class="col-sm-8 map-option">
+                        <div class="m-button active" id="where-to-study">
+                            Where to study
+                        </div>
+                        <div class="m-button" id="what-to-study">
+                            What to study
+                        </div>
+                        <div class="m-button" id="choose-occupation">
+                            Choose occupation
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid" id="map-container">
+            </div>
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-b -->
+
+    <div class="content-section-a">
+        <div class="container">
+            <div class="row intro-section">
+                <div class="col-sm-12">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">OUR PARTNERS</h2>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="partner"></div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="partner"></div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="partner"></div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="partner"></div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="partner"></div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="partner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.content-section-a -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10">
+                    <p class="copyright text-muted small">Kartoza 2016</p>
+                </div>
+                <div class="col-lg-2">
+                    <p class="login-link pull-right">
+                        <a href="#">Log In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
 {%  endblock %}
+
+{% block js_inline %}
+    <script type='template' id='map-template'>
+        <div class="row" id="feti-map"></div>
+        <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
+        <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
+        <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
+    </script>
+{% endblock %}

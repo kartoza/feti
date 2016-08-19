@@ -25,17 +25,14 @@ INSTALLED_APPS += (
     'user_profile',
 )
 
-
 PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
-            'js/jquery-1.11.1.min.js',
+            'js/jquery-1.11.3.min.js',
             'js/bootstrap.js',
             'js/moment.min.js',
-            'feti/js/leaflet.js',
-            'feti/js/leaflet-image.js',
+            'feti/js/Leaflet/1.0.0-rc1/leaflet.js',
             'feti/js/jspdf.js',
-            'feti/js/material.min.js',
             'feti/js/ripples.min.js',
             'feti/js/validate.js',
             'js/bootstrap-datetimepicker.min.js',
@@ -43,13 +40,14 @@ PIPELINE_JS = {
             'feti/js/jquery.flot.time.min.js',
             'feti/leaflet-extra-markers/leaflet.extra-markers.js',
             'feti/js/ZeroClipboard.js',
+            'feti/js/underscore-1.8.3.min.js',
+            'feti/js/backbone-1.3.3.min.js',
         ),
         'output_filename': 'js/contrib.js',
     },
     'appjs': {
         'source_filenames': (
             'feti/js/leaflet.control.share.js',
-            'feti/js/feti.js',
             'js/csrf-ajax.js',
         ),
         'output_filename': 'js/appjs.js'
@@ -67,15 +65,29 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/bootstrap.min.css',
             'feti/css/leaflet.css',
-            'feti/css/material-wfont.min.css',
-            'feti/css/ripples.min.css',
-            'feti/css/feti-theme.css',
-            'feti/css/retheme.css',
             'css/bootstrap-datetimepicker.min.css',
             'feti/leaflet-extra-markers/leaflet.extra-markers.css',
             'feti/font-awesome/css/font-awesome.css',
         ),
         'output_filename': 'css/contrib.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
+    },
+    'feti-base': {
+        'source_filenames': (
+            'feti/css/feti-base.css',
+        ),
+        'output_filename': 'css/feti-base.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
+    },
+    'landing_page': {
+        'source_filenames': (
+            'feti/css/landing-page.css',
+        ),
+        'output_filename': 'css/landing-page.css',
         'extra_context': {
             'media': 'screen, projection',
         },
