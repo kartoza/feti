@@ -11,6 +11,10 @@
 
 {% block css_head %}
     {% stylesheet 'landing_page' %}
+    <script
+        src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
+    </script>
+
 {% endblock %}
 
 {% block content %}
@@ -35,7 +39,7 @@
     <!-- /.intro-header -->
 
     <!-- Page Content -->
-    <div class="content-section-a">
+    <div class="content-section-a about-section">
         <div class="container">
             <div class="row intro-section">
                 <div class="col-sm-1"></div>
@@ -63,36 +67,33 @@
     </div>
     <!-- /.content-section-a -->
 
-    <div class="content-section-b">
-        <div class="container">
-            <div class="map-category">
-                <div class="row">
-                    <div class="col-sm-4 map-question">
-                        What are you looking for?
-                    </div>
-                    <div class="col-sm-8 map-option">
-                        <div class="m-button active" id="where-to-study">
-                            Where to study
+    <div class="map-section">
+            <div id="map-container">
+                <div class="map-category">
+                    <div class="row">
+                        <div class="col-sm-4 map-question">
+                            What are you looking for?
                         </div>
-                        <div class="m-button" id="what-to-study">
-                            What to study
-                        </div>
-                        <div class="m-button" id="choose-occupation">
-                            Choose occupation
+                        <div class="col-sm-8 map-option">
+                            <div class="m-button active" id="where-to-study">
+                                Where to study
+                            </div>
+                            <div class="m-button" id="what-to-study">
+                                What to study
+                            </div>
+                            <div class="m-button" id="choose-occupation">
+                                Choose occupation
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="container-fluid" id="map-container">
-            </div>
         </div>
         <!-- /.container -->
 
     </div>
     <!-- /.content-section-b -->
 
-    <div class="content-section-a">
+    <div class="content-section-a partner-section">
         <div class="container">
             <div class="row intro-section">
                 <div class="col-sm-12">
@@ -144,9 +145,9 @@
 
 {% block js_inline %}
     <script type='template' id='map-template'>
-        <div class="row" id="feti-map"></div>
-        <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
-        <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
-        <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
+        <div id="feti-map"></div>
     </script>
+    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
 {% endblock %}
