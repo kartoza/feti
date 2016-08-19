@@ -125,27 +125,28 @@ p.login-link :hover {
     margin-left: 10px;
     margin-right: 10px;
     font-weight: lighter;
-	-moz-border-radius:25px;
-	-webkit-border-radius:25px;
-	border-radius:25px;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-size:16px;
-	padding:10px 16px;
-	text-decoration:none;
+    -moz-border-radius: 25px;
+    -webkit-border-radius: 25px;
+    border-radius: 25px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 10px 16px;
+    text-decoration: none;
 }
+
 .m-button:hover {
-	background-color:#155ba2;
+    background-color: #155ba2;
 }
 
 .m-button.active {
-    background-color:#155ba2;
+    background-color: #155ba2;
 }
 
 .m-button:active {
-	position:relative;
-	top:1px;
+    position: relative;
+    top: 1px;
 }
 
 #feti-map {
