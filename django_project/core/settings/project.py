@@ -22,7 +22,7 @@ DATABASES = {
 # Project apps
 INSTALLED_APPS += (
     'feti',
-    # 'user_profile',
+    'user_profile',
 )
 
 PIPELINE_JS = {
@@ -70,6 +70,15 @@ PIPELINE_CSS = {
             'feti/font-awesome/css/font-awesome.css',
         ),
         'output_filename': 'css/contrib.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
+    },
+    'feti-base': {
+        'source_filenames': (
+            'feti/css/feti-base.css',
+        ),
+        'output_filename': 'css/feti-base.css',
         'extra_context': {
             'media': 'screen, projection',
         },

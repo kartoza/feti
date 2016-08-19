@@ -17,6 +17,7 @@ urlpatterns = patterns(
 
     # include application urls
     url(r'', include('feti.urls', namespace='feti')),
+    url(r'', include('user_profile.urls', namespace='user_profile')),
 
 )
 

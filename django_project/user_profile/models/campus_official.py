@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
+from feti.models.campus import Campus
 
 
-class Official(models.Model):
+class CampusOfficial(models.Model):
+    # official user that have provider
     user = models.OneToOneField(User)
     department = models.CharField(max_length=100)
     phone_regex = RegexValidator(
@@ -13,3 +15,12 @@ class Official(models.Model):
     phone = models.CharField(
         validators=[phone_regex], blank=True, max_length=15
     )
+    campus = models.OneToOneField(
+        Campus, related_name='official_provider', blank=True, null=True)
+
+    class Meta:
+        app_label = "feti"
+        verbose_name = 'Provider Official'
+
+    def __unicode__(self):
+        return self.user.username

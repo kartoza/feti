@@ -1,0 +1,61 @@
+{% extends "feti_base.html" %}
+{% block header %}
+    <script>
+        $(document).ready(function () {
+            $('#login_id').addClass("active");
+        });
+
+    </script>
+    <title>User Login</title>
+{% endblock %}
+
+{% block content %}
+    <div class="col-lg-8 col-lg-offset-2">
+        <div style="padding-top:50px"></div>
+        <div class="panel panel-primary" style="margin-bottom:0px">
+            <h1 style="text-align: center; color: #4285f4">
+                {{ username }}
+            </h1>
+            <div class="panel-body" style="text-align: center">
+                <b>Email : </b> {{ email }}
+                </br>
+                <b>Full name : </b> {{ full_name }}
+                </br>
+                <b>Department : </b> {{ department }}
+                </br>
+                <b>Phone : </b> {{ phone }}
+            </div>
+        </div>
+        {% if campus %}
+            <div class="panel panel-primary" style="margin-bottom:0px">
+                <div class="panel-heading">
+                    <h3 class="panel-title" style="text-align: center">
+                        {{ username }}'s provider
+                    </h3>
+                </div>
+                <h3 style="text-align: center; color: #4285f4">
+                    {{ campus.campus }}
+                </h3>
+                <div class="panel-body">
+                    <b>Description : </b> {{ campus.long_description }}
+                    </br>
+                    <b>Address : </b> {{ campus.address }}
+                    </br>
+                </div>
+            </div>
+            {% if campus.courses %}
+                <div class="panel panel-primary" style="margin-bottom:0px">
+                    <h3 style="color: #4285f4">
+                        Course List <a href="/campus/{{ campus.id }}/update/" class="mdi-image-edit"></a>
+                    </h3>
+                    <ul>
+                        {% for course in campus.courses %}
+                            <li>{{ course.course_description }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock %}
