@@ -4,6 +4,6 @@ from feti.models.provider import Provider
 __author__ = 'irwan'
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provider
