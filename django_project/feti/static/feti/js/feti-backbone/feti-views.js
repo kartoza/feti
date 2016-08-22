@@ -179,7 +179,7 @@ var SearchBarView = Backbone.View.extend({
         mapView.fullScreenMap();
     },
     exitFullScreen: function () {
-        this.hideSearchBarWithMap();
+        this.toogleProviderWithMap();
     },
     carouselToogling: function (event) {
         if ($(event.target).hasClass('fa-caret-left')) {
@@ -263,6 +263,18 @@ var SearchBarView = Backbone.View.extend({
             this.search_bar_hidden = true;
         } else {
             mapView.exitFullScreen();
+        }
+    },
+    toogleProviderWithMap: function () {
+        var that = this;
+        if ($('#providers').is(":visible")) {
+            $('#carousel-toogle').removeClass('fa-caret-right');
+            $('#carousel-toogle').addClass('fa-caret-left');
+            $('#providers').hide("slide", {direction: "right"}, 500, function () {
+                that.hideSearchBarWithMap();
+            });
+        } else {
+            that.hideSearchBarWithMap();
         }
     }
 });
