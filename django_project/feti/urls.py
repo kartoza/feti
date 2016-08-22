@@ -46,5 +46,4 @@ urlpatterns = patterns(
     url(regex='^campus/(?P<pk>\d+)/update/$',
         view=UpdateCampusView.as_view(),
         name='update_campus'),
-)
 ) + api_urls

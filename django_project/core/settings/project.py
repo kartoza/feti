@@ -74,6 +74,15 @@ PIPELINE_CSS = {
             'media': 'screen, projection',
         },
     },
+    'feti-base': {
+        'source_filenames': (
+            'feti/css/feti-base.css',
+        ),
+        'output_filename': 'css/feti-base.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
+    },
     'landing_page': {
         'source_filenames': (
             'feti/css/landing-page.css',

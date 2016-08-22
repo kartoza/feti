@@ -7,41 +7,16 @@
 {% endblock title %}
 
 {% block js_head %}
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"
+            integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk=" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block css_head %}
     {% stylesheet 'landing_page' %}
+    <script
+            src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
+    </script>
 {% endblock %}
-
-{% block navigation-bar %}
-    <!-- Navigation -->
-    <nav class="navbar navbar-default topnav" role="navigation">
-        <div class="container topnav">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand topnav" href="#">FORD 2</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="#login">Log In</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-{% endblock %}
-
 
 {% block content %}
     <!-- Header -->
@@ -65,7 +40,7 @@
     <!-- /.intro-header -->
 
     <!-- Page Content -->
-    <div id="introduction_text" class="content-section-a">
+    <div id="introduction_text" class="content-section-a about-section">
         <div class="container">
             <div class="row intro-section">
                 <div class="col-sm-1"></div>
@@ -93,36 +68,19 @@
     </div>
     <!-- /.content-section-a -->
 
-    <div class="content-section-b">
-        <div class="container">
-            <div class="map-category">
-                <div class="row">
-                    <div class="col-sm-4 map-question">
-                        What are you looking for?
-                    </div>
-                    <div class="col-sm-8 map-option">
-                        <div class="m-button active" id="where-to-study">
-                            Where to study
-                        </div>
-                        <div class="m-button" id="what-to-study">
-                            What to study
-                        </div>
-                        <div class="m-button" id="choose-occupation">
-                            Choose occupation
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container-fluid" id="map-container">
+    <div class="map-section">
+        <div id="map-container">
+            <div id="map-search"></div>
+            <div class="row" style="height: 100%; position: relative;">
+                <div id="map-section" style="height: 100%; width: 100%"></div>
+                <div id="providers" class="col-md-4 nopadding" style="height: 100%"></div>
             </div>
         </div>
         <!-- /.container -->
-
     </div>
     <!-- /.content-section-b -->
 
-    <div class="content-section-a">
+    <div class="content-section-a partner-section">
         <div class="container">
             <div class="row intro-section">
                 <div class="col-sm-12">
@@ -170,14 +128,18 @@
             </div>
         </div>
     </footer>
-{%  endblock %}
+{% endblock %}
 
 {% block js_inline %}
-    <script type='template' id='map-template'>
-        <div class="row" id="feti-map"></div>
-        <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
-        <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
-        <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
-        <script src="/static/feti/js/feti-backbone/feti-router.js"></script>
+    <script>
+        var dispatcher = _.extend({}, Backbone.Events);
     </script>
+    <script type='template' id='map-template'>
+        <div id="feti-map"></div>
+    </script>
+    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-router.js"></script>
 {% endblock %}
