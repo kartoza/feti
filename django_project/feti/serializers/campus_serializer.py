@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from feti.models.campus import Campus
 from feti.serializers.course_serializer import CourseSerializer
-from feti.serializers.provider_serializer import ProviderSerializer
 
 __author__ = 'irwan'
 
