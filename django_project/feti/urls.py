@@ -15,13 +15,13 @@ sqs = SearchQuerySet()
 api_urls = patterns(
     '',
     url(
-        r'^api/campuss/',
+        r'^api/campus/',
         ApiCampuss.as_view(),
-        name='api-campuss'),
+        name='api-campus'),
     url(
-        r'^api/courses/(?P<campus_id>\d+)',
+        r'^api/course/(?P<campus_id>\d+)',
         ApiCourses.as_view(),
-        name='api-courses'),
+        name='api-course'),
 )
 
 urlpatterns = patterns(
@@ -29,12 +29,10 @@ urlpatterns = patterns(
     url(
         r'^$',
         LandingPage.as_view(),
-        name='landing_page'
-    ),
+        name='landing_page'),
     url(
         r'^search/',
-        include('haystack.urls')
-    ),
+        include('haystack.urls')),
     url(
         r'^customsearch/',
         search_view_factory(
