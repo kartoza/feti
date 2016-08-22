@@ -38,6 +38,9 @@ var MapView = Backbone.View.extend({
     removeLayer: function (layer) {
         this.map.removeLayer(layer);
     },
+    maximise: function() {
+        alert('maximising');
+    },
     clickMap: function (e) {
         this.fullScreenMap(e);
     },

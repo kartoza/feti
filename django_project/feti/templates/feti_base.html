@@ -38,11 +38,6 @@
     </script>
 </head>
 <body>
-<div id="content">
-    {% block content %}
-    {% endblock %}
-</div>
-
 <div id="navigation_bar">
     <!-- Navigation -->
     <nav class="navbar navbar-default topnav" role="navigation">
@@ -70,6 +65,11 @@
         </div>
         <!-- /.container -->
     </nav>
+</div>
+
+<div id="content">
+    {% block content %}
+    {% endblock %}
 </div>
 
 {% block js_inline %}

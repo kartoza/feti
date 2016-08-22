@@ -3,7 +3,7 @@
 {% load pipeline %}
 
 {% block title %}
-    FETI
+    FORD 2
 {% endblock title %}
 
 {% block js_head %}
@@ -21,7 +21,7 @@
 {% block content %}
     <!-- Header -->
     <a name="about"></a>
-    <div class="intro-header">
+    <div id="introduction_carousel" class="intro-header">
         <div class="container">
 
             <div class="row">
@@ -40,7 +40,7 @@
     <!-- /.intro-header -->
 
     <!-- Page Content -->
-    <div class="content-section-a about-section">
+    <div id="introduction_text" class="content-section-a about-section">
         <div class="container">
             <div class="row intro-section">
                 <div class="col-sm-1"></div>
@@ -141,4 +141,5 @@
     <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-router.js"></script>
 {% endblock %}
