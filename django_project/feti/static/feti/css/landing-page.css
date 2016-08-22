@@ -93,10 +93,7 @@ p.login-link :hover {
 }
 
 .m-button {
-    float: left;
     width: 170px;
-    margin-left: 10px;
-    margin-right: 10px;
     font-weight: lighter;
     -moz-border-radius: 25px;
     -webkit-border-radius: 25px;
@@ -172,39 +169,100 @@ p.login-link :hover {
 }
 
 @media (max-width: 768px) {
-   #map-container {
+    #map-container {
         width: 750px;
-   }
+    }
 }
 
-.map-category {
+.search-category {
+    background-color: #1d68b3;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     height: 55px;
-    background-color: #1d68b3;
+    text-align: center;
+    z-index: 99998;
 }
 
-.map-category .row {
+.search-category .row, #map-search {
     color: white;
     font-size: 14pt;
     text-align: center;
 }
 
 .map-option {
+    margin-top: 7px;
     padding-top: 6px;
 }
 
 .map-question {
+    display: inline-block;
+    margin-right: 50px;
     padding-top: 13px;
-    text-align: right
+    text-align: right;
+}
+
+.search-bar {
+    background-color: rgba(29, 104, 179, 0.9);
+    display: none;
+    font-size: 10px;
+    height: 55px;
+    position: absolute;
+    top: 55px;
+    width: 100%;
+    z-index: 99999;
+}
+
+.search-bar .m-button {
+    width: 140px !important;
+}
+
+#search-bar {
+    display: inline-block;
+    margin-right: 50px;
+    margin-top: 11px;
+    width: 30%;
+}
+
+#search-bar i {
+    color: black;
+}
+
+.form-control {
+    border-radius: 14px !important;
+}
+
+#providers {
+    overflow: scroll;
+    display: none;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding-top: 55px !important;
+    background: white;
+    z-index: 99995;
 }
 
 #back-home {
     font-size: 12pt;
     display: none;
+    position: absolute;
+    left: 50px;
+    top: 13px;
 }
 
 #back-home:hover {
     cursor: pointer;
     color: #084889;
+}
+
+.carousel-toogle {
+    cursor: pointer;
+    font-size: 24pt;
+    position: absolute;
+    right: 50px;
+    top: 13px;
+}
+
+.carousel-toogle:hover {
+    opacity: 0.7;
 }

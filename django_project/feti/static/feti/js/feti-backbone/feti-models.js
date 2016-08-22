@@ -29,10 +29,12 @@ var Campus = Backbone.Model.extend({
     destroy: function (options) {
         return Backbone.Model.prototype.destroy.call(this, options);
     },
-    render_marker: function () {
-        var location = this.attributes.location.split("(")[1].replace(")", "").split(" ");
-        // not sure is the best way
-        this.marker = new L.marker([parseFloat(location[1]), parseFloat(location[0])]).bindPopup(this.attributes._campus_popup);
-        dispatcher.trigger('map:add_layer', this.marker);
+    renderMarker: function () {
+        if (this.attributes.location) {
+            var location = this.attributes.location.split("(")[1].replace(")", "").split(" ");
+            // not sure is the best way
+            this.marker = new L.marker([parseFloat(location[1]), parseFloat(location[0])]).bindPopup(this.attributes._campus_popup);
+            dispatcher.trigger('map:addLayer', this.marker);
+        }
     }
 });
