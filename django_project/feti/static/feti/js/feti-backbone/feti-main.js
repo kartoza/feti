@@ -4,7 +4,6 @@
 // A $( document ).ready() block.
 var dispatcher = _.extend({}, Backbone.Events);
 $(document).ready(function () {
-    var map_view = new MapView();
     var campus_collection = new CampusCollection();
     campus_collection.fetch({
         success: function () {

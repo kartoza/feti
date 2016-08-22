@@ -12,7 +12,7 @@
 {% block css_head %}
     {% stylesheet 'landing_page' %}
     <script
-        src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
+            src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
     </script>
 
 {% endblock %}
@@ -68,25 +68,8 @@
     <!-- /.content-section-a -->
 
     <div class="map-section">
-            <div id="map-container">
-                <div class="map-category">
-                    <div class="row">
-                        <div class="col-sm-4 map-question">
-                            What are you looking for?
-                        </div>
-                        <div class="col-sm-8 map-option">
-                            <div class="m-button active" id="where-to-study">
-                                Where to study
-                            </div>
-                            <div class="m-button" id="what-to-study">
-                                What to study
-                            </div>
-                            <div class="m-button" id="choose-occupation">
-                                Choose occupation
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div id="map-container">
+            <div id="map-search"></div>
         </div>
         <!-- /.container -->
 
@@ -141,12 +124,13 @@
             </div>
         </div>
     </footer>
-{%  endblock %}
+{% endblock %}
 
 {% block js_inline %}
     <script type='template' id='map-template'>
         <div id="feti-map"></div>
     </script>
+    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
