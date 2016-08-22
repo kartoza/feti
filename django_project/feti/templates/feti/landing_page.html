@@ -70,6 +70,10 @@
     <div class="map-section">
         <div id="map-container">
             <div id="map-search"></div>
+            <div class="row" style="height: 100%">
+                <div id="map-section" class="col-md-8 nopadding" style="height: 100%"></div>
+                <div id="providers" class="col-md-4 nopadding" style="height: 100%"></div>
+            </div>
         </div>
         <!-- /.container -->
 
@@ -127,11 +131,14 @@
 {% endblock %}
 
 {% block js_inline %}
+    <script>
+        var dispatcher = _.extend({}, Backbone.Events);
+    </script>
     <script type='template' id='map-template'>
         <div id="feti-map"></div>
     </script>
-    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
 {% endblock %}

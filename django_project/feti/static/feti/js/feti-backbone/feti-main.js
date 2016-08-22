@@ -2,7 +2,6 @@
  * Created by meomancer on 08/08/16.
  */
 // A $( document ).ready() block.
-var dispatcher = _.extend({}, Backbone.Events);
 $(document).ready(function () {
     var campus_collection = new CampusCollection();
     campus_collection.fetch({

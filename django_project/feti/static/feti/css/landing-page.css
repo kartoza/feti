@@ -229,3 +229,7 @@ p.login-link :hover {
 .form-control {
     border-radius: 14px !important;
 }
+
+#providers {
+    overflow: scroll;
+}

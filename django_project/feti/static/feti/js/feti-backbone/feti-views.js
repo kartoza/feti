@@ -19,7 +19,7 @@ var MapView = Backbone.View.extend({
     },
     render: function () {
         this.$el.html(this.template());
-        $('#map-container').append(this.$el);
+        $('#map-section').append(this.$el);
         this.map = L.map(this.$('#feti-map')[0]).setView([-29, 20], 6);
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -74,54 +74,6 @@ var MapView = Backbone.View.extend({
 var mapView = new MapView();
 mapView.render();
 mapView.map.invalidateSize();
-
-var CourseView = Backbone.View.extend({
-    tagName: 'li',
-    template: _.template('<%- _long_description %>'),
-    container: "",
-    events: {
-        'click': 'clicked'
-    },
-    clicked: function () {
-        return false;
-    },
-    render: function () {
-        this.$el.empty();
-        this.$el.html(this.template(this.model.attributes));
-        $(this.container).append(this.$el);
-    }
-});
-
-var CampusView = Backbone.View.extend({
-    tagName: 'li',
-    template: _.template('<%- provider %><br><ul id="campus_course_<%- id %>" ></ul>'),
-    container: '#providers',
-    model: Campus,
-    events: {
-        'click': 'clicked'
-    },
-    clicked: function () {
-        return false;
-    },
-    render: function () {
-        this.$el.empty();
-        this.$el.html(this.template(this.model.attributes));
-        $(this.container).append(this.$el);
-        var that = this;
-        this.course_collection = new CourseCollection({id: this.model.attributes.id});
-        this.course_collection.fetch({
-            success: function () {
-                _.each(that.course_collection.models, function (model) {
-                    that.course_collection.course_views.push(new CourseView({
-                        model: model,
-                        id: "campus_" + that.model.attributes.id + "_course_" + model.get('id'),
-                    }, "#campus_course_" + that.model.attributes.id));
-                });
-            }
-        });
-        this.model.render_marker();
-    }
-});
 
 
 var SearchBarView = Backbone.View.extend({
@@ -209,6 +161,10 @@ var SearchBarView = Backbone.View.extend({
             $zoom_control.animate({
                 marginTop: '+=55px'
             }, 500);
+            var $result = $('#providers');
+            $result.animate({
+                paddingTop: '+=55px'
+            }, 500);
 
             // now it is shown
             this.search_bar_hidden = false;
@@ -217,3 +173,57 @@ var SearchBarView = Backbone.View.extend({
 });
 
 new SearchBarView();
+
+var CourseView = Backbone.View.extend({
+    tagName: 'li',
+    template: _.template('<%- _long_description %>'),
+    container: "",
+    events: {
+        'click': 'clicked'
+    },
+    clicked: function () {
+        return false;
+    },
+    render: function () {
+        this.$el.empty();
+        this.$el.html(this.template(this.model.attributes));
+        $(this.container).append(this.$el);
+    },
+    initialize: function () {
+        this.render();
+    }
+});
+
+var CampusView = Backbone.View.extend({
+    tagName: 'li',
+    template: _.template('<%- provider %><br><ul id="campus_course_<%- id %>" ></ul>'),
+    container: '#providers',
+    model: Campus,
+    events: {
+        'click': 'clicked'
+    },
+    clicked: function () {
+        return false;
+    },
+    render: function () {
+        this.$el.empty();
+        this.$el.html(this.template(this.model.attributes));
+        $(this.container).append(this.$el);
+        var that = this;
+        this.course_collection = new CourseCollection({id: this.model.attributes.id});
+        //this.course_collection.fetch({
+        //    success: function () {
+        //        _.each(that.course_collection.models, function (model) {
+        //            that.course_collection.course_views.push(new CourseView({
+        //                model: model,
+        //                id: "campus_" + that.model.attributes.id + "_course_" + model.get('id'),
+        //            }, "#campus_course_" + that.model.attributes.id));
+        //        });
+        //    }
+        //});
+        this.model.render_marker();
+    },
+    initialize: function () {
+        this.render();
+    }
+});

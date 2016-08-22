@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from feti.models.campus import Campus
 from feti.serializers.course_serializer import CourseSerializer
+from feti.serializers.provider_serializer import ProviderSerializer
 
 __author__ = 'irwan'
 
@@ -18,5 +19,6 @@ class CampusSerializer(serializers.ModelSerializer):
         res = super(CampusSerializer, self).to_representation(instance)
         res['long_description'] = instance.long_description
         res['courses'] = CourseSerializer(instance.courses.all(), many=True).data
-        res['address'] = instance.address.__unicode__
+        res['address'] = instance.address.__unicode__()
+        res['provider'] = instance.provider.__unicode__()
         return res
