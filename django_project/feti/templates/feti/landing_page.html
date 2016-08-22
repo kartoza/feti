@@ -13,7 +13,7 @@
     {% stylesheet 'landing_page' %}
 {% endblock %}
 
-{% block content %}
+{% block navigation-bar %}
     <!-- Navigation -->
     <nav class="navbar navbar-default topnav" role="navigation">
         <div class="container topnav">
@@ -40,11 +40,13 @@
         </div>
         <!-- /.container -->
     </nav>
+{% endblock %}
 
 
+{% block content %}
     <!-- Header -->
     <a name="about"></a>
-    <div class="intro-header">
+    <div id="introduction_carousel" class="intro-header">
         <div class="container">
 
             <div class="row">
@@ -63,7 +65,7 @@
     <!-- /.intro-header -->
 
     <!-- Page Content -->
-    <div class="content-section-a">
+    <div id="introduction_text" class="content-section-a">
         <div class="container">
             <div class="row intro-section">
                 <div class="col-sm-1"></div>
@@ -176,5 +178,6 @@
         <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
         <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
         <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
+        <script src="/static/feti/js/feti-backbone/feti-router.js"></script>
     </script>
 {% endblock %}
