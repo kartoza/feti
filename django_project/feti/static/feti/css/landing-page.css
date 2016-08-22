@@ -199,3 +199,12 @@ p.login-link :hover {
     text-align: right
 }
 
+#back-home {
+    font-size: 12pt;
+    display: none;
+}
+
+#back-home:hover {
+    cursor: pointer;
+    color: #084889;
+}

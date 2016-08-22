@@ -1,7 +1,8 @@
 var MapView = Backbone.View.extend({
     template: _.template($('#map-template').html()),
     events: {
-        'click #feti-map': 'clickMap'
+        'click #feti-map': 'clickMap',
+        'click #back-home': 'exitFullScreen'
     },
     initialize: function() {
         this.$mapContainer = $('#map-container');
@@ -12,7 +13,13 @@ var MapView = Backbone.View.extend({
         this.$mapSection = $('.map-section');
         this.$navbar = $('.navbar');
         this.$bodyContent = $("#content");
+
         this.isFullScreen = false;
+        this.animationSpeed = 400;
+
+        this.mapContainerWidth = 0;
+        this.mapContainerHeight = 0;
+
         this.render();
     },
     render: function () {
@@ -35,7 +42,6 @@ var MapView = Backbone.View.extend({
     },
     fullScreenMap: function(e) {
         var d = {};
-        var speed = 400;
         var _map = this.map;
 
         if(!this.isFullScreen) {
@@ -43,24 +49,77 @@ var MapView = Backbone.View.extend({
             this.$mapContainer.css('padding-left', 0);
 
             this.$navbar.hide();
-            this.$header.slideUp(speed);
-            this.$aboutSection.slideUp(speed);
+            this.$header.slideUp(this.animationSpeed);
+            this.$aboutSection.slideUp(this.animationSpeed);
             this.$partnerSection.hide();
             this.$footerSection.hide();
 
             this.$bodyContent.css('margin-top', '0');
             this.$bodyContent.css('height', '100%');
 
-            this.$mapSection.css('padding-top', '0');
-            this.$mapSection.css('padding-bottom', '0');
-            this.$mapSection.css('height', '100%');
+            this.$mapSection.css({
+                'padding-top': '0',
+                'padding-bottom': '0',
+                'height': '100%'
+            });
 
             d.width = '100%';
             d.height = '100%';
 
+            this.$('.map-category').css({
+                'border-top-left-radius': '0',
+                'border-top-right-radius': '0'
+            });
+
+            this.mapContainerWidth = this.$mapContainer.width();
+            this.mapContainerHeight = 600;
+
+            this.$('#back-home').show();
+
             this.isFullScreen = true;
 
-            this.$mapContainer.animate(d, speed, function() {
+            this.$mapContainer.animate(d, this.animationSpeed, function() {
+                _map._onResize();
+            });
+        }
+    },
+    exitFullScreen: function(e) {
+        var d = {};
+        var _map = this.map;
+
+        console.log(this.isFullScreen);
+
+        if(this.isFullScreen) {
+            this.$mapContainer.css({
+                'padding-right': '15px',
+                'padding-left': '15px'
+            });
+
+            this.$navbar.show();
+            this.$header.slideDown(this.animationSpeed);
+            this.$aboutSection.slideDown(this.animationSpeed);
+            this.$partnerSection.show();
+            this.$footerSection.show();
+
+            d.width = this.mapContainerWidth;
+            d.height = this.mapContainerHeight;
+
+            this.$mapSection.css({
+                'padding-top': '50px',
+                'padding-bottom': '50px',
+                'height': this.mapContainerHeight + 100
+            });
+
+            this.$('.map-category').css({
+                'border-top-left-radius': '8px',
+                'border-top-right-radius': '8px'
+            });
+
+            this.$('#back-home').hide();
+
+            this.isFullScreen = false;
+
+            this.$mapContainer.animate(d, this.animationSpeed, function() {
                 _map._onResize();
             });
         }
