@@ -1,7 +1,7 @@
 var MapView = Backbone.View.extend({
     template: _.template($('#map-template').html()),
     events: {
-        'click #feti-map': 'clickMap'
+        'click #feti-map': 'clickMap',
     },
     initialize: function () {
         this.$mapContainer = $('#map-container');
@@ -12,9 +12,14 @@ var MapView = Backbone.View.extend({
         this.$mapSection = $('.map-section');
         this.$navbar = $('.navbar');
         this.$bodyContent = $("#content");
+
         this.isFullScreen = false;
-        dispatcher.on('map:add_layer', this.add_layer, this);
-        dispatcher.on('map:remove_layer', this.remove_layer, this);
+        dispatcher.on('map:addLayer', this.addLayer, this);
+        dispatcher.on('map:removeLayer', this.removeLayer, this);
+        this.animationSpeed = 400;
+
+        this.mapContainerWidth = 0;
+        this.mapContainerHeight = 0;
         this.render();
     },
     render: function () {
@@ -27,10 +32,10 @@ var MapView = Backbone.View.extend({
 
         this.$('#feti-map').parent().css('height', '100%');
     },
-    add_layer: function (layer) {
+    addLayer: function (layer) {
         this.map.addLayer(layer);
     },
-    remove_layer: function (layer) {
+    removeLayer: function (layer) {
         this.map.removeLayer(layer);
     },
     clickMap: function (e) {
@@ -38,7 +43,6 @@ var MapView = Backbone.View.extend({
     },
     fullScreenMap: function (e) {
         var d = {};
-        var speed = 400;
         var _map = this.map;
         var that = this;
 
@@ -47,25 +51,73 @@ var MapView = Backbone.View.extend({
             this.$mapContainer.css('padding-left', 0);
 
             this.$navbar.hide();
-            this.$header.slideUp(speed);
-            this.$aboutSection.slideUp(speed);
+            this.$header.slideUp(this.animationSpeed);
+            this.$aboutSection.slideUp(this.animationSpeed);
             this.$partnerSection.hide();
             this.$footerSection.hide();
 
             this.$bodyContent.css('margin-top', '0');
             this.$bodyContent.css('height', '100%');
 
-            this.$mapSection.css('padding-top', '0');
-            this.$mapSection.css('padding-bottom', '0');
-            this.$mapSection.css('height', '100%');
+            this.$mapSection.css({
+                'padding-top': '0',
+                'padding-bottom': '0',
+                'height': '100%'
+            });
 
             d.width = '100%';
             d.height = '100%';
 
-            this.$mapContainer.animate(d, speed, function () {
+            $('.search-category').css({
+                'border-top-left-radius': '0',
+                'border-top-right-radius': '0'
+            });
+
+            this.mapContainerWidth = this.$mapContainer.width();
+            this.mapContainerHeight = 600;
+
+            this.$mapContainer.animate(d, this.animationSpeed, function () {
                 _map._onResize();
                 that.isFullScreen = true;
                 dispatcher.trigger('map:resize', true);
+            });
+        }
+    },
+    exitFullScreen: function (e) {
+        var d = {};
+        var _map = this.map;
+        var that = this;
+
+        if (this.isFullScreen) {
+            this.$mapContainer.css({
+                'padding-right': '15px',
+                'padding-left': '15px'
+            });
+
+            this.$navbar.show();
+            this.$header.slideDown(this.animationSpeed);
+            this.$aboutSection.slideDown(this.animationSpeed);
+            this.$partnerSection.show();
+            this.$footerSection.show();
+
+            d.width = this.mapContainerWidth;
+            d.height = this.mapContainerHeight;
+
+            this.$mapSection.css({
+                'padding-top': '50px',
+                'padding-bottom': '50px',
+                'height': this.mapContainerHeight + 100
+            });
+
+            $('.search-category').css({
+                'border-top-left-radius': '8px',
+                'border-top-right-radius': '8px'
+            });
+
+            this.$mapContainer.animate(d, this.animationSpeed, function () {
+                _map._onResize();
+                that.isFullScreen = false;
+                dispatcher.trigger('map:resize', false);
             });
         }
     }
@@ -82,6 +134,7 @@ var SearchBarView = Backbone.View.extend({
     template: _.template('\
         <form action="map" method="POST">\
             <div class="search-category">\
+                <span id="back-home">Home</span>\
                 <span class="map-question"">\
                     What are you looking for?\
                 </span>\
@@ -111,20 +164,41 @@ var SearchBarView = Backbone.View.extend({
                 <span class="m-button map-option" id="choose-occupation">\
                     Travel line\
                 </span>\
+               <i id="carousel-toogle" class="carousel-toogle fa fa-caret-left" aria-hidden="true"></i>\
             </div>\
         </form>'),
     events: {
-        'click #where-to-study': 'category_clicked',
-        'click #what-to-study': 'category_clicked',
-        'click #choose-occupation': 'category_clicked'
+        'click #where-to-study': 'categoryClicked',
+        'click #what-to-study': 'categoryClicked',
+        'click #choose-occupation': 'categoryClicked',
+        'click #back-home': 'exitFullScreen',
+        'click #carousel-toogle': 'carouselToogling'
     },
-    category_clicked: function (event) {
-        this.change_category(event.target);
+    categoryClicked: function (event) {
+        this.changeCategory(event.target);
         mapView.fullScreenMap();
+    },
+    exitFullScreen: function () {
+        this.hideSearchBarWithMap();
+    },
+    carouselToogling: function (event) {
+        if ($(event.target).hasClass('fa-caret-left')) {
+            $(event.target).removeClass('fa-caret-left');
+            $(event.target).addClass('fa-caret-right');
+            if (!$('#providers').is(":visible")) {
+                $('#providers').show("slide", {direction: "right"}, 500);
+            }
+        } else {
+            $(event.target).removeClass('fa-caret-right');
+            $(event.target).addClass('fa-caret-left');
+            if ($('#providers').is(":visible")) {
+                $('#providers').hide("slide", {direction: "right"}, 500);
+            }
+        }
     },
     initialize: function () {
         this.render();
-        dispatcher.on('map:resize', this.map_resize, this);
+        dispatcher.on('map:resize', this.mapResize, this);
         this.$search_bar = $(".search-bar");
         this.search_bar_hidden = true;
     },
@@ -133,7 +207,7 @@ var SearchBarView = Backbone.View.extend({
         this.$el.html(this.template());
         $(this.container).append(this.$el);
     },
-    category_selected: function () {
+    categorySelected: function () {
         var button = this.$el.find('.search-category').find('.m-button.active');
         if (button[0]) {
             return $(button[0]).html();
@@ -141,20 +215,24 @@ var SearchBarView = Backbone.View.extend({
             return null;
         }
     },
-    change_category: function (button) {
+    changeCategory: function (button) {
         this.$el.find('.search-category').find('.m-button').removeClass('active');
         $(button).addClass('active');
         if (mapView.isFullScreen) {
-            this.show_search_bar();
+            this.showSearchBar();
         }
     },
-    map_resize: function (is_resizing) {
+    mapResize: function (is_resizing) {
         if (is_resizing) {
-            this.show_search_bar();
+            this.$('#back-home').show();
+            this.showSearchBar();
+        } else {
+            this.$('#back-home').hide();
+
         }
     },
-    show_search_bar: function () {
-        if (this.search_bar_hidden && this.category_selected()) {
+    showSearchBar: function () {
+        if (this.search_bar_hidden && this.categorySelected()) {
             this.$search_bar.slideToggle(500);
             // zoom control animation
             var $zoom_control = $('.leaflet-control-zoom');
@@ -170,6 +248,23 @@ var SearchBarView = Backbone.View.extend({
             this.search_bar_hidden = false;
         }
     },
+    hideSearchBarWithMap: function () {
+        if (!this.search_bar_hidden) {
+            this.$search_bar.slideToggle(500, function () {
+                mapView.exitFullScreen();
+            });
+            // zoom control animation
+            var $zoom_control = $('.leaflet-control-zoom');
+            $zoom_control.animate({
+                marginTop: '-=55px'
+            }, 500);
+
+            // now it is shown
+            this.search_bar_hidden = true;
+        } else {
+            mapView.exitFullScreen();
+        }
+    }
 });
 
 new SearchBarView();
@@ -211,17 +306,17 @@ var CampusView = Backbone.View.extend({
         $(this.container).append(this.$el);
         var that = this;
         this.course_collection = new CourseCollection({id: this.model.attributes.id});
-        //this.course_collection.fetch({
-        //    success: function () {
-        //        _.each(that.course_collection.models, function (model) {
-        //            that.course_collection.course_views.push(new CourseView({
-        //                model: model,
-        //                id: "campus_" + that.model.attributes.id + "_course_" + model.get('id'),
-        //            }, "#campus_course_" + that.model.attributes.id));
-        //        });
-        //    }
-        //});
-        this.model.render_marker();
+        this.course_collection.fetch({
+            success: function () {
+                _.each(that.course_collection.models, function (model) {
+                    that.course_collection.course_views.push(new CourseView({
+                        model: model,
+                        id: "campus_" + that.model.attributes.id + "_course_" + model.get('id'),
+                    }, "#campus_course_" + that.model.attributes.id));
+                });
+            }
+        });
+        this.model.renderMarker();
     },
     initialize: function () {
         this.render();

@@ -180,6 +180,7 @@ p.login-link :hover {
     border-top-right-radius: 8px;
     height: 55px;
     text-align: center;
+    z-index: 99998;
 }
 
 .search-category .row, #map-search {
@@ -232,4 +233,36 @@ p.login-link :hover {
 
 #providers {
     overflow: scroll;
+    display: none;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding-top: 55px !important;
+    background: white;
+    z-index: 99995;
+}
+
+#back-home {
+    font-size: 12pt;
+    display: none;
+    position: absolute;
+    left: 50px;
+    top: 13px;
+}
+
+#back-home:hover {
+    cursor: pointer;
+    color: #084889;
+}
+
+.carousel-toogle {
+    cursor: pointer;
+    font-size: 24pt;
+    position: absolute;
+    right: 50px;
+    top: 13px;
+}
+
+.carousel-toogle:hover {
+    opacity: 0.7;
 }
