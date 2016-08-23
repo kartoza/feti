@@ -57,6 +57,43 @@ def login(request):
         context_instance=RequestContext(request))
 
 
+def login_modal(request):
+    """
+    User login modal view.
+    """
+    username = ''
+    error = ''
+
+    if request.method == 'POST':
+        redirect_url = request.POST.get('next')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            if user.is_active:
+                django_login(request, user)
+                return redirect(redirect_url)
+        error = 'invalid username or password'
+
+    if not redirect_url:
+        if user.is_superuser or user.is_staff:
+            redirect_url = reverse('admin:index')
+        else:
+            # admin for provider
+            redirect_url = reverse('admin:index')
+
+    return render_to_response(
+        'feti/landing_page.html',
+        {
+            'username': username,
+            'next': redirect_url,
+            'error': error
+        },
+        context_instance=RequestContext(request))
+
+
 def logout(request):
     """
     Log out view

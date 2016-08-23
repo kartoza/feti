@@ -13,9 +13,7 @@
 
 {% block css_head %}
     {% stylesheet 'landing_page' %}
-    <script
-            src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
-    </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -137,9 +135,25 @@
     <script type='template' id='map-template'>
         <div id="feti-map"></div>
     </script>
+    <script type='template' id='login-modal-template'>
+        {% include 'feti/modals/login_modal.html' %}
+    </script>
     <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
     <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-router.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>
+
+    <script>
+
+        // If login error
+        {% if error %}
+            $(document).ready(function(){
+                window.history.pushState("", "", "/");
+            });
+            loginModalView.show();
+        {% endif %}
+
+    </script>
+
 {% endblock %}

@@ -11,6 +11,11 @@ urlpatterns = patterns(
         name='login_page'
     ),
     url(
+        r'^login-modal/',
+        'user_profile.views.login_modal',
+        name='login_modal'
+    ),
+    url(
         r'^profile/(?P<username>[\w\-]+)',
         ProfilePage.as_view(),
         name='profile_page'
