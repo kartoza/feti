@@ -84,6 +84,12 @@ var MapView = Backbone.View.extend({
                 that.isFullScreen = true;
                 dispatcher.trigger('map:resize', true);
             });
+
+            // edit url
+            var currentRoute = Backbone.history.getFragment();
+            if(currentRoute == '') {
+                Backbone.history.navigate('map/fullscreen');
+            }
         }
     },
     exitFullScreen: function (e) {
@@ -122,6 +128,9 @@ var MapView = Backbone.View.extend({
                 that.isFullScreen = false;
                 dispatcher.trigger('map:resize', false);
             });
+
+            // edit url
+            Backbone.history.navigate('/');
         }
     }
 });
@@ -181,8 +190,8 @@ var SearchBarView = Backbone.View.extend({
         this.changeCategory(event.target);
         mapView.fullScreenMap();
     },
-    exitFullScreen: function () {
-        this.toogleProviderWithMap();
+    exitFullScreen: function (e) {
+        this.toogleProviderWithMap(e);
     },
     carouselToogling: function (event) {
         if ($(event.target).hasClass('fa-caret-left')) {
@@ -251,10 +260,10 @@ var SearchBarView = Backbone.View.extend({
             this.search_bar_hidden = false;
         }
     },
-    hideSearchBarWithMap: function () {
+    hideSearchBarWithMap: function (e) {
         if (!this.search_bar_hidden) {
             this.$search_bar.slideToggle(500, function () {
-                mapView.exitFullScreen();
+                mapView.exitFullScreen(e);
             });
             // zoom control animation
             var $zoom_control = $('.leaflet-control-zoom');
@@ -265,19 +274,19 @@ var SearchBarView = Backbone.View.extend({
             // now it is shown
             this.search_bar_hidden = true;
         } else {
-            mapView.exitFullScreen();
+            mapView.exitFullScreen(e);
         }
     },
-    toogleProviderWithMap: function () {
+    toogleProviderWithMap: function (e) {
         var that = this;
         if ($('#providers').is(":visible")) {
             $('#carousel-toogle').removeClass('fa-caret-right');
             $('#carousel-toogle').addClass('fa-caret-left');
             $('#providers').hide("slide", {direction: "right"}, 500, function () {
-                that.hideSearchBarWithMap();
+                that.hideSearchBarWithMap(e);
             });
         } else {
-            that.hideSearchBarWithMap();
+            that.hideSearchBarWithMap(e);
         }
     }
 });
