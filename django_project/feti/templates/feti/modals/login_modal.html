@@ -1,0 +1,30 @@
+<!-- Login Modal -->
+<div class="modal-dialog">
+    <div class="loginmodal-container">
+        <h1>Login</h1><br>
+
+        <form class="form" name="LoginForm" action="/login-modal/" method="post">
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}"/>
+            {% endif %}
+            <input type="text" name="username" id="username" value="{{ username }}"
+                   placeholder="Username">
+            <input type="password" name="password" id="password"
+                   placeholder="Password">
+            <input type="submit" name="login" class="login loginmodal-submit" value="Login">
+        </form>
+
+        <div class="login-help">
+            Please contact admin@feti.com for an account.
+            {#<a href="#">Register</a> - <a href="#">Forgot Password</a>#}
+        </div>
+        {% if error %}
+            <div class="alert alert-danger">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong>Error!</strong>
+                {{ error }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- /. Login Modal -->

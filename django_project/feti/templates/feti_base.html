@@ -57,7 +57,15 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#about">Log In</a>
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff %}
+                                <a href="/feti-admin">Admin Site</a>
+                            {% else %}
+                                <a>{{ user.username }}</a>
+                            {% endif %}
+                        {% else %}
+                            <a href="#login">Log In</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
