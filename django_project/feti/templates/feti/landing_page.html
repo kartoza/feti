@@ -138,14 +138,10 @@
     <script type='template' id='login-modal-template'>
         {% include 'feti/modals/login_modal.html' %}
     </script>
-    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>
 
     <script>
 
+        var is_logged_in = "{{ user.is_authenticated }}" == "True";
         // If login error
         {% if error %}
             $(document).ready(function(){
@@ -155,5 +151,12 @@
         {% endif %}
 
     </script>
+
+    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
+    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>
+
 
 {% endblock %}

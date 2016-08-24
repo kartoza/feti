@@ -15,6 +15,7 @@ var app_router = new AppRouter;
 
 var mapView = mapView || {};
 var loginModalView = loginModalView || {};
+var is_logged_in = is_logged_in || false;
 
 app_router.on('route:show_map', function (mode) {
     if(mode=='fullscreen') {
@@ -25,8 +26,9 @@ app_router.on('route:show_map', function (mode) {
 });
 
 app_router.on('route:login_page', function() {
-   loginModalView.show();
-   loginModalView.show();
+    if(!is_logged_in) {
+        loginModalView.show();
+    }
 });
 
 // Start Backbone history a necessary step for bookmarkable URL's
