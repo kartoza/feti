@@ -22,11 +22,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='campus',
             name='campus',
-            field=models.CharField(max_length=150, null=True, verbose_name=b'Provider', blank=True),
+            field=models.CharField(max_length=150, null=True, verbose_name='Provider', blank=True),
         ),
         migrations.AlterField(
             model_name='provider',
             name='primary_institution',
-            field=models.CharField(max_length=255, null=True, verbose_name=b'Primary institution', blank=True),
+            field=models.CharField(max_length=255, null=True, verbose_name='Primary institution', blank=True),
         ),
     ]

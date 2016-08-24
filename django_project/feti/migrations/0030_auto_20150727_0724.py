@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='campus',
             name='location',
-            field=django.contrib.gis.db.models.fields.PointField(default=b'POINT(28.034088 -26.195246)', srid=4326, null=True, blank=True),
+            field=django.contrib.gis.db.models.fields.PointField(default='POINT(28.034088 -26.195246)', srid=4326, null=True, blank=True),
             preserve_default=True,
         ),
     ]

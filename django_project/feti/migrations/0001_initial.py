@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
                 ('address_line_2', models.CharField(max_length=100)),
                 ('address_line_3', models.CharField(max_length=100)),
                 ('town', models.CharField(max_length=100)),
-                ('postal_code', models.CharField(max_length=4, validators=[django.core.validators.RegexValidator(regex=b'^\\d{4,4}$', message=b'Postal code consists of 4 digits.')])),
-                ('phone', models.CharField(blank=True, max_length=12, null=True, validators=[django.core.validators.RegexValidator(regex=b'^\\+\\d{12,12}$', message=b"Phone number should have the following format: '+27888888888'.")])),
+                ('postal_code', models.CharField(max_length=4, validators=[django.core.validators.RegexValidator(regex='^\\d{4,4}$', message='Postal code consists of 4 digits.')])),
+                ('phone', models.CharField(blank=True, max_length=12, null=True, validators=[django.core.validators.RegexValidator(regex='^\\+\\d{12,12}$', message=b"Phone number should have the following format: '+27888888888'.")])),
             ],
             options={
             },
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             name='Course',
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True)),
-                ('national_learners_records_database', models.CharField(help_text=b'National Learners` Records Database (NLRD)', max_length=15, validators=[django.core.validators.RegexValidator(regex=b'^\\d{15,15}$', message=b"National Learners Records Database: '123456789012345'.")])),
+                ('national_learners_records_database', models.CharField(help_text='National Learners` Records Database (NLRD)', max_length=15, validators=[django.core.validators.RegexValidator(regex='^\\d{15,15}$', message=b"National Learners Records Database: '123456789012345'.")])),
                 ('course_description', models.CharField(max_length=100, null=True, blank=True)),
             ],
             options={

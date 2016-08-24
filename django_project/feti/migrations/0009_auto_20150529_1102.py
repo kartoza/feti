@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='address',
             name='postal_code',
-            field=models.CharField(blank=True, max_length=4, null=True, validators=[django.core.validators.RegexValidator(regex=b'^\\d{4,4}$', message=b'Postal code consists of 4 digits.')]),
+            field=models.CharField(blank=True, max_length=4, null=True, validators=[django.core.validators.RegexValidator(regex='^\\d{4,4}$', message='Postal code consists of 4 digits.')]),
             preserve_default=True,
         ),
         migrations.AlterField(
