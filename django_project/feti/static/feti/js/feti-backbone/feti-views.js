@@ -1,3 +1,5 @@
+var app_router = app_router || {};
+
 var MapView = Backbone.View.extend({
     template: _.template($('#map-template').html()),
     events: {
@@ -42,22 +44,29 @@ var MapView = Backbone.View.extend({
         alert('maximising');
     },
     clickMap: function (e) {
-        this.fullScreenMap(e);
+        // this.fullScreenMap(e);
+        app_router.navigate('map/fullscreen', true);
     },
-    fullScreenMap: function (e) {
+    fullScreenMap: function (speed) {
         var d = {};
         var _map = this.map;
         var that = this;
+        var _speed = this.animationSpeed;
 
         if (!this.isFullScreen) {
-            this.$mapContainer.css('padding-right', 0);
-            this.$mapContainer.css('padding-left', 0);
+
+            if (typeof speed != 'undefined') {
+                _speed = speed;
+            }
 
             this.$navbar.hide();
-            this.$header.slideUp(this.animationSpeed);
-            this.$aboutSection.slideUp(this.animationSpeed);
+            this.$header.slideUp(_speed);
+            this.$aboutSection.slideUp(_speed);
             this.$partnerSection.hide();
             this.$footerSection.hide();
+
+            this.$mapContainer.css('padding-right', 0);
+            this.$mapContainer.css('padding-left', 0);
 
             this.$bodyContent.css('margin-top', '0');
             this.$bodyContent.css('height', '100%');
@@ -79,17 +88,12 @@ var MapView = Backbone.View.extend({
             this.mapContainerWidth = this.$mapContainer.width();
             this.mapContainerHeight = 600;
 
-            this.$mapContainer.animate(d, this.animationSpeed, function () {
+            this.$mapContainer.animate(d, _speed, function () {
                 _map._onResize();
                 that.isFullScreen = true;
                 dispatcher.trigger('map:resize', true);
             });
 
-            // edit url
-            var currentRoute = Backbone.history.getFragment();
-            if(currentRoute == '') {
-                Backbone.history.navigate('map/fullscreen');
-            }
         }
     },
     exitFullScreen: function (e) {
