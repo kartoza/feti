@@ -54,4 +54,3 @@ def application(environ, start_response):
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
 # application = HelloWorldApplication(application)
-
