@@ -16,7 +16,7 @@ from django.http import Http404
 from django.views.generic import TemplateView
 
 from feti.serializers.campus_serializer import CampusSerializer
-from models.campus_official import CampusOfficial
+from user_profile.models.campus_official import CampusOfficial
 
 
 def login(request):

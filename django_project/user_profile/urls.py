@@ -1,7 +1,7 @@
 # coding=utf-8
 """URI Routing configuration for this apps."""
 from django.conf.urls import patterns, url
-from views import ProfilePage
+from user_profile.views import ProfilePage
 
 urlpatterns = patterns(
     '',

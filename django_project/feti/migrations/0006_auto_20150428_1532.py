@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='address',
             name='phone',
-            field=models.CharField(blank=True, max_length=100, null=True, validators=[django.core.validators.RegexValidator(regex=b'^\\+\\d{12,12}$', message=b"Phone number should have the following format: '+27888888888'.")]),
+            field=models.CharField(blank=True, max_length=100, null=True, validators=[django.core.validators.RegexValidator(regex='^\\+\\d{12,12}$', message=b"Phone number should have the following format: '+27888888888'.")]),
         ),
     ]

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .dev import *  # noqa
 import os
-print os.environ
+print(os.environ)
 
 DATABASES = {
     'default': {

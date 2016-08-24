@@ -4,14 +4,16 @@ pylint
 flake8
 factory_boy
 
-django-devserver
+# django-devserver
+git+https://github.com/dimasciput/django-devserver.git
 
 # documentation
 Sphinx
 
 # pdb plus plus
-pdbpp
+# not suppported in python 3.6
+# pdbpp
 
 # hizashi-utils
-hizashi-utils
+# hizashi-utils
 

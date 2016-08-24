@@ -242,7 +242,14 @@ reload:
 	@echo "------------------------------------------------------------------"
 	@echo "Reload django project in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)_uwsgi uwsgi --reload  /tmp/django.pid
+	@docker exec -t -i $(PROJECT_ID)-uwsgi uwsgi --reload  /tmp/django.pid
+
+superuser:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Creating a superuser in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py createsuperuser
 
 dbrestore:
 	@echo
