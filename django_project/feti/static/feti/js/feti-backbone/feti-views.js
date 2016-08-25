@@ -40,12 +40,8 @@ var MapView = Backbone.View.extend({
     removeLayer: function (layer) {
         this.map.removeLayer(layer);
     },
-    maximise: function() {
-        alert('maximising');
-    },
     clickMap: function (e) {
-        // this.fullScreenMap(e);
-        app_router.navigate('map/fullscreen', true);
+        app_router.navigate('map', true);
     },
     fullScreenMap: function (speed) {
         var d = {};
@@ -91,7 +87,7 @@ var MapView = Backbone.View.extend({
             this.$mapContainer.animate(d, _speed, function () {
                 _map._onResize();
                 that.isFullScreen = true;
-                dispatcher.trigger('map:resize', true);
+                dispatcher.trigger('map:resize', true, speed);
             });
 
         }
@@ -154,20 +150,20 @@ var SearchBarView = Backbone.View.extend({
                 <span class="map-question"">\
                     What are you looking for?\
                 </span>\
-                <span class="m-button map-option" id="where-to-study">\
+                <span class="m-button map-option" id="where-to-study" mode="provider">\
                     Where to study\
                 </span>\
-                <span class="m-button map-option" id="what-to-study">\
+                <span class="m-button map-option" id="what-to-study" mode="course">\
                     What to study\
                 </span>\
-                <span class="m-button map-option" id="choose-occupation">\
+                <span class="m-button map-option" id="choose-occupation" mode="occupation">\
                     Choose occupation\
                 </span>\
             </div>\
             <div class="search-bar">\
                 <span id="search-bar" class="right-inner-addon">\
                    <i class="icon-search fa fa-search"></i>\
-                   <input type="search"\
+                   <input id="search-bar-input" type="search"\
                            class="form-control"\
                            placeholder="Search" />\
                 </span>\
@@ -190,12 +186,28 @@ var SearchBarView = Backbone.View.extend({
         'click #back-home': 'exitFullScreen',
         'click #carousel-toogle': 'carouselToogling'
     },
+    initialize: function () {
+        this.render();
+        this.$search_bar = $(".search-bar");
+        this.$search_bar_input = $("#search-bar-input");
+        this.$provider_button = $("#where-to-study");
+        this.$course_button = $("#what-to-study");
+        this.$occupation_button = $("#choose-occupation");
+        this.search_bar_hidden = true;
+        dispatcher.on('map:resize', this.mapResize, this);
+    },
+    render: function () {
+        this.$el.empty();
+        this.$el.html(this.template());
+        $(this.container).append(this.$el);
+    },
     categoryClicked: function (event) {
         this.changeCategory(event.target);
         mapView.fullScreenMap();
     },
     exitFullScreen: function (e) {
         this.toogleProviderWithMap(e);
+        this.changeCategoryButton("");
     },
     carouselToogling: function (event) {
         if ($(event.target).hasClass('fa-caret-left')) {
@@ -212,53 +224,55 @@ var SearchBarView = Backbone.View.extend({
             }
         }
     },
-    initialize: function () {
-        this.render();
-        dispatcher.on('map:resize', this.mapResize, this);
-        this.$search_bar = $(".search-bar");
-        this.search_bar_hidden = true;
-    },
-    render: function () {
-        this.$el.empty();
-        this.$el.html(this.template());
-        $(this.container).append(this.$el);
-    },
-    categorySelected: function () {
-        var button = this.$el.find('.search-category').find('.m-button.active');
-        if (button[0]) {
-            return $(button[0]).html();
-        } else {
-            return null;
+    changeCategoryButton: function (mode) {
+        this.$el.find('.search-category').find('.m-button').removeClass('active');
+        var $button = null;
+        var highlight = "";
+        if (mode == "provider") {
+            $button = this.$provider_button;
+            highlight = 'Search for provider';
+        } else if (mode == "course") {
+            $button = this.$course_button;
+            highlight = 'Search for courses';
+        } else if (mode == "occupation") {
+            $button = this.$occupation_button;
+            highlight = 'Search for occuption';
+        }
+
+        // change placeholder of input
+        this.$search_bar_input.attr("placeholder", highlight);
+        if ($button) {
+            $button.addClass('active');
+            if (mapView.isFullScreen) {
+                this.showSearchBar();
+            }
         }
     },
     changeCategory: function (button) {
-        this.$el.find('.search-category').find('.m-button').removeClass('active');
-        $(button).addClass('active');
-        if (mapView.isFullScreen) {
-            this.showSearchBar();
-        }
+        var mode = $(button).attr("mode");
+        Backbone.history.navigate('map/' + mode, true);
     },
-    mapResize: function (is_resizing) {
+    mapResize: function (is_resizing, speed) {
         if (is_resizing) {
             this.$('#back-home').show();
-            this.showSearchBar();
+            this.showSearchBar(speed);
         } else {
             this.$('#back-home').hide();
 
         }
     },
-    showSearchBar: function () {
-        if (this.search_bar_hidden && this.categorySelected()) {
-            this.$search_bar.slideToggle(500);
+    showSearchBar: function (speed) {
+        if (this.search_bar_hidden) {
+            this.$search_bar.slideToggle(speed);
             // zoom control animation
             var $zoom_control = $('.leaflet-control-zoom');
             $zoom_control.animate({
                 marginTop: '+=55px'
-            }, 500);
+            }, speed);
             var $result = $('#providers');
             $result.animate({
                 paddingTop: '+=55px'
-            }, 500);
+            }, speed);
 
             // now it is shown
             this.search_bar_hidden = false;
@@ -295,7 +309,6 @@ var SearchBarView = Backbone.View.extend({
     }
 });
 
-new SearchBarView();
 
 var CourseView = Backbone.View.extend({
     tagName: 'li',
@@ -359,12 +372,12 @@ var LoginModalView = Backbone.View.extend({
         'hidden.bs.modal': 'teardown'
     },
 
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'show', 'teardown', 'render', 'hide');
         this.render();
     },
 
-    show: function() {
+    show: function () {
         this.$el.modal('show');
     },
 
@@ -372,15 +385,16 @@ var LoginModalView = Backbone.View.extend({
         this.$el.modal('hide');
     },
 
-    teardown: function() {
+    teardown: function () {
         Backbone.history.navigate('');
     },
 
-    render: function() {
+    render: function () {
         this.$el.html(this.template());
-        this.$el.modal({show:false});
+        this.$el.modal({show: false});
         return this;
     }
 });
 
+searchBarView = new SearchBarView();
 loginModalView = new LoginModalView();

@@ -2,49 +2,49 @@
  * Created by Christian Christelis <christian@kartoza.com> on 18/08/16.
  */
 
-var AppRouter = Backbone.Router.extend({
-    routes: {
-        "": "landing_page",
-        "map/:mode": "show_map",
-        "login": "login_page",
-        "/map/:mode(/:results)": "show_map_results"
-    }
-});
-
-var app_router = new AppRouter;
-
 var mapView = mapView || {};
 var loginModalView = loginModalView || {};
+var searchBarView = searchBarView || {};
 var is_logged_in = is_logged_in || false;
 
-var page_history = [];
-
-app_router.on('route:landing_page', function(){
-    if(page_history.length > 0 && page_history[page_history.length-1].match(/map.*/)) {
-        mapView.exitFullScreen();
-    }
-    page_history.push(Backbone.history.getFragment());
-});
-
-app_router.on('route:show_map', function (mode) {
-    if(mode=='fullscreen') {
-        if(page_history.length==0) {
+var AppRouter = Backbone.Router.extend({
+    page_history: [],
+    routes: {
+        "": "landing_page",
+        "login": "login_page",
+        "map": "show_map",
+        "map/:mode": "show_map",
+        "map/:mode(/:results)": "show_map_results"
+    },
+    landing_page: function () {
+        if (this.page_history.length > 0 && this.page_history[this.page_history.length - 1].match(/map.*/)) {
+            searchBarView.exitFullScreen();
+        } else if (this.page_history.length > 0 && this.page_history[this.page_history.length - 1].match(/login/)) {
+            loginModalView.hide();
+        }
+        this.page_history.push(Backbone.history.getFragment());
+    },
+    show_map: function (mode) {
+        if (this.page_history.length == 0) {
             mapView.fullScreenMap(0);
         } else {
             mapView.fullScreenMap();
         }
-    } else {
-        mapView.exitFullScreen();
+        if (mode) {
+            searchBarView.changeCategoryButton(mode);
+        } else {
+            searchBarView.changeCategoryButton("");
+        }
+        this.page_history.push(Backbone.history.getFragment());
+    },
+    login_page: function () {
+        if (!is_logged_in) {
+            loginModalView.show();
+        }
+        this.page_history.push(Backbone.history.getFragment());
     }
-    page_history.push(Backbone.history.getFragment());
 });
 
-app_router.on('route:login_page', function() {
-    if(!is_logged_in) {
-        loginModalView.show();
-    }
-    page_history.push(Backbone.history.getFragment());
-});
-
+var app_router = new AppRouter;
 // Start Backbone history a necessary step for bookmarkable URL's
 Backbone.history.start();
