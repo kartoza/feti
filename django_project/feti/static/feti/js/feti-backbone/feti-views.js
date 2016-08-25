@@ -41,7 +41,9 @@ var MapView = Backbone.View.extend({
         this.map.removeLayer(layer);
     },
     clickMap: function (e) {
-        app_router.navigate('map', true);
+        if (!this.isFullScreen) {
+            app_router.navigate('map', true);
+        }
     },
     fullScreenMap: function (speed) {
         var d = {};
