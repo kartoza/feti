@@ -18,15 +18,22 @@ define([
             this.$bodyContent = $("#content");
 
             this.isFullScreen = false;
-            Common.Dispatcher.on('map:addLayer', this.addLayer, this);
-            Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
+
             this.animationSpeed = 400;
 
             this.mapContainerWidth = 0;
             this.mapContainerHeight = 0;
 
             this.render();
-            new SearchbarView();
+            this.searchBarView = new SearchbarView();
+            this.listenTo(this.searchBarView, 'backHome', this.exitFullScreen);
+            this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
+
+            // Common Dispatcher events
+            Common.Dispatcher.on('map:addLayer', this.addLayer, this);
+            Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
+            Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
+            Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
         },
         render: function () {
             this.$el.html(this.template());
@@ -48,7 +55,12 @@ define([
             alert('maximising');
         },
         clickMap: function (e) {
-            Common.Router.navigate('map/fullscreen', true);
+            if(!this.isFullScreen) {
+                Common.Router.navigate('map', true);
+            }
+        },
+        changeCategory: function (mode) {
+            this.searchBarView.changeCategoryButton(mode);
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -62,12 +74,13 @@ define([
                     _speed = speed;
                 }
 
-                this.$navbar.hide();
                 this.$header.slideUp(_speed);
                 this.$aboutSection.slideUp(_speed);
                 this.$partnerSection.hide();
                 this.$footerSection.hide();
 
+                var nav_bar_height = $('#navigation_bar').height();
+                this.$mapContainer.css('padding-top', nav_bar_height);
                 this.$mapContainer.css('padding-right', 0);
                 this.$mapContainer.css('padding-left', 0);
 
@@ -110,7 +123,6 @@ define([
                     'padding-left': '15px'
                 });
 
-                this.$navbar.show();
                 this.$header.slideDown(this.animationSpeed);
                 this.$aboutSection.slideDown(this.animationSpeed);
                 this.$partnerSection.show();
@@ -118,6 +130,8 @@ define([
 
                 d.width = this.mapContainerWidth;
                 d.height = this.mapContainerHeight;
+
+                this.$mapContainer.css('padding-top', 0);
 
                 this.$mapSection.css({
                     'padding-top': '50px',
@@ -134,6 +148,7 @@ define([
                     _map._onResize();
                     that.isFullScreen = false;
                     Common.Dispatcher.trigger('map:resize', false);
+                    that.searchBarView.toggleProvider(e);
                 });
 
                 // edit url

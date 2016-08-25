@@ -66,9 +66,11 @@
 
     <div class="map-section">
         <div id="map-container">
-            <div id="map-search"></div>
+
             <div class="row" style="height: 100%; position: relative;">
-                <div id="map-section" style="height: 100%; width: 100%"></div>
+                <div id="map-section" style="height: 100%; width: 100%">
+                     <div id="map-search"></div>
+                </div>
                 <div id="providers" class="col-md-4 nopadding" style="height: 100%"></div>
             </div>
         </div>
@@ -128,36 +130,6 @@
 
 {% block js_inline %}
 
-{#    <script>#}
-{#        var dispatcher = _.extend({}, Backbone.Events);#}
-{#    </script>#}
-{#    <script type='template' id='map-template'>#}
-{#        <div id="feti-map"></div>#}
-{#    </script>#}
-{#    <script type='template' id='login-modal-template'>#}
-{#        {% include 'feti/modals/login_modal.html' %}#}
-{#    </script>#}
-{##}
-{#    <script>#}
-{##}
-{#        var is_logged_in = "{{ user.is_authenticated }}" == "True";#}
-{#        // If login error#}
-{#        {% if error %}#}
-{#            $(document).ready(function(){#}
-{#                window.history.pushState("", "", "/");#}
-{#            });#}
-{#            loginModalView.show();#}
-{#        {% endif %}#}
-{##}
-{#    </script>#}
-
-
-{#    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>#}
-{#    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>#}
-{#    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>#}
-{#    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>#}
-{#    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>#}
-
     <!-- Backbone Templates -->
     <script type='template' id='login-modal-template'>
         {% include 'feti/modals/login_modal.html' %}
@@ -170,8 +142,10 @@
     <!-- Django context variables -->
     <script>
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
+        var is_login_error = false;
         {% if error %}
             $(document).ready(function(){
+                is_login_error = true;
                 window.history.pushState("", "", "/#login");
             });
         {% endif %}

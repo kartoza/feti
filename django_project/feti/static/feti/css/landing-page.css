@@ -241,7 +241,7 @@ p.login-link :hover {
     display: none;
     position: absolute;
     right: 0px;
-    top: 0px;
+    top: 55px;
     padding-top: 55px !important;
     background: white;
     z-index: 1000000;

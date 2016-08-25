@@ -1,4 +1,6 @@
-define([], function () {
+define([
+    'common'
+], function (Common) {
     var LoginModalView = Backbone.View.extend({
         id: 'login-modal',
         className: 'modal fade',
@@ -21,7 +23,7 @@ define([], function () {
         },
 
         teardown: function() {
-            Backbone.history.navigate('');
+            Common.Router.back('login');
         },
 
         render: function() {
@@ -33,5 +35,3 @@ define([], function () {
 
     return LoginModalView;
 });
-
-
