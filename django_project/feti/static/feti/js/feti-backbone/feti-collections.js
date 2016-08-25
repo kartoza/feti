@@ -1,23 +1,37 @@
 /**
  * Created by meomancer on 08/08/16.
  */
-
-var CourseCollection = Backbone.Collection.extend({
-    model: Course,
-    course_views: [],
-    url_template: _.template("/api/courses/<%- id %>"),
-    initialize: function (options) {
-        this.id = options.id;
+var SearchCollection = Backbone.Collection.extend({
+    model: SearchResult,
+    SearchResultViews: [],
+    provider_url_template: _.template("/api/campus?q=<%- q %>"),
+    url: function () {
+        return this.url;
     },
-    url: function () {
-        return this.url_template({id: this.id});
-    }
-});
-var CampusCollection = Backbone.Collection.extend({
-    model: Campus,
-    campus_views: [],
-    url: function () {
-        return "/api/campuss/";
+    reset: function () {
+        _.each(this.SearchResultViews, function (view) {
+            view.destroy();
+        });
+        this.SearchResultViews = [];
+        searchBarView.showResult();
+    },
+    getProvider: function (q) {
+        var that = this;
+        this.url = this.provider_url_template({q: q});
+        this.fetch({
+            success: function (collection, response) {
+                that.reset();
+                _.each(that.models, function (model) {
+                    that.SearchResultViews.push(new SearchResultView({
+                        model: model,
+                        id: "search_" + model.get('id'),
+                    }));
+                });
+            },
+            error: function () {
+                that.trigger('errorOnFetch');
+            }
+        });
     }
 });
 

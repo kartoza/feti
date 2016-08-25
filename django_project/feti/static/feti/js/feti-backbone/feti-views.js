@@ -16,6 +16,7 @@ var MapView = Backbone.View.extend({
         this.$bodyContent = $("#content");
 
         this.isFullScreen = false;
+        dispatcher.on('map:pan', this.pan, this);
         dispatcher.on('map:addLayer', this.addLayer, this);
         dispatcher.on('map:removeLayer', this.removeLayer, this);
         this.animationSpeed = 400;
@@ -33,6 +34,9 @@ var MapView = Backbone.View.extend({
         }).addTo(this.map);
 
         this.$('#feti-map').parent().css('height', '100%');
+    },
+    pan: function (latLng) {
+        this.map.panTo(latLng);
     },
     addLayer: function (layer) {
         this.map.addLayer(layer);
@@ -147,7 +151,7 @@ var SearchBarView = Backbone.View.extend({
     tagName: 'div',
     container: '#map-search',
     template: _.template('\
-        <form action="map" method="POST">\
+        <form id="search-form" action="" method="POST">\
             <div class="search-category">\
                 <span id="back-home">Home</span>\
                 <span class="map-question"">\
@@ -167,7 +171,7 @@ var SearchBarView = Backbone.View.extend({
                 <span id="search-bar" class="right-inner-addon">\
                    <i class="icon-search fa fa-search"></i>\
                    <input id="search-bar-input" type="search"\
-                           class="form-control"\
+                           class="form-control" name="q"\
                            placeholder="Search" />\
                 </span>\
                 <span class="m-button map-option" id="where-to-study">\
@@ -179,7 +183,7 @@ var SearchBarView = Backbone.View.extend({
                 <span class="m-button map-option" id="choose-occupation">\
                     Travel line\
                 </span>\
-               <i id="carousel-toogle" class="carousel-toogle fa fa-caret-left" aria-hidden="true"></i>\
+               <i id="result-toogle" class="result-toogle fa fa-caret-left" aria-hidden="true"></i>\
             </div>\
         </form>'),
     events: {
@@ -187,7 +191,7 @@ var SearchBarView = Backbone.View.extend({
         'click #what-to-study': 'categoryClicked',
         'click #choose-occupation': 'categoryClicked',
         'click #back-home': 'exitFullScreen',
-        'click #carousel-toogle': 'carouselToogling'
+        'click #result-toogle': 'resultToogling'
     },
     initialize: function () {
         this.render();
@@ -203,6 +207,16 @@ var SearchBarView = Backbone.View.extend({
         this.$el.empty();
         this.$el.html(this.template());
         $(this.container).append(this.$el);
+        // form submit
+        var that = this;
+        $("#search-form").submit(function (e) {
+            var mode = that.categorySelected();
+            if (mode == 'provider') {
+                search_collection.getProvider(that.$search_bar_input.val());
+            }
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
     },
     categoryClicked: function (event) {
         this.changeCategory(event.target);
@@ -212,7 +226,25 @@ var SearchBarView = Backbone.View.extend({
         this.toogleProviderWithMap(e);
         this.changeCategoryButton("");
     },
-    carouselToogling: function (event) {
+    categorySelected: function () {
+        var button = this.$el.find('.search-category').find('.m-button.active');
+        if (button[0]) {
+            return $(button[0]).attr("mode");
+        } else {
+            return "";
+        }
+    },
+    showResult: function () {
+        var $toogle = $('#result-toogle');
+        if ($toogle.hasClass('fa-caret-left')) {
+            $toogle.removeClass('fa-caret-left');
+            $toogle.addClass('fa-caret-right');
+            if (!$('#providers').is(":visible")) {
+                $('#providers').show("slide", {direction: "right"}, 500);
+            }
+        }
+    },
+    resultToogling: function (event) {
         if ($(event.target).hasClass('fa-caret-left')) {
             $(event.target).removeClass('fa-caret-left');
             $(event.target).addClass('fa-caret-right');
@@ -301,8 +333,8 @@ var SearchBarView = Backbone.View.extend({
     toogleProviderWithMap: function (e) {
         var that = this;
         if ($('#providers').is(":visible")) {
-            $('#carousel-toogle').removeClass('fa-caret-right');
-            $('#carousel-toogle').addClass('fa-caret-left');
+            $('#result-toogle').removeClass('fa-caret-right');
+            $('#result-toogle').addClass('fa-caret-left');
             $('#providers').hide("slide", {direction: "right"}, 500, function () {
                 that.hideSearchBarWithMap(e);
             });
@@ -312,58 +344,32 @@ var SearchBarView = Backbone.View.extend({
     }
 });
 
-
-var CourseView = Backbone.View.extend({
-    tagName: 'li',
-    template: _.template('<%- _long_description %>'),
-    container: "",
-    events: {
-        'click': 'clicked'
-    },
-    clicked: function () {
-        return false;
-    },
-    render: function () {
-        this.$el.empty();
-        this.$el.html(this.template(this.model.attributes));
-        $(this.container).append(this.$el);
-    },
-    initialize: function () {
-        this.render();
-    }
-});
-
-var CampusView = Backbone.View.extend({
-    tagName: 'li',
-    template: _.template('<%- provider %><br><ul id="campus_course_<%- id %>" ></ul>'),
+var SearchResultView = Backbone.View.extend({
+    tagName: 'div',
+    className: 'result-row',
+    template: _.template('<%- provider %>'),
     container: '#providers',
-    model: Campus,
+    model: SearchResult,
     events: {
         'click': 'clicked'
     },
     clicked: function () {
+        this.model.clicked();
         return false;
     },
     render: function () {
         this.$el.empty();
         this.$el.html(this.template(this.model.attributes));
         $(this.container).append(this.$el);
-        var that = this;
-        this.course_collection = new CourseCollection({id: this.model.attributes.id});
-        this.course_collection.fetch({
-            success: function () {
-                _.each(that.course_collection.models, function (model) {
-                    that.course_collection.course_views.push(new CourseView({
-                        model: model,
-                        id: "campus_" + that.model.attributes.id + "_course_" + model.get('id'),
-                    }, "#campus_course_" + that.model.attributes.id));
-                });
-            }
-        });
         this.model.renderMarker();
     },
     initialize: function () {
         this.render();
+    },
+    destroy: function () {
+        this.model.destroy();
+        this.$el.remove();
+        return Backbone.View.prototype.remove.call(this);
     }
 });
 
