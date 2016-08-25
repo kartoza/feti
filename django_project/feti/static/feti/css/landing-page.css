@@ -181,6 +181,11 @@ p.login-link :hover {
     height: 55px;
     text-align: center;
     z-index: 99998;
+    position: relative;
+}
+
+#map-search {
+    position: relative;
 }
 
 .search-category .row, #map-search {
@@ -209,7 +214,7 @@ p.login-link :hover {
     position: absolute;
     top: 55px;
     width: 100%;
-    z-index: 99999;
+    z-index:1000001;
 }
 
 .search-bar .m-button {
@@ -239,7 +244,7 @@ p.login-link :hover {
     top: 0px;
     padding-top: 55px !important;
     background: white;
-    z-index: 99995;
+    z-index: 1000000;
 }
 
 #back-home {
