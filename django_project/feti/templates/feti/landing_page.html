@@ -7,8 +7,7 @@
 {% endblock title %}
 
 {% block js_head %}
-    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"
-            integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk=" crossorigin="anonymous"></script>
+
 {% endblock %}
 
 {% block css_head %}
@@ -129,34 +128,56 @@
 {% endblock %}
 
 {% block js_inline %}
-    <script>
-        var dispatcher = _.extend({}, Backbone.Events);
-    </script>
-    <script type='template' id='map-template'>
-        <div id="feti-map"></div>
-    </script>
+
+{#    <script>#}
+{#        var dispatcher = _.extend({}, Backbone.Events);#}
+{#    </script>#}
+{#    <script type='template' id='map-template'>#}
+{#        <div id="feti-map"></div>#}
+{#    </script>#}
+{#    <script type='template' id='login-modal-template'>#}
+{#        {% include 'feti/modals/login_modal.html' %}#}
+{#    </script>#}
+{##}
+{#    <script>#}
+{##}
+{#        var is_logged_in = "{{ user.is_authenticated }}" == "True";#}
+{#        // If login error#}
+{#        {% if error %}#}
+{#            $(document).ready(function(){#}
+{#                window.history.pushState("", "", "/");#}
+{#            });#}
+{#            loginModalView.show();#}
+{#        {% endif %}#}
+{##}
+{#    </script>#}
+
+
+{#    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>#}
+{#    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>#}
+{#    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>#}
+{#    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>#}
+{#    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>#}
+
+    <!-- Backbone Templates -->
     <script type='template' id='login-modal-template'>
         {% include 'feti/modals/login_modal.html' %}
     </script>
 
-    <script>
-
-        var is_logged_in = "{{ user.is_authenticated }}" == "True";
-        // If login error
-        {% if error %}
-            $(document).ready(function(){
-                window.history.pushState("", "", "/");
-            });
-            loginModalView.show();
-        {% endif %}
-
+    <script type='template' id='map-template'>
+        <div id="feti-map"></div>
     </script>
 
-    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>
+    <!-- Django context variables -->
+    <script>
+        var is_logged_in = "{{ user.is_authenticated }}" == "True";
+        {% if error %}
+            $(document).ready(function(){
+                window.history.pushState("", "", "/#login");
+            });
+        {% endif %}
+    </script>
 
+    <script type="text/javascript" src="/static/feti/js/scripts/main.js"></script>
 
 {% endblock %}
