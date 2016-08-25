@@ -25,6 +25,7 @@ var AppRouter = Backbone.Router.extend({
         this.page_history.push(Backbone.history.getFragment());
     },
     show_map: function (mode) {
+        loginModalView.hide();
         if (this.page_history.length == 0) {
             mapView.fullScreenMap(0);
         } else {
@@ -42,6 +43,17 @@ var AppRouter = Backbone.Router.extend({
             loginModalView.show();
         }
         this.page_history.push(Backbone.history.getFragment());
+    },
+    back: function (own_route) {
+        if (this.page_history.length > 0) {
+            if (own_route == this.page_history[this.page_history.length - 1]) {
+                this.navigate(this.page_history[this.page_history.length - 2], true);
+            } else {
+                this.navigate(this.page_history[this.page_history.length - 1], true);
+            }
+        } else {
+            this.navigate('', true);
+        }
     }
 });
 

@@ -55,12 +55,13 @@ var MapView = Backbone.View.extend({
                 _speed = speed;
             }
 
-            this.$navbar.hide();
             this.$header.slideUp(_speed);
             this.$aboutSection.slideUp(_speed);
             this.$partnerSection.hide();
             this.$footerSection.hide();
 
+            var nav_bar_height = $('#navigation_bar').height();
+            this.$mapContainer.css('padding-top', nav_bar_height);
             this.$mapContainer.css('padding-right', 0);
             this.$mapContainer.css('padding-left', 0);
 
@@ -227,7 +228,7 @@ var SearchBarView = Backbone.View.extend({
     changeCategoryButton: function (mode) {
         this.$el.find('.search-category').find('.m-button').removeClass('active');
         var $button = null;
-        var highlight = "";
+        var highlight = "Choose what are you looking for";
         if (mode == "provider") {
             $button = this.$provider_button;
             highlight = 'Search for provider';
@@ -381,12 +382,12 @@ var LoginModalView = Backbone.View.extend({
         this.$el.modal('show');
     },
 
-    hide: function () {
+    hide: function (s) {
         this.$el.modal('hide');
     },
 
     teardown: function () {
-        Backbone.history.navigate('');
+        app_router.back('login');
     },
 
     render: function () {
