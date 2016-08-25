@@ -34,10 +34,13 @@ h6 {
     background-size: cover;
 }
 
+#introduction_carousel {
+    height: 500px;
+}
+
 .intro-message {
     position: relative;
-    padding-top: 20%;
-    padding-bottom: 20%;
+    padding-top: 15%;
 }
 
 .intro-message > h1 {
