@@ -110,7 +110,11 @@ h6 {
     width: 100%;
     top: 0px;
     left: 0px;
-    z-index: 100;
+    z-index: 1000002;
+}
+
+#content {
+    margin-top: 0px !important;
 }
 
 .left-inner-addon {

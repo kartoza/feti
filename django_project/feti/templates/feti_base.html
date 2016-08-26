@@ -31,13 +31,18 @@
     {% block css_head %}{% endblock %}
 
     <script>
-        $(document).ready(function () {
-            var nav_bar_height = $("#navigation_bar").height();
-            $("#content").css("margin-top", nav_bar_height);
-        });
+{#        $(document).ready(function () {#}
+{#            var nav_bar_height = $("#navigation_bar").height();#}
+{#            $("#content").css("margin-top", nav_bar_height);#}
+{#        });#}
     </script>
 </head>
 <body>
+
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
 <div id="navigation_bar">
     <!-- Navigation -->
     <nav class="navbar navbar-default topnav" role="navigation">
@@ -73,11 +78,6 @@
         </div>
         <!-- /.container -->
     </nav>
-</div>
-
-<div id="content">
-    {% block content %}
-    {% endblock %}
 </div>
 
 {% block js_inline %}
