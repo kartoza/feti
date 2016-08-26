@@ -7,8 +7,7 @@
 {% endblock title %}
 
 {% block js_head %}
-    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"
-            integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk=" crossorigin="anonymous"></script>
+
 {% endblock %}
 
 {% block css_head %}
@@ -34,7 +33,9 @@
                          alt="First slide">
                     <div class="container">
                         <div class="carousel-caption">
-                            <h1>WE HELP YOU TO FIND YOUR CAREER</h1>
+                            <h
+                                    R CAREER
+                            </h1>
                             <h2>23527 COURSES FOUND</h2>
                         </div>
                     </div>
@@ -43,26 +44,25 @@
                     <img class="second-slide"
                          src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
                          alt="Second slide">
-                    <div class="container">
-                        <div class="carousel-caption">
-                            <h1>WE HELP YOU TO FIND YOUR CAREER</h1>
-                            <h2>23527 COURSES FOUND</h2>
-                        </div>
+
+                    er">
+                    <div class="carousel-caption">
+                        <
+                        UR CAREER</h1>
+                        <h2>23527 COURSES FOUND</h2>
                     </div>
                 </div>
             </div>
-            <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div><!-- /.carousel -->
-
-    </div>
-    <!-- /.intro-header -->
+        </div>
+        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div><!-- /.carousel -->
 
     <!-- Page Content -->
     <div id="introduction_text" class="content-section-a about-section">
@@ -95,9 +95,11 @@
 
     <div class="map-section">
         <div id="map-container">
-            <div id="map-search"></div>
+
             <div class="row" style="height: 100%; position: relative;">
-                <div id="map-section" style="height: 100%; width: 100%"></div>
+                <div id="map-section" style="height: 100%; width: 100%">
+                    <div id="map-search"></div>
+                </div>
                 <div id="providers" class="col-md-4 nopadding" style="height: 100%"></div>
             </div>
         </div>
@@ -156,34 +158,28 @@
 {% endblock %}
 
 {% block js_inline %}
-    <script>
-        var dispatcher = _.extend({}, Backbone.Events);
-    </script>
-    <script type='template' id='map-template'>
-        <div id="feti-map"></div>
-    </script>
+
+    <!-- Backbone Templates -->
     <script type='template' id='login-modal-template'>
         {% include 'feti/modals/login_modal.html' %}
     </script>
 
-    <script>
-
-        var is_logged_in = "{{ user.is_authenticated }}" == "True";
-        // If login error
-        {% if error %}
-            $(document).ready(function () {
-                window.history.pushState("", "", "/");
-            });
-            loginModalView.show();
-        {% endif %}
-
+    <script type='template' id='map-template'>
+        <div id="feti-map"></div>
     </script>
 
-    <script src="/static/feti/js/feti-backbone/feti-models.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-views.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-collections.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-main.js"></script>
-    <script src="/static/feti/js/feti-backbone/feti-route.js"></script>
+    <!-- Django context variables -->
+    <script>
+        var is_logged_in = "{{ user.is_authenticated }}" == "True";
+        var is_login_error = false;
+        {% if error %}
+            $(document).ready(function () {
+                is_login_error = true;
+                window.history.pushState("", "", "/#login");
+            });
+        {% endif %}
+    </script>
 
+    <script type="text/javascript" src="/static/feti/js/scripts/main.js"></script>
 
 {% endblock %}
