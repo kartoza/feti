@@ -1,7 +1,7 @@
 define([
     'common',
     '/static/feti/js/scripts/views/searchbar.js'
-], function(Common, SearchbarView){
+], function (Common, SearchbarView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -42,8 +42,9 @@ define([
             this.$el.html(this.template());
             $('#map-section').append(this.$el);
             this.map = L.map(this.$('#feti-map')[0]).setView([-29, 20], 6);
-            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(this.map);
 
             this.$('#feti-map').parent().css('height', '100%');
@@ -54,11 +55,11 @@ define([
         removeLayer: function (layer) {
             this.map.removeLayer(layer);
         },
-        maximise: function() {
+        maximise: function () {
             alert('maximising');
         },
         clickMap: function (e) {
-            if(!this.isFullScreen) {
+            if (!this.isFullScreen) {
                 Common.Router.navigate('map', true);
             }
         },
