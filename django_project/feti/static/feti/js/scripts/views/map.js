@@ -46,6 +46,12 @@ define([
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(this.map);
+            // event
+            var that = this;
+            this.map.on('moveend', function () {
+                Common.Dispatcher.trigger('map:moved', that.map.getBounds()._southWest.lng, that.map.getBounds()._southWest.lat,
+                    that.map.getBounds()._northEast.lng, that.map.getBounds()._northEast.lat);
+            });
 
             this.$('#feti-map').parent().css('height', '100%');
         },

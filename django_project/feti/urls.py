@@ -8,7 +8,7 @@ from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
 from feti.views.landing_page import LandingPage
-from feti.views.api import ApiCampuss, ApiCourses
+from feti.views.api import ApiCampus, ApiCourse
 
 sqs = SearchQuerySet()
 
@@ -16,12 +16,16 @@ api_urls = patterns(
     '',
     url(
         r'^api/campus',
-        ApiCampuss.as_view(),
+        ApiCampus.as_view(),
+        name='api-campus'),
+    url(
+        r'^api/course',
+        ApiCourse.as_view(),
         name='api-campus'),
     url(
         r'^api/course/(?P<campus_id>\d+)',
-        ApiCourses.as_view(),
-        name='api-course'),
+        ApiCourse.as_view(),
+        name='api-course-campus'),
 )
 
 urlpatterns = patterns(

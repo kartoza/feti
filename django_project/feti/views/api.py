@@ -14,7 +14,7 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
-class ApiCampuss(APIView):
+class ApiCampus(APIView):
     def get(self, request, format=None):
         q = request.GET.get('q')
         if not q:
@@ -24,9 +24,12 @@ class ApiCampuss(APIView):
         return Response(serializer.data)
 
 
-class ApiCourses(APIView):
-    def get(self, request, campus_id=None, format=None):
-        set = CampusCourseEntry.objects.filter(campus=campus_id).values('course')
-        set = Course.objects.filter(id__in=set)
+class ApiCourse(APIView):
+    def get(self, request, format=None):
+        q = request.GET.get('q')
+        if not q:
+            q = ""
+
+        set = Course.objects.filter(course_description__icontains=q)
         serializer = CourseSerializer(set, many=True)
         return Response(serializer.data)

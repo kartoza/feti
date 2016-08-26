@@ -13,6 +13,7 @@
 {% block css_head %}
     {% stylesheet 'landing_page' %}
     <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'feti/leaflet-extra-markers/leaflet.extra-markers.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -158,6 +159,7 @@
 {% endblock %}
 
 {% block js_inline %}
+    <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
 
     <!-- Backbone Templates -->
     <script type='template' id='login-modal-template'>

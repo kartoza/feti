@@ -11,29 +11,47 @@ define([
             } else {
                 data = options;
             }
+            if (data.location) {
+                var location = data.location.split("(")[1].replace(")", "").split(" ");
+                data.location = new L.LatLng(parseFloat(location[1]), parseFloat(location[0]));
+            }
             return data;
         },
         renderMarker: function () {
-            if (this.attributes.location) {
-                var location = this.attributes.location.split("(")[1].replace(")", "").split(" ");
-                // not sure is the best way
-                this.marker = new L.marker([parseFloat(location[1]), parseFloat(location[0])]).bindPopup(this.attributes._campus_popup);
+            if (!this.get('layer')) {
+                if (this.attributes.location) {
+                    // not sure is the best way
+                    this.marker = new L.marker([this.attributes.location.lat, this.attributes.location.lng], {
+                        icon: L.ExtraMarkers.icon({
+                            markerColor: 'blue leaflet-clickable',
+                            icon: 'true',
+                            extraClasses: 'fa fa-graduation-cap',
+                            iconColor: 'white'
+                        })
+                    }).bindPopup(this.attributes._campus_popup);
+                    this.set('layer', L.layerGroup([this.marker]));
+                    Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
+                }
+            } else {
                 this.set('layer', L.layerGroup([this.marker]));
                 Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
             }
         },
-        destroy: function () {
-            // destroy by remove layers and delete this object
+        removeMarker: function () {
             if (this.get('layer')) {
                 this.get('layer').clearLayers();
             }
+
+        },
+        destroy: function () {
+            // destroy by remove layers and delete this object
+            this.removeMarker();
             delete this;
         },
         clicked: function () {
-            var location = this.attributes.location.split("(")[1].replace(")", "").split(" ");
             this.marker.openPopup();
-            Common.Dispatcher.trigger('map:pan', new L.LatLng(parseFloat(location[1]), parseFloat(location[0])));
-        }
+            Common.Dispatcher.trigger('map:pan', this.attributes.location);
+        },
     });
 
     return SearchResult;
