@@ -94,6 +94,7 @@ uwsgi:
     - ./static:/home/web/static
     - ./media:/home/web/media
     - ./logs:/var/log/
+    - ./webroot-path:/var/www/webroot
   links:
     - smtp:smtp
     - db:db
