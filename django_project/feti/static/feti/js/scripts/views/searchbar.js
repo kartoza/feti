@@ -21,7 +21,6 @@ define([
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.search_bar_hidden = true;
-            Common.Dispatcher.on('map:resize', this.mapResize, this);
         },
         render: function () {
             this.$el.empty();

@@ -26,7 +26,7 @@ define([
 
             this.render();
             this.searchBarView = new SearchbarView();
-            this.listenTo(this.searchBarView, 'backHome', this.exitFullScreen);
+            this.listenTo(this.searchBarView, 'backHome', this.backHome);
             this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
 
             // Common Dispatcher events
@@ -34,6 +34,9 @@ define([
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
+        },
+        backHome: function () {
+            Common.Router.navigate('', true);
         },
         render: function () {
             this.$el.html(this.template());
@@ -107,7 +110,7 @@ define([
                 this.$mapContainer.animate(d, _speed, function () {
                     _map._onResize();
                     that.isFullScreen = true;
-                    Common.Dispatcher.trigger('map:resize', true);
+                    that.searchBarView.mapResize(true);
                 });
 
             }
@@ -147,7 +150,7 @@ define([
                 this.$mapContainer.animate(d, this.animationSpeed, function () {
                     _map._onResize();
                     that.isFullScreen = false;
-                    Common.Dispatcher.trigger('map:resize', false);
+                    that.searchBarView.mapResize(false);
                     that.searchBarView.toggleProvider(e);
                 });
 
