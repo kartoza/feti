@@ -95,6 +95,7 @@ uwsgi:
     - ./media:/home/web/media
     - ./logs:/var/log/
     - ./webroot-path:/var/www/webroot
+    - /etc/letsencrypt:/etc/letsencrypt
   links:
     - smtp:smtp
     - db:db
