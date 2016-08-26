@@ -1,7 +1,7 @@
 define([
     'common',
     '/static/feti/js/scripts/views/searchbar.js'
-], function(Common, SearchbarView){
+], function (Common, SearchbarView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -30,6 +30,7 @@ define([
             this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
 
             // Common Dispatcher events
+            Common.Dispatcher.on('map:pan', this.pan, this);
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
@@ -54,13 +55,16 @@ define([
         removeLayer: function (layer) {
             this.map.removeLayer(layer);
         },
-        maximise: function() {
+        maximise: function () {
             alert('maximising');
         },
         clickMap: function (e) {
-            if(!this.isFullScreen) {
+            if (!this.isFullScreen) {
                 Common.Router.navigate('map', true);
             }
+        },
+        pan: function (latLng) {
+            this.map.panTo(latLng);
         },
         changeCategory: function (mode) {
             this.searchBarView.changeCategoryButton(mode);

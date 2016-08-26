@@ -15,7 +15,7 @@ sqs = SearchQuerySet()
 api_urls = patterns(
     '',
     url(
-        r'^api/campus/',
+        r'^api/campus',
         ApiCampuss.as_view(),
         name='api-campus'),
     url(
@@ -32,7 +32,8 @@ urlpatterns = patterns(
         name='landing_page'),
     url(
         r'^search/',
-        include('haystack.urls')),
+        # include('haystack.urls')),
+        'feti.views.search.search'),
     url(
         r'^customsearch/',
         search_view_factory(

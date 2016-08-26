@@ -1,7 +1,8 @@
 define([
     'text!static/feti/js/scripts/templates/searchbar.html',
-    'common'
-], function(searchbarTemplate, Common){
+    'common',
+    '/static/feti/js/scripts/collections/search.js'
+], function (searchbarTemplate, Common, searchCollection) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -11,7 +12,7 @@ define([
             'click #what-to-study': 'categoryClicked',
             'click #choose-occupation': 'categoryClicked',
             'click #back-home': 'backHomeClicked',
-            'click #carousel-toogle': 'carouselToogling'
+            'click #result-toogle': 'resultToogling'
         },
         initialize: function () {
             this.render();
@@ -21,11 +22,21 @@ define([
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.search_bar_hidden = true;
+            Common.Dispatcher.on('result:show', this.showResult(), this);
         },
         render: function () {
             this.$el.empty();
             this.$el.html(this.template());
             $(this.container).append(this.$el);
+            // form submit
+            var that = this;
+            $("#search-form").submit(function (e) {
+                var mode = that.categorySelected();
+                if (mode == 'provider') {
+                    searchCollection.getProvider(that.$search_bar_input.val());
+                }
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+            });
         },
         categoryClicked: function (event) {
             this.changeCategory($(event.target).data("mode"));
@@ -35,7 +46,17 @@ define([
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        carouselToogling: function (event) {
+        showResult: function () {
+            var $toogle = $('#result-toogle');
+            if ($toogle.hasClass('fa-caret-left')) {
+                $toogle.removeClass('fa-caret-left');
+                $toogle.addClass('fa-caret-right');
+                if (!$('#providers').is(":visible")) {
+                    $('#providers').show("slide", {direction: "right"}, 500);
+                }
+            }
+        },
+        resultToogling: function (event) {
             if ($(event.target).hasClass('fa-caret-left')) {
                 $(event.target).removeClass('fa-caret-left');
                 $(event.target).addClass('fa-caret-right');
@@ -48,6 +69,14 @@ define([
                 if ($('#providers').is(":visible")) {
                     $('#providers').hide("slide", {direction: "right"}, 500);
                 }
+            }
+        },
+        categorySelected: function () {
+            var button = this.$el.find('.search-category').find('.m-button.active');
+            if (button[0]) {
+                return $(button[0]).attr("data-mode");
+            } else {
+                return "";
             }
         },
         changeCategoryButton: function (mode) {
