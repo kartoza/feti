@@ -17,7 +17,6 @@ define([
                 view.destroy();
             });
             this.SearchResultViews = [];
-            Common.Dispatcher.trigger('result:show');
         },
         getProvider: function (q) {
             var that = this;

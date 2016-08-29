@@ -6,11 +6,6 @@ __author__ = 'irwan'
 
 
 class CampusSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField('is_named_bar')
-
-    def is_named_bar(self, campus):
-        return campus.__unicode__()
-
     class Meta:
         model = Campus
 
@@ -22,4 +17,8 @@ class CampusSerializer(serializers.ModelSerializer):
             res['address'] = instance.address.__unicode__()
         if instance.provider:
             res['provider'] = instance.provider.__unicode__()
+        locations = []
+        if instance.location:
+            locations.append({'lat': instance.location.y, 'lng': instance.location.x, 'popup': instance._campus_popup})
+        res['locations'] = locations
         return res

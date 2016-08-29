@@ -1,6 +1,6 @@
 # coding=utf-8
 """URI Routing configuration for this apps."""
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 
 # Needed by haystack views
 from feti.forms.search import DefaultSearchForm

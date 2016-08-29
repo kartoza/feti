@@ -24,7 +24,7 @@ define([
         },
         landing_page: function() {
             if (this.is_previous_route_match(/map.*/)) {
-                this.mapView.exitFullScreen();
+                this.mapView.exitAllFullScreen();
             } else if (this.is_previous_route_match(/login/)) {
                 this.loginView.hide();
             }

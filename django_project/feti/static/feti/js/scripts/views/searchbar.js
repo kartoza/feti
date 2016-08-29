@@ -22,7 +22,6 @@ define([
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.search_bar_hidden = true;
-            Common.Dispatcher.on('result:show', this.showResult(), this);
         },
         render: function () {
             this.$el.empty();
@@ -43,6 +42,7 @@ define([
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
+            this.changeCategoryButton("");
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
@@ -132,6 +132,7 @@ define([
         hideSearchBar: function (e) {
             if (!this.search_bar_hidden) {
                 this.$search_bar.slideToggle(500, function () {
+                    Common.Dispatcher.trigger('map:exitFullScreen');
                 });
                 // zoom control animation
                 var $zoom_control = $('.leaflet-control-zoom');
@@ -145,10 +146,9 @@ define([
         },
         toggleProvider: function (e) {
             var that = this;
-            this.changeCategoryButton("");
             if ($('#providers').is(":visible")) {
-                $('#carousel-toogle').removeClass('fa-caret-right');
-                $('#carousel-toogle').addClass('fa-caret-left');
+                $('#result-toogle').removeClass('fa-caret-right');
+                $('#result-toogle').addClass('fa-caret-left');
                 $('#providers').hide("slide", {direction: "right"}, 500, function () {
                     that.hideSearchBar(e);
                 });

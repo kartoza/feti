@@ -57,6 +57,9 @@ define([
             this.$('#feti-map').parent().css('height', '100%');
         },
         addLayer: function (layer) {
+            if (this.isFullScreen) {
+                this.searchBarView.showResult();
+            }
             this.map.addLayer(layer);
         },
         removeLayer: function (layer) {
@@ -75,6 +78,9 @@ define([
         },
         changeCategory: function (mode) {
             this.searchBarView.changeCategoryButton(mode);
+        },
+        exitAllFullScreen: function () {
+            this.searchBarView.toggleProvider();
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -121,7 +127,7 @@ define([
                 this.$mapContainer.animate(d, _speed, function () {
                     _map._onResize();
                     that.isFullScreen = true;
-                    that.searchBarView.mapResize(true);
+                    that.searchBarView.mapResize(true, _speed);
                 });
 
             }
@@ -161,7 +167,7 @@ define([
                 this.$mapContainer.animate(d, this.animationSpeed, function () {
                     _map._onResize();
                     that.isFullScreen = false;
-                    that.searchBarView.mapResize(false);
+                    that.searchBarView.mapResize(false, that.animationSpeed);
                     that.searchBarView.toggleProvider(e);
                 });
 

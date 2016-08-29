@@ -19,16 +19,16 @@ define([
         },
         renderMarker: function () {
             if (!this.get('layer')) {
-                if (this.attributes.location) {
+                if (this.attributes.locations.length > 0) {
                     // not sure is the best way
-                    this.marker = new L.marker([this.attributes.location.lat, this.attributes.location.lng], {
+                    this.marker = new L.marker([this.attributes.locations[0].lat, this.attributes.locations[0].lng], {
                         icon: L.ExtraMarkers.icon({
                             markerColor: 'blue leaflet-clickable',
                             icon: 'true',
                             extraClasses: 'fa fa-graduation-cap',
                             iconColor: 'white'
                         })
-                    }).bindPopup(this.attributes._campus_popup);
+                    }).bindPopup(this.attributes.locations[0].popup);
                     this.set('layer', L.layerGroup([this.marker]));
                     Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
                 }

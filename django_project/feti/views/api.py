@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 
 from feti.models.campus import Campus
 from feti.models.course import Course
-from feti.models.campus_course_entry import CampusCourseEntry
 from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.course_serializer import CourseSerializer
 
@@ -19,7 +18,9 @@ class ApiCampus(APIView):
         q = request.GET.get('q')
         if not q:
             q = ""
-        set = Campus.objects.filter(Q(campus__icontains=q) | Q(provider__primary_institution__icontains=q))
+        set = Campus.objects.filter(
+            Q(campus__icontains=q) |
+            Q(provider__primary_institution__icontains=q))
         serializer = CampusSerializer(set, many=True)
         return Response(serializer.data)
 
