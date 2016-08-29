@@ -4,7 +4,6 @@ from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.core import management
 
-
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '16/04/15'
 
@@ -26,6 +25,9 @@ class Provider(models.Model):
         default=PROVIDER_STATUS_PUBLIC)
     """public owned or private owned"""
     objects = models.GeoManager()
+
+    def __str__(self):
+        return self.__unicode__()
 
     def __unicode__(self):
         return self.primary_institution.title() or 'N/A'

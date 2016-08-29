@@ -13,6 +13,7 @@
 {% block css_head %}
     {% stylesheet 'landing_page' %}
     <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'feti/leaflet-extra-markers/leaflet.extra-markers.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -99,7 +100,7 @@
                 <div id="map-section" style="height: 100%; width: 100%">
                     <div id="map-search"></div>
                 </div>
-                <div id="providers" class="col-md-4 nopadding" style="height: 100%"></div>
+                <div id="result" class="col-md-4 nopadding" style="height: 100%"></div>
             </div>
         </div>
         <!-- /.container -->
@@ -161,6 +162,7 @@
 {% endblock %}
 
 {% block js_inline %}
+    <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
 
     <!-- Backbone Templates -->
     <script type='template' id='login-modal-template'>

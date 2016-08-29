@@ -1,7 +1,8 @@
 define([
     'text!static/feti/js/scripts/templates/searchbar.html',
-    'common'
-], function(searchbarTemplate, Common){
+    'common',
+    '/static/feti/js/scripts/collections/search.js'
+], function (searchbarTemplate, Common, searchCollection) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -11,7 +12,7 @@ define([
             'click #what-to-study': 'categoryClicked',
             'click #choose-occupation': 'categoryClicked',
             'click #back-home': 'backHomeClicked',
-            'click #carousel-toogle': 'carouselToogling'
+            'click #result-toogle': 'resultToogling'
         },
         initialize: function () {
             this.render();
@@ -26,28 +27,65 @@ define([
             this.$el.empty();
             this.$el.html(this.template());
             $(this.container).append(this.$el);
+            // form submit
+            var that = this;
+            $("#search-form").submit(function (e) {
+                that.search();
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+            });
+        },
+        search: function () {
+            var mode = this.categorySelected();
+            if (mode) {
+                searchCollection.search(mode, this.$search_bar_input.val());
+                this.is_searching = true;
+            }
+
         },
         categoryClicked: function (event) {
             this.changeCategory($(event.target).data("mode"));
+            this.search();
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
+            this.changeCategoryButton("");
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        carouselToogling: function (event) {
+        showResult: function () {
+            if (this.is_searching) {
+                var $toogle = $('#result-toogle');
+                if ($toogle.hasClass('fa-caret-left')) {
+                    $toogle.removeClass('fa-caret-left');
+                    $toogle.addClass('fa-caret-right');
+                    if (!$('#result').is(":visible")) {
+                        $('#result').show("slide", {direction: "right"}, 500);
+                    }
+                }
+                this.is_searching = false;
+            }
+        },
+        resultToogling: function (event) {
             if ($(event.target).hasClass('fa-caret-left')) {
                 $(event.target).removeClass('fa-caret-left');
                 $(event.target).addClass('fa-caret-right');
-                if (!$('#providers').is(":visible")) {
-                    $('#providers').show("slide", {direction: "right"}, 500);
+                if (!$('#result').is(":visible")) {
+                    $('#result').show("slide", {direction: "right"}, 500);
                 }
             } else {
                 $(event.target).removeClass('fa-caret-right');
                 $(event.target).addClass('fa-caret-left');
-                if ($('#providers').is(":visible")) {
-                    $('#providers').hide("slide", {direction: "right"}, 500);
+                if ($('#result').is(":visible")) {
+                    $('#result').hide("slide", {direction: "right"}, 500);
                 }
+            }
+        },
+        categorySelected: function () {
+            var button = this.$el.find('.search-category').find('.m-button.active');
+            if (button[0]) {
+                return $(button[0]).attr("data-mode");
+            } else {
+                return "";
             }
         },
         changeCategoryButton: function (mode) {
@@ -91,7 +129,7 @@ define([
                 $zoom_control.animate({
                     marginTop: '+=55px'
                 }, speed);
-                var $result = $('#providers');
+                var $result = $('#result');
                 $result.animate({
                     paddingTop: '+=55px'
                 }, speed);
@@ -103,6 +141,7 @@ define([
         hideSearchBar: function (e) {
             if (!this.search_bar_hidden) {
                 this.$search_bar.slideToggle(500, function () {
+                    Common.Dispatcher.trigger('map:exitFullScreen');
                 });
                 // zoom control animation
                 var $zoom_control = $('.leaflet-control-zoom');
@@ -116,11 +155,10 @@ define([
         },
         toggleProvider: function (e) {
             var that = this;
-            this.changeCategoryButton("");
-            if ($('#providers').is(":visible")) {
-                $('#carousel-toogle').removeClass('fa-caret-right');
-                $('#carousel-toogle').addClass('fa-caret-left');
-                $('#providers').hide("slide", {direction: "right"}, 500, function () {
+            if ($('#result').is(":visible")) {
+                $('#result-toogle').removeClass('fa-caret-right');
+                $('#result-toogle').addClass('fa-caret-left');
+                $('#result').hide("slide", {direction: "right"}, 500, function () {
                     that.hideSearchBar(e);
                 });
             } else {

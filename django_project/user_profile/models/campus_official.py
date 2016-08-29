@@ -22,5 +22,8 @@ class CampusOfficial(models.Model):
         app_label = "feti"
         verbose_name = 'Provider Official'
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return self.user.username

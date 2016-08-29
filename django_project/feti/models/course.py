@@ -23,7 +23,6 @@ __copyright__ = 'kartoza.com'
 
 
 class Course(models.Model):
-
     id = models.AutoField(primary_key=True)
     # nlrd_regex = RegexValidator(
     #     regex=r'^\d{15,15}$',
@@ -64,6 +63,9 @@ class Course(models.Model):
     )
 
     objects = models.GeoManager()
+
+    def __str__(self):
+        return self.__unicode__()
 
     def __unicode__(self):
         course_string = u''

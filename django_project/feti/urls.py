@@ -1,6 +1,6 @@
 # coding=utf-8
 """URI Routing configuration for this apps."""
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 
 # Needed by haystack views
 from feti.forms.search import DefaultSearchForm
@@ -8,20 +8,24 @@ from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
 from feti.views.landing_page import LandingPage
-from feti.views.api import ApiCampuss, ApiCourses
+from feti.views.api import ApiCampus, ApiCourse
 
 sqs = SearchQuerySet()
 
 api_urls = patterns(
     '',
     url(
-        r'^api/campus/',
-        ApiCampuss.as_view(),
+        r'^api/campus',
+        ApiCampus.as_view(),
+        name='api-campus'),
+    url(
+        r'^api/course',
+        ApiCourse.as_view(),
         name='api-campus'),
     url(
         r'^api/course/(?P<campus_id>\d+)',
-        ApiCourses.as_view(),
-        name='api-course'),
+        ApiCourse.as_view(),
+        name='api-course-campus'),
 )
 
 urlpatterns = patterns(
@@ -32,7 +36,8 @@ urlpatterns = patterns(
         name='landing_page'),
     url(
         r'^search/',
-        include('haystack.urls')),
+        # include('haystack.urls')),
+        'feti.views.search.search'),
     url(
         r'^customsearch/',
         search_view_factory(

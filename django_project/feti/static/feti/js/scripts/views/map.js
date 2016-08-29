@@ -30,6 +30,7 @@ define([
             this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
 
             // Common Dispatcher events
+            Common.Dispatcher.on('map:pan', this.pan, this);
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
@@ -46,10 +47,12 @@ define([
                 maxZoom: 20,
                 attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(this.map);
-
             this.$('#feti-map').parent().css('height', '100%');
         },
         addLayer: function (layer) {
+            if (this.isFullScreen) {
+                this.searchBarView.showResult();
+            }
             this.map.addLayer(layer);
         },
         removeLayer: function (layer) {
@@ -63,8 +66,14 @@ define([
                 Common.Router.navigate('map', true);
             }
         },
+        pan: function (latLng) {
+            this.map.panTo(latLng);
+        },
         changeCategory: function (mode) {
             this.searchBarView.changeCategoryButton(mode);
+        },
+        exitAllFullScreen: function () {
+            this.searchBarView.toggleProvider();
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -111,7 +120,7 @@ define([
                 this.$mapContainer.animate(d, _speed, function () {
                     _map._onResize();
                     that.isFullScreen = true;
-                    that.searchBarView.mapResize(true);
+                    that.searchBarView.mapResize(true, _speed);
                 });
 
             }
@@ -151,7 +160,7 @@ define([
                 this.$mapContainer.animate(d, this.animationSpeed, function () {
                     _map._onResize();
                     that.isFullScreen = false;
-                    that.searchBarView.mapResize(false);
+                    that.searchBarView.mapResize(false, that.animationSpeed);
                     that.searchBarView.toggleProvider(e);
                 });
 
