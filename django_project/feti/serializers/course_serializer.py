@@ -11,11 +11,12 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         res = super(CourseSerializer, self).to_representation(instance)
+        res['title'] = instance.__unicode__()
+        locations = []
         for campus in Campus.objects.filter(courses=instance):
-            locations = []
             if campus.location:
                 locations.append(
                     {'lat': campus.location.y, 'lng': campus.location.x,
                      'popup': campus._campus_popup})
-            res['locations'] = locations
+        res['locations'] = locations
         return res

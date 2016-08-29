@@ -43,7 +43,6 @@ define([
             if (this.get('layer')) {
                 this.get('layer').clearLayers();
             }
-
         },
         destroy: function () {
             // destroy by remove layers and delete this object

@@ -230,7 +230,7 @@ p.login-link :hover {
     border-radius: 14px !important;
 }
 
-#providers {
+#result {
     overflow: scroll;
     display: none;
     position: absolute;

@@ -5,8 +5,8 @@ define([
     var SearchResultView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-row',
-        template: _.template('<%- provider %> [<%- locations.length %>]'),
-        container: '#providers',
+        template: _.template('<%- title %> [<%- locations.length %>]'),
+        container: '#result',
         model: SearchResult,
         events: {
             'click': 'clicked'
@@ -23,20 +23,10 @@ define([
         },
         initialize: function () {
             this.render();
-            Common.Dispatcher.on('map:moved', this.map_moved_handle, this);
-        },
-        map_moved_handle: function (minx, miny, maxx, maxy) {
-            var latlng = this.model.attributes.location;
-            if (latlng) {
-                if (maxx < latlng.lng || minx > latlng.lng || maxy < latlng.lat || miny > latlng.lat) {
-                    this.model.removeMarker();
-                } else {
-                    this.model.renderMarker();
-                }
-            }
         },
         destroy: function () {
             this.model.destroy();
+            this.model = null;
             this.$el.remove();
             return Backbone.View.prototype.remove.call(this);
         }

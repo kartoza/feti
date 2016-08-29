@@ -9,6 +9,7 @@ define([
         model: SearchResult,
         SearchResultViews: [],
         provider_url_template: _.template("/api/campus?q=<%- q %>"),
+        course_url_template: _.template("/api/course?q=<%- q %>"),
         url: function () {
             return this.url;
         },
@@ -18,9 +19,13 @@ define([
             });
             this.SearchResultViews = [];
         },
-        getProvider: function (q) {
+        search: function (mode, q) {
             var that = this;
-            this.url = this.provider_url_template({q: q});
+            if (mode == 'provider') {
+                this.url = this.provider_url_template({q: q});
+            } else if (mode == 'course') {
+                this.url = this.course_url_template({q: q});
+            }
             this.fetch({
                 success: function (collection, response) {
                     that.reset();

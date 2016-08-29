@@ -16,7 +16,7 @@ class CampusSerializer(serializers.ModelSerializer):
         if instance.address:
             res['address'] = instance.address.__unicode__()
         if instance.provider:
-            res['provider'] = instance.provider.__unicode__()
+            res['title'] = instance.provider.__unicode__()
         locations = []
         if instance.location:
             locations.append({'lat': instance.location.y, 'lng': instance.location.x, 'popup': instance._campus_popup})
