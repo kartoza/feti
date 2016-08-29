@@ -34,6 +34,7 @@ define([
                 if (mode == 'provider') {
                     searchCollection.getProvider(that.$search_bar_input.val());
                 }
+                that.is_searching = true;
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
@@ -47,13 +48,16 @@ define([
             this.trigger('backHome', e);
         },
         showResult: function () {
-            var $toogle = $('#result-toogle');
-            if ($toogle.hasClass('fa-caret-left')) {
-                $toogle.removeClass('fa-caret-left');
-                $toogle.addClass('fa-caret-right');
-                if (!$('#providers').is(":visible")) {
-                    $('#providers').show("slide", {direction: "right"}, 500);
+            if (this.is_searching) {
+                var $toogle = $('#result-toogle');
+                if ($toogle.hasClass('fa-caret-left')) {
+                    $toogle.removeClass('fa-caret-left');
+                    $toogle.addClass('fa-caret-right');
+                    if (!$('#providers').is(":visible")) {
+                        $('#providers').show("slide", {direction: "right"}, 500);
+                    }
                 }
+                this.is_searching = false;
             }
         },
         resultToogling: function (event) {

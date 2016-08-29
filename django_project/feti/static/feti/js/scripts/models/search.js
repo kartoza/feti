@@ -19,23 +19,25 @@ define([
         },
         renderMarker: function () {
             if (!this.get('layer')) {
-                if (this.attributes.locations.length > 0) {
+                var markers = [];
+                var that = this;
+                _.each(this.attributes.locations, function (location) {
                     // not sure is the best way
-                    this.marker = new L.marker([this.attributes.locations[0].lat, this.attributes.locations[0].lng], {
+                    marker = new L.marker([location.lat, location.lng], {
                         icon: L.ExtraMarkers.icon({
                             markerColor: 'blue leaflet-clickable',
                             icon: 'true',
                             extraClasses: 'fa fa-graduation-cap',
                             iconColor: 'white'
                         })
-                    }).bindPopup(this.attributes.locations[0].popup);
-                    this.set('layer', L.layerGroup([this.marker]));
-                    Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
-                }
-            } else {
-                this.set('layer', L.layerGroup([this.marker]));
-                Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
+                    }).bindPopup(location.popup);
+                    markers.push(marker);
+                });
+                this.set('markers', markers);
             }
+            this.set('now_index', 0);
+            this.set('layer', L.layerGroup(this.get('markers')));
+            Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
         },
         removeMarker: function () {
             if (this.get('layer')) {
@@ -49,7 +51,15 @@ define([
             delete this;
         },
         clicked: function () {
-            this.marker.openPopup();
+            var now_index = this.get('now_index');
+            if (this.get('markers').length > 0) {
+                this.get('markers')[now_index].openPopup();
+                now_index += 1;
+                if (now_index >= this.get('markers').length) {
+                    now_index = 0;
+                }
+                this.set('now_index', now_index);
+            }
             Common.Dispatcher.trigger('map:pan', this.attributes.location);
         },
     });

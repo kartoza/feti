@@ -113,6 +113,9 @@ class Campus(models.Model):
     def primary_institution(self):
         return self.provider
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return u'%s' % self.campus_name
 
@@ -206,7 +209,6 @@ class Campus(models.Model):
         from feti.models.campus_course_entry import CampusCourseEntry
         CampusCourseEntry.objects.filter(campus=self).delete()
         super(Campus, self).delete(*args, **kwargs)
-
 
 
 def regenerate_landing_page(sender, instance, **kwargs):

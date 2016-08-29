@@ -5,7 +5,7 @@ define([
     var SearchResultView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-row',
-        template: _.template('<%- provider %>'),
+        template: _.template('<%- provider %> [<%- locations.length %>]'),
         container: '#providers',
         model: SearchResult,
         events: {

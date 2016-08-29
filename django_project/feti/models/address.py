@@ -41,6 +41,9 @@ class Address(models.Model):
 
     objects = models.GeoManager()
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         address_list = [
             self.address_line_1,
