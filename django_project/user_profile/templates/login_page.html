@@ -1,4 +1,6 @@
 {% extends "feti_base.html" %}
+{% load staticfiles %}
+{% load pipeline %}
 {% block header %}
     <script>
         $(document).ready(function () {
@@ -6,56 +8,65 @@
         });
 
     </script>
-    <title>User Login</title>
+{% endblock %}
+
+{% block title %}
+    FORD 2 - User Login
+{% endblock title %}
+
+{% block css_head %}
+    {% stylesheet 'custom_page' %}
 {% endblock %}
 
 {% block content %}
 
-    <div class="col-lg-2 col-lg-offset-5">
-        <div style="padding-top:50px"></div>
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <i class="mdi-social-person"></i>
-                    Welcome to FETI.
-                </h3>
+    <div class="container">
+        <div class="col-lg-3 col-lg-offset-4" style="margin-top: 30px">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <i class="mdi-social-person"></i>
+                        Welcome to FETI.
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form" name="LoginForm" action="/feti-admin/login/" method="post">
+                        {# % csrf_token % #}
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}"/>
+                        {% endif %}
+                        <div class="control-group">
+                            <label class="control-label" for="username">Username</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" name="username" id="username"
+                                       value="{{ username }}"
+                                       placeholder="Username">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="password">Password</label>
+                            <div class="controls">
+                                <input type="password" class="form-control" name="password" id="password"
+                                       placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <button type="submit" class="btn btn-block btn-success">Login</button>
+                            </div>
+                        </div>
+                        <div>Please contact admin@feti.com for an account.</div>
+                    </form>
+                </div>
             </div>
-            <div class="panel-body">
-                <form class="form" name="LoginForm" action="/feti-admin/login/" method="post">
-                    {# % csrf_token % #}
-                    {% if next %}
-                        <input type="hidden" name="next" value="{{ next }}"/>
-                    {% endif %}
-                    <div class="control-group">
-                        <label class="control-label" for="username">Username</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="username" id="username" value="{{ username }}"
-                                   placeholder="Username">
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label" for="password">Password</label>
-                        <div class="controls">
-                            <input type="password" class="form-control" name="password" id="password"
-                                   placeholder="Password">
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="controls">
-                            <button type="submit" class="btn btn-block btn-success">Login</button>
-                        </div>
-                    </div>
-                    <div>Please contact admin@feti.com for an account.</div>
-                </form>
-            </div>
+            {% if error %}
+                <div class="alert alert-error">
+                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                    <strong>Error!</strong>
+                    {{ error }}
+                </div>
+            {% endif %}
         </div>
-        {% if error %}
-            <div class="alert alert-error">
-                <a href="#" class="close" data-dismiss="alert">&times;</a>
-                <strong>Error!</strong>
-                {{ error }}
-            </div>
-        {% endif %}
     </div>
 
 {% endblock %}

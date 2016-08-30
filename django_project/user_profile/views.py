@@ -16,6 +16,7 @@ from django.http import Http404
 from django.views.generic import TemplateView
 
 from feti.serializers.campus_serializer import CampusSerializer
+from feti.models.campus import Campus
 from user_profile.models.campus_official import CampusOfficial
 
 
@@ -72,9 +73,8 @@ def login_modal(request):
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            if user.is_active:
-                django_login(request, user)
-                return redirect(redirect_url)
+            django_login(request, user)
+            return redirect(redirect_url)
         error = 'invalid username or password'
 
     if not redirect_url:
@@ -109,6 +109,7 @@ class ProfilePage(TemplateView):
         context = self.get_context_data(**kwargs)
 
         username = self.kwargs.get('username', None)
+
         if username:
             try:
                 user = User.objects.get(username=username)
@@ -122,7 +123,10 @@ class ProfilePage(TemplateView):
                 context['phone'] = official.phone
 
                 if request.user.is_authenticated() and request.user == user:
-                    context['campus'] = CampusSerializer(official.campus).data
+                    if request.user.is_staff:
+                        context['campus'] = CampusSerializer(Campus.objects.all(), many=True).data
+                    else:
+                        context['campus'] = CampusSerializer(official.campus.all(), many=True).data
 
             except User.DoesNotExist:
                 raise Http404("User doesn't exist")

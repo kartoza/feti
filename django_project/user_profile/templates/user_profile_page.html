@@ -1,4 +1,6 @@
 {% extends "feti_base.html" %}
+{% load staticfiles %}
+{% load pipeline %}
 {% block header %}
     <script>
         $(document).ready(function () {
@@ -6,56 +8,70 @@
         });
 
     </script>
-    <title>User Login</title>
+{% endblock %}
+
+{% block title %}
+    FORD 2 - Profile
+{% endblock title %}
+
+{% block css_head %}
+    {% stylesheet 'custom_page' %}
 {% endblock %}
 
 {% block content %}
-    <div class="col-lg-8 col-lg-offset-2">
-        <div style="padding-top:50px"></div>
-        <div class="panel panel-primary" style="margin-bottom:0px">
-            <h1 style="text-align: center; color: #4285f4">
-                {{ username }}
-            </h1>
-            <div class="panel-body" style="text-align: center">
-                <b>Email : </b> {{ email }}
-                </br>
-                <b>Full name : </b> {{ full_name }}
-                </br>
-                <b>Department : </b> {{ department }}
-                </br>
-                <b>Phone : </b> {{ phone }}
+    <div id="additional-bar" class="main-color ">
+        <div class="container">
+            <div class="navbar-header">
+                <ul class="nav">
+                    <li>
+                        <a>{{ username }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if email %}
+                        <li>
+                            <a>email : {{ email }}</a>
+                        </li>
+                    {% endif %}
+                    {% if full_name %}
+                        <li>
+                            <a>Full name : {{ full_name }}</a>
+                        </li>
+                    {% endif %}
+                    {% if department %}
+                        <li>
+                            <a>Department : {{ department }}</a>
+                        </li>
+                    {% endif %}
+                    {% if phone %}
+                        <li>
+                            <a>Phone : {{ phone }}</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
-        {% if campus %}
-            <div class="panel panel-primary" style="margin-bottom:0px">
-                <div class="panel-heading">
-                    <h3 class="panel-title" style="text-align: center">
-                        {{ username }}'s provider
-                    </h3>
-                </div>
-                <h3 style="text-align: center; color: #4285f4">
-                    {{ campus.campus }}
-                </h3>
-                <div class="panel-body">
-                    <b>Description : </b> {{ campus.long_description }}
-                    </br>
-                    <b>Address : </b> {{ campus.address }}
-                    </br>
-                </div>
-            </div>
-            {% if campus.courses %}
-                <div class="panel panel-primary" style="margin-bottom:0px">
-                    <h3 style="color: #4285f4">
-                        Course List <a href="/campus/{{ campus.id }}/update/" class="mdi-image-edit"></a>
-                    </h3>
-                    <ul>
-                        {% for course in campus.courses %}
-                            <li>{{ course.course_description }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        {% endif %}
     </div>
-
+    {% if campus %}
+        <div class="container">
+            <h2>PROVIDERS</h2>
+            <div id="providers" class="row">
+                {% for provider in campus %}
+                    <div class="span3">
+                        <p><h3>{{ provider.campus }}
+                        <a href="/provider/{{ provider.id }}/update/"
+                           class="tiny material-icons" style="font-size: 14px">mode_edit</a></h3></p>
+                        {% if provider.long_description %}
+                            <p> {{ provider.long_description }}</p>
+                        {% endif %}
+                        {% if provider.address %}
+                            <p><i> {{ provider.address }}</i></p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

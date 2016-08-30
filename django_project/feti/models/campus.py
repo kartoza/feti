@@ -211,8 +211,8 @@ class Campus(models.Model):
         super(Campus, self).delete(*args, **kwargs)
 
 
-def regenerate_landing_page(sender, instance, **kwargs):
-    management.call_command('full_front_page')
-
-
-post_save.connect(regenerate_landing_page, sender=Campus, dispatch_uid="campus_landing_page")
+# def regenerate_landing_page(sender, instance, **kwargs):
+#     management.call_command('full_front_page')
+#
+#
+# post_save.connect(regenerate_landing_page, sender=Campus, dispatch_uid="campus_landing_page")
