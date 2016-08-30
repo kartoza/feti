@@ -63,7 +63,7 @@ define([
         },
         clickMap: function (e) {
             if (!this.isFullScreen) {
-                Common.Router.navigate('map', true);
+                Common.Router.navigate('map/'+Common.CurrentSearchMode, true);
             }
         },
         pan: function (latLng) {
