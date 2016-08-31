@@ -7,10 +7,6 @@
 {% endblock title %}
 
 {% block js_head %}
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
-    <script src="{% static "/static/grappelli/jquery/jquery-2.1.4.min.js" %}"></script>
-    <script src="{% static "/static/grappelli/jquery/ui/jquery-ui.min.js" %}"></script>
-    <script src="{% static "/static/grappelli/js/grappelli.min.js" %}"></script>
     <script>
         $(document).ready(function () {
             var map_height = $('.olMap').height();
