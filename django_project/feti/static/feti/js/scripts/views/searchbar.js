@@ -4,6 +4,7 @@ define([
     '/static/feti/js/scripts/collections/search.js'
 ], function (searchbarTemplate, Common, searchCollection) {
     var SearchBarView = Backbone.View.extend({
+        minimumWords: 3,
         tagName: 'div',
         container: '#map-search',
         template: _.template(searchbarTemplate),
@@ -16,12 +17,14 @@ define([
         },
         initialize: function () {
             this.render();
+            $("#result-toogle").hide();
             this.$search_bar = $(".search-bar");
             this.$search_bar_input = $("#search-bar-input");
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.search_bar_hidden = true;
+            Common.Dispatcher.on('search:finish', this.showResult, this);
         },
         render: function () {
             this.$el.empty();
@@ -35,15 +38,18 @@ define([
             });
         },
         search: function () {
+            this.changeRoute();
             var mode = this.categorySelected();
             if (mode) {
-                searchCollection.search(mode, this.$search_bar_input.val());
-                this.is_searching = true;
+                var query = this.$search_bar_input.val();
+                if (query.length >= this.minimumWords) {
+                    searchCollection.search(mode, this.$search_bar_input.val());
+                    this.is_searching = true;
+                }
             }
-
         },
         categoryClicked: function (event) {
-            this.changeCategory($(event.target).data("mode"));
+            this.changeRoute($(event.target).data("mode"));
             this.search();
             this.trigger('categoryClicked', event);
         },
@@ -112,14 +118,20 @@ define([
                 document.search_form.search_input.focus();
             }
         },
-        changeCategory: function (mode) {
-            Backbone.history.navigate('map/' + mode, true);
+        changeRoute: function (mode) {
+            if (mode) {
+                Backbone.history.navigate('map/' + mode, true);
+            } else {
+                Backbone.history.navigate('map/' + this.categorySelected(), true);
+            }
         },
         mapResize: function (is_resizing, speed) {
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
+                this.$('#result-toogle').show();
             } else { // Exit fullscreen
                 this.$('#back-home').hide();
+                this.$('#result-toogle').hide();
             }
         },
         showSearchBar: function (speed) {

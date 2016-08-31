@@ -28,6 +28,7 @@ define([
             }
             this.fetch({
                 success: function (collection, response) {
+                    Common.Dispatcher.trigger('search:finish');
                     that.reset();
                     _.each(that.models, function (model) {
                         that.SearchResultViews.push(new SearchResultView({
@@ -37,7 +38,7 @@ define([
                     });
                 },
                 error: function () {
-                    that.trigger('errorOnFetch');
+                    Common.Dispatcher.trigger('search:finish');
                 }
             });
         }
