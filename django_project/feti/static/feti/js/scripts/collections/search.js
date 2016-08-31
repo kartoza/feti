@@ -26,10 +26,10 @@ define([
             } else if (mode == 'course') {
                 this.url = this.course_url_template({q: q});
             }
+            this.reset();
             this.fetch({
                 success: function (collection, response) {
                     Common.Dispatcher.trigger('search:finish');
-                    that.reset();
                     _.each(that.models, function (model) {
                         that.SearchResultViews.push(new SearchResultView({
                             model: model,

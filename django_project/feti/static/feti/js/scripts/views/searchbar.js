@@ -23,8 +23,9 @@ define([
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
+            this.$result_loading = $("#result-loading");
             this.search_bar_hidden = true;
-            Common.Dispatcher.on('search:finish', this.showResult, this);
+            Common.Dispatcher.on('search:finish', this.resultFinish, this);
         },
         render: function () {
             this.$el.empty();
@@ -44,7 +45,8 @@ define([
                 var query = this.$search_bar_input.val();
                 if (query.length >= this.minimumWords) {
                     searchCollection.search(mode, this.$search_bar_input.val());
-                    this.is_searching = true;
+                    this.showResult();
+                    this.$result_loading.show();
                 }
             }
         },
@@ -57,17 +59,17 @@ define([
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
+        resultFinish: function () {
+            this.$result_loading.hide();
+        },
         showResult: function () {
-            if (this.is_searching) {
-                var $toogle = $('#result-toogle');
-                if ($toogle.hasClass('fa-caret-left')) {
-                    $toogle.removeClass('fa-caret-left');
-                    $toogle.addClass('fa-caret-right');
-                    if (!$('#result').is(":visible")) {
-                        $('#result').show("slide", {direction: "right"}, 500);
-                    }
+            var $toogle = $('#result-toogle');
+            if ($toogle.hasClass('fa-caret-left')) {
+                $toogle.removeClass('fa-caret-left');
+                $toogle.addClass('fa-caret-right');
+                if (!$('#result').is(":visible")) {
+                    $('#result').show("slide", {direction: "right"}, 500);
                 }
-                this.is_searching = false;
             }
         },
         resultToogling: function (event) {
