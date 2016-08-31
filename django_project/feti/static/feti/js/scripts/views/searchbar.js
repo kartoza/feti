@@ -48,7 +48,6 @@ define([
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
-            this.changeCategoryButton("");
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
@@ -108,6 +107,9 @@ define([
             if ($button) {
                 $button.addClass('active');
                 this.showSearchBar();
+                Common.CurrentSearchMode = mode;
+                // set focus on search text
+                document.search_form.search_input.focus();
             }
         },
         changeCategory: function (mode) {
@@ -116,7 +118,6 @@ define([
         mapResize: function (is_resizing, speed) {
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
-                this.showSearchBar(speed);
             } else { // Exit fullscreen
                 this.$('#back-home').hide();
             }
@@ -159,10 +160,10 @@ define([
                 $('#result-toogle').removeClass('fa-caret-right');
                 $('#result-toogle').addClass('fa-caret-left');
                 $('#result').hide("slide", {direction: "right"}, 500, function () {
-                    that.hideSearchBar(e);
+                    Common.Dispatcher.trigger('map:exitFullScreen');
                 });
             } else {
-                that.hideSearchBar(e);
+                Common.Dispatcher.trigger('map:exitFullScreen');
             }
         }
     });
