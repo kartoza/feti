@@ -46,7 +46,7 @@ urlpatterns = patterns(
             searchqueryset=sqs,
             form_class=DefaultSearchForm),
         name='haystack_search'),
-    url(regex='^campus/(?P<pk>\d+)/update/$',
+    url(regex='^provider/(?P<pk>\d+)/update/$',
         view=UpdateCampusView.as_view(),
         name='update_campus'),
 ) + api_urls

@@ -15,8 +15,7 @@ class CampusOfficial(models.Model):
     phone = models.CharField(
         validators=[phone_regex], blank=True, max_length=15
     )
-    campus = models.OneToOneField(
-        Campus, related_name='official_provider', blank=True, null=True)
+    campus = models.ManyToManyField(Campus, verbose_name="Providers")
 
     class Meta:
         app_label = "feti"

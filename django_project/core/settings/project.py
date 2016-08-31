@@ -88,5 +88,14 @@ PIPELINE_CSS = {
         'extra_context': {
             'media': 'screen, projection',
         },
+    },
+    'custom_page': {
+        'source_filenames': (
+            'feti/css/feti-custom-page.css',
+        ),
+        'output_filename': 'css/custom-page.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
     }
 }

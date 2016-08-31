@@ -1,0 +1,25 @@
+#content {
+    background-color: #f8f8f8;
+    min-height: 100%;
+    margin-top: 52px !important;
+}
+
+#content .container {
+    padding-bottom: 20px;
+}
+
+#content .container {
+    padding-top: 10px;
+}
+
+#additional-bar {
+    min-height: 50px;
+}
+
+#additional-bar a {
+    color: white;
+}
+
+#additional-bar a:hover {
+    background: none;
+}

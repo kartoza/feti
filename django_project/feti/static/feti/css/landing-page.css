@@ -72,21 +72,6 @@
     }
 }
 
-footer {
-    padding-top: 5px;
-    padding-bottom: 15px;
-    background-color: #214971;
-}
-
-p.copyright, p.login-link, p.login-link a {
-    margin: 15px 0 0;
-    color: white;
-}
-
-p.login-link :hover {
-    text-decoration: none;
-}
-
 .partner {
     height: 120px;
     background-color: #eeeeee;

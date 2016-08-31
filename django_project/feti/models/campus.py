@@ -3,8 +3,6 @@
 
 from django.contrib.gis.db import models
 from django.template import Context, loader
-from django.db.models.signals import post_save
-from django.core import management
 
 from feti.models.provider import Provider
 from feti.models.course import Course
@@ -209,10 +207,3 @@ class Campus(models.Model):
         from feti.models.campus_course_entry import CampusCourseEntry
         CampusCourseEntry.objects.filter(campus=self).delete()
         super(Campus, self).delete(*args, **kwargs)
-
-
-def regenerate_landing_page(sender, instance, **kwargs):
-    management.call_command('full_front_page')
-
-
-post_save.connect(regenerate_landing_page, sender=Campus, dispatch_uid="campus_landing_page")

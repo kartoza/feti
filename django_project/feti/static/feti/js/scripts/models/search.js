@@ -11,10 +11,6 @@ define([
             } else {
                 data = options;
             }
-            if (data.location) {
-                var location = data.location.split("(")[1].replace(")", "").split(" ");
-                data.location = new L.LatLng(parseFloat(location[1]), parseFloat(location[0]));
-            }
             return data;
         },
         renderMarker: function () {
@@ -52,14 +48,15 @@ define([
         clicked: function () {
             var now_index = this.get('now_index');
             if (this.get('markers').length > 0) {
-                this.get('markers')[now_index].openPopup();
+                var marker = this.get('markers')[now_index];
+                marker.openPopup();
+                Common.Dispatcher.trigger('map:pan', marker._latlng);
                 now_index += 1;
                 if (now_index >= this.get('markers').length) {
                     now_index = 0;
                 }
                 this.set('now_index', now_index);
             }
-            Common.Dispatcher.trigger('map:pan', this.attributes.location);
         },
     });
 

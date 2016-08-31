@@ -144,26 +144,6 @@
         <!-- /.container -->
     </div>
     <!-- /.content-section-a -->
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10">
-                    <p class="copyright text-muted small">Kartoza 2016</p>
-                </div>
-                <div class="col-lg-2">
-                    <p class="login-link pull-right">
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'logout' %}">Log out</a>
-                        {% else %}
-                            <a href="#login">Log In</a>
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
 {% endblock %}
 
 {% block js_inline %}
