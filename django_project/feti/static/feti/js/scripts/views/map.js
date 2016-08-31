@@ -60,7 +60,7 @@ define([
         },
         clickMap: function (e) {
             if (!this.isFullScreen) {
-                Common.Router.navigate('map/'+Common.CurrentSearchMode, true);
+                Common.Router.navigate('map/' + Common.CurrentSearchMode, true);
             }
         },
         pan: function (latLng) {
@@ -160,6 +160,9 @@ define([
                     that.searchBarView.mapResize(false, that.animationSpeed);
                     that.searchBarView.toggleProvider(e);
                 });
+
+                // set body content to previous
+                this.$bodyContent.css('height', 'auto');
 
                 // edit url
                 Backbone.history.navigate('/');
