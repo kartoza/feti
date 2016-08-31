@@ -100,7 +100,12 @@
                 <div id="map-section" style="height: 100%; width: 100%">
                     <div id="map-search"></div>
                 </div>
-                <div id="result" class="col-md-4 nopadding" style="height: 100%"></div>
+                <div id="result" class="col-md-4 nopadding" style="height: 100%">
+                    <div id="result-loading">
+                        <div><img width="400" height="300" src="{% static 'feti/images/spinner.gif' %}"></div>
+                        <div class="result-loading-text">loading</div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- /.container -->
