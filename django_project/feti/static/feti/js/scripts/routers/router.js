@@ -28,6 +28,9 @@ define([
             } else if (this.is_previous_route_match(/login/)) {
                 this.loginView.hide();
             }
+            // Set 'where to study' clicked on landing page
+            this.mapView.changeCategory(Common.CurrentSearchMode);
+
             this.pageHistory.push(Backbone.history.getFragment());
         },
         login_page: function() {
@@ -48,8 +51,9 @@ define([
             if (mode) {
                 this.mapView.changeCategory(mode);
             } else {
-                this.mapView.changeCategory("");
+                this.mapView.changeCategory(Common.CurrentSearchMode);
             }
+
             this.pageHistory.push(Backbone.history.getFragment());
         },
         back: function (own_route) {
