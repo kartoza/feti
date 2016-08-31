@@ -26,9 +26,10 @@ define([
             } else if (mode == 'course') {
                 this.url = this.course_url_template({q: q});
             }
+            this.reset();
             this.fetch({
                 success: function (collection, response) {
-                    that.reset();
+                    Common.Dispatcher.trigger('search:finish');
                     _.each(that.models, function (model) {
                         that.SearchResultViews.push(new SearchResultView({
                             model: model,
@@ -37,7 +38,7 @@ define([
                     });
                 },
                 error: function () {
-                    that.trigger('errorOnFetch');
+                    Common.Dispatcher.trigger('search:finish');
                 }
             });
         }

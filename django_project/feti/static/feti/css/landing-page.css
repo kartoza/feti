@@ -312,3 +312,16 @@
 .carousel-control.right {
     background-image: linear-gradient(to left, rgba(0, 0, 0, .2) 0, rgba(0, 0, 0, .0001) 100%);
 }
+
+#result-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+#result-loading .result-loading-text {
+    text-align: center;
+    font-size: 16px;
+}

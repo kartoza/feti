@@ -50,9 +50,6 @@ define([
             this.$('#feti-map').parent().css('height', '100%');
         },
         addLayer: function (layer) {
-            if (this.isFullScreen) {
-                this.searchBarView.showResult();
-            }
             this.map.addLayer(layer);
         },
         removeLayer: function (layer) {
