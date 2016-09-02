@@ -29,13 +29,17 @@ define([
             this.reset();
             this.fetch({
                 success: function (collection, response) {
-                    Common.Dispatcher.trigger('search:finish');
-                    _.each(that.models, function (model) {
-                        that.SearchResultViews.push(new SearchResultView({
-                            model: model,
-                            id: "search_" + model.get('id'),
-                        }));
-                    });
+                    if (that.models.length == 0) {
+                        Common.Dispatcher.trigger('search:finish', false);
+                    } else {
+                        Common.Dispatcher.trigger('search:finish', true);
+                        _.each(that.models, function (model) {
+                            that.SearchResultViews.push(new SearchResultView({
+                                model: model,
+                                id: "search_" + model.get('id'),
+                            }));
+                        });
+                    }
                 },
                 error: function () {
                     Common.Dispatcher.trigger('search:finish');

@@ -13,7 +13,7 @@ define([
             'click #what-to-study': 'categoryClicked',
             'click #choose-occupation': 'categoryClicked',
             'click #back-home': 'backHomeClicked',
-            'click #result-toogle': 'resultToogling'
+            'click #result-toogle': 'toogleResult'
         },
         initialize: function () {
             this.render();
@@ -24,8 +24,9 @@ define([
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.$result_loading = $("#result-loading");
+            this.$result_empty = $("#result-empty");
             this.search_bar_hidden = true;
-            Common.Dispatcher.on('search:finish', this.resultFinish, this);
+            Common.Dispatcher.on('search:finish', this.searchingFinish, this);
         },
         render: function () {
             this.$el.empty();
@@ -38,18 +39,6 @@ define([
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
-        search: function () {
-            this.changeRoute();
-            var mode = this.categorySelected();
-            if (mode) {
-                var query = this.$search_bar_input.val();
-                if (query.length >= this.minimumWords) {
-                    searchCollection.search(mode, this.$search_bar_input.val());
-                    this.showResult();
-                    this.$result_loading.show();
-                }
-            }
-        },
         categoryClicked: function (event) {
             this.changeRoute($(event.target).data("mode"));
             this.search();
@@ -59,20 +48,42 @@ define([
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        resultFinish: function () {
-            this.$result_loading.hide();
-        },
-        showResult: function () {
-            var $toogle = $('#result-toogle');
-            if ($toogle.hasClass('fa-caret-left')) {
-                $toogle.removeClass('fa-caret-left');
-                $toogle.addClass('fa-caret-right');
-                if (!$('#result').is(":visible")) {
-                    $('#result').show("slide", {direction: "right"}, 500);
+        search: function () {
+            this.changeRoute();
+            var mode = this.categorySelected();
+            if (mode) {
+                var query = this.$search_bar_input.val();
+                if (query.length >= this.minimumWords) {
+                    searchCollection.search(mode, this.$search_bar_input.val());
+                    this.in_show_result = true;
+                    this.$result_loading.show();
+                    this.$result_empty.hide();
+                    this.showResult();
                 }
             }
         },
-        resultToogling: function (event) {
+        searchingFinish: function (is_not_empty) {
+            this.$result_loading.hide();
+            if (!is_not_empty) {
+                this.$result_empty.show();
+            }
+        },
+        showResult: function () {
+            var that = this;
+            if (this.map_in_fullscreen) {
+                var $toogle = $('#result-toogle');
+                if ($toogle.hasClass('fa-caret-left')) {
+                    $toogle.removeClass('fa-caret-left');
+                    $toogle.addClass('fa-caret-right');
+                    if (!$('#result').is(":visible")) {
+                        $('#result').show("slide", {direction: "right"}, 500, function () {
+                            that.in_show_result = false;
+                        });
+                    }
+                }
+            }
+        },
+        toogleResult: function (event) {
             if ($(event.target).hasClass('fa-caret-left')) {
                 $(event.target).removeClass('fa-caret-left');
                 $(event.target).addClass('fa-caret-right');
@@ -114,7 +125,7 @@ define([
             this.$search_bar_input.attr("placeholder", highlight);
             if ($button) {
                 $button.addClass('active');
-                this.showSearchBar();
+                this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
                 // set focus on search text
                 document.search_form.search_input.focus();
@@ -127,10 +138,14 @@ define([
                 Backbone.history.navigate('map/' + this.categorySelected(), true);
             }
         },
-        mapResize: function (is_resizing, speed) {
+        mapResize: function (is_resizing) {
+            this.map_in_fullscreen = is_resizing;
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
                 this.$('#result-toogle').show();
+                if (this.in_show_result) {
+                    this.showResult();
+                }
             } else { // Exit fullscreen
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
@@ -168,8 +183,7 @@ define([
                 this.search_bar_hidden = true;
             }
         },
-        toggleProvider: function (e) {
-            var that = this;
+        toggleProvider: function () {
             if ($('#result').is(":visible")) {
                 $('#result-toogle').removeClass('fa-caret-right');
                 $('#result-toogle').addClass('fa-caret-left');
