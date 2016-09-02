@@ -15,7 +15,7 @@ define([
             'click #back-home': 'backHomeClicked',
             'click #result-toogle': 'resultToogling'
         },
-        initialize: function () {
+        initialize: function (options) {
             this.render();
             $("#result-toogle").hide();
             this.$search_bar = $(".search-bar");
@@ -25,6 +25,7 @@ define([
             this.$occupation_button = $("#choose-occupation");
             this.$result_loading = $("#result-loading");
             this.search_bar_hidden = true;
+            this.parent = options.parent;
             Common.Dispatcher.on('search:finish', this.resultFinish, this);
         },
         render: function () {
@@ -43,8 +44,12 @@ define([
             var mode = this.categorySelected();
             if (mode) {
                 var query = this.$search_bar_input.val();
+
+                // Get coordinates from shape
+                var drawnLayers = this.parent.drawnItems.getLayers();
+
                 if (query.length >= this.minimumWords) {
-                    searchCollection.search(mode, this.$search_bar_input.val());
+                    searchCollection.search(mode, this.$search_bar_input.val(), drawnLayers);
                     this.showResult();
                     this.$result_loading.show();
                 }

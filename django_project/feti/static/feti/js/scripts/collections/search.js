@@ -8,8 +8,8 @@ define([
     var SearchCollection = Backbone.Collection.extend({
         model: SearchResult,
         SearchResultViews: [],
-        provider_url_template: _.template("/api/campus?q=<%- q %>"),
-        course_url_template: _.template("/api/course?q=<%- q %>"),
+        provider_url_template: _.template("/api/campus?q=<%- q %>&coord=<%- coord %>"),
+        course_url_template: _.template("/api/course?q=<%- q %>&coord=<%- coord %>"),
         url: function () {
             return this.url;
         },
@@ -19,13 +19,26 @@ define([
             });
             this.SearchResultViews = [];
         },
-        search: function (mode, q) {
+        search: function (mode, q, drawnLayers) {
             var that = this;
-            if (mode == 'provider') {
-                this.url = this.provider_url_template({q: q});
-            } else if (mode == 'course') {
-                this.url = this.course_url_template({q: q});
+            var parameters = {
+                q: q,
+                coord: ''
+            };
+
+            if(drawnLayers.length > 0) {
+                var coordinate = drawnLayers[0].getLatLngs();
+                parameters.coord = JSON.stringify(coordinate);
             }
+
+            if (mode == 'provider') {
+                this.url = this.provider_url_template(parameters);
+            } else if (mode == 'course') {
+                this.url = this.course_url_template(parameters);
+            }
+
+            this.url = this.url.replace(/&quot;/g, '"');
+
             this.reset();
             this.fetch({
                 success: function (collection, response) {
