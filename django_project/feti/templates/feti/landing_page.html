@@ -95,7 +95,6 @@
 
     <div class="map-section">
         <div id="map-container">
-
             <div class="row" style="height: 100%; position: relative;">
                 <div id="map-section" style="height: 100%; width: 100%">
                     <div id="map-search"></div>
@@ -103,7 +102,10 @@
                 <div id="result" class="col-md-4 nopadding" style="height: 100%">
                     <div id="result-loading">
                         <div><img width="400" height="300" src="{% static 'feti/images/spinner.gif' %}"></div>
-                        <div class="result-loading-text">loading</div>
+                        <div>loading</div>
+                    </div>
+                    <div id="result-empty">
+                        <h1>No result to show.</h1>
                     </div>
                 </div>
             </div>

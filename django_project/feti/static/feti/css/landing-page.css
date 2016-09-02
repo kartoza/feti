@@ -313,7 +313,7 @@
     background-image: linear-gradient(to left, rgba(0, 0, 0, .2) 0, rgba(0, 0, 0, .0001) 100%);
 }
 
-#result-loading {
+#result-loading, #result-empty {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -321,7 +321,9 @@
     display: none;
 }
 
-#result-loading .result-loading-text {
+#result-loading, #result-empty {
     text-align: center;
-    font-size: 16px;
+    font-size: 28px;
+    font-weight: 900;
+    opacity: 0.5;
 }
