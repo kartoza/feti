@@ -10,6 +10,8 @@ from crispy_forms.layout import (
     Field,
 )
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.gis import gdal
+from django.contrib.gis.forms.widgets import BaseGeometryWidget
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '09/08/16'
@@ -17,10 +19,53 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
+class CustomOSMWidget(BaseGeometryWidget):
+    """
+    An OpenLayers/OpenStreetMap-based widget.
+    """
+    template_name = 'gis/openlayers-osm.html'
+    default_lon = 5
+    default_lat = 47
+
+    class Media:
+        css = {'all': ['admin/css/widgets.css', '/static/grappelli/jquery/ui/jquery-ui.min.css',
+               '/static/grappelli/stylesheets/screen.css']}
+        js = (
+            '/custom_admin/jsi18n',
+            '/static/grappelli/jquery/jquery-2.1.4.min.js',
+            '/static/grappelli/jquery/ui/jquery-ui.min.js',
+            '/static/grappelli/js/grappelli.js',
+            '/static/feti/js/libs/grappelli_override.js',
+            '/static/admin/js/SelectBox.js',
+            '/static/admin/js/SelectFilter2.js',
+            '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js',
+            '/static/feti/js/libs/OpenLayers-2.13.1/OpenStreetMap.js',
+            'gis/js/OLMapWidget.js'
+        )
+
+    def __init__(self, attrs=None):
+        super(CustomOSMWidget, self).__init__()
+        for key in ('default_lon', 'default_lat'):
+            self.attrs[key] = getattr(self, key)
+        if attrs:
+            self.attrs.update(attrs)
+
+    @property
+    def map_srid(self):
+        # Use the official spherical mercator projection SRID when GDAL is
+        # available; otherwise, fallback to 900913.
+        if gdal.HAS_GDAL:
+            return 3857
+        else:
+            return 900913
+
+
 class CampusForm(forms.ModelForm):
     location = forms.PointField(
         widget=
-        forms.OSMWidget(attrs={'map_width': 1140, 'map_height': 500}))
+        CustomOSMWidget(
+            attrs={'map_width': 1140, 'map_height': 500}
+        ))
     courses = forms.ModelMultipleChoiceField(
         queryset=Course.objects.all(),
         label='Select course',
@@ -60,14 +105,3 @@ class CampusForm(forms.ModelForm):
 
         # init choice
         self.helper.add_input(Submit('submit', 'Submit'))
-
-    class Media:
-        css = {'all': ['admin/css/widgets.css', '/static/grappelli/jquery/ui/jquery-ui.min.css',
-                       '/static/grappelli/stylesheets/screen.css']}
-        js = ['/custom_admin/jsi18n',
-              '/static/grappelli/jquery/jquery-2.1.4.min.js',
-              "/static/grappelli/jquery/ui/jquery-ui.min.js",
-              "/static/grappelli/js/grappelli.min.js",
-              '/static/feti/js/libs/grappelli_override.js',
-              '/static/admin/js/SelectBox.js',
-              '/static/admin/js/SelectFilter2.js']
