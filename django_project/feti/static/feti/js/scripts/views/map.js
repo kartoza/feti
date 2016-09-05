@@ -24,7 +24,11 @@ define([
             this.mapContainerWidth = 0;
             this.mapContainerHeight = 0;
 
+            // Leaflet draw
             this.drawnItems = new L.FeatureGroup();
+            // Polygon draw handler
+            this.polygonDrawer = null;
+            this.polygonLayer = null;
 
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
@@ -54,8 +58,11 @@ define([
             // Add drawable layer to map
             this.map.addLayer(this.drawnItems);
 
+            this.polygonDrawer = new L.Draw.Polygon(this.map);
+
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw({
+                draw: false,
                 edit: {
                     featureGroup: this.drawnItems
                 },
@@ -72,11 +79,22 @@ define([
             var type = e.layerType,
                 layer = e.layer;
 
-            if (type === 'marker') {
-                // Do marker specific actions
+            if (type === 'polygon') {
+                this.searchBarView.cancelDrawShape();
+                this.polygonLayer = layer;
             }
 
             this.drawnItems.addLayer(layer);
+        },
+        enablePolygonDrawer: function(){
+            // check if there's already a shape in map
+            if(this.polygonLayer) {
+                this.drawnItems.removeLayer(this.polygonLayer);
+            }
+            this.polygonDrawer.enable();
+        },
+        disablePolygonDrawer: function () {
+            this.polygonDrawer.disable();
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
