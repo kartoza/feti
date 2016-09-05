@@ -75,13 +75,19 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <li class="dropdown">
                         {% if user.is_authenticated %}
-                            {% if user.is_staff %}
-                                <a href="/feti-admin">Admin Site</a>
-                            {% else %}
-                                <a href="/profile/{{ user.username }}">{{ user.username }}</a>
-                            {% endif %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                {{ user.username }}
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/profile/{{ user.username }}">Your profile</a></li>
+                                <li role="separator" class="divider"></li>
+                                {% if user.is_staff %}
+                                    <li><a href="/feti-admin">Admin</a></li>
+                                {% endif %}
+                                <li><a href="/feti-admin/logout/">Log out</a></li>
+                            </ul>
                         {% else %}
                             <a href="#login">Log In</a>
                         {% endif %}
