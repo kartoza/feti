@@ -19,9 +19,10 @@ __copyright__ = 'kartoza.com'
 class ApiCampus(APIView):
     def get(self, request, format=None):
         q = request.GET.get('q')
-        coord_string = request.GET.get('coord')
-        drawn_polygon = {}
 
+        # Get coordinates from request and create a polygon
+        coord_string = request.GET.get('coord')
+        drawn_polygon = None
         if coord_string:
             coord_obj = json.loads(coord_string)
             poly = []
@@ -32,7 +33,7 @@ class ApiCampus(APIView):
 
         if not q:
             q = ""
-        if coord_string:
+        if drawn_polygon:
             campuses = Campus.objects.filter(
                 Q(campus__icontains=q) |
                 Q(provider__primary_institution__icontains=q),
@@ -50,9 +51,37 @@ class ApiCampus(APIView):
 class ApiCourse(APIView):
     def get(self, request, format=None):
         q = request.GET.get('q')
+
+        # Get coordinates from request and create a polygon
+        coord_string = request.GET.get('coord')
+        drawn_polygon = None
+        if coord_string:
+            coord_obj = json.loads(coord_string)
+            poly = []
+            for c in coord_obj:
+                poly.append((c['lng'], c['lat']))
+            poly.append(poly[0])
+            drawn_polygon = Polygon(poly)
+
         if not q:
             q = ""
 
-        set = Course.objects.filter(course_description__icontains=q)
-        serializer = CourseSerializer(set, many=True)
-        return Response(serializer.data)
+        if drawn_polygon:
+            # Get courses within the polygon area
+            courses = Course.objects.distinct().filter(
+                course_description__icontains=q,
+                campus__location__within=drawn_polygon
+            )
+        else:
+            courses = Course.objects.filter(
+                course_description__icontains=q
+            )
+
+        serializer = CourseSerializer(
+            courses,
+            many=True,
+            context={'drawn_polygon': drawn_polygon}
+        )
+        data = serializer.data
+
+        return Response(data)
