@@ -78,7 +78,6 @@
 }
 
 .m-button {
-    width: 170px;
     font-weight: lighter;
     -moz-border-radius: 25px;
     -webkit-border-radius: 25px;
@@ -98,6 +97,15 @@
 
 .m-button.cancel-button {
     color:#801717;
+}
+
+.m-button.clear-button:hover {
+    color: white;
+    background-color: #a92121;
+}
+
+.m-button.clear-button {
+    width: 45px !important;
 }
 
 .m-button:hover {
@@ -210,12 +218,12 @@
 }
 
 .search-bar .m-button {
-    width: 140px !important;
+    width: 140px;
 }
 
 #search-bar {
     display: inline-block;
-    margin-right: 50px;
+    margin-right: 20px;
     margin-top: 11px;
     width: 30%;
 }

@@ -80,7 +80,7 @@ define([
                 layer = e.layer;
 
             if (type === 'polygon') {
-                this.searchBarView.cancelDrawShape();
+                this.searchBarView.onFinishedCreatedPolygon();
                 this.polygonLayer = layer;
             }
 
@@ -95,6 +95,11 @@ define([
         },
         disablePolygonDrawer: function () {
             this.polygonDrawer.disable();
+        },
+        clearAllDrawnLayer: function() {
+            this.drawnItems.eachLayer(function (layer) {
+                this.drawnItems.removeLayer(layer);
+            },this);
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);

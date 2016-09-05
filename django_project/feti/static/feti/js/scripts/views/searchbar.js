@@ -16,7 +16,8 @@ define([
             'click #result-toogle': 'toogleResult',
             'click #draw-shape': 'drawModeSelected',
             'click #location': 'drawModeSelected',
-            'click #cancel-draw-shape': 'cancelDrawShape'
+            'click #cancel-draw-shape': 'cancelDrawShape',
+            'click #clear-draw': 'clearAllDraw'
         },
         initialize: function (options) {
             this.render();
@@ -124,7 +125,6 @@ define([
 
             // enable polygon drawer
             this.parent.enablePolygonDrawer();
-
         },
         cancelDrawShape: function () {
             $('#draw-shape').show();
@@ -138,6 +138,14 @@ define([
             // enable polygon drawer
             this.parent.disablePolygonDrawer();
         },
+        clearAllDraw: function() {
+            $('#clear-draw').hide();
+            // remove all drawn layer in map
+            this.parent.clearAllDrawnLayer();
+        },
+        showClearDrawButton: function() {
+            $('#clear-draw').show();
+        },
         categorySelected: function () {
             var button = this.$el.find('.search-category').find('.m-button.active');
             if (button[0]) {
@@ -145,6 +153,11 @@ define([
             } else {
                 return "";
             }
+        },
+        // Draw Events
+        onFinishedCreatedPolygon: function() {
+            this.cancelDrawShape();
+            this.showClearDrawButton();
         },
         changeCategoryButton: function (mode) {
             this.$el.find('.search-category').find('.m-button').removeClass('active');
