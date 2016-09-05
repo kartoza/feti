@@ -165,6 +165,8 @@ define([
                     _map._onResize();
                     that.isFullScreen = true;
                     that.searchBarView.mapResize(true, _speed);
+                    // set focus on search text
+                    document.search_form.search_input.focus();
                 });
 
             }
