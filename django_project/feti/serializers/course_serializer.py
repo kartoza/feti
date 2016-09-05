@@ -13,10 +13,27 @@ class CourseSerializer(serializers.ModelSerializer):
         res = super(CourseSerializer, self).to_representation(instance)
         res['title'] = instance.__unicode__()
         locations = []
-        for campus in Campus.objects.filter(courses=instance):
+
+        drawn_polygon = self.context.get('drawn_polygon')
+
+        if drawn_polygon:
+            campuses = Campus.objects.filter(
+                courses=instance,
+                location__within=drawn_polygon
+            )
+        else:
+            campuses = Campus.objects.filter(courses=instance)
+
+        for campus in campuses:
             if campus.location:
                 locations.append(
                     {'lat': campus.location.y, 'lng': campus.location.x,
                      'popup': campus._campus_popup})
         res['locations'] = locations
+
         return res
+
+
+class SimpleCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
