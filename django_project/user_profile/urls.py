@@ -1,7 +1,7 @@
 # coding=utf-8
 """URI Routing configuration for this apps."""
 from django.conf.urls import patterns, url
-from user_profile.views import ProfilePage
+from user_profile.views import UserAdminPage
 
 urlpatterns = patterns(
     '',
@@ -16,8 +16,8 @@ urlpatterns = patterns(
         name='login_modal'
     ),
     url(
-        r'^profile/(?P<username>[\w\-]+)',
-        ProfilePage.as_view(),
-        name='profile_page'
+        r'^admin/',
+        UserAdminPage.as_view(),
+        name='user-admin-page'
     )
 )

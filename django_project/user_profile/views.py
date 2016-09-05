@@ -4,20 +4,22 @@
 author: christian@kartoza.com
 date: January 2015
 """
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
 from django.contrib.auth import (
     login as django_login,
     authenticate,
     logout as django_logout)
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.shortcuts import render_to_response, redirect
+from django.template import RequestContext
 from django.views.generic import TemplateView
 
-from feti.serializers.campus_serializer import CampusSerializer
 from feti.models.campus import Campus
+from feti.serializers.campus_serializer import CampusSerializer
+
 from user_profile.models.campus_official import CampusOfficial
+
+from feti.templatetags.user_admin import has_access_user_admin
 
 
 def login(request):
@@ -102,34 +104,27 @@ def logout(request):
     return redirect('/')
 
 
-class ProfilePage(TemplateView):
-    template_name = 'user_profile_page.html'
+class UserAdminPage(TemplateView):
+    template_name = 'user_admin_page.html'
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
 
-        username = self.kwargs.get('username', None)
+        campus = None
+        try:
+            # get official detail
+            user = request.user
+            if has_access_user_admin(user):
+                if user.is_staff:
+                    campus = CampusSerializer(Campus.objects.all(), many=True).data
+                else:
+                    official = CampusOfficial.objects.get(user=user)
+                    campus = CampusSerializer(official.campus.all(), many=True).data
+        except CampusOfficial.DoesNotExist:
+            pass
 
-        if username:
-            try:
-                user = User.objects.get(username=username)
-                context['username'] = user.username
-                context['email'] = user.email
-                context['full_name'] = user.get_full_name()
-
-                # get official detail
-                official = CampusOfficial.objects.get(user=user)
-                context['department'] = official.department
-                context['phone'] = official.phone
-
-                if request.user.is_authenticated() and request.user == user:
-                    if request.user.is_staff:
-                        context['campus'] = CampusSerializer(Campus.objects.all(), many=True).data
-                    else:
-                        context['campus'] = CampusSerializer(official.campus.all(), many=True).data
-
-            except User.DoesNotExist:
-                raise Http404("User doesn't exist")
-            except CampusOfficial.DoesNotExist:
-                pass
-        return self.render_to_response(context)
+        if campus:
+            context['campus'] = campus
+            return self.render_to_response(context)
+        else:
+            raise Http404()
