@@ -1,4 +1,5 @@
 {% load pipeline %}
+{% load user_admin %}
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -77,14 +78,25 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         {% if user.is_authenticated %}
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">
                                 {{ user.username }}
                                 <span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="/profile/{{ user.username }}">Your profile</a></li>
                                 <li role="separator" class="divider"></li>
                                 {% if user.is_staff %}
-                                    <li><a href="/feti-admin">Admin</a></li>
+                                    <li id="nav_project_team">
+                                        <a href="/feti-admin" role="button">
+                                            <i class="mdi-maps-map"></i>
+                                            Admin</a>
+                                    </li>
+                                {% elif user|has_access_user_admin %}
+                                    <li id="nav_project_team">
+                                        <a href="/admin" role="button">
+                                            <i class="mdi-maps-map"></i>
+                                            Admin</a>
+                                    </li>
                                 {% endif %}
                                 <li><a href="/feti-admin/logout/">Log out</a></li>
                             </ul>

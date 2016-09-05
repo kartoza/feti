@@ -127,6 +127,8 @@ define([
                 $button.addClass('active');
                 this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
+                // set focus on search text
+                document.search_form.search_input.focus();
             }
         },
         changeRoute: function (mode) {
