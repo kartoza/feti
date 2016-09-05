@@ -39,7 +39,7 @@ class CustomOSMWidget(BaseGeometryWidget):
             '/static/admin/js/SelectBox.js',
             '/static/admin/js/SelectFilter2.js',
             '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js',
-            '/static/feti/js/libs/OpenLayers-2.13.1/OpenStreetMap.js',
+            '/static/feti/js/libs/OpenLayers-2.13.1/OpenStreetMapSSL.js',
             'gis/js/OLMapWidget.js'
         )
 
