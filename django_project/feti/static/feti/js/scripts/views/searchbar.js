@@ -13,9 +13,12 @@ define([
             'click #what-to-study': 'categoryClicked',
             'click #choose-occupation': 'categoryClicked',
             'click #back-home': 'backHomeClicked',
-            'click #result-toogle': 'toogleResult'
+            'click #result-toogle': 'toogleResult',
+            'click #draw-shape': 'drawModeSelected',
+            'click #location': 'drawModeSelected',
+            'click #cancel-draw-shape': 'cancelDrawShape'
         },
-        initialize: function () {
+        initialize: function (options) {
             this.render();
             $("#result-toogle").hide();
             this.$search_bar = $(".search-bar");
@@ -26,6 +29,8 @@ define([
             this.$result_loading = $("#result-loading");
             this.$result_empty = $("#result-empty");
             this.search_bar_hidden = true;
+            this.parent = options.parent;
+            this.drawMode = '';
             Common.Dispatcher.on('search:finish', this.searchingFinish, this);
         },
         render: function () {
@@ -53,8 +58,12 @@ define([
             var mode = this.categorySelected();
             if (mode) {
                 var query = this.$search_bar_input.val();
+
+                // Get coordinates from shape
+                var drawnLayers = this.parent.drawnItems.getLayers();
+
                 if (query.length >= this.minimumWords) {
-                    searchCollection.search(mode, this.$search_bar_input.val());
+                    searchCollection.search(mode, this.$search_bar_input.val(), drawnLayers);
                     this.in_show_result = true;
                     this.$result_loading.show();
                     this.$result_empty.hide();
@@ -97,6 +106,37 @@ define([
                     $('#result').hide("slide", {direction: "right"}, 500);
                 }
             }
+        },
+        drawModeSelected: function (event) {
+            this.$el.find('.search-bar').find('.m-button').removeClass('active');
+            $(event.target).addClass('active');
+            var selected = $(event.target).get(0).id;
+            if (selected == 'draw-shape') {
+                this.drawShape();
+            }
+        },
+        drawShape: function () {
+            $('#draw-shape').hide();
+            $('#cancel-draw-shape').show();
+
+            // set draw mode to shape
+            this.drawMode = 'shape';
+
+            // enable polygon drawer
+            this.parent.enablePolygonDrawer();
+
+        },
+        cancelDrawShape: function () {
+            $('#draw-shape').show();
+            $('#cancel-draw-shape').hide();
+
+            // remove draw mode
+            this.drawMode = '';
+
+            this.$el.find('.search-bar').find('.m-button').removeClass('active');
+
+            // enable polygon drawer
+            this.parent.disablePolygonDrawer();
         },
         categorySelected: function () {
             var button = this.$el.find('.search-category').find('.m-button.active');
