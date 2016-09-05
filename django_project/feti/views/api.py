@@ -33,18 +33,20 @@ class ApiCampus(APIView):
 
         if not q:
             q = ""
+
+        campuses = Campus.objects.filter(location__isnull=False)
+        campuses = campuses.filter(
+            Q(campus__icontains=q) |
+            Q(provider__primary_institution__icontains=q))
+
         if drawn_polygon:
-            campuses = Campus.objects.filter(
-                Q(campus__icontains=q) |
-                Q(provider__primary_institution__icontains=q),
+            campuses = campuses.filter(
                 location__within=drawn_polygon
             )
-        else:
-            campuses = Campus.objects.filter(
-                Q(campus__icontains=q) |
-                Q(provider__primary_institution__icontains=q)
-            )
+
+        campuses.order_by('campus')
         serializer = CampusSerializer(campuses, many=True)
+        print(serializer.data)
         return Response(serializer.data)
 
 
@@ -66,22 +68,16 @@ class ApiCourse(APIView):
         if not q:
             q = ""
 
-        if drawn_polygon:
-            # Get courses within the polygon area
-            courses = Course.objects.distinct().filter(
-                course_description__icontains=q,
-                campus__location__within=drawn_polygon
-            )
-        else:
-            courses = Course.objects.filter(
-                course_description__icontains=q
-            )
-
-        serializer = CourseSerializer(
-            courses,
-            many=True,
-            context={'drawn_polygon': drawn_polygon}
+        campuses = Campus.objects.filter(location__isnull=False)
+        campuses = campuses.filter(
+            courses__course_description__icontains=q
         )
-        data = serializer.data
 
-        return Response(data)
+        if drawn_polygon:
+            campuses = campuses.filter(
+                location__within=drawn_polygon
+            )
+
+        campuses.order_by('campus')
+        serializer = CampusSerializer(campuses, many=True)
+        return Response(serializer.data)
