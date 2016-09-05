@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.template.context import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from feti.custom_admin.geodjango import OSMGeoStackedInline
 from feti.models.address import Address
 from feti.models.campus import Campus
@@ -42,6 +43,7 @@ class AddressAdminInline(admin.StackedInline):
 
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
+    openlayers_url = static('feti/js/libs/OpenLayers-2.13.1/OpenLayers.js')
     inlines = [AddressAdminInline]
     list_display = ('id', 'campus', 'primary_institution', '_complete',)
     list_filter = ['provider__primary_institution', '_complete']
@@ -71,6 +73,14 @@ class CampusAdmin(admin.OSMGeoAdmin):
             reverse('admin:feti_provider_change', args=(
                 instance.provider.id,)),
         )
+
+    def _media(self):
+        "Injects OpenLayers JavaScript into the admin."
+        media = super(CampusAdmin, self)._media()
+        media.add_js([self.openlayers_url])
+        media.add_js(self.extra_js)
+        return media
+
     provider_url.allow_tags = True
     provider_url.short_description = 'Primary institute url'
 
