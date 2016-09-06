@@ -1,23 +1,23 @@
 /*global define */
 define([
     'common',
-    '/static/feti/js/scripts/views/search.js',
-    '/static/feti/js/scripts/models/search.js'
-], function (Common, SearchResultView, SearchResult) {
+    '/static/feti/js/scripts/views/provider-view.js',
+    '/static/feti/js/scripts/models/provider.js'
+], function (Common, ProviderView, Provider) {
 
     var SearchCollection = Backbone.Collection.extend({
-        model: SearchResult,
-        SearchResultViews: [],
+        model: Provider,
+        ProviderViews: [],
         provider_url_template: _.template("/api/campus?q=<%- q %>&coord=<%- coord %>"),
         course_url_template: _.template("/api/course?q=<%- q %>&coord=<%- coord %>"),
         url: function () {
             return this.url;
         },
         reset: function () {
-            _.each(this.SearchResultViews, function (view) {
+            _.each(this.ProviderViews, function (view) {
                 view.destroy();
             });
-            this.SearchResultViews = [];
+            this.ProviderViews = [];
         },
         search: function (mode, q, drawnLayers) {
             var that = this;
@@ -26,7 +26,7 @@ define([
                 coord: ''
             };
 
-            if(drawnLayers.length > 0) {
+            if (drawnLayers.length > 0) {
                 var coordinate = drawnLayers[0].getLatLngs();
                 parameters.coord = JSON.stringify(coordinate);
             }
@@ -47,7 +47,7 @@ define([
                     } else {
                         Common.Dispatcher.trigger('search:finish', true);
                         _.each(that.models, function (model) {
-                            that.SearchResultViews.push(new SearchResultView({
+                            that.ProviderViews.push(new ProviderView({
                                 model: model,
                                 id: "search_" + model.get('id'),
                             }));
