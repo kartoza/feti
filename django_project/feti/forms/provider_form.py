@@ -18,7 +18,7 @@ __copyright__ = 'kartoza.com'
 class ProviderForm(forms.ModelForm):
     class Meta:
         model = Provider
-        fields = ('primary_institution', 'website', 'status')
+        fields = ('primary_institution', 'website')
 
     def __init__(self, *args, **kwargs):
         try:
@@ -35,7 +35,6 @@ class ProviderForm(forms.ModelForm):
                 form_title,
                 Field('primary_institution', css_class='form-control'),
                 Field('website', css_class='form-control'),
-                Field('status', css_class='form-control'),
                 css_id='project-form')
         )
         self.helper.layout = layout

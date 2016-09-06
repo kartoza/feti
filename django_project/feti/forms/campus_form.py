@@ -29,7 +29,7 @@ class CustomOSMWidget(BaseGeometryWidget):
 
     class Media:
         css = {'all': ['admin/css/widgets.css', '/static/grappelli/jquery/ui/jquery-ui.min.css',
-               '/static/grappelli/stylesheets/screen.css']}
+                       '/static/grappelli/stylesheets/screen.css']}
         js = (
             '/custom_admin/jsi18n',
             '/static/grappelli/jquery/jquery-2.1.4.min.js',

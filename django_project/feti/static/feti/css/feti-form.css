@@ -33,3 +33,13 @@ input[type=submit] {
     margin-top: 20px;
     width: 100%;
 }
+
+.checkbox label {
+    margin-bottom: 5px !important;
+    padding-left: 0px;
+    font-weight: 700 !important;
+}
+
+.checkbox input[type=checkbox] {
+    margin-left: 0px;
+}
