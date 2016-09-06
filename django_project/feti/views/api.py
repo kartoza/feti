@@ -6,9 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from feti.models.campus import Campus
-from feti.models.course import Course
 from feti.serializers.campus_serializer import CampusSerializer
-from feti.serializers.course_serializer import CourseSerializer
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '08/08/16'
@@ -33,17 +31,18 @@ class ApiCampus(APIView):
 
         if not q:
             q = ""
+
+        campuses = Campus.objects.filter(location__isnull=False)
+        campuses = campuses.filter(
+            Q(campus__icontains=q) |
+            Q(provider__primary_institution__icontains=q))
+
         if drawn_polygon:
-            campuses = Campus.objects.filter(
-                Q(campus__icontains=q) |
-                Q(provider__primary_institution__icontains=q),
+            campuses = campuses.filter(
                 location__within=drawn_polygon
             )
-        else:
-            campuses = Campus.objects.filter(
-                Q(campus__icontains=q) |
-                Q(provider__primary_institution__icontains=q)
-            )
+
+        campuses.order_by('campus')
         serializer = CampusSerializer(campuses, many=True)
         return Response(serializer.data)
 
@@ -66,22 +65,16 @@ class ApiCourse(APIView):
         if not q:
             q = ""
 
-        if drawn_polygon:
-            # Get courses within the polygon area
-            courses = Course.objects.distinct().filter(
-                course_description__icontains=q,
-                campus__location__within=drawn_polygon
-            )
-        else:
-            courses = Course.objects.filter(
-                course_description__icontains=q
-            )
-
-        serializer = CourseSerializer(
-            courses,
-            many=True,
-            context={'drawn_polygon': drawn_polygon}
+        campuses = Campus.objects.filter(location__isnull=False)
+        campuses = campuses.distinct().filter(
+            courses__course_description__icontains=q
         )
-        data = serializer.data
 
-        return Response(data)
+        if drawn_polygon:
+            campuses = campuses.filter(
+                location__within=drawn_polygon
+            )
+
+        campuses.order_by('campus')
+        serializer = CampusSerializer(campuses, many=True)
+        return Response(serializer.data)

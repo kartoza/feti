@@ -44,8 +44,8 @@ LEAFLET_CONFIG = {
 
 }
 
-HAYSTACK_DEFAULT_OPERATOR = 'AND'
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# HAYSTACK_DEFAULT_OPERATOR = 'AND'
+# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 GRAPPELLI_ADMIN_TITLE = 'Feti Administration'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
