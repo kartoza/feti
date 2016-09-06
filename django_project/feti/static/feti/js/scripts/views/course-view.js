@@ -1,13 +1,12 @@
 define([
     'common',
-    '/static/feti/js/scripts/models/search.js'
-], function (Common, SearchResult) {
-    var SearchResultView = Backbone.View.extend({
+    '/static/feti/js/scripts/models/course.js'
+], function (Common, Course) {
+    var CourseView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-row',
-        template: _.template('<%- title %> [<%- locations.length %>]'),
-        container: '#result',
-        model: SearchResult,
+        template: _.template('<%- title %>'),
+        model: Course,
         events: {
             'click': 'clicked'
         },
@@ -17,11 +16,11 @@ define([
         },
         render: function () {
             this.$el.empty();
-            this.$el.html(this.template(this.model.attributes));
+            this.$el.html(this.model.attributes.title);
             $(this.container).append(this.$el);
-            this.model.renderMarker();
         },
-        initialize: function () {
+        initialize: function (options) {
+            this.container = options.container;
             this.render();
         },
         destroy: function () {
@@ -32,5 +31,5 @@ define([
         }
     });
 
-    return SearchResultView;
+    return CourseView;
 });

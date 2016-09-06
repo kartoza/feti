@@ -42,6 +42,7 @@ class AddressAdminInline(admin.StackedInline):
 
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
+    openlayers_url = '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js'
     inlines = [AddressAdminInline]
     list_display = ('id', 'campus', 'primary_institution', '_complete',)
     list_filter = ['provider__primary_institution', '_complete']
@@ -71,6 +72,7 @@ class CampusAdmin(admin.OSMGeoAdmin):
             reverse('admin:feti_provider_change', args=(
                 instance.provider.id,)),
         )
+
     provider_url.allow_tags = True
     provider_url.short_description = 'Primary institute url'
 
@@ -107,6 +109,8 @@ class CampusAdminInline(OSMGeoStackedInline):
 class ProviderAdmin(admin.OSMGeoAdmin):
     """Admin Class for Provider Model."""
     inlines = [CampusAdminInline]
+    openlayers_url = '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js'
+
     fieldsets = (
         ('General', {
             'fields': ['primary_institution', 'website', 'status']
