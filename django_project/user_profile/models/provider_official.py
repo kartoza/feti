@@ -1,17 +1,16 @@
 from django.contrib.auth.models import User
-from django.core.validators import RegexValidator
 from django.db import models
-from feti.models.campus import Campus
+from feti.models.provider import Provider
 
 
-class CampusOfficial(models.Model):
+class ProviderOfficial(models.Model):
     # official user that have provider
     user = models.OneToOneField(User)
-    campus = models.ManyToManyField(Campus, verbose_name="Providers")
+    provider = models.ManyToManyField(Provider, verbose_name="Primary Institution")
 
     class Meta:
         app_label = "feti"
-        verbose_name = 'Provider Official'
+        verbose_name = 'Primary Institution Official'
 
     def __str__(self):
         return self.__unicode__()

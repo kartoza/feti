@@ -3,19 +3,8 @@
 {% load pipeline %}
 {% load crispy_forms_tags %}
 {% block title %}
-    FORD 2 - Update Provider
+    FORD 2 - Update Primary Institute
 {% endblock title %}
-
-{% block js_head %}
-    <script>
-        $(document).ready(function () {
-            var map_height = $('.olMap').height();
-            var parent_form = $('.olMap').closest('.form-group');
-            $(parent_form).height(map_height + $(parent_form).height() + 25);
-            $('.selectmultiple').height(500);
-        });
-    </script>
-{% endblock %}
 
 {% block css_head %}
     {% stylesheet 'custom_page' %}
