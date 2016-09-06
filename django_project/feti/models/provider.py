@@ -1,8 +1,5 @@
 # coding=utf-8
 from django.contrib.gis.db import models
-# from feti.models.address import Address
-from django.db.models.signals import post_save
-from django.core import management
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '16/04/15'

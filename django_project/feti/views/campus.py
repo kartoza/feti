@@ -42,7 +42,8 @@ class UpdateCampusView(LoginRequiredMixin, UpdateView):
                 # checking from provider official
                 try:
                     provider_official = ProviderOfficial.objects.get(user=self.request.user)
-                    campus = Campus.objects.filter(provider__in=provider_official.provider.all()).get(pk=pk)
+                    campus = Campus.objects.filter(
+                        provider__in=provider_official.provider.all()).get(pk=pk)
                 except ProviderOfficial.DoesNotExist:
                     pass
                 except Campus.DoesNotExist:
