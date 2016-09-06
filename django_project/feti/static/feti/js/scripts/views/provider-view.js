@@ -31,7 +31,9 @@ define([
         },
         renderCourses: function () {
             var that = this;
+            var marker = that.model.get('marker');
             _.each(this.model.attributes.courses, function (course) {
+                course.marker = marker;
                 var model = new Course(course);
                 that.courses.push(new CourseView({
                     model: model,

@@ -44,7 +44,6 @@ class ApiCampus(APIView):
 
         campuses.order_by('campus')
         serializer = CampusSerializer(campuses, many=True)
-        print(serializer.data)
         return Response(serializer.data)
 
 
@@ -67,7 +66,7 @@ class ApiCourse(APIView):
             q = ""
 
         campuses = Campus.objects.filter(location__isnull=False)
-        campuses = campuses.filter(
+        campuses = campuses.distinct().filter(
             courses__course_description__icontains=q
         )
 
