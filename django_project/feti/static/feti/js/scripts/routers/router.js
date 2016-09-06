@@ -11,9 +11,10 @@ define([
             "login": "login_page",
             "map": "show_map",
             "map/:mode": "show_map",
-            "map/:mode(/:results)": "show_map_results"
+            "map/:mode/:query": "show_map",
+            "map/:mode/:query/:filter": "show_map",
         },
-        initialize: function() {
+        initialize: function () {
             this.loginView = new LoginView();
             this.loginView.render();
 
@@ -22,7 +23,7 @@ define([
 
             this.pageHistory = [];
         },
-        landing_page: function() {
+        landing_page: function () {
             if (this.is_previous_route_match(/map.*/)) {
                 this.mapView.exitAllFullScreen();
             } else if (this.is_previous_route_match(/login/)) {
@@ -33,17 +34,17 @@ define([
 
             this.pageHistory.push(Backbone.history.getFragment());
         },
-        login_page: function() {
+        login_page: function () {
             if (!Common.IsLoggedIn) {
                 this.loginView.show();
             }
             this.pageHistory.push(Backbone.history.getFragment());
         },
-        is_previous_route_match: function(regex) {
+        is_previous_route_match: function (regex) {
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
         },
-        show_map: function(mode) {
-            if(this.pageHistory.length == 0) {
+        show_map: function (mode, query, filter) {
+            if (this.pageHistory.length == 0) {
                 this.mapView.fullScreenMap(0);
             } else {
                 this.mapView.fullScreenMap();
@@ -52,7 +53,9 @@ define([
                 this.mapView.changeCategory(mode);
             } else {
                 this.mapView.changeCategory(Common.CurrentSearchMode);
+                mode = Common.CurrentSearchMode;
             }
+            this.mapView.search(mode, query, filter);
 
             this.pageHistory.push(Backbone.history.getFragment());
         },

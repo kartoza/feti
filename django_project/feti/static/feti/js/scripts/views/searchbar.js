@@ -41,35 +41,65 @@ define([
             // form submit
             var that = this;
             $("#search-form").submit(function (e) {
-                that.search();
+                that.searchRouting();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
         categoryClicked: function (event) {
-            this.changeRoute($(event.target).data("mode"));
-            this.search();
+            this.changeCategoryButton($(event.target).data("mode"));
+            this.searchRouting();
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        search: function () {
-            this.changeRoute();
-            var mode = this.categorySelected();
-            if (mode) {
-                var query = this.$search_bar_input.val();
-
-                // Get coordinates from shape
-                var drawnLayers = this.parent.drawnItems.getLayers();
-
-                if (query.length >= this.minimumWords) {
-                    searchCollection.search(mode, this.$search_bar_input.val(), drawnLayers);
-                    this.in_show_result = true;
-                    this.$result_loading.show();
-                    this.$result_empty.hide();
-                    this.showResult();
+        isSearchEnable: function (mode, query) {
+            if (mode && mode != "" && query && query.length >= this.minimumWords) {
+                return true;
+            }
+            return false;
+        },
+        searchRouting: function () {
+            // update route based on query and filter
+            var that = this;
+            var new_url = ['map'];
+            var mode = that.categorySelected();
+            var query = that.$search_bar_input.val();
+            if (that.isSearchEnable(mode, query)) {
+                new_url.push(mode);
+                new_url.push(query);
+                var drawnLayers = that.parent.drawnItems.getLayers();
+                if (drawnLayers.length > 0) {
+                    // Get coordinates from shape
+                    var coordinate = drawnLayers[0].getLatLngs();
+                    var filter = JSON.stringify(coordinate);
+                    new_url.push(filter);
                 }
+                Backbone.history.navigate(new_url.join("/"), true);
+            }
+        },
+        search: function (mode, query, filter) {
+            this.$search_bar_input.val(query);
+            if (!filter) {
+                this.clearAllDraw();
+            } else {
+                var json = JSON.parse(filter);
+                var coordinates = [];
+                _.each(json, function (coordinate) {
+                    coordinates.push([coordinate.lat, coordinate.lng]);
+                });
+                this.parent.createPolygon(coordinates);
+                $('#clear-draw').show();
+            }
+
+            // search
+            if (this.isSearchEnable(mode, query)) {
+                searchCollection.search(mode, query, filter);
+                this.in_show_result = true;
+                this.$result_loading.show();
+                this.$result_empty.hide();
+                this.showResult();
             }
         },
         searchingFinish: function (is_not_empty) {
@@ -120,9 +150,6 @@ define([
             $('#draw-shape').hide();
             $('#cancel-draw-shape').show();
 
-            // set draw mode to shape
-            this.drawMode = 'shape';
-
             // enable polygon drawer
             this.parent.enablePolygonDrawer();
         },
@@ -138,12 +165,13 @@ define([
             // enable polygon drawer
             this.parent.disablePolygonDrawer();
         },
-        clearAllDraw: function() {
+        clearAllDraw: function () {
             $('#clear-draw').hide();
             // remove all drawn layer in map
             this.parent.clearAllDrawnLayer();
+            this.searchRouting();
         },
-        showClearDrawButton: function() {
+        showClearDrawButton: function () {
             $('#clear-draw').show();
         },
         categorySelected: function () {
@@ -155,7 +183,7 @@ define([
             }
         },
         // Draw Events
-        onFinishedCreatedPolygon: function() {
+        onFinishedCreatedPolygon: function () {
             this.cancelDrawShape();
             this.showClearDrawButton();
         },
@@ -180,13 +208,6 @@ define([
                 $button.addClass('active');
                 this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
-            }
-        },
-        changeRoute: function (mode) {
-            if (mode) {
-                Backbone.history.navigate('map/' + mode, true);
-            } else {
-                Backbone.history.navigate('map/' + this.categorySelected(), true);
             }
         },
         mapResize: function (is_resizing) {

@@ -7,6 +7,17 @@ define([
         events: {
             'click #feti-map': 'clickMap'
         },
+        create_polygon_options: function () {
+            return {
+                stroke: true,
+                color: '#f06eaa',
+                weight: 4,
+                opacity: 0.5,
+                fill: true,
+                fillColor: null, //same as color by default
+                fillOpacity: 0.2
+            }
+        },
         initialize: function () {
             this.$mapContainer = $('#map-container');
             this.$header = $('.intro-header');
@@ -75,7 +86,7 @@ define([
             // Draw events
             this.map.on('draw:created', this.drawCreated, this);
         },
-        drawCreated: function(e) {
+        drawCreated: function (e) {
             var type = e.layerType,
                 layer = e.layer;
 
@@ -86,9 +97,9 @@ define([
 
             this.drawnItems.addLayer(layer);
         },
-        enablePolygonDrawer: function(){
+        enablePolygonDrawer: function () {
             // check if there's already a shape in map
-            if(this.polygonLayer) {
+            if (this.polygonLayer) {
                 this.drawnItems.removeLayer(this.polygonLayer);
             }
             this.polygonDrawer.enable();
@@ -96,10 +107,10 @@ define([
         disablePolygonDrawer: function () {
             this.polygonDrawer.disable();
         },
-        clearAllDrawnLayer: function() {
+        clearAllDrawnLayer: function () {
             this.drawnItems.eachLayer(function (layer) {
                 this.drawnItems.removeLayer(layer);
-            },this);
+            }, this);
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -120,6 +131,9 @@ define([
         },
         changeCategory: function (mode) {
             this.searchBarView.changeCategoryButton(mode);
+        },
+        search: function (mode, query, filter) {
+            this.searchBarView.search(mode, query, filter);
         },
         exitAllFullScreen: function () {
             this.searchBarView.toggleProvider();
@@ -221,6 +235,13 @@ define([
                 // edit url
                 Backbone.history.navigate('/');
             }
+        },
+        createPolygon: function (coordinates) {
+            this.clearAllDrawnLayer();
+            var layer = L.polygon(coordinates, this.create_polygon_options());
+            this.polygonLayer = layer;
+            this.drawnItems.addLayer(this.polygonLayer);
+            this.addLayer(this.drawnItems);
         }
     });
 
