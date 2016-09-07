@@ -4,7 +4,6 @@ define([
     '/static/feti/js/scripts/collections/search.js'
 ], function (searchbarTemplate, Common, searchCollection) {
     var SearchBarView = Backbone.View.extend({
-        minimumWords: 3,
         tagName: 'div',
         container: '#map-search',
         template: _.template(searchbarTemplate),
@@ -31,7 +30,7 @@ define([
             this.$result_empty = $("#result-empty");
             this.search_bar_hidden = true;
             this.parent = options.parent;
-            this.drawMode = '';
+            this.initAutocomplete();
             Common.Dispatcher.on('search:finish', this.searchingFinish, this);
         },
         render: function () {
@@ -45,6 +44,41 @@ define([
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
+        initAutocomplete: function () {
+            var that = this;
+            this.$search_bar_input.autocomplete({
+                source: function (request, response) {
+                    that.$search_bar_input.css("cursor", "wait");
+                    var url = "/api/autocomplete/" + that.categorySelected();
+                    $.ajax({
+                        url: url,
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            that.$search_bar_input.css("cursor", "");
+                            response(data);
+                        },
+                        error: function (request, error) {
+                            that.$search_bar_input.css("cursor", "");
+                        },
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    $(this).val(ui.item.value);
+                    $("#search-form").submit()
+                },
+                open: function () {
+                    //$(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    //$(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            });
+            var width = this.$search_bar_input.css('width');
+            $('.ui-autocomplete').css('width', width);
+        },
         categoryClicked: function (event) {
             this.changeCategoryButton($(event.target).data("mode"));
             this.searchRouting();
@@ -54,30 +88,22 @@ define([
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        isSearchEnable: function (mode, query) {
-            if (mode && mode != "" && query && query.length >= this.minimumWords) {
-                return true;
-            }
-            return false;
-        },
         searchRouting: function () {
             // update route based on query and filter
             var that = this;
             var new_url = ['map'];
             var mode = that.categorySelected();
             var query = that.$search_bar_input.val();
-            if (that.isSearchEnable(mode, query)) {
-                new_url.push(mode);
-                new_url.push(query);
-                var drawnLayers = that.parent.drawnItems.getLayers();
-                if (drawnLayers.length > 0) {
-                    // Get coordinates from shape
-                    var coordinate = drawnLayers[0].getLatLngs();
-                    var filter = JSON.stringify(coordinate);
-                    new_url.push(filter);
-                }
-                Backbone.history.navigate(new_url.join("/"), true);
+            new_url.push(mode);
+            new_url.push(query);
+            var drawnLayers = that.parent.drawnItems.getLayers();
+            if (drawnLayers.length > 0) {
+                // Get coordinates from shape
+                var coordinate = drawnLayers[0].getLatLngs();
+                var filter = JSON.stringify(coordinate);
+                new_url.push(filter);
             }
+            Backbone.history.navigate(new_url.join("/"), true);
         },
         search: function (mode, query, filter) {
             this.$search_bar_input.val(query);
@@ -94,13 +120,11 @@ define([
             }
 
             // search
-            if (this.isSearchEnable(mode, query)) {
-                searchCollection.search(mode, query, filter);
-                this.in_show_result = true;
-                this.$result_loading.show();
-                this.$result_empty.hide();
-                this.showResult();
-            }
+            searchCollection.search(mode, query, filter);
+            this.in_show_result = true;
+            this.$result_loading.show();
+            this.$result_empty.hide();
+            this.showResult();
         },
         searchingFinish: function (is_not_empty) {
             this.$result_loading.hide();

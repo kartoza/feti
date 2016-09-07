@@ -2,6 +2,8 @@
 """Model class for WMS Resource"""
 
 from django.contrib.gis.db import models
+from django.core import management
+from django.db.models.signals import post_save
 from django.template import Context, loader
 
 from feti.models.provider import Provider
@@ -207,3 +209,10 @@ class Campus(models.Model):
         from feti.models.campus_course_entry import CampusCourseEntry
         CampusCourseEntry.objects.filter(campus=self).delete()
         super(Campus, self).delete(*args, **kwargs)
+
+
+def generate_campus_index(sender, instance, **kwargs):
+    management.call_command('generate_campus_index')
+
+
+post_save.connect(generate_campus_index, sender=Campus, dispatch_uid="generate_campus_index")

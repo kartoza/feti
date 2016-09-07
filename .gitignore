@@ -90,6 +90,8 @@ deployment/pg/postgres_dev_data/9.3
 deployment/nginx-conf/
 deployment/static
 deployment/media
+deployment/backups
+django_project/cache
 
 # Mapproxy in docker
 mapproxy/cache_data/

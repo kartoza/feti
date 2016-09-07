@@ -361,3 +361,22 @@
     font-weight: 900;
     opacity: 0.5;
 }
+
+.ui-autocomplete {
+    max-height: 500px !important;
+    z-index: 1000002 !important;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.ui-menu-item {
+    font-weight: 300 !important;
+    background: white !important;
+    border-bottom: solid 1px rgba(30, 107, 255, .4) !important;
+}
+
+.ui-menu-item-wrapper {
+    padding: 7px !important;
+}
+
+
