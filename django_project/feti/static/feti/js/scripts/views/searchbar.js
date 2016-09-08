@@ -101,13 +101,14 @@ define([
             var mode = that.categorySelected();
             var query = that.$search_bar_input.val();
             new_url.push(mode);
-            new_url.push(query);
+            if (query) {
+                new_url.push(query);
+                // Get coordinates query from map
+                var coordinates = this.parent.getCoordinatesQuery();
 
-            // Get coordinates query from map
-            var coordinates = this.parent.getCoordinatesQuery();
-
-            if(coordinates) {
-                new_url.push(coordinates);
+                if(coordinates) {
+                    new_url.push(coordinates);
+                }
             }
             Backbone.history.navigate(new_url.join("/"), true);
         },
