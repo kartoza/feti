@@ -14,8 +14,9 @@ define([
             'click #back-home': 'backHomeClicked',
             'click #result-toogle': 'toogleResult',
             'click #draw-shape': 'drawModeSelected',
-            'click #location': 'drawModeSelected',
+            'click #draw-circle': 'drawModeSelected',
             'click #cancel-draw-shape': 'cancelDrawShape',
+            'click #cancel-draw-circle': 'cancelDrawCircle',
             'click #clear-draw': 'clearAllDraw'
         },
         initialize: function (options) {
@@ -96,12 +97,12 @@ define([
             var query = that.$search_bar_input.val();
             new_url.push(mode);
             new_url.push(query);
-            var drawnLayers = that.parent.drawnItems.getLayers();
-            if (drawnLayers.length > 0) {
-                // Get coordinates from shape
-                var coordinate = drawnLayers[0].getLatLngs();
-                var filter = JSON.stringify(coordinate);
-                new_url.push(filter);
+
+            // Get coordinates query from map
+            var coordinates = this.parent.getCoordinatesQuery();
+
+            if(coordinates) {
+                new_url.push(coordinates);
             }
             Backbone.history.navigate(new_url.join("/"), true);
         },
@@ -110,12 +111,21 @@ define([
             if (!filter) {
                 this.clearAllDraw();
             } else {
-                var json = JSON.parse(filter);
-                var coordinates = [];
-                _.each(json, function (coordinate) {
-                    coordinates.push([coordinate.lat, coordinate.lng]);
-                });
-                this.parent.createPolygon(coordinates);
+                var filters = filter.split('&');
+
+                if(filters[0].split('=').pop() == 'polygon')  { // if polygon
+                    var coordinates_json = JSON.parse(filters[1].split('=').pop());
+                    var coordinates = [];
+                    _.each(coordinates_json, function (coordinate) {
+                        coordinates.push([coordinate.lat, coordinate.lng]);
+                    });
+                    this.parent.createPolygon(coordinates);
+                } else if(filters[0].split('=').pop() == 'circle') { // if circle
+                    var coords = JSON.parse(filters[1].split('=').pop());
+                    var radius = filters[2].split('=').pop();
+                    this.parent.createCircle(coords, radius);
+                }
+
                 $('#clear-draw').show();
             }
 
@@ -168,7 +178,16 @@ define([
             var selected = $(event.target).get(0).id;
             if (selected == 'draw-shape') {
                 this.drawShape();
+            } else if (selected == 'draw-circle') {
+                this.drawCircle();
             }
+        },
+        drawCircle: function () {
+            $('#draw-circle').hide();
+            $('#cancel-draw-circle').show();
+
+            // enable circle drawer
+            this.parent.enableCircleDrawer();
         },
         drawShape: function () {
             $('#draw-shape').hide();
@@ -186,8 +205,17 @@ define([
 
             this.$el.find('.search-bar').find('.m-button').removeClass('active');
 
-            // enable polygon drawer
+            // disable polygon drawer
             this.parent.disablePolygonDrawer();
+        },
+        cancelDrawCircle: function() {
+            $('#draw-circle').show();
+            $('#cancel-draw-circle').hide();
+
+            this.$el.find('.search-bar').find('.m-button').removeClass('active');
+
+            // disable polygon drawer
+            this.parent.disableCircleDrawer();
         },
         clearAllDraw: function () {
             $('#clear-draw').hide();
@@ -209,6 +237,10 @@ define([
         // Draw Events
         onFinishedCreatedPolygon: function () {
             this.cancelDrawShape();
+            this.showClearDrawButton();
+        },
+        onFinishedCreatedCircle: function () {
+            this.cancelDrawCircle();
             this.showClearDrawButton();
         },
         changeCategoryButton: function (mode) {

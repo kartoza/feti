@@ -8,8 +8,8 @@ define([
     var SearchCollection = Backbone.Collection.extend({
         model: Provider,
         ProviderViews: [],
-        provider_url_template: _.template("/api/campus?q=<%- q %>&coord=<%- coord %>"),
-        course_url_template: _.template("/api/course?q=<%- q %>&coord=<%- coord %>"),
+        provider_url_template: _.template("/api/campus?q=<%- q %>&<%- coord %>"),
+        course_url_template: _.template("/api/course?q=<%- q %>&<%- coord %>"),
         url: function () {
             return this.url;
         },

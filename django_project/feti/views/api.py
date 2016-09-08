@@ -5,7 +5,8 @@ import json
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import Polygon, Point
+from django.contrib.gis.measure import Distance
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,15 +27,26 @@ class SearchCampus(APIView):
             return Response([])
 
         # Get coordinates from request and create a polygon
-        coord_string = request.GET.get('coord')
+        coord_type = request.GET.get('coord_type')
         drawn_polygon = None
-        if coord_string:
-            coord_obj = json.loads(coord_string)
-            poly = []
-            for c in coord_obj:
-                poly.append((c['lng'], c['lat']))
-            poly.append(poly[0])
-            drawn_polygon = Polygon(poly)
+        drawn_circle = None
+        radius = 0
+
+        if coord_type == 'polygon':
+            coord_string = request.GET.get('coordinates')
+            if coord_string:
+                coord_obj = json.loads(coord_string)
+                poly = []
+                for c in coord_obj:
+                    poly.append((c['lng'], c['lat']))
+                poly.append(poly[0])
+                drawn_polygon = Polygon(poly)
+        elif coord_type == 'circle':
+            coord_string = request.GET.get('coordinate')
+            radius = request.GET.get('radius')
+            if coord_string:
+                coord_obj = json.loads(coord_string)
+                drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
 
         if not query:
             query = ""
@@ -45,6 +57,10 @@ class SearchCampus(APIView):
         if drawn_polygon:
             campuses = campuses.filter(
                 location__within=drawn_polygon
+            )
+        elif drawn_circle:
+            campuses = campuses.filter(
+                location__distance_lt=(drawn_circle, Distance(m=radius))
             )
 
         campuses.order_by('campus')

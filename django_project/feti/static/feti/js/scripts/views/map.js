@@ -7,7 +7,7 @@ define([
         events: {
             'click #feti-map': 'clickMap'
         },
-        create_polygon_options: function () {
+        layerOptions: function () {
             return {
                 stroke: true,
                 color: '#f06eaa',
@@ -40,6 +40,8 @@ define([
             // Polygon draw handler
             this.polygonDrawer = null;
             this.polygonLayer = null;
+            this.circleDrawer = null;
+            this.circleLayer = null;
 
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
@@ -71,6 +73,8 @@ define([
 
             this.polygonDrawer = new L.Draw.Polygon(this.map);
 
+            this.circleDrawer = new L.Draw.Circle(this.map);
+
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw({
                 draw: false,
@@ -93,24 +97,53 @@ define([
             if (type === 'polygon') {
                 this.searchBarView.onFinishedCreatedPolygon();
                 this.polygonLayer = layer;
+            } else if(type === 'circle') {
+                this.searchBarView.onFinishedCreatedCircle();
+                this.circleLayer = layer;
             }
 
             this.drawnItems.addLayer(layer);
         },
         enablePolygonDrawer: function () {
-            // check if there's already a shape in map
-            if (this.polygonLayer) {
-                this.drawnItems.removeLayer(this.polygonLayer);
+            this.clearAllDrawnLayer();
+            if(this.polygonDrawer) {
+                this.polygonDrawer.enable();
             }
-            this.polygonDrawer.enable();
         },
         disablePolygonDrawer: function () {
             this.polygonDrawer.disable();
+        },
+        enableCircleDrawer: function () {
+            this.clearAllDrawnLayer();
+            if(this.circleDrawer) {
+                this.circleDrawer.enable();
+            }
+        },
+        disableCircleDrawer: function () {
+            this.circleDrawer.disable();
         },
         clearAllDrawnLayer: function () {
             this.drawnItems.eachLayer(function (layer) {
                 this.drawnItems.removeLayer(layer);
             }, this);
+        },
+        getCoordinatesQuery: function() {
+            var drawnLayers = this.drawnItems.getLayers();
+            if (drawnLayers.length > 0) {
+                var _layer = drawnLayers[0];
+                var query = '';
+                // check if layer is polygon or circle
+                if(_layer instanceof L.Polygon) {
+                    var coordinates = _layer.getLatLngs();
+                    var coordinates_string = JSON.stringify(coordinates);
+                    query = 'coord_type=polygon&coordinates='+coordinates_string;
+                } else if(_layer instanceof L.Circle) {
+                    var circleCoordinate = _layer.getLatLng();
+                    var circleRadius = _layer.getRadius();
+                    query = 'coord_type=circle&coordinate='+JSON.stringify(circleCoordinate)+'&radius='+circleRadius;
+                }
+                return query;
+            }
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -238,10 +271,17 @@ define([
         },
         createPolygon: function (coordinates) {
             this.clearAllDrawnLayer();
-            var layer = L.polygon(coordinates, this.create_polygon_options());
-            this.polygonLayer = layer;
+            this.polygonLayer = L.polygon(coordinates, this.layerOptions());
             this.drawnItems.addLayer(this.polygonLayer);
             this.addLayer(this.drawnItems);
+            this.map.fitBounds(this.polygonLayer);
+        },
+        createCircle: function(coords, radius) {
+            this.clearAllDrawnLayer();
+            this.circleLayer = L.circle([coords['lat'], coords['lng']], radius, this.layerOptions());
+            this.drawnItems.addLayer(this.circleLayer);
+            this.addLayer(this.drawnItems);
+            this.map.fitBounds(this.circleLayer);
         }
     });
 
