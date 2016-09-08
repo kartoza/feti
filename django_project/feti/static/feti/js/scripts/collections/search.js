@@ -26,9 +26,8 @@ define([
                 coord: ''
             };
 
-            if (drawnLayers.length > 0) {
-                var coordinate = drawnLayers[0].getLatLngs();
-                parameters.coord = JSON.stringify(coordinate);
+            if (drawnLayers && drawnLayers.length > 0) {
+                parameters.coord = drawnLayers;
             }
 
             if (mode == 'provider') {

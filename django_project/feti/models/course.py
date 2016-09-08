@@ -124,8 +124,8 @@ class Course(models.Model):
         managed = True
 
 
-def regenerate_landing_page(sender, instance, **kwargs):
-    management.call_command('full_front_page')
+def generate_course_index(sender, instance, **kwargs):
+    management.call_command('generate_course_index')
 
 
-post_save.connect(regenerate_landing_page, sender=Course, dispatch_uid="course_landing_page")
+post_save.connect(generate_course_index, sender=Course, dispatch_uid="generate_course_index")

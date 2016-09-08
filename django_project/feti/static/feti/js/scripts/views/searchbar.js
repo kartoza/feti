@@ -4,7 +4,6 @@ define([
     '/static/feti/js/scripts/collections/search.js'
 ], function (searchbarTemplate, Common, searchCollection) {
     var SearchBarView = Backbone.View.extend({
-        minimumWords: 3,
         tagName: 'div',
         container: '#map-search',
         template: _.template(searchbarTemplate),
@@ -31,7 +30,7 @@ define([
             this.$result_empty = $("#result-empty");
             this.search_bar_hidden = true;
             this.parent = options.parent;
-            this.drawMode = '';
+            this.initAutocomplete();
             Common.Dispatcher.on('search:finish', this.searchingFinish, this);
         },
         render: function () {
@@ -41,36 +40,91 @@ define([
             // form submit
             var that = this;
             $("#search-form").submit(function (e) {
-                that.search();
+                that.searchRouting();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
+        initAutocomplete: function () {
+            var that = this;
+            this.$search_bar_input.autocomplete({
+                source: function (request, response) {
+                    that.$search_bar_input.css("cursor", "wait");
+                    var url = "/api/autocomplete/" + that.categorySelected();
+                    $.ajax({
+                        url: url,
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            that.$search_bar_input.css("cursor", "");
+                            response(data);
+                        },
+                        error: function (request, error) {
+                            that.$search_bar_input.css("cursor", "");
+                        },
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    $(this).val(ui.item.value);
+                    $("#search-form").submit()
+                },
+                open: function () {
+                    //$(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    //$(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            });
+            var width = this.$search_bar_input.css('width');
+            $('.ui-autocomplete').css('width', width);
+        },
         categoryClicked: function (event) {
-            this.changeRoute($(event.target).data("mode"));
-            this.search();
+            this.changeCategoryButton($(event.target).data("mode"));
+            this.searchRouting();
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        search: function () {
-            this.changeRoute();
-            var mode = this.categorySelected();
-            if (mode) {
-                var query = this.$search_bar_input.val();
-
+        searchRouting: function () {
+            // update route based on query and filter
+            var that = this;
+            var new_url = ['map'];
+            var mode = that.categorySelected();
+            var query = that.$search_bar_input.val();
+            new_url.push(mode);
+            new_url.push(query);
+            var drawnLayers = that.parent.drawnItems.getLayers();
+            if (drawnLayers.length > 0) {
                 // Get coordinates from shape
-                var drawnLayers = this.parent.drawnItems.getLayers();
-
-                if (query.length >= this.minimumWords) {
-                    searchCollection.search(mode, this.$search_bar_input.val(), drawnLayers);
-                    this.in_show_result = true;
-                    this.$result_loading.show();
-                    this.$result_empty.hide();
-                    this.showResult();
-                }
+                var coordinate = drawnLayers[0].getLatLngs();
+                var filter = JSON.stringify(coordinate);
+                new_url.push(filter);
             }
+            Backbone.history.navigate(new_url.join("/"), true);
+        },
+        search: function (mode, query, filter) {
+            this.$search_bar_input.val(query);
+            if (!filter) {
+                this.clearAllDraw();
+            } else {
+                var json = JSON.parse(filter);
+                var coordinates = [];
+                _.each(json, function (coordinate) {
+                    coordinates.push([coordinate.lat, coordinate.lng]);
+                });
+                this.parent.createPolygon(coordinates);
+                $('#clear-draw').show();
+            }
+
+            // search
+            searchCollection.search(mode, query, filter);
+            this.in_show_result = true;
+            this.$result_loading.show();
+            this.$result_empty.hide();
+            this.showResult();
         },
         searchingFinish: function (is_not_empty) {
             this.$result_loading.hide();
@@ -120,9 +174,6 @@ define([
             $('#draw-shape').hide();
             $('#cancel-draw-shape').show();
 
-            // set draw mode to shape
-            this.drawMode = 'shape';
-
             // enable polygon drawer
             this.parent.enablePolygonDrawer();
         },
@@ -138,12 +189,13 @@ define([
             // enable polygon drawer
             this.parent.disablePolygonDrawer();
         },
-        clearAllDraw: function() {
+        clearAllDraw: function () {
             $('#clear-draw').hide();
             // remove all drawn layer in map
             this.parent.clearAllDrawnLayer();
+            this.searchRouting();
         },
-        showClearDrawButton: function() {
+        showClearDrawButton: function () {
             $('#clear-draw').show();
         },
         categorySelected: function () {
@@ -155,7 +207,7 @@ define([
             }
         },
         // Draw Events
-        onFinishedCreatedPolygon: function() {
+        onFinishedCreatedPolygon: function () {
             this.cancelDrawShape();
             this.showClearDrawButton();
         },
@@ -180,13 +232,6 @@ define([
                 $button.addClass('active');
                 this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
-            }
-        },
-        changeRoute: function (mode) {
-            if (mode) {
-                Backbone.history.navigate('map/' + mode, true);
-            } else {
-                Backbone.history.navigate('map/' + this.categorySelected(), true);
             }
         },
         mapResize: function (is_resizing) {

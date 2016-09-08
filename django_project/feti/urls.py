@@ -9,7 +9,7 @@ from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import LandingPage
-from feti.views.api import ApiCampus, ApiCourse
+from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
 
 sqs = SearchQuerySet()
 
@@ -24,9 +24,9 @@ api_urls = patterns(
         ApiCourse.as_view(),
         name='api-campus'),
     url(
-        r'^api/course/(?P<campus_id>\d+)',
-        ApiCourse.as_view(),
-        name='api-course-campus'),
+        r'^api/autocomplete/(?P<model>.+)',
+        ApiAutocomplete.as_view(),
+        name='api-campus-autocomplete'),
 )
 
 urlpatterns = patterns(
