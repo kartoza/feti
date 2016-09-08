@@ -1,9 +1,10 @@
 from braces.views import LoginRequiredMixin
-from django.views.generic import UpdateView
+from extra_views import UpdateWithInlinesView
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from feti.models.campus import Campus
 from feti.forms.campus_form import CampusForm
+from feti.views.address import UpdateAddressView
 
 from user_profile.models.campus_official import CampusOfficial
 from user_profile.models.provider_official import ProviderOfficial
@@ -14,10 +15,12 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
-class UpdateCampusView(LoginRequiredMixin, UpdateView):
+class UpdateCampusView(LoginRequiredMixin, UpdateWithInlinesView):
     context_object_name = 'administrator'
     template_name = 'feti/update_campus.html'
     form_class = CampusForm
+    model = Campus
+    inlines = [UpdateAddressView]
 
     def get_form(self, form_class):
         form = super(UpdateCampusView, self).get_form(form_class)

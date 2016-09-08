@@ -43,3 +43,7 @@ input[type=submit] {
 .checkbox input[type=checkbox] {
     margin-left: 0px;
 }
+
+#form {
+    margin-bottom: 20px;
+}

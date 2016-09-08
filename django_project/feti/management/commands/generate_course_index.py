@@ -31,7 +31,7 @@ class Command(BaseCommand):
                                    if course.course_description])
 
         # safe to file
-        file = open(filename, 'w')
+        file = open(filename, 'w', encoding='utf-8')
         file.write(courses_names)  # python will convert \n to os.linesep
         file.close()  # you can omit in most cases as the destructor will call it
         print("generate courses index finish")

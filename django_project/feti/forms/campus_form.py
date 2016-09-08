@@ -96,12 +96,10 @@ class CampusForm(forms.ModelForm):
                 Field('campus', css_class='form-control'),
                 Field('location', css_class='form-control'),
                 Field('courses', css_class='form-control'),
-                css_id='project-form')
+                css_id='form')
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_tag = False
 
         super(CampusForm, self).__init__(*args, **kwargs)
-
-        # init choice
-        self.helper.add_input(Submit('submit', 'Submit'))

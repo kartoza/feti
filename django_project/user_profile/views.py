@@ -137,7 +137,7 @@ class UserAdminPage(TemplateView):
             except CampusOfficial.DoesNotExist:
                 pass
 
-        if campus and providers:
+        if campus or providers:
             if campus:
                 context['campus'] = campus
             if providers:

@@ -2,7 +2,7 @@
 import abc
 import os
 import json
-
+from django.db.models import Q
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.contrib.gis.geos import Polygon
@@ -61,7 +61,7 @@ class ApiCampus(SearchCampus):
         return SearchCampus.get(self, request)
 
     def additional_filter(self, model, query):
-        return model.filter(provider__primary_institution__icontains=query)
+        return model.filter(Q(campus__icontains=query) | Q(provider__primary_institution__icontains=query))
 
 
 class ApiCourse(SearchCampus):

@@ -27,10 +27,10 @@ class Command(BaseCommand):
 
         # get data
         campuses = Campus.objects.all().order_by('provider__primary_institution')
-        campuses_names = "\n".join([campus.provider.__unicode__().strip() for campus in campuses])
+        campuses_names = "\n".join([campus.__unicode__().strip() for campus in campuses])
 
         # safe to file
-        file = open(filename, 'w')
+        file = open(filename, 'w', encoding='utf-8')
         file.write(campuses_names)  # python will convert \n to os.linesep
         file.close()  # you can omit in most cases as the destructor will call it
         print("generate campus index finish")
