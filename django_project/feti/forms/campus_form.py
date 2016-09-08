@@ -6,7 +6,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout,
     Fieldset,
-    Submit,
     Field,
 )
 from django.contrib.admin.widgets import FilteredSelectMultiple

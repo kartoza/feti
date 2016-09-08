@@ -61,7 +61,9 @@ class ApiCampus(SearchCampus):
         return SearchCampus.get(self, request)
 
     def additional_filter(self, model, query):
-        return model.filter(Q(campus__icontains=query) | Q(provider__primary_institution__icontains=query))
+        return model.filter(
+            Q(campus__icontains=query) |
+            Q(provider__primary_institution__icontains=query))
 
 
 class ApiCourse(SearchCampus):
