@@ -136,11 +136,11 @@ define([
                 if(_layer instanceof L.Polygon) {
                     var coordinates = _layer.getLatLngs();
                     var coordinates_string = JSON.stringify(coordinates);
-                    query = 'coord_type=polygon&coordinates='+coordinates_string;
+                    query = 'shape=polygon&coordinates='+coordinates_string;
                 } else if(_layer instanceof L.Circle) {
                     var circleCoordinate = _layer.getLatLng();
                     var circleRadius = _layer.getRadius();
-                    query = 'coord_type=circle&coordinate='+JSON.stringify(circleCoordinate)+'&radius='+circleRadius;
+                    query = 'shape=circle&coordinate='+JSON.stringify(circleCoordinate)+'&radius='+circleRadius;
                 }
                 return query;
             }

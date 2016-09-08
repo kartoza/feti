@@ -27,12 +27,12 @@ class SearchCampus(APIView):
             return Response([])
 
         # Get coordinates from request and create a polygon
-        coord_type = request.GET.get('coord_type')
+        shape = request.GET.get('shape')
         drawn_polygon = None
         drawn_circle = None
         radius = 0
 
-        if coord_type == 'polygon':
+        if shape == 'polygon':
             coord_string = request.GET.get('coordinates')
             if coord_string:
                 coord_obj = json.loads(coord_string)
@@ -41,7 +41,7 @@ class SearchCampus(APIView):
                     poly.append((c['lng'], c['lat']))
                 poly.append(poly[0])
                 drawn_polygon = Polygon(poly)
-        elif coord_type == 'circle':
+        elif shape == 'circle':
             coord_string = request.GET.get('coordinate')
             radius = request.GET.get('radius')
             if coord_string:
