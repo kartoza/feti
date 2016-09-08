@@ -101,3 +101,6 @@ PIPELINE_CSS = {
         },
     }
 }
+
+# Cache folder
+CACHE_DIR = ABS_PATH('cache')

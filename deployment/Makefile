@@ -66,7 +66,7 @@ nginx:
 	@docker-compose -p $(PROJECT_ID) up -d nginx
 	@echo "Site should now be available at http://localhost"
 
-migrate:
+migrate: update-cache
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running migrate static in production mode"
@@ -277,6 +277,14 @@ dbbackup:
 	# out with wrong path...
 	@ln -s `date +%Y`/`date +%B`/PG_$(PROJECT_ID)_gis.`date +%d-%B-%Y`.dmp backups/latest.dmp
 	@echo "Backup should be at: backups/`date +%Y`/`date +%B`/PG_$(PROJECT_ID)_gis.`date +%d-%B-%Y`.dmp"\
+
+update-cache:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to make cache in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_campus_index
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_course_index
 
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S
