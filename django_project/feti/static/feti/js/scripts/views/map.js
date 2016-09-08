@@ -94,15 +94,15 @@ define([
             var type = e.layerType,
                 layer = e.layer;
 
-            if (type === 'polygon') {
-                this.searchBarView.onFinishedCreatedPolygon();
-                this.polygonLayer = layer;
-            } else if(type === 'circle') {
-                this.searchBarView.onFinishedCreatedCircle();
-                this.circleLayer = layer;
-            }
-
             this.drawnItems.addLayer(layer);
+
+            if (type === 'polygon') {
+                this.polygonLayer = layer;
+                this.searchBarView.onFinishedCreatedShape('polygon');
+            } else if(type === 'circle') {
+                this.circleLayer = layer;
+                this.searchBarView.onFinishedCreatedShape('circle');
+            }
         },
         enablePolygonDrawer: function () {
             this.clearAllDrawnLayer();

@@ -13,10 +13,10 @@ define([
             'click #choose-occupation': 'categoryClicked',
             'click #back-home': 'backHomeClicked',
             'click #result-toogle': 'toogleResult',
-            'click #draw-shape': 'drawModeSelected',
+            'click #draw-polygon': 'drawModeSelected',
             'click #draw-circle': 'drawModeSelected',
-            'click #cancel-draw-shape': 'cancelDrawShape',
-            'click #cancel-draw-circle': 'cancelDrawCircle',
+            'click #cancel-draw-polygon': 'cancelDrawClicked',
+            'click #cancel-draw-circle': 'cancelDrawClicked',
             'click #clear-draw': 'clearAllDraw'
         },
         initialize: function (options) {
@@ -33,6 +33,11 @@ define([
             this.parent = options.parent;
             this.initAutocomplete();
             Common.Dispatcher.on('search:finish', this.searchingFinish, this);
+
+            this._drawer = {
+                polygon: this._initializeDrawPolygon,
+                circle: this._initializeDrawCircle
+            }
         },
         render: function () {
             this.$el.empty();
@@ -176,46 +181,35 @@ define([
             this.$el.find('.search-bar').find('.m-button').removeClass('active');
             $(event.target).addClass('active');
             var selected = $(event.target).get(0).id;
-            if (selected == 'draw-shape') {
-                this.drawShape();
-            } else if (selected == 'draw-circle') {
-                this.drawCircle();
-            }
-        },
-        drawCircle: function () {
-            $('#draw-circle').hide();
-            $('#cancel-draw-circle').show();
 
-            // enable circle drawer
-            this.parent.enableCircleDrawer();
+            var drawer = this._drawer[selected.split('-').pop()];
+            drawer.call(this);
         },
-        drawShape: function () {
-            $('#draw-shape').hide();
-            $('#cancel-draw-shape').show();
-
+        _initializeDrawPolygon: function () {
+            $('#draw-polygon').hide();
+            $('#cancel-draw-polygon').show();
             // enable polygon drawer
             this.parent.enablePolygonDrawer();
         },
-        cancelDrawShape: function () {
-            $('#draw-shape').show();
-            $('#cancel-draw-shape').hide();
-
-            // remove draw mode
-            this.drawMode = '';
-
-            this.$el.find('.search-bar').find('.m-button').removeClass('active');
-
-            // disable polygon drawer
-            this.parent.disablePolygonDrawer();
+        _initializeDrawCircle: function () {
+            $('#draw-circle').hide();
+            $('#cancel-draw-circle').show();
+            // enable circle drawer
+            this.parent.enableCircleDrawer();
         },
-        cancelDrawCircle: function() {
-            $('#draw-circle').show();
-            $('#cancel-draw-circle').hide();
-
+        cancelDrawClicked: function (element) {
+            var shape = $(element.target).attr('id').split('-').pop();
+            this.cancelDraw(shape);
+        },
+        cancelDraw: function(shape) {
+            if(shape=='circle') {
+                this.parent.disableCircleDrawer();
+            } else if(shape=='polygon') {
+                this.parent.disablePolygonDrawer();
+            }
+            $('#draw-'+shape).show();
+            $('#cancel-draw-'+shape).hide();
             this.$el.find('.search-bar').find('.m-button').removeClass('active');
-
-            // disable polygon drawer
-            this.parent.disableCircleDrawer();
         },
         clearAllDraw: function () {
             $('#clear-draw').hide();
@@ -235,13 +229,10 @@ define([
             }
         },
         // Draw Events
-        onFinishedCreatedPolygon: function () {
-            this.cancelDrawShape();
+        onFinishedCreatedShape: function(shape) {
+            this.cancelDraw(shape);
             this.showClearDrawButton();
-        },
-        onFinishedCreatedCircle: function () {
-            this.cancelDrawCircle();
-            this.showClearDrawButton();
+            this.searchRouting();
         },
         changeCategoryButton: function (mode) {
             this.$el.find('.search-category').find('.m-button').removeClass('active');
