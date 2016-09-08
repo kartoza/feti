@@ -16,6 +16,8 @@ from feti.models.national_graduate_school_in_education import (  # noqa
 from feti.models.national_qualifications_framework import (  # noqa
     NationalQualificationsFramework)  # noqa
 from feti.models.provider import Provider  # noqa
+from feti.models.learning_pathway import LearningPathway  # noqa
+from feti.models.occupation import Occupation  # noqa
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'

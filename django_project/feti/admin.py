@@ -6,11 +6,15 @@ from django.core.urlresolvers import reverse
 from django.template.context import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from django.db.models import Q
+
 from feti.custom_admin.geodjango import OSMGeoStackedInline
 from feti.models.address import Address
 from feti.models.campus import Campus
 from feti.models.course import Course
 from feti.models.provider import Provider
+from feti.models.occupation import Occupation
+from feti.models.learning_pathway import LearningPathway, Step
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -154,9 +158,13 @@ class CourseAdmin(admin.ModelAdmin):
     related_providers.short_description = 'Related providers'
 
 
+
+
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
 admin.site.site_title = 'Feti Administration'
 admin.site.register(Campus, CampusAdmin)
 admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
+admin.site.register(LearningPathway, admin.ModelAdmin)
+admin.site.register(Step, admin.ModelAdmin)
