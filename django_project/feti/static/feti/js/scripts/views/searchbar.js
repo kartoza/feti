@@ -95,13 +95,15 @@ define([
             var mode = that.categorySelected();
             var query = that.$search_bar_input.val();
             new_url.push(mode);
-            new_url.push(query);
-            var drawnLayers = that.parent.drawnItems.getLayers();
-            if (drawnLayers.length > 0) {
-                // Get coordinates from shape
-                var coordinate = drawnLayers[0].getLatLngs();
-                var filter = JSON.stringify(coordinate);
-                new_url.push(filter);
+            if (query) {
+                new_url.push(query);
+                var drawnLayers = that.parent.drawnItems.getLayers();
+                if (drawnLayers.length > 0) {
+                    // Get coordinates from shape
+                    var coordinate = drawnLayers[0].getLatLngs();
+                    var filter = JSON.stringify(coordinate);
+                    new_url.push(filter);
+                }
             }
             Backbone.history.navigate(new_url.join("/"), true);
         },
