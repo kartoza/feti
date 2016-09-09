@@ -237,7 +237,6 @@
 }
 
 #result {
-    overflow: scroll;
     display: none;
     position: absolute;
     right: 0px;
@@ -245,6 +244,48 @@
     padding-top: 55px !important;
     background: white;
     z-index: 1000000;
+}
+
+#result-wrapper {
+    overflow-y: scroll;
+}
+
+#result-container {
+    height: 80%;
+}
+
+.share-button {
+    position: relative;
+    top: 40%;
+    transform: translateY(-45%);
+    border-radius: 20px;
+    background-color: white;
+    color: #008CBA;
+    border: 2px solid #008CBA;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: lighter;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.share-row {
+    height: 100%;
+}
+
+.share-button:hover {
+    background-color: #008CBA;
+    color: white;
+}
+
+#result-share-container {
+    height: 80px;
+    background-color: red;
 }
 
 #back-home {

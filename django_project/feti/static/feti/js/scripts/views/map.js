@@ -1,7 +1,8 @@
 define([
     'common',
-    '/static/feti/js/scripts/views/searchbar.js'
-], function (Common, SearchbarView) {
+    '/static/feti/js/scripts/views/searchbar.js',
+    '/static/feti/js/scripts/views/sharebar.js'
+], function (Common, SearchbarView, SharebarView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -45,6 +46,7 @@ define([
 
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
+            this.shareBarView = new SharebarView({parent: this});
             this.listenTo(this.searchBarView, 'backHome', this.backHome);
             this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
 
