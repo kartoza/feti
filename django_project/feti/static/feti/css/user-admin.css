@@ -1,0 +1,28 @@
+h1 {
+    color: white;
+    background-color: #1D68B3;
+    padding: 10px;
+    margin: 0px !important;
+}
+
+h4 {
+    color: #1D68B3;
+}
+
+#content {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.section {
+    border: solid 1px rgba(29, 104, 179, 0.5);
+    padding: 0px !important;
+    margin-top: 20px !important;
+}
+
+.section .section-container {
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: solid 1px rgba(29, 104, 179, 0.5);
+
+}

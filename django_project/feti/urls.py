@@ -7,6 +7,7 @@ from feti.forms.search import DefaultSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
+from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import LandingPage
 from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
 
@@ -49,4 +50,7 @@ urlpatterns = patterns(
     url(regex='^provider/(?P<pk>\d+)/update/$',
         view=UpdateCampusView.as_view(),
         name='update_campus'),
+    url(regex='^primary-institute/(?P<pk>\d+)/update/$',
+        view=UpdateProviderView.as_view(),
+        name='primary_institute_campus'),
 ) + api_urls

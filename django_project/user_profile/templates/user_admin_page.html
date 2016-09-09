@@ -6,7 +6,6 @@
         $(document).ready(function () {
             $('#login_id').addClass("active");
         });
-
     </script>
 {% endblock %}
 
@@ -16,27 +15,66 @@
 
 {% block css_head %}
     {% stylesheet 'custom_page' %}
+    <link rel="stylesheet" type="text/css" href="/static/feti/css/user-admin.css">
 {% endblock %}
 
 {% block content %}
+    <br>
+    {% if providers %}
+        <div class="container section">
+            <h1>Primary Institutes</h1>
+            {% for prim_inst in providers %}
+                <div class="section-container">
+                    <h3>{{ prim_inst.primary_institution }}
+                        <a href="/primary-institute/{{ prim_inst.id }}/update/"
+                           class="tiny material-icons" style="font-size: 14px">mode_edit</a></h3>
+                    {% if prim_inst.campus %}
+                        <div id="providers" class="row">
+                            {% for provider in prim_inst.campus %}
+                                <div class="span3">
+                                    <p>
+                                    <h4>
+                                        {% if provider.campus %}
+                                            {{ provider.campus }}
+                                        {% else %}
+                                            No Name
+                                        {% endif %}
+                                        <a href="/provider/{{ provider.id }}/update/"
+                                           class="tiny material-icons" style="font-size: 14px">mode_edit</a></h4></p>
+                                    {% if provider.long_description %}
+                                        <p> {{ provider.long_description }}</p>
+                                    {% endif %}
+                                    {% if provider.address %}
+                                        <p><i> {{ provider.address }}</i></p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% if campus %}
-        <div class="container">
-            <h2>PROVIDERS</h2>
-            <div id="providers" class="row">
-                {% for provider in campus %}
-                    <div class="span3">
-                        <p>
-                        <h3>{{ provider.campus }}
-                            <a href="/provider/{{ provider.id }}/update/"
-                               class="tiny material-icons" style="font-size: 14px">mode_edit</a></h3></p>
-                        {% if provider.long_description %}
-                            <p> {{ provider.long_description }}</p>
-                        {% endif %}
-                        {% if provider.address %}
-                            <p><i> {{ provider.address }}</i></p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+        <div class="container section">
+            <h1>PROVIDERS</h1>
+            <div class="section-container">
+                <div id="providers" class="row">
+                    {% for provider in campus %}
+                        <div class="span3">
+                            <p>
+                            <h4>{{ provider.campus }}
+                                <a href="/provider/{{ provider.id }}/update/"
+                                   class="tiny material-icons" style="font-size: 14px">mode_edit</a></h4></p>
+                            {% if provider.long_description %}
+                                <p> {{ provider.long_description }}</p>
+                            {% endif %}
+                            {% if provider.address %}
+                                <p><i> {{ provider.address }}</i></p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     {% endif %}
