@@ -27,8 +27,12 @@ class Command(BaseCommand):
 
         # get data
         courses = Course.objects.all().order_by('course_description')
-        courses_names = "\n".join([course.course_description.strip() for course in courses
-                                   if course.course_description])
+        courses_names = [
+            course.course_description.strip() for course in courses
+            if course.course_description]
+        courses_names = list(set(courses_names))
+        courses_names.sort()
+        courses_names = "\n".join(courses_names)
 
         # safe to file
         file = open(filename, 'w', encoding='utf-8')
