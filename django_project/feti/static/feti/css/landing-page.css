@@ -72,28 +72,12 @@
     }
 }
 
-footer {
-    padding-top: 5px;
-    padding-bottom: 15px;
-    background-color: #214971;
-}
-
-p.copyright, p.login-link, p.login-link a {
-    margin: 15px 0 0;
-    color: white;
-}
-
-p.login-link :hover {
-    text-decoration: none;
-}
-
 .partner {
     height: 120px;
     background-color: #eeeeee;
 }
 
 .m-button {
-    width: 170px;
     font-weight: lighter;
     -moz-border-radius: 25px;
     -webkit-border-radius: 25px;
@@ -104,6 +88,24 @@ p.login-link :hover {
     font-size: 16px;
     padding: 10px 16px;
     text-decoration: none;
+}
+
+.m-button.cancel-button:hover {
+    color: white;
+    background-color: #a92121;
+}
+
+.m-button.cancel-button {
+    color: #801717;
+}
+
+.m-button.clear-button:hover {
+    color: white;
+    background-color: #a92121;
+}
+
+.m-button.clear-button {
+    width: 45px !important;
 }
 
 .m-button:hover {
@@ -119,18 +121,16 @@ p.login-link :hover {
     top: 1px;
 }
 
-#feti-pro, #feti-providers {
-    height: 100%;
-    max-height: 100%;
-    overflow-y: scroll;
-}
-
 .row {
     margin-right: 0;
     margin-left: 0;
 }
 
 /** MAP **/
+
+.leaflet-draw-toolbar-top {
+    display: none;
+}
 
 #feti-map-wrapper {
     height: 600px;
@@ -181,6 +181,11 @@ p.login-link :hover {
     height: 55px;
     text-align: center;
     z-index: 99998;
+    position: relative;
+}
+
+#map-search {
+    position: relative;
 }
 
 .search-category .row, #map-search {
@@ -209,16 +214,16 @@ p.login-link :hover {
     position: absolute;
     top: 55px;
     width: 100%;
-    z-index: 99999;
+    z-index: 1000001;
 }
 
 .search-bar .m-button {
-    width: 140px !important;
+    width: 140px;
 }
 
 #search-bar {
     display: inline-block;
-    margin-right: 50px;
+    margin-right: 20px;
     margin-top: 11px;
     width: 30%;
 }
@@ -231,15 +236,15 @@ p.login-link :hover {
     border-radius: 14px !important;
 }
 
-#providers {
+#result {
     overflow: scroll;
     display: none;
     position: absolute;
     right: 0px;
-    top: 0px;
+    top: 55px;
     padding-top: 55px !important;
     background: white;
-    z-index: 99995;
+    z-index: 1000000;
 }
 
 #back-home {
@@ -255,7 +260,7 @@ p.login-link :hover {
     color: #084889;
 }
 
-.carousel-toogle {
+.result-toogle {
     cursor: pointer;
     font-size: 24pt;
     position: absolute;
@@ -263,6 +268,115 @@ p.login-link :hover {
     top: 13px;
 }
 
-.carousel-toogle:hover {
+.result-toogle:hover {
     opacity: 0.7;
 }
+
+.result-title {
+    font-size: 16px;
+    background: rgba(29, 104, 179, 1);
+    cursor: pointer;
+    color: white;
+    border-bottom: 1px solid white;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: 500;
+}
+
+.result-row {
+    color: rgba(29, 104, 179, 1);
+    cursor: pointer;
+    border-bottom: 1px solid rgba(29, 104, 179, 1);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-weight: 500;
+}
+
+.result-row:hover, .result-title:hover {
+    opacity: 0.9;
+}
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+#myCarousel, .carousel {
+    width: 100% !important;
+}
+
+/* Carousel base class */
+.carousel {
+    height: 500px;
+}
+
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+    text-align: left;
+    z-index: 10;
+    padding-bottom: 8%;
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.carousel-caption h1 {
+    font-size: 3.5em;
+    width: 600px;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+    height: 500px;
+    background-color: #777;
+}
+
+.carousel-inner > .item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 500px;
+}
+
+.carousel-control.left {
+    background-image: linear-gradient(to right, rgba(0, 0, 0, .2) 0, rgba(0, 0, 0, .0001) 100%);
+}
+
+.carousel-control.right {
+    background-image: linear-gradient(to left, rgba(0, 0, 0, .2) 0, rgba(0, 0, 0, .0001) 100%);
+}
+
+#result-loading, #result-empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+#result-loading, #result-empty {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 900;
+    opacity: 0.5;
+}
+
+.ui-autocomplete {
+    max-height: 500px !important;
+    z-index: 1000002 !important;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.ui-menu-item {
+    font-weight: 300 !important;
+    background: white !important;
+    border-bottom: solid 1px rgba(30, 107, 255, .4) !important;
+}
+
+.ui-menu-item-wrapper {
+    padding: 7px !important;
+}
+
+

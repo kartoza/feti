@@ -41,15 +41,18 @@ class Address(models.Model):
 
     objects = models.GeoManager()
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         address_list = [
             self.address_line_1,
             self.address_line_2,
             self.address_line_3,
             self.town,
-            u'Postal Code: ' + unicode(self.postal_code) if self.postal_code
+            u'Postal Code: ' + self.postal_code if self.postal_code
             else u'',
-            u'Phone: ' + unicode(self.phone) if self.phone else u''
+            u'Phone: ' + self.phone if self.phone else u''
         ]
         concat_list = [l for l in address_list if l and l.strip()]
         address_string = u', \n'.join(concat_list)

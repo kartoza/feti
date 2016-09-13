@@ -1,4 +1,5 @@
 {% load pipeline %}
+{% load user_admin %}
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -17,6 +18,7 @@
     <!-- Custom Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"
           type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -29,15 +31,33 @@
 
     {% block js_head %}{% endblock %}
     {% block css_head %}{% endblock %}
-
-    <script>
-        $(document).ready(function () {
-            var nav_bar_height = $("#navigation_bar").height();
-            $("#content").css("margin-top", nav_bar_height);
-        });
-    </script>
 </head>
 <body>
+
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10">
+                <p class="copyright text-muted small">Kartoza 2016</p>
+            </div>
+            <div class="col-lg-2">
+                <p class="login-link pull-right">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}">Log out</a>
+                    {% else %}
+                        <a href="/#login">Log In</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
 <div id="navigation_bar">
     <!-- Navigation -->
     <nav class="navbar navbar-default topnav" role="navigation">
@@ -51,18 +71,35 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand topnav" href="#">FETI</a>
+                <a class="navbar-brand topnav" href="/#">FETI</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <li class="dropdown">
                         {% if user.is_authenticated %}
-                            {% if user.is_staff %}
-                                <a href="/feti-admin">Admin Site</a>
-                            {% else %}
-                                <a>{{ user.username }}</a>
-                            {% endif %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">
+                                {{ user.username }}
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/profile/{{ user.username }}">Your profile</a></li>
+                                <li role="separator" class="divider"></li>
+                                {% if user.is_staff %}
+                                    <li id="nav_project_team">
+                                        <a href="/feti-admin" role="button">
+                                            <i class="mdi-maps-map"></i>
+                                            Admin</a>
+                                    </li>
+                                {% elif user|has_access_user_admin %}
+                                    <li id="nav_project_team">
+                                        <a href="/admin" role="button">
+                                            <i class="mdi-maps-map"></i>
+                                            Admin</a>
+                                    </li>
+                                {% endif %}
+                                <li><a href="/feti-admin/logout/">Log out</a></li>
+                            </ul>
                         {% else %}
                             <a href="#login">Log In</a>
                         {% endif %}
@@ -73,11 +110,6 @@
         </div>
         <!-- /.container -->
     </nav>
-</div>
-
-<div id="content">
-    {% block content %}
-    {% endblock %}
 </div>
 
 {% block js_inline %}

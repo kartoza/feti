@@ -2,9 +2,9 @@
 """Model class for WMS Resource"""
 
 from django.contrib.gis.db import models
-from django.template import Context, loader
-from django.db.models.signals import post_save
 from django.core import management
+from django.db.models.signals import post_save
+from django.template import Context, loader
 
 from feti.models.provider import Provider
 from feti.models.course import Course
@@ -113,8 +113,14 @@ class Campus(models.Model):
     def primary_institution(self):
         return self.provider
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
-        return u'%s' % self.campus_name
+        if self.campus_name:
+            return u'%s' % self.campus_name
+        else:
+            return u'%s' % self.provider.__unicode__()
 
     def save(self, *args, **kwargs):
         # set up long description
@@ -208,9 +214,8 @@ class Campus(models.Model):
         super(Campus, self).delete(*args, **kwargs)
 
 
+def generate_campus_index(sender, instance, **kwargs):
+    management.call_command('generate_campus_index')
 
-def regenerate_landing_page(sender, instance, **kwargs):
-    management.call_command('full_front_page')
 
-
-post_save.connect(regenerate_landing_page, sender=Campus, dispatch_uid="campus_landing_page")
+post_save.connect(generate_campus_index, sender=Campus, dispatch_uid="generate_campus_index")

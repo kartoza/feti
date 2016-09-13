@@ -1,0 +1,49 @@
+.form-group input[type=text] {
+    width: 100% !important;
+}
+
+.form-group h2 {
+    margin: 0px;
+}
+
+.selector {
+    width: 100% !important;
+}
+
+.selector-available, .selector-chosen {
+    width: 550px !important;;
+}
+
+.selector select[multiple=multiple] {
+    width: 500px !important;
+    max-width: 500px !important;
+}
+
+.selector-filter {
+    height: 35px !important;
+}
+
+.selector .selector-filter input[type=text] {
+    width: 487px !important;
+    max-width: 487px !important;
+}
+
+input[type=submit] {
+    height: 50px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.checkbox label {
+    margin-bottom: 5px !important;
+    padding-left: 0px;
+    font-weight: 700 !important;
+}
+
+.checkbox input[type=checkbox] {
+    margin-left: 0px;
+}
+
+#form {
+    margin-bottom: 20px;
+}

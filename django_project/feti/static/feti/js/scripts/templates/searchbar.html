@@ -1,0 +1,46 @@
+<form id="search-form" name="search_form" action="map" method="POST">
+    <div class="search-category">
+        <span id="back-home">Home</span>
+        <span class="map-question">
+            What are you looking for?
+        </span>
+        <span class="m-button map-option" id="where-to-study" data-mode="provider">
+            Where to study
+        </span>
+        <span class="m-button map-option" id="what-to-study" data-mode="course">
+            What to study
+        </span>
+        <span class="m-button map-option" id="choose-occupation" data-mode="occupation">
+            Choose occupation
+        </span>
+    </div>
+    <div class="search-bar">
+            <span id="search-bar" class="right-inner-addon">
+               <i class="icon-search fa fa-search"></i>
+               <input id="search-bar-input"
+                      type="search"
+                      class="form-control"
+                      placeholder="Search"
+                      name="search_input"/>
+            </span>
+            <span class="m-button map-option" id="draw-circle">
+                Location
+            </span>
+            <span class="m-button map-option cancel-button" id="cancel-draw-circle" style="display: none">
+                Cancel draw
+            </span>
+            <span class="m-button map-option" id="draw-polygon">
+                Draw a shape
+            </span>
+            <span class="m-button map-option cancel-button" id="cancel-draw-polygon" style="display: none">
+                Cancel draw
+            </span>
+            <span class="m-button map-option" id="travel-line">
+                Travel line
+            </span>
+            <span class="m-button map-option clear-button" id="clear-draw" style="display: none;">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </span>
+        <i id="result-toogle" class="result-toogle fa fa-caret-left" aria-hidden="true"></i>
+    </div>
+</form>

@@ -1,13 +1,33 @@
-{% extends "feti/base.html" %}
+{% extends "feti_base.html" %}
+{% load staticfiles %}
+{% load pipeline %}
 {% load crispy_forms_tags %}
-{% block header %}
+{% block title %}
+    FORD 2 - Update Provider
+{% endblock title %}
+
+{% block js_head %}
     <script>
         $(document).ready(function () {
-            $('#login_id').addClass("active");
-        });
+            var map_height = $('.olMap').height();
+            var parent_form = $('.olMap').closest('.form-group');
+            $(parent_form).height(map_height + $(parent_form).height() + 25);
+            $('.selectmultiple').height(500);
 
+            $('form').append('\
+                <div class="form-actions">\
+                <input type="submit" name="submit" value="Submit"\
+                class="btn btn-primary"\
+                id="submit-id-submit"></div>');
+        });
     </script>
-    <title>User Login</title>
+{% endblock %}
+
+{% block css_head %}
+    {% stylesheet 'custom_page' %}
+    {{ form.media }}
+    {% stylesheet 'contrib' %}
+    <link rel="stylesheet" href="{% static "feti/css/feti-form.css" %}">
 {% endblock %}
 
 {% block navigation-bar %}
@@ -15,11 +35,15 @@
 {% endblock %}
 
 {% block content %}
-    <div class="col-lg-8 col-lg-offset-2">
-        <div style="padding-top:50px"></div>
+    <div class="container">
         <section id="forms">
             <div class='container'>
-                {% crispy form %}
+                <form method="post">
+                    {% crispy form %}
+                    {% for form in inlines %}
+                        {% crispy form %}
+                    {% endfor %}
+                </form>
             </div>
         </section>
     </div>

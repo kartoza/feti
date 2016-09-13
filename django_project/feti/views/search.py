@@ -1,5 +1,8 @@
 # coding=utf-8
 from datetime import date
+from django.http import HttpResponse
+from feti.models.campus import Campus
+from feti.serializers.campus_serializer import CampusSerializer
 from haystack.generic_views import SearchView
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
@@ -18,3 +21,16 @@ class MySearchView(SearchView):
         context = super(MySearchView, self).get_context_data(*args, **kwargs)
         # do something
         return context
+
+
+def search(request):
+    if request.method == "POST":
+        mode = request.POST.get('mode')
+        q = request.POST.get('q')
+        # get query
+        if mode == 'provider':
+            set = Campus.objects.filter(campus__contains=q)
+            serializer = CampusSerializer(set, many=True)
+            return HttpResponse(serializer.data, content_type='application/json')
+
+        return HttpResponse("", content_type='application/json')

@@ -23,7 +23,6 @@ __copyright__ = 'kartoza.com'
 
 
 class Course(models.Model):
-
     id = models.AutoField(primary_key=True)
     # nlrd_regex = RegexValidator(
     #     regex=r'^\d{15,15}$',
@@ -64,6 +63,9 @@ class Course(models.Model):
     )
 
     objects = models.GeoManager()
+
+    def __str__(self):
+        return self.__unicode__()
 
     def __unicode__(self):
         course_string = u''
@@ -122,8 +124,8 @@ class Course(models.Model):
         managed = True
 
 
-def regenerate_landing_page(sender, instance, **kwargs):
-    management.call_command('full_front_page')
+def generate_course_index(sender, instance, **kwargs):
+    management.call_command('generate_course_index')
 
 
-post_save.connect(regenerate_landing_page, sender=Course, dispatch_uid="course_landing_page")
+post_save.connect(generate_course_index, sender=Course, dispatch_uid="generate_course_index")

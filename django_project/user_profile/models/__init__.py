@@ -4,3 +4,4 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 from user_profile.models.campus_official import CampusOfficial  # noqa
+from user_profile.models.provider_official import ProviderOfficial  # noqa

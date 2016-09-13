@@ -34,10 +34,13 @@ h6 {
     background-size: cover;
 }
 
+#introduction_carousel {
+    height: 500px;
+}
+
 .intro-message {
     position: relative;
-    padding-top: 20%;
-    padding-bottom: 20%;
+    padding-top: 15%;
 }
 
 .intro-message > h1 {
@@ -107,7 +110,11 @@ h6 {
     width: 100%;
     top: 0px;
     left: 0px;
-    z-index: 100;
+    z-index: 1000002;
+}
+
+#content {
+    margin-top: 0px !important;
 }
 
 .left-inner-addon {
@@ -142,4 +149,43 @@ h6 {
 .nopadding {
     padding: 0 !important;
     margin: 0 !important;
+}
+
+.main-color {
+    background-color: #428bca;
+}
+
+.span3 {
+    font-weight: 500;
+    width: 270px;
+}
+
+.material-icons {
+    font-size: 14px;
+}
+
+.map-field {
+    height: 550px;
+}
+
+[class*="span"] {
+    float: left;
+    min-height: 1px;
+    margin-left: 30px;
+}
+
+footer {
+    padding-top: 5px !important;
+    padding-bottom: 15px !important;;
+    background-color: #214971 !important;;
+    color: white !important;;
+}
+
+p.copyright, p.login-link, p.login-link a {
+    margin: 15px 0 0;
+    color: white;
+}
+
+p.login-link :hover {
+    text-decoration: none;
 }
