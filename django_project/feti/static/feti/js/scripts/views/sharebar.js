@@ -7,19 +7,30 @@ define([
         container: '#share-container',
         template: _.template(sharebarTemplate),
         events: {
-            'click #share-pdf': 'clicked'
+            'click #share-pdf': 'sharePDF',
+            'click #share-social-twitter': 'shareToTwitter'
         },
         initialize: function (options) {
             this.render();
-        },
-        clicked: function () {
-            alert('share pdf');
+            this.parent = options.parent;
         },
         render: function () {
             this.$el.empty();
             this.$el.addClass('share-row');
             this.$el.html(this.template());
             $(this.container).append(this.$el);
+        },
+        sharePDF: function() {
+
+        },
+        shareToTwitter: function () {
+            // get url
+            var url = Backbone.history.location.href.replace("#", "%23");
+
+            var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+url;
+
+            // open twitter box
+            window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
         }
     });
 
