@@ -10,7 +10,7 @@ class Step(models.Model):
     step_number = models.IntegerField()
     title = models.CharField(max_length=255, null=True, blank=True)
     detail = models.CharField(max_length=510, null=True, blank=True)
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, null=True, blank=True)
 
     class Meta:
         app_label = 'feti'
