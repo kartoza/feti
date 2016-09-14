@@ -151,6 +151,29 @@
         <!-- /.container -->
     </div>
     <!-- /.content-section-a -->
+    <!-- Modal -->
+    <div class="modal fade" id="email-modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Share to email</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="email-form">
+                        <div class="form-group">
+                            <label for="email">Email address:</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <button type="submit" id="email-submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 {% endblock %}
 
 {% block js_inline %}

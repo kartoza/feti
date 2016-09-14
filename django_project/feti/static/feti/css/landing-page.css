@@ -246,10 +246,15 @@
     z-index: 1000000;
 }
 
-#email-modal {
-    margin-top: 200px;
-    z-index: 1000010 !important;
+.modal-backdrop {
+    z-index: 1000099 !important;
 }
+
+#email-modal, .modal {
+    margin-top: 200px;
+    z-index: 1000100 !important;
+}
+
 
 #result-wrapper {
     overflow-y: scroll;
