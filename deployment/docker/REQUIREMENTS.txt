@@ -21,3 +21,5 @@ django-geojson==2.8.0
 django-nested-inline
 django-grappelli==2.7.3
 django-crispy-forms==1.4.0
+setuptools==18.5
+WeasyPrint

@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+<head> <title>{{ title }}</title> </head>
+<body>
+<h2>You're searching for {{ query }} in
+{% if provider == 'provider' %}
+    all campuses.
+{% else %}
+    all courses.
+{% endif %}
+</h2>
+
+{% if type == 'pdf' %}
+    <h2>Map :</h2>
+    <img src="assets:{{ image }}" style="width: 100%;"/>
+    <br/>
+{% else %}
+    <h2>Link : </h2>
+    <strong>{{ link }}</strong>
+{% endif %}
+<h2>List Campus :</h2>
+<ul>
+{% for campus in campuses %}
+    <li>
+        <div class="campus-wrapper">
+            <p><a href="{{ campus.provider.website }}">{{ campus.provider }}</a></p>
+            <p>{{ campus.address }}</p>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

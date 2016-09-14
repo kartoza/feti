@@ -10,6 +10,7 @@ from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import LandingPage
 from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
+from feti.views.share import PDFDownload, EmailShare
 
 sqs = SearchQuerySet()
 
@@ -50,6 +51,12 @@ urlpatterns = patterns(
     url(regex='^provider/(?P<pk>\d+)/update/$',
         view=UpdateCampusView.as_view(),
         name='update_campus'),
+    url(regex='^pdf_report/(?P<provider>[\w-]+)/(?P<query>[\w\ ]+)',
+        view=PDFDownload.as_view(),
+        name='get_pdf'),
+    url(regex='^share_email/',
+        view=EmailShare.as_view(),
+        name='send_email'),
     url(regex='^primary-institute/(?P<pk>\d+)/update/$',
         view=UpdateProviderView.as_view(),
         name='primary_institute_campus'),

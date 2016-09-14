@@ -1,7 +1,7 @@
 define([
     'common',
     '/static/feti/js/scripts/views/searchbar.js'
-], function (Common, SearchbarView) {
+], function (Common, SearchbarView, SharebarView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
