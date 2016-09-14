@@ -8,7 +8,8 @@ define([
         template: _.template(sharebarTemplate),
         events: {
             'click #share-pdf': 'sharePDF',
-            'click #share-social-twitter': 'shareToTwitter'
+            'click #share-social-twitter': 'shareToTwitter',
+            'click #share-email': 'shareEmail'
         },
         initialize: function (options) {
             this.render();
@@ -22,13 +23,50 @@ define([
         },
         sharePDF: function() {
             var url = '/pdf_report/';
-
             var currentRoute = Backbone.history.getFragment().split('/');
-
             if(currentRoute.length > 2) {
                 window.location = url + currentRoute[1] + '/' + currentRoute[2];
             }
 
+        },
+        shareEmail: function() {
+            var currentRoute = Backbone.history.getFragment().split('/');
+            // Open Modal
+            if(currentRoute.length > 1) {
+                $('#email-modal').modal('toggle');
+            }
+
+            $('#email-form').submit(function (e) {
+                e.preventDefault();
+                var all_data = {};
+
+                all_data.email = $('#email').val();
+                all_data.provider = currentRoute[1];
+                all_data.query = currentRoute[2];
+                all_data.link = Backbone.history.location.href;
+
+                $('#email-submit').prop('disabled', true);
+                $('#email').prop('disabled', true);
+
+                $.ajax({
+                    url:'share_email/',
+                    type:'POST',
+                    data: JSON.stringify(all_data),
+                    success: function(response) {
+                        if(response=='success') {
+                            $('#email-modal').modal('toggle');
+                            alert('Email sent!');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error sending email');
+                    },
+                    complete: function() {
+                        $('#email-submit').prop('disabled', false);
+                        $('#email').prop('disabled', false);
+                    }
+                });
+            });
         },
         shareToTwitter: function () {
             // get url
