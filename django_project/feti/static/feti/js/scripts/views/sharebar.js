@@ -14,12 +14,20 @@ define([
         initialize: function (options) {
             this.render();
             this.parent = options.parent;
+            this.hide();
         },
         render: function () {
             this.$el.empty();
             this.$el.addClass('share-row');
             this.$el.html(this.template());
             $(this.container).append(this.$el);
+        },
+        hide: function() {
+            $(this.container).hide();
+        },
+        show: function () {
+            console.log('show');
+            $(this.container).show();
         },
         sharePDF: function() {
             var url = '/pdf_report/';

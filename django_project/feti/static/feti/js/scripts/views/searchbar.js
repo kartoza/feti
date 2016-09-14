@@ -1,8 +1,9 @@
 define([
     'text!static/feti/js/scripts/templates/searchbar.html',
     'common',
-    '/static/feti/js/scripts/collections/search.js'
-], function (searchbarTemplate, Common, searchCollection) {
+    '/static/feti/js/scripts/collections/search.js',
+    '/static/feti/js/scripts/views/sharebar.js'
+], function (searchbarTemplate, Common, searchCollection, SharebarView) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -32,6 +33,7 @@ define([
             this.search_bar_hidden = true;
             this.parent = options.parent;
             this.initAutocomplete();
+            this.shareBarView = new SharebarView({parent: this});
             Common.Dispatcher.on('search:finish', this.searchingFinish, this);
 
             this._drawer = {
@@ -144,7 +146,10 @@ define([
         },
         searchingFinish: function (is_not_empty) {
             this.$result_loading.hide();
-            if (!is_not_empty) {
+            this.shareBarView.show();
+
+            if (!is_not_empty) { // empty
+                this.shareBarView.hide();
                 this.$result_empty.show();
             }
         },
