@@ -88,6 +88,7 @@ define([
             this.map.addControl(drawControl);
 
             // Draw events
+            this.map.on('draw:drawstop', this.drawStop, this);
             this.map.on('draw:created', this.drawCreated, this);
         },
         drawCreated: function (e) {
@@ -103,6 +104,10 @@ define([
                 this.circleLayer = layer;
                 this.searchBarView.onFinishedCreatedShape('circle');
             }
+        },
+        drawStop: function (e) {
+            var type = e.layerType;
+            this.searchBarView.cancelDraw(type);
         },
         enablePolygonDrawer: function () {
             this.clearAllDrawnLayer();
@@ -176,6 +181,7 @@ define([
             var _map = this.map;
             var that = this;
             var _speed = this.animationSpeed;
+            $(".ui-menu").hide();
 
             if (!this.isFullScreen) {
 
