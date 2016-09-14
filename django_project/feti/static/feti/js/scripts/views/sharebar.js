@@ -21,6 +21,13 @@ define([
             $(this.container).append(this.$el);
         },
         sharePDF: function() {
+            var url = '/pdf_report/';
+
+            var currentRoute = Backbone.history.getFragment().split('/');
+
+            if(currentRoute.length > 2) {
+                window.location = url + currentRoute[1] + '/' + currentRoute[2];
+            }
 
         },
         shareToTwitter: function () {
