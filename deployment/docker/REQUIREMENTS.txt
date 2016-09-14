@@ -2,6 +2,7 @@ Django==1.8.14
 psycopg2
 pytz
 django-braces
+django-extra-views
 django-model-utils
 django-pipeline==1.4.5
 nodeenv

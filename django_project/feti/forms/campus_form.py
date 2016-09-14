@@ -6,7 +6,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout,
     Fieldset,
-    Submit,
     Field,
 )
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -29,7 +28,7 @@ class CustomOSMWidget(BaseGeometryWidget):
 
     class Media:
         css = {'all': ['admin/css/widgets.css', '/static/grappelli/jquery/ui/jquery-ui.min.css',
-               '/static/grappelli/stylesheets/screen.css']}
+                       '/static/grappelli/stylesheets/screen.css']}
         js = (
             '/custom_admin/jsi18n',
             '/static/grappelli/jquery/jquery-2.1.4.min.js',
@@ -96,12 +95,10 @@ class CampusForm(forms.ModelForm):
                 Field('campus', css_class='form-control'),
                 Field('location', css_class='form-control'),
                 Field('courses', css_class='form-control'),
-                css_id='project-form')
+                css_id='form')
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_tag = False
 
         super(CampusForm, self).__init__(*args, **kwargs)
-
-        # init choice
-        self.helper.add_input(Submit('submit', 'Submit'))

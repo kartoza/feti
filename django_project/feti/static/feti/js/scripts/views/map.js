@@ -176,6 +176,7 @@ define([
             var _map = this.map;
             var that = this;
             var _speed = this.animationSpeed;
+            $(".ui-menu").hide();
 
             if (!this.isFullScreen) {
 

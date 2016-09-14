@@ -108,7 +108,7 @@ define([
                 // Get coordinates query from map
                 var coordinates = this.parent.getCoordinatesQuery();
 
-                if(coordinates) {
+                if (coordinates) {
                     new_url.push(coordinates);
                 }
             }
@@ -121,14 +121,14 @@ define([
             } else {
                 var filters = filter.split('&');
 
-                if(filters[0].split('=').pop() == 'polygon')  { // if polygon
+                if (filters[0].split('=').pop() == 'polygon') { // if polygon
                     var coordinates_json = JSON.parse(filters[1].split('=').pop());
                     var coordinates = [];
                     _.each(coordinates_json, function (coordinate) {
                         coordinates.push([coordinate.lat, coordinate.lng]);
                     });
                     this.parent.createPolygon(coordinates);
-                } else if(filters[0].split('=').pop() == 'circle') { // if circle
+                } else if (filters[0].split('=').pop() == 'circle') { // if circle
                     var coords = JSON.parse(filters[1].split('=').pop());
                     var radius = filters[2].split('=').pop();
                     this.parent.createCircle(coords, radius);
@@ -207,14 +207,14 @@ define([
             var shape = $(element.target).attr('id').split('-').pop();
             this.cancelDraw(shape);
         },
-        cancelDraw: function(shape) {
-            if(shape=='circle') {
+        cancelDraw: function (shape) {
+            if (shape == 'circle') {
                 this.parent.disableCircleDrawer();
-            } else if(shape=='polygon') {
+            } else if (shape == 'polygon') {
                 this.parent.disablePolygonDrawer();
             }
-            $('#draw-'+shape).show();
-            $('#cancel-draw-'+shape).hide();
+            $('#draw-' + shape).show();
+            $('#cancel-draw-' + shape).hide();
             this.$el.find('.search-bar').find('.m-button').removeClass('active');
         },
         clearAllDraw: function () {
@@ -235,7 +235,7 @@ define([
             }
         },
         // Draw Events
-        onFinishedCreatedShape: function(shape) {
+        onFinishedCreatedShape: function (shape) {
             this.cancelDraw(shape);
             this.showClearDrawButton();
             this.searchRouting();

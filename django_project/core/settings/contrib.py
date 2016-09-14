@@ -6,7 +6,7 @@ INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
     'pipeline',
     'rest_framework',
-    'haystack',
+    # 'haystack',
     'leaflet',
     'djgeojson',
     'nested_inline',

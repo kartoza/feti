@@ -117,7 +117,10 @@ class Campus(models.Model):
         return self.__unicode__()
 
     def __unicode__(self):
-        return u'%s' % self.campus_name
+        if self.campus_name:
+            return u'%s' % self.campus_name
+        else:
+            return u'%s' % self.provider.__unicode__()
 
     def save(self, *args, **kwargs):
         # set up long description
