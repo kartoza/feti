@@ -19,3 +19,4 @@ django-leaflet==0.16.0
 django-geojson==2.8.0
 django-nested-inline
 django-grappelli
+requests<2.12
