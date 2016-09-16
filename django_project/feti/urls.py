@@ -30,11 +30,11 @@ api_urls = patterns(
         ApiAutocomplete.as_view(),
         name='api-campus-autocomplete'),
     url(
-        r'^api/travel-time/(?P<origin>[\w\d]+)/(?P<origin>[\w\d]+)',
+        r'^api/travel-time/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
         TravelTime.as_view(),
         name='api-travel-time'),
     url(
-        r'^api/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<origin>[\w\d]+)',
+        r'^api/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
         TravelTime.as_view(response_type='data'),
         name='api-travel-time-seconds'),
 )
