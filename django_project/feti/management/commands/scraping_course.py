@@ -58,56 +58,49 @@ class Command(BaseCommand):
         # ----------------------------------------------------------
         # http://regqs.saqa.org.za/search.php
         # ----------------------------------------------------------
-        create_course({'min credits': '120', '': '', 'id': '97813',
-                       'title': 'advanced certificate in fitness in sport conditioning',
-                       'originator': 'Exercise Teachers Academy - Cape Town', 'nqf level': 'NQF Level 06',
-                       'pre-2009 nqf level': 'Not Applicable', 'field': 'Field 002 - Culture and Arts',
-                       'abet band': 'Undefined',
-                       'primary or delegated qa functionary': 'CHE - Council on Higher Education',
-                       'qualification type': 'Advanced Certificate', 'nqf sub-framework': 'HEQSF'})
-        # increment = 20
-        # searchResultsATfirst = 0
-        # while True:
-        #     print("----------------------------------------------------------")
-        #     print("GETTING COURSE IN http://regqs.saqa.org.za/search.php/")
-        #     print("----------------------------------------------------------")
-        #     url = 'http://regqs.saqa.org.za/search.php'
-        #     values = {"GO": "Go", "searchResultsATfirst": searchResultsATfirst,
-        #               "cat": "qual", "view": "list", "QUALIFICATION_TITLE": "",
-        #               "QUALIFICATION_ID": "", "NQF_LEVEL_ID": "", "NQF_LEVEL_G2_ID": "", "ABET_BAND_ID": "",
-        #               "SUBFIELD_ID": "", "QUALIFICATION_TYPE_ID": "", "ORIGINATOR_ID": "", "FIELD_ID": "",
-        #               "ETQA_ID": "",
-        #               "SEARCH_TEXT": "", "ACCRED_PROVIDER_ID": "", "NQF_SUBFRAMEWORK_ID": "",}
-        #     print("processing %d to %d" % (searchResultsATfirst, searchResultsATfirst + increment))
-        #     data = urllib.parse.urlencode(values)
-        #     data = data.encode('ascii')  # data should be bytes
-        #     req = urllib.request.Request(url, data)
-        #     with urllib.request.urlopen(req) as response:
-        #         html_doc = response.read()
-        #         html = beautify(html_doc)
-        #
-        #         # check emptiness
-        #         items = html.findAll("table")
-        #         last_table = str(items[len(items) - 1])
-        #         if not "Next" in last_table and not "Prev" in last_table:
-        #             print("it is empty")
-        #             break
-        #         # extract courses
-        #         rows = html.findAll('tr')
-        #         course = {}
-        #         for row in rows:
-        #             tds = row.findAll('td')
-        #             if len(tds) == 2 and tds[0].string != None:
-        #                 if "title" in tds[0].string.lower():
-        #                     if "title" in course:
-        #                         print("insert database : %s" % course)
-        #                     course = {}
-        #
-        #                 key = str(tds[0].string).replace(":", "").strip().lower()
-        #                 value = str(tds[1].a.string).strip().lower() if tds[1].a != None else str(tds[1].string).strip()
-        #                 course[key] = cleaning(value)
-        #
-        #             print(("course : %s" % course).encode('utf-8'))
-        #             create_course(course)
-        #
-        #     searchResultsATfirst += increment
+        increment = 20
+        searchResultsATfirst = 0
+        while True:
+            print("----------------------------------------------------------")
+            print("GETTING COURSE IN http://regqs.saqa.org.za/search.php/")
+            print("----------------------------------------------------------")
+            url = 'http://regqs.saqa.org.za/search.php'
+            values = {"GO": "Go", "searchResultsATfirst": searchResultsATfirst,
+                      "cat": "qual", "view": "list", "QUALIFICATION_TITLE": "",
+                      "QUALIFICATION_ID": "", "NQF_LEVEL_ID": "", "NQF_LEVEL_G2_ID": "", "ABET_BAND_ID": "",
+                      "SUBFIELD_ID": "", "QUALIFICATION_TYPE_ID": "", "ORIGINATOR_ID": "", "FIELD_ID": "",
+                      "ETQA_ID": "",
+                      "SEARCH_TEXT": "", "ACCRED_PROVIDER_ID": "", "NQF_SUBFRAMEWORK_ID": "",}
+            print("processing %d to %d" % (searchResultsATfirst, searchResultsATfirst + increment))
+            data = urllib.parse.urlencode(values)
+            data = data.encode('ascii')  # data should be bytes
+            req = urllib.request.Request(url, data)
+            with urllib.request.urlopen(req) as response:
+                html_doc = response.read()
+                html = beautify(html_doc)
+
+                # check emptiness
+                items = html.findAll("table")
+                last_table = str(items[len(items) - 1])
+                if not "Next" in last_table and not "Prev" in last_table:
+                    print("it is empty")
+                    break
+                # extract courses
+                rows = html.findAll('tr')
+                course = {}
+                for row in rows:
+                    tds = row.findAll('td')
+                    if len(tds) == 2 and tds[0].string != None:
+                        if "title" in tds[0].string.lower():
+                            if "title" in course:
+                                print("insert database : %s" % course)
+                            course = {}
+
+                        key = str(tds[0].string).replace(":", "").strip().lower()
+                        value = str(tds[1].a.string).strip().lower() if tds[1].a != None else str(tds[1].string).strip()
+                        course[key] = cleaning(value)
+
+                    print(("course : %s" % course).encode('utf-8'))
+                    create_course(course)
+
+            searchResultsATfirst += increment
