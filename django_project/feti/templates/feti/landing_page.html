@@ -11,9 +11,10 @@
 
 {% block css_head %}
     {% stylesheet 'landing_page' %}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/leaflet-extra-markers/leaflet.extra-markers.css' %}">
+{% endblock %}
+
+{% block navbar %}
+    {% include 'feti/navigation_bar.html' %}
 {% endblock %}
 
 {% block content %}
@@ -172,6 +173,25 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10">
+                <p class="copyright text-muted small">Kartoza 2016</p>
+            </div>
+            <div class="col-lg-2">
+                <p class="login-link pull-right">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}">Log out</a>
+                    {% else %}
+                        <a href="/#login">Log In</a>
+                    {% endif %}
+                </p>
+            </div>
         </div>
     </div>
 {% endblock %}

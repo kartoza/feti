@@ -11,7 +11,12 @@ INSTALLED_APPS += (
     'djgeojson',
     'nested_inline',
     'crispy_forms',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 )
+
+SITE_ID = 1
 
 # These get enabled in prod.py
 PIPELINE_ENABLED = False

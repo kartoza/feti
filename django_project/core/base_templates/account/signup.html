@@ -1,0 +1,26 @@
+{% extends "account_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+
+    <div class="single-form-container">
+
+        <div class="loginmodal-container">
+            <h1>Sign Up</h1><br>
+
+            <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="{{ redirect_field_name }}" value="/" />
+                <input type="submit" name="login" class="login loginmodal-submit" value="Sign Up">
+
+            </form>
+
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -21,6 +21,9 @@ urlpatterns = patterns(
 
     url(r'^custom_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 
+    # allauth
+    url(r'^accounts/', include('allauth.urls')),
+
 )
 
 # expose static files and uploded media if DEBUG is active
