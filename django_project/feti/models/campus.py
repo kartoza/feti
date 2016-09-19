@@ -51,6 +51,7 @@ class Campus(models.Model):
         app_label = 'feti'
         ordering = ['campus']
         verbose_name = 'Provider'
+        unique_together = ('campus', 'provider',)
 
     @property
     def related_course(self):
@@ -117,10 +118,7 @@ class Campus(models.Model):
         return self.__unicode__()
 
     def __unicode__(self):
-        if self.campus_name:
-            return u'%s' % self.campus_name
-        else:
-            return u'%s' % self.provider.__unicode__()
+        return u'%s - %s' % (self.provider.__unicode__(),self.campus_name)
 
     def save(self, *args, **kwargs):
         # set up long description

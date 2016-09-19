@@ -19,6 +19,9 @@ class NationalCertificateVocational(models.Model):
 
     objects = models.GeoManager()
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return 'National Certificate Vocational Level (%s)' % (
             self.national_certificate_vocational_level)
