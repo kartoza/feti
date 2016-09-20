@@ -14,6 +14,10 @@ from rest_framework.views import APIView
 from feti.models.campus import Campus
 from feti.serializers.campus_serializer import CampusSerializer
 
+from map_administrative.models.country import Country
+from map_administrative.models.province import Province
+from map_administrative.views import get_boundary
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '08/08/16'
 __license__ = "GPL"
@@ -47,6 +51,10 @@ class SearchCampus(APIView):
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
+
+        boundary = get_boundary(request.GET.get('administrative'))
+        if boundary:
+            drawn_polygon = boundary.polygon_geometry
 
         if not query:
             query = ""

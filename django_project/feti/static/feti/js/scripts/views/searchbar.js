@@ -30,6 +30,7 @@ define([
             this.$occupation_button = $("#choose-occupation");
             this.$result_loading = $("#result-loading");
             this.$result_empty = $("#result-empty");
+            this.$clear_draw = $("#clear-draw");
             this.search_bar_hidden = true;
             this.parent = options.parent;
             this.initAutocomplete();
@@ -96,7 +97,7 @@ define([
             this.toggleProvider(e);
             this.trigger('backHome', e);
         },
-        searchRouting: function () {
+        searchRouting: function (filter) {
             // update route based on query and filter
             var that = this;
             var new_url = ['map'];
@@ -105,11 +106,14 @@ define([
             new_url.push(mode);
             if (query) {
                 new_url.push(query);
-                // Get coordinates query from map
-                var coordinates = this.parent.getCoordinatesQuery();
-
-                if (coordinates) {
-                    new_url.push(coordinates);
+                if (filter) {
+                    new_url.push(filter);
+                } else {
+                    // Get coordinates query from map
+                    var coordinates = this.parent.getCoordinatesQuery();
+                    if (coordinates) {
+                        new_url.push(coordinates);
+                    }
                 }
             }
             Backbone.history.navigate(new_url.join("/"), true);
@@ -133,8 +137,6 @@ define([
                     var radius = filters[2].split('=').pop();
                     this.parent.createCircle(coords, radius);
                 }
-
-                $('#clear-draw').show();
             }
 
             // search
@@ -217,10 +219,14 @@ define([
             $('#cancel-draw-' + shape).hide();
             this.$el.find('.search-bar').find('.m-button').removeClass('active');
         },
-        clearAllDraw: function () {
+        clearAllDrawWithoutRouting: function () {
             $('#clear-draw').hide();
             // remove all drawn layer in map
             this.parent.clearAllDrawnLayer();
+            this.parent.layerAdministrativeView.resetBasedLayer();
+        },
+        clearAllDraw: function () {
+            this.clearAllDrawWithoutRouting();
             this.searchRouting();
         },
         showClearDrawButton: function () {
@@ -239,6 +245,7 @@ define([
             this.cancelDraw(shape);
             this.showClearDrawButton();
             this.searchRouting();
+            this.parent.layerAdministrativeView.resetBasedLayer();
         },
         changeCategoryButton: function (mode) {
             this.$el.find('.search-category').find('.m-button').removeClass('active');
