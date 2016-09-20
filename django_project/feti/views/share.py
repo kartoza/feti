@@ -1,4 +1,5 @@
 import urllib.request
+from urllib.parse import unquote
 import weasyprint
 import os
 import json
@@ -188,7 +189,7 @@ class ApiRandomString(UpdateView):
             raise Http404(
                 'Error json value'
             )
-        url = retrieved_data['url']
+        url = unquote(retrieved_data['url'])
 
         response = self.generate_random_string(url)
 
