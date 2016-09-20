@@ -10,7 +10,7 @@ from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import LandingPage
 from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
-from feti.views.share import PDFDownload, EmailShare
+from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
 
 sqs = SearchQuerySet()
@@ -37,6 +37,16 @@ api_urls = patterns(
         r'^api/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
         TravelTime.as_view(response_type='data'),
         name='api-travel-time-seconds'),
+    url(
+        r'^api/generate-random-string/',
+        ApiRandomString.as_view(),
+        name="api-get-random-string"
+    ),
+    url(
+        r'^url/(?P<random>[\w\d]+)',
+        ApiGetURL.as_view(),
+        name="api-get-url"
+    )
 )
 
 urlpatterns = patterns(

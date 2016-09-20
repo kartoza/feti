@@ -13,6 +13,7 @@ define([
             "map/:mode": "show_map",
             "map/:mode/:query": "show_map",
             "map/:mode/:query/:filter": "show_map",
+            "url/:random_string": "get_url"
         },
         initialize: function () {
             this.loginView = new LoginView();
@@ -72,6 +73,22 @@ define([
             } else {
                 this.navigate('', true);
             }
+        },
+        get_url: function(random_string) {
+            $.ajax({
+                url:'api/get-url/'+random_string,
+                type:'GET',
+                success: function(response) {
+                    if(response=='') {
+                        this.navigate('', true);
+                    } else {
+                        this.navigate(response);
+                    }
+                },
+                error: function(response) {
+                    this.navigate('', true);
+                }
+            });
         }
     });
 

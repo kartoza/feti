@@ -163,6 +163,11 @@ class CourseAdmin(admin.ModelAdmin):
     related_providers.short_description = 'Related providers'
 
 
+class URLAdmin(admin.ModelAdmin):
+    """Admin Class for URL Model."""
+    list_display = ('url', 'random_string', 'date')
+    list_filter = ['url', 'random_string', 'date']
+    search_fields = ['url', 'random_string', 'date']
 
 
 admin.site.site_header = 'Feti Administration'
@@ -173,4 +178,4 @@ admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(LearningPathway, admin.ModelAdmin)
 admin.site.register(Step, admin.ModelAdmin)
-admin.site.register(URL)
+admin.site.register(URL, URLAdmin)

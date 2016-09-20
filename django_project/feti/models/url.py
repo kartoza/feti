@@ -11,7 +11,7 @@ class URL(models.Model):
 
     id = models.AutoField(primary_key=True)
 
-    random_words = models.CharField(
+    random_string = models.CharField(
         _("Random Words"),
         max_length=255,
         blank=False,
