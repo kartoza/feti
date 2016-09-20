@@ -8,17 +8,21 @@ __date__ = '24/04/15'
 
 class CampusIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    campus = indexes.NgramField(model_attr='campus')
+    campus = indexes.NgramField(model_attr='campus', indexed=True)
     long_description = indexes.NgramField(
         model_attr='_long_description',
         null=True
     )
     campus_auto = indexes.EdgeNgramField(model_attr='campus')
 
-    provider_primary_institution = indexes.CharField()
+    provider_primary_institution = indexes.EdgeNgramField()
+    courses = indexes.CharField()
 
     def prepare_provider_primary_institution(self, obj):
         return obj.provider.primary_institution
+
+    def prepare_courses(self, obj):
+        return [l.course_description for l in obj.courses.all()]
 
     class Meta:
         app_label = 'feti'

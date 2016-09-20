@@ -10,7 +10,8 @@ from django.contrib.gis.measure import Distance
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from haystack.query import SearchQuerySet
+from haystack.query import SearchQuerySet, SQ
+from haystack.inputs import Clean, Raw
 
 from feti.models.campus import Campus
 from feti.serializers.campus_serializer import CampusSerializer
@@ -81,7 +82,10 @@ class ApiCampus(SearchCampus):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query):
-        sqs = SearchQuerySet().filter(campus=query).models(Campus)
+        q = Clean(query)
+        sqs = SearchQuerySet().filter(
+            SQ(campus_auto=q) |
+            SQ(provider_primary_institution=q)).models(Campus)
         results = [x.pk for x in sqs]
 
         campuses = Campus.objects.filter(pk__in=results)
@@ -99,8 +103,12 @@ class ApiCourse(SearchCampus):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query):
-        campuses = Campus.objects.filter(location__isnull=False)
-        return self.additional_filter(campuses, query)
+        sqs = SearchQuerySet().filter(courses__course_description=Clean(query)).models(Campus)
+        results = [x.pk for x in sqs]
+
+        campuses = Campus.objects.filter(pk__in=results)
+        campuses = campuses.filter(location__isnull=False)
+        return campuses
 
     def additional_filter(self, model, query):
         return model.distinct().filter(
