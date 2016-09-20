@@ -13,10 +13,12 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='_long_description',
         null=True
     )
-    # provider_primary_institution = indexes.CharField()
+    campus_auto = indexes.EdgeNgramField(model_attr='campus')
 
-    # def prepare_provider_primary_institution(self, obj):
-    #     return obj.provider.primary_institution
+    provider_primary_institution = indexes.CharField()
+
+    def prepare_provider_primary_institution(self, obj):
+        return obj.provider.primary_institution
 
     class Meta:
         app_label = 'feti'

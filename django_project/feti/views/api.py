@@ -10,6 +10,7 @@ from django.contrib.gis.measure import Distance
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from haystack.query import SearchQuerySet
 
 from feti.models.campus import Campus
 from feti.serializers.campus_serializer import CampusSerializer
@@ -51,8 +52,7 @@ class SearchCampus(APIView):
         if not query:
             query = ""
 
-        campuses = Campus.objects.filter(location__isnull=False)
-        campuses = self.additional_filter(campuses, query)
+        campuses = self.filter_model(query)
 
         if drawn_polygon:
             campuses = campuses.filter(
@@ -68,13 +68,25 @@ class SearchCampus(APIView):
         return Response(serializer.data)
 
     @abc.abstractmethod
-    def additional_filter(self, model):
+    def additional_filter(self, model, query):
+        return
+
+    @abc.abstractmethod
+    def filter_model(self, query):
         return
 
 
 class ApiCampus(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
+
+    def filter_model(self, query):
+        sqs = SearchQuerySet().filter(campus=query).models(Campus)
+        results = [x.pk for x in sqs]
+
+        campuses = Campus.objects.filter(pk__in=results)
+        campuses = campuses.filter(location__isnull=False)
+        return campuses
 
     def additional_filter(self, model, query):
         return model.filter(
@@ -85,6 +97,10 @@ class ApiCampus(SearchCampus):
 class ApiCourse(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
+
+    def filter_model(self, query):
+        campuses = Campus.objects.filter(location__isnull=False)
+        return self.additional_filter(campuses, query)
 
     def additional_filter(self, model, query):
         return model.distinct().filter(
