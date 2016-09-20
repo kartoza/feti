@@ -15,6 +15,7 @@ from feti.models.course import Course
 from feti.models.provider import Provider
 from feti.models.occupation import Occupation
 from feti.models.learning_pathway import LearningPathway, Step
+from feti.models.url import URL
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -172,3 +173,4 @@ admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(LearningPathway, admin.ModelAdmin)
 admin.site.register(Step, admin.ModelAdmin)
+admin.site.register(URL)
