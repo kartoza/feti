@@ -10,6 +10,8 @@ from django.contrib.gis.measure import Distance
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from haystack.query import SearchQuerySet, RelatedSearchQuerySet, SQ
+from haystack.inputs import Clean, Raw
 
 from feti.models.campus import Campus
 from feti.serializers.campus_serializer import CampusSerializer
@@ -51,30 +53,42 @@ class SearchCampus(APIView):
         if not query:
             query = ""
 
-        campuses = Campus.objects.filter(location__isnull=False)
-        campuses = self.additional_filter(campuses, query)
+        campuses = self.filter_model(query)
 
         if drawn_polygon:
-            campuses = campuses.filter(
-                location__within=drawn_polygon
+            campuses = campuses.load_all_queryset(
+                Campus,
+                Campus.objects.filter(location__within=drawn_polygon)
             )
         elif drawn_circle:
-            campuses = campuses.filter(
-                location__distance_lt=(drawn_circle, Distance(m=radius))
-            )
+            campuses = campuses.load_all_queryset(
+                Campus,
+                Campus.objects.filter(location__distance_lt=(drawn_circle, Distance(m=radius))))
 
-        campuses.order_by('campus')
-        serializer = CampusSerializer(campuses, many=True)
+        serializer = CampusSerializer([x.object for x in campuses], many=True)
         return Response(serializer.data)
 
     @abc.abstractmethod
-    def additional_filter(self, model):
+    def additional_filter(self, model, query):
+        return
+
+    @abc.abstractmethod
+    def filter_model(self, query):
         return
 
 
 class ApiCampus(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
+
+    def filter_model(self, query):
+        q = Clean(query)
+        sqs = RelatedSearchQuerySet().filter(
+            SQ(campus_auto=q) |
+            SQ(provider_primary_institution=q)).models(Campus).load_all()
+
+        sqs = sqs.load_all_queryset(Campus, Campus.objects.filter(location__isnull=False))
+        return sqs
 
     def additional_filter(self, model, query):
         return model.filter(
@@ -85,6 +99,14 @@ class ApiCampus(SearchCampus):
 class ApiCourse(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
+
+    def filter_model(self, query):
+        sqs = RelatedSearchQuerySet().filter(
+            courses__course_description=Clean(query)
+        ).models(Campus).load_all()
+
+        sqs = sqs.load_all_queryset(Campus, Campus.objects.filter(location__isnull=False))
+        return sqs
 
     def additional_filter(self, model, query):
         return model.distinct().filter(
