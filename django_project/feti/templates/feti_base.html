@@ -1,62 +1,27 @@
-{% load pipeline %}
-{% load user_admin %}
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-<head lang="en">
+{% extends 'main_base.html' %}
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    {% stylesheet 'contrib' %}
-    {% stylesheet 'feti-base' %}
-    {% javascript 'contrib' %}
-    {% javascript 'appjs' %}
-
-    <!-- Custom Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"
-          type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/leaflet-extra-markers/leaflet.extra-markers.css' %}">
-
-    <title>{% block title %}{% endblock title %}</title>
-
-    {% block js_head %}{% endblock %}
-    {% block css_head %}{% endblock %}
-</head>
-<body>
-
-<div id="content">
-    {% block content %}
-    {% endblock %}
-</div>
-
-<!-- Footer -->
-<footer>
-    {% block footer %}
-    {% endblock %}
-</footer>
-
-<div id="navigation_bar">
-    {% block navbar %}
-    {% endblock %}
-</div>
-
-{% block js_inline %}
+{% block navbar %}
+    {% include 'feti/navigation_bar.html' %}
 {% endblock %}
 
-</body>
-</html>
+{% block content %}
+{% endblock %}
+
+{% block footer %}
+    <div class="container foot">
+        <div class="row">
+            <div class="col-lg-10">
+                <p class="copyright text-muted small">Kartoza 2016</p>
+            </div>
+            <div class="col-lg-2">
+                <p class="login-link pull-right">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}">Log out</a>
+                    {% else %}
+                        <a href="/#login">Log In</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
