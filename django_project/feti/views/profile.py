@@ -1,7 +1,10 @@
 from braces.views import LoginRequiredMixin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
 from django.contrib.auth.models import User
 from django.http import Http404
+from django.core.urlresolvers import reverse_lazy
+
+from feti.forms.profile_form import UserEditMultiForm
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '21/09/16'
@@ -28,3 +31,22 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
         context['user'] = user
 
         return context
+
+
+class UpdateUserProfileView(UpdateView):
+    template_name = 'feti/update_user_profile.html'
+    model = User
+    form_class = UserEditMultiForm
+
+    def get_form_kwargs(self):
+        kwargs = super(UpdateUserProfileView, self).get_form_kwargs()
+        kwargs.update(instance={
+            'user': self.object,
+            'profile': self.object.profile,
+        })
+        return kwargs
+
+    def get_success_url(self):
+        username = self.object['user'].username
+        return reverse_lazy('feti:user-profile-view',
+                            kwargs={'username': username})

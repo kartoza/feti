@@ -12,7 +12,7 @@ from feti.views.landing_page import LandingPage
 from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
 from feti.views.share import PDFDownload, EmailShare
 from feti.views.travel_time import TravelTime
-from feti.views.profile import UserProfileView
+from feti.views.profile import UserProfileView, UpdateUserProfileView
 
 sqs = SearchQuerySet()
 
@@ -51,9 +51,13 @@ urlpatterns = patterns(
         # include('haystack.urls')),
         'feti.views.search.search'),
     url(
-        r'^profile/(?P<username>[\w\d]+)',
+        r'^profile/(?P<username>[\w\d]+)$',
         UserProfileView.as_view(),
         name='user-profile-view'),
+    url(
+        r'^profile/update/(?P<pk>\d+)$',
+        UpdateUserProfileView.as_view(),
+        name='update-user-profile-view'),
     url(
         r'^customsearch/',
         search_view_factory(
