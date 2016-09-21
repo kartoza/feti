@@ -92,16 +92,15 @@ class Command(BaseCommand):
                 low = character.index(range[0])
                 high = character.index(range[len(range) - 1])
                 character = character[low:high]
-        character_index = 0
         page = 1
         print("GETTING OCCUPATIONS IN http://ncap.careerhelp.org.za/")
         print("----------------------------------------------------------")
-        while True:
+        for char in character:
             while True:
                 # get all of list
-                print("processing '%s' page %d" % (character[character_index], page))
+                print("processing '%s' page %d" % (char, page))
                 html = get_soup('http://ncap.careerhelp.org.za/occupations/alphabetical/%s/page/%s/' %
-                                (character[character_index], page))
+                                (char, page))
                 items = html.findAll("div", {"class": "SearchResultItem"})
                 if len(items) == 0:
                     # if no item
@@ -203,7 +202,4 @@ class Command(BaseCommand):
                 page += 1
                 print("----------------------------------------------------------")
             page = 1
-            character_index += 1
-            if character_index >= len(character) - 1:
-                break
         print("----------------------------------------------------------")

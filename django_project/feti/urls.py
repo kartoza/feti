@@ -11,6 +11,7 @@ from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import LandingPage
 from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
 from feti.views.share import PDFDownload, EmailShare
+from feti.views.travel_time import TravelTime
 
 sqs = SearchQuerySet()
 
@@ -28,6 +29,14 @@ api_urls = patterns(
         r'^api/autocomplete/(?P<model>.+)',
         ApiAutocomplete.as_view(),
         name='api-campus-autocomplete'),
+    url(
+        r'^api/travel-time/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
+        TravelTime.as_view(),
+        name='api-travel-time'),
+    url(
+        r'^api/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
+        TravelTime.as_view(response_type='data'),
+        name='api-travel-time-seconds'),
 )
 
 urlpatterns = patterns(
