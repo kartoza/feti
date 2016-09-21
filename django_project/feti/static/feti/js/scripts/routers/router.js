@@ -12,7 +12,7 @@ define([
             "map": "show_map",
             "map/:mode": "show_map",
             "map/:mode/:query": "show_map",
-            "map/:mode/:query/:filter": "show_map",
+            "map/:mode/:query/:filter": "show_map"
         },
         initialize: function () {
             this.loginView = new LoginView();
