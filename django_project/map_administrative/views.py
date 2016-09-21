@@ -5,6 +5,8 @@ from .serializers.country_serializer import CountrySerializer
 from .serializers.province_serializer import ProvinceSerializer
 from rest_framework.views import APIView
 
+ALLOWED_COUNTRIES = ["South Africa"]
+
 
 def get_boundary(administrative):
     boundary = None
@@ -14,11 +16,10 @@ def get_boundary(administrative):
         try:
             for administrative in administratives:
                 if index == 0:
-                    boundary = Country.objects.get(name=administrative)
-                    print(administrative)
+                    if administrative in ALLOWED_COUNTRIES:
+                        boundary = Country.objects.get(name=administrative)
                 elif index == 1:
                     boundary = Province.objects.get(name=administrative, country=boundary)
-                    print(administrative)
                 index += 1
         except Country.DoesNotExist:
             pass
@@ -40,8 +41,9 @@ class GetAdministrative(APIView):
                 if layer == 'country':
                     try:
                         country = Country.objects.get(polygon_geometry__contains=point)
-                        serializer = CountrySerializer(country)
-                        return Response(serializer.data)
+                        if country.name in ALLOWED_COUNTRIES:
+                            serializer = CountrySerializer(country)
+                            return Response(serializer.data)
                     except Country.DoesNotExist:
                         pass
                 elif layer == 'province':
@@ -54,13 +56,10 @@ class GetAdministrative(APIView):
             else:
                 boundary = get_boundary(request.GET.get('administrative'))
                 if boundary:
-                    print(type(boundary))
                     if type(boundary) == Country:
-                        print(type(boundary))
                         serializer = CountrySerializer(boundary)
                         return Response(serializer.data)
                     elif type(boundary) == Province:
-                        print(type(boundary))
                         serializer = ProvinceSerializer(boundary)
                         return Response(serializer.data)
 

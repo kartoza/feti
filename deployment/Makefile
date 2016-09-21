@@ -309,6 +309,20 @@ build-devweb: db
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) build devweb
 
+rebuildindex-devweb:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in DEVELOPMENT mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run devweb python manage.py rebuild_index
+
+updateindex-devweb:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in DEVELOPMENT mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run devweb python manage.py update_index
+
 # --------------- help --------------------------------
 
 help:
