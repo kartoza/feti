@@ -2,7 +2,7 @@
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '16/09/16'
 import requests
-from core.settings.api_keys import GOOGLE_DISTANCE_MATRIX
+from core.settings.secret import GOOGLE_DISTANCE_MATRIX
 
 
 def get_travel_time(origin, destination, response_type='text'):
