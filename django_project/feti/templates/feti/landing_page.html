@@ -189,6 +189,7 @@
 
     <!-- Django context variables -->
     <script>
+        var user_location = "{{ user.profile.location }}";
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
         var is_login_error = false;
         {% if error %}
