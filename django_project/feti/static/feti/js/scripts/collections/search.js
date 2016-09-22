@@ -52,11 +52,25 @@ define([
                             }));
                         });
                     }
+                    that.updateSearchTitle(that.models.length, mode, parameters['coord']);
                 },
                 error: function () {
                     Common.Dispatcher.trigger('search:finish');
                 }
             });
+        },
+        updateSearchTitle: function (number_result, mode, query) {
+            $("#result-title-number").html(number_result);
+            $("#result-title-mode").html(mode);
+            if (query.indexOf("administrative") >= 0) {
+                query = query.split("=")[1];
+                query = query.split();
+                query.reverse();
+                $("#result-title-place").html('in ' + query.join().replace(",", ", "));
+            } else {
+                $("#result-title-place").html('');
+            }
+
         }
     });
 
