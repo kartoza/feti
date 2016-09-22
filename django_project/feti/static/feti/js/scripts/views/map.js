@@ -321,6 +321,10 @@ define([
             this.drawnItems.addLayer(this.circleLayer);
             this.addLayer(this.drawnItems);
             this.map.fitBounds(this.circleLayer);
+            this.searchBarView.$clear_draw.show();
+
+            var draggable = new L.Draggable(this.circleLayer);
+            draggable.enable();
         }
     });
 
