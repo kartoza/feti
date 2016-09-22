@@ -1,17 +1,22 @@
 import urllib.request
+from urllib.parse import unquote
 import weasyprint
 import os
 import json
 import smtplib
+from rest_framework.views import APIView
 from django.views.generic import TemplateView, UpdateView
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
 from django.template import RequestContext, Context
+from django.utils.crypto import get_random_string
 from django.utils._os import safe_join
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
+from django.shortcuts import redirect
 from feti.models.campus import Campus
+from feti.models.url import URL
 
 
 class SharingMixin(object):
@@ -155,3 +160,45 @@ class EmailShare(UpdateView, SharingMixin):
             )
 
         return HttpResponse('success')
+
+
+class ApiRandomString(UpdateView):
+
+    def generate_random_string(self, url):
+        """ Generate random string from url and store it to db"""
+        random = get_random_string()
+        while URL.objects.filter(random_string=random).exists():
+            random = get_random_string()
+
+        if URL.objects.filter(url=url).exists():
+            return URL.objects.filter(url=url).first().random_string
+
+        u = URL(
+            url=url,
+            random_string=random
+        )
+        u.save()
+        return random
+
+    def post(self, request, *args, **kwargs):
+        data = request.body
+
+        try:
+            retrieved_data = json.loads(data.decode("utf-8"))
+        except ValueError:
+            raise Http404(
+                'Error json value'
+            )
+        url = unquote(retrieved_data['url'])
+
+        response = self.generate_random_string(url)
+
+        return HttpResponse(response)
+
+
+class ApiGetURL(APIView):
+
+    def get(self, request, random):
+        if URL.objects.filter(random_string=random).exists():
+            return redirect(URL.objects.filter(random_string=random).first().url)
+        return redirect('/')

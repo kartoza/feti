@@ -19,23 +19,35 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
     def build_search_kwargs(self, query_string, **kwargs):
         """Build search kwargs with fuzziness.
         """
-        # query_string = query_string.replace(' AND ', ' ')
         search_kwargs = super(FuzzyElasticBackend, self).build_search_kwargs(
             query_string, **kwargs)
-        # query_string = u'*siness'
-        # search_kwargs['query']['filtered']['query']['query_string']\
-        #     ['query'] = query_string
-        # RM : add fuzzines args
-        # leave this be for now
-        # del search_kwargs['query']['filtered']['query']['query_string']
-        # search_kwargs['query']['filtered']['query']\
-        #     ['fuzzy_like_this'] = {
-        #     'like_text': query_string,
-        # }
+
+        try:
+            search_kwargs["sort"]
+        except KeyError:
+            search_kwargs["sort"] = [{
+                "_score": {
+                    "order": "desc"
+                }
+            }]
+
+        try:
+            search_kwargs["min_score"]
+        except KeyError:
+            search_kwargs["min_score"] = 0.6
+
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             search_kwargs['query']['filtered']['query']['query_string'][
-                'fuzziness'] = 2
-        # if 'query_string' in search_kwargs['query']['filtered']['query']:
-        #     search_kwargs['query']['filtered']['query']['query_string']\
-        #         ['default_operator'] = 'OR'
+                'fuzziness'] = 'AUTO'
+            search_kwargs['query']['filtered']['query']['query_string'][
+                'minimum_should_match'] = '95%'
+
+        if 'query_string' in search_kwargs['query']['filtered']['query']:
+            search_kwargs['query']['filtered']['query']['query_string'][
+                'default_operator'] = 'OR'
+
         return search_kwargs
+
+    def search(self, query_string, **kwargs):
+        search = super(FuzzyElasticBackend, self).search(query_string, **kwargs)
+        return search

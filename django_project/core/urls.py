@@ -18,6 +18,7 @@ urlpatterns = patterns(
     # include application urls
     url(r'', include('feti.urls', namespace='feti')),
     url(r'', include('user_profile.urls', namespace='user_profile')),
+    url(r'', include('map_administrative.urls', namespace='map_administrative')),
 
     url(r'^custom_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 
