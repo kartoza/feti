@@ -26,7 +26,6 @@ define([
             $(this.container).hide();
         },
         show: function () {
-            console.log('show');
             $(this.container).show();
         },
         sharePDF: function() {

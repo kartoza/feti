@@ -56,8 +56,10 @@ define([
                 mode = Common.CurrentSearchMode;
             }
 
-            if(query) {
+            if (query) {
                 this.mapView.search(mode, query, filter);
+            } else {
+                this.mapView.search(mode, '', '');
             }
 
             this.pageHistory.push(Backbone.history.getFragment());
