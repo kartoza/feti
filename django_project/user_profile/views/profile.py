@@ -48,5 +48,5 @@ class UpdateUserProfileView(UpdateView):
 
     def get_success_url(self):
         username = self.object['user'].username
-        return reverse_lazy('feti:user-profile-view',
+        return reverse_lazy('user_profile:user-profile-view',
                             kwargs={'username': username})

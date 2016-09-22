@@ -120,7 +120,7 @@ define([
                         extraClasses: 'fa fa-user',
                         iconColor: 'white'
                     })
-                }).bindPopup("<b>Your location</b>").addTo(this.map);
+                }).bindPopup("<b>My location</b>").addTo(this.map);
             }
         },
         drawCreated: function (e) {
