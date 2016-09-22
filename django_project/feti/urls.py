@@ -35,6 +35,10 @@ api_urls = patterns(
         TravelTime.as_view(),
         name='api-travel-time'),
     url(
+        r'^api/travel-time/(?P<origin>[/(-?\d+\.\d+),(-?\d+\.\d+)/]+)/(?P<destination>[/(-?\d+\.\d+),(-?\d+\.\d+)/]+)',
+        TravelTime.as_view(),
+        name='api-travel-time-coordinates'),
+    url(
         r'^api/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
         TravelTime.as_view(response_type='data'),
         name='api-travel-time-seconds'),
