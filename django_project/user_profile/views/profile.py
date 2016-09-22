@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from django.core.urlresolvers import reverse_lazy
 
-from feti.forms.profile_form import UserEditMultiForm
+from user_profile.forms.profile_form import UserEditMultiForm
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '21/09/16'

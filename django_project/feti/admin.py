@@ -15,7 +15,6 @@ from feti.models.course import Course
 from feti.models.provider import Provider
 from feti.models.occupation import Occupation
 from feti.models.learning_pathway import LearningPathway, Step
-from feti.models.profile import Profile
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -163,16 +162,6 @@ class CourseAdmin(admin.ModelAdmin):
     related_providers.short_description = 'Related providers'
 
 
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'location', 'birth_date')
-    search_fields = ['user__username', 'birth_date']
-
-    class Media:
-        css = {
-            'all': ('feti/css/feti-admin.css',)
-        }
-
-
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
 admin.site.site_title = 'Feti Administration'
@@ -181,4 +170,3 @@ admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(LearningPathway, admin.ModelAdmin)
 admin.site.register(Step, admin.ModelAdmin)
-admin.site.register(Profile, ProfileAdmin)
