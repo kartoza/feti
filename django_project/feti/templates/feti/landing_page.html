@@ -11,10 +11,8 @@
 
 {% block css_head %}
     {% stylesheet 'landing_page' %}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/leaflet-extra-markers/leaflet.extra-markers.css' %}">
 {% endblock %}
+
 
 {% block content %}
     <!-- Header -->
@@ -182,6 +180,7 @@
     </div>
 {% endblock %}
 
+
 {% block js_inline %}
     <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
 
@@ -196,6 +195,7 @@
 
     <!-- Django context variables -->
     <script>
+        var user_location = "{{ user.profile.location }}";
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
         var is_login_error = false;
         {% if error %}

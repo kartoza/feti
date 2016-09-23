@@ -11,8 +11,8 @@ urlpatterns = patterns(
     # grappelli URLS
     url(r'^grappelli/', include('grappelli.urls')),
     # Enable the admin:
-    url(r'^feti-admin/logout/$', 'user_profile.views.logout', name='logout'),
-    url(r'^feti-admin/login/$', 'user_profile.views.login', name='login'),
+    url(r'^feti-admin/logout/$', 'user_profile.views.login.logout', name='logout'),
+    url(r'^feti-admin/login/$', 'user_profile.views.login.login', name='login'),
     url(r'^feti-admin/', include(admin.site.urls)),
 
     # include application urls
@@ -21,6 +21,9 @@ urlpatterns = patterns(
     url(r'', include('map_administrative.urls', namespace='map_administrative')),
 
     url(r'^custom_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
+
+    # allauth
+    url(r'^accounts/', include('allauth.urls')),
 
 )
 

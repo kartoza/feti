@@ -108,6 +108,20 @@ define([
             // Draw events
             this.map.on('draw:drawstop', this.drawStop, this);
             this.map.on('draw:created', this.drawCreated, this);
+
+            // Add marker for userlocation
+            if(Common.UserLocation != 'None') {
+                var regExp = /\(([^)]+)\)/;
+                var location = regExp.exec(Common.UserLocation)[1].split(' ');
+                var marker = new L.marker([location[1], location[0]], {
+                    icon: L.ExtraMarkers.icon({
+                        markerColor: 'orange leaflet-clickable',
+                        icon: 'true',
+                        extraClasses: 'fa fa-user',
+                        iconColor: 'white'
+                    })
+                }).bindPopup("<b>My location</b>").addTo(this.map);
+            }
         },
         drawCreated: function (e) {
             var type = e.layerType,
