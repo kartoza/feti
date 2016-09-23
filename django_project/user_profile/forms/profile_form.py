@@ -1,6 +1,5 @@
 from django.contrib.gis import forms
 from django.contrib.auth.models import User
-
 from betterforms.multiform import MultiModelForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
@@ -8,9 +7,8 @@ from crispy_forms.layout import (
     Fieldset,
     Field,
 )
-from feti.forms.campus_form import CustomOSMWidget
 from user_profile.models.profile import Profile
-
+from core.widgets.custom_osm_widget import CustomOSMWidget
 
 class UserForm(forms.ModelForm):
 
