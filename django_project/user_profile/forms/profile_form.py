@@ -52,10 +52,8 @@ class ProfileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        form_title = 'Profile'
         layout = Layout(
             Fieldset(
-                form_title,
                 Field('bio', css_class='form-control'),
                 Field('location', css_class='form-control'),
                 Field('birth_date', css_class='form-control'),
