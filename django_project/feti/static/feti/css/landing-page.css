@@ -465,3 +465,31 @@
     color: #F27317;
     font-weight: 600;
 }
+
+#shadow-map {
+    background: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    top: 55px;
+    left: 0px;
+    z-index: 1001;
+    display: none;
+}
+
+#result-detail {
+    position: absolute;
+    top: 55px;
+    left: 0px;
+    background: white !important;
+    padding: 55px 20px 20px 20px !important;
+    display: none;
+    z-index: 1002;
+    overflow-y: scroll;
+}
+
+#result-detail div {
+    font-weight: 500;
+}
+
+#pathways h4 {
+    margin-top: 0px !important;
+}

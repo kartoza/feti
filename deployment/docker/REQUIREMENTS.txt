@@ -24,5 +24,6 @@ django-crispy-forms==1.4.0
 setuptools==18.5
 WeasyPrint
 requests<2.12
+beautifulsoup4
 django-allauth
 django-betterforms

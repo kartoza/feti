@@ -84,15 +84,17 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         # Set up long description
-        if self.education_training_quality_assurance.acronym.strip():
-            seta = u'%s (%s)' % (
-                self.education_training_quality_assurance.body_name.strip() or
-                u'',
-                self.education_training_quality_assurance.acronym.strip() or
-                u''
-            )
-        else:
-            seta = self.education_training_quality_assurance.body_name.strip()
+        seta = ""
+        if self.education_training_quality_assurance:
+            if self.education_training_quality_assurance.acronym.strip():
+                seta = u'%s (%s)' % (
+                    self.education_training_quality_assurance.body_name.strip() or
+                    u'',
+                    self.education_training_quality_assurance.acronym.strip() or
+                    u''
+                )
+            else:
+                seta = self.education_training_quality_assurance.body_name.strip()
 
         self._long_description = u'%s : %s' % (
             self.description.strip() or u'',

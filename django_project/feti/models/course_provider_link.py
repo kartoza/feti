@@ -17,6 +17,9 @@ class CourseProviderLink(models.Model):
     course = models.ForeignKey(Course)
     campus = models.ForeignKey(Campus)
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return '%s at %s' % (
             self.course.__unicode__(),

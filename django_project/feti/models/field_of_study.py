@@ -19,8 +19,11 @@ class FieldOfStudy(models.Model):
 
     objects = models.GeoManager()
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
-        return 'Field of Study Class (%s)' % self.field_of_study_class
+        return 'Field %s - %s' % (self.field_of_study_class, self.field_of_study_description)
 
     class Meta:
         app_label = 'feti'

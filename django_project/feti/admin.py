@@ -3,18 +3,19 @@
 
 from django.contrib.gis import admin
 from django.core.urlresolvers import reverse
+from nested_inline.admin import NestedStackedInline, NestedModelAdmin, NestedTabularInline
 from django.template.context import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
-from django.db.models import Q
 
 from feti.custom_admin.geodjango import OSMGeoStackedInline
 from feti.models.address import Address
 from feti.models.campus import Campus
 from feti.models.course import Course
+from feti.models.field_of_study import FieldOfStudy
 from feti.models.provider import Provider
 from feti.models.occupation import Occupation
-from feti.models.learning_pathway import LearningPathway, Step
+from feti.models.learning_pathway import LearningPathway, Step, StepDetail
 from feti.models.url import URL
 
 
@@ -24,7 +25,7 @@ class AddressAdmin(admin.ModelAdmin):
     list_filter = ['town', 'postal_code', ]
     readonly_fields = ['provider_url']
     search_fields = ['address_line_1', 'town', 'postal_code', 'phone', ]
-    exclude = ('campus_fk', )
+    exclude = ('campus_fk',)
 
     def provider_url(self, instance):
         return mark_safe('{}<br/><a href="{}">Go to edit page</a>').format(
@@ -32,6 +33,7 @@ class AddressAdmin(admin.ModelAdmin):
             reverse('admin:feti_provider_change', args=(
                 instance.campus_fk.provider.id,)),
         )
+
     provider_url.allow_tags = True
     provider_url.short_description = 'Primary institute'
 
@@ -107,6 +109,7 @@ class CampusAdminInline(OSMGeoStackedInline):
             reverse('admin:feti_campus_change', args=(
                 instance.id,))
         )
+
     campus_url.allow_tags = True
     campus_url.short_description = 'Address'
 
@@ -159,9 +162,32 @@ class CourseAdmin(admin.ModelAdmin):
             'providers': providers
         })
         return mark_safe(template.render(context).replace('\n', ''))
+
     related_providers.allow_tags = True
     related_providers.short_description = 'Related providers'
 
+
+class StepInline(NestedTabularInline):
+    model = Step
+    extra = 1
+
+
+class LearningPathwayline(NestedStackedInline):
+    model = LearningPathway
+    extra = 1
+    inlines = [StepInline]
+
+
+class OccupationAdmin(NestedModelAdmin):
+    model = Occupation
+    inlines = [LearningPathwayline]
+    list_filter = ['green_occupation', 'scarce_skill', 'occupation_regulation']
+    search_fields = ['occupation', 'tasks', 'learning_pathway_description']
+
+
+class StepDetailAdmin(admin.ModelAdmin):
+    model = StepDetail
+    search_fields = ['title', 'detail']
 
 class URLAdmin(admin.ModelAdmin):
     """Admin Class for URL Model."""
@@ -176,6 +202,9 @@ admin.site.site_title = 'Feti Administration'
 admin.site.register(Campus, CampusAdmin)
 admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
-admin.site.register(LearningPathway, admin.ModelAdmin)
-admin.site.register(Step, admin.ModelAdmin)
+
+admin.site.register(Occupation, OccupationAdmin)
+admin.site.register(StepDetail, StepDetailAdmin)
+admin.site.register(Address, admin.ModelAdmin)
+admin.site.register(FieldOfStudy, admin.ModelAdmin)
 admin.site.register(URL, URLAdmin)

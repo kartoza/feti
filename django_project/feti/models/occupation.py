@@ -7,22 +7,34 @@ __copyright__ = 'kartoza.com'
 """Model class for Occupations"""
 
 from django.contrib.gis.db import models
+from django.core import management
+from django.db.models.signals import post_save
 
-from feti.models.learning_pathway import LearningPathway
 
 class Occupation(models.Model):
     """A campus where a set of courses are offered."""
     id = models.AutoField(primary_key=True)
-    occupation = models.CharField(max_length=150, blank=False, null=False)
+    occupation = models.CharField(max_length=150, blank=False, null=False, unique=True)
     green_occupation = models.BooleanField(default=False)
-    green_skill = models.BooleanField(default=False)
+    scarce_skill = models.BooleanField(default=False)
     description = models.CharField(max_length=500)
     tasks = models.TextField(blank=True, null=True)
     occupation_regulation = models.TextField(blank=True, null=True)
     learning_pathway_description = models.TextField(blank=True, null=True)
-    learning_pathways = models.ManyToManyField(
-        LearningPathway)  ## limit choices to not selected pathnumbers
 
     class Meta:
         app_label = 'feti'
         managed = True
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        return u'%s' % self.occupation
+
+
+def generate_occupation_index(sender, instance, **kwargs):
+    management.call_command('generate_occupation_index')
+
+
+post_save.connect(generate_occupation_index, sender=Occupation, dispatch_uid="generate_occupation_index")

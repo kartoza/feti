@@ -110,7 +110,7 @@ define([
             this.map.on('draw:created', this.drawCreated, this);
 
             // Add marker for userlocation
-            if(Common.UserLocation != 'None') {
+            if (Common.UserLocation != 'None') {
                 var regExp = /\(([^)]+)\)/;
                 var location = regExp.exec(Common.UserLocation)[1].split(' ');
                 var marker = new L.marker([location[1], location[0]], {
@@ -220,7 +220,7 @@ define([
             }
         },
         exitAllFullScreen: function () {
-            this.searchBarView.toggleProvider();
+            this.searchBarView.toggleOccupation();
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -311,7 +311,7 @@ define([
                     _map._onResize();
                     that.isFullScreen = false;
                     that.searchBarView.mapResize(false, that.animationSpeed);
-                    that.searchBarView.toggleProvider(e);
+                    that.searchBarView.toggleOccupation(e);
                 });
 
                 // set body content to previous

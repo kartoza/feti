@@ -285,6 +285,25 @@ update-cache:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_campus_index
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_course_index
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_occupation_index
+
+scraping:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to make cache in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_campus
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation
+
+clean-scraping:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to make cache in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_campus True
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course True
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation True
 
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S

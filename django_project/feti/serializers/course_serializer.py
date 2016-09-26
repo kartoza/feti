@@ -11,4 +11,5 @@ class CourseSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         res = super(CourseSerializer, self).to_representation(instance)
         res['title'] = instance.__unicode__()
+        res['model'] = 'course'
         return res

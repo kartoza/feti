@@ -36,6 +36,7 @@ define([
             this.initAutocomplete();
             this.shareBarView = new SharebarView({parent: this});
             Common.Dispatcher.on('search:finish', this.searchingFinish, this);
+            Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
 
             this._drawer = {
                 polygon: this._initializeDrawPolygon,
@@ -94,14 +95,17 @@ define([
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
-            this.toggleProvider(e);
+            this.toggleOccupation(e);
             this.trigger('backHome', e);
         },
-        searchRouting: function (filter) {
+        updateRouting: function (filter) {
             // update route based on query and filter
             var that = this;
             var new_url = ['map'];
             var mode = that.categorySelected();
+            if (mode == "occupation") {
+                this.clearAllDrawWithoutRouting();
+            }
             var query = that.$search_bar_input.val();
             new_url.push(mode);
             if (query) {
@@ -116,7 +120,19 @@ define([
                     }
                 }
             }
+            return new_url;
+        },
+        searchRouting: function (filter) {
+            var new_url = this.updateRouting(filter);
             Backbone.history.navigate(new_url.join("/"), true);
+        },
+        occupationClicked: function (id, pathway) {
+            var new_url = this.updateRouting();
+            new_url.push(id);
+            if (pathway) {
+                new_url.push(pathway);
+            }
+            Backbone.history.navigate(new_url.join("/"), false);
         },
         search: function (mode, query, filter) {
             this.$search_bar_input.val(query);
@@ -154,6 +170,7 @@ define([
                 this.shareBarView.hide();
                 this.$result_empty.show();
             }
+            Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
         },
         showResult: function () {
             var that = this;
@@ -314,6 +331,19 @@ define([
                 // now it is shown
                 this.search_bar_hidden = true;
             }
+        },
+        toggleOccupation: function () {
+            var that = this;
+            var $cover = $('#shadow-map');
+            if ($cover.is(":visible")) {
+                $cover.fadeOut(500);
+                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
+                    that.toggleProvider();
+                });
+            } else {
+                that.toggleProvider();
+            }
+
         },
         toggleProvider: function () {
             if ($('#result').is(":visible")) {

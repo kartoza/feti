@@ -10,14 +10,14 @@ from django.contrib.gis.measure import Distance
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from haystack.query import SearchQuerySet, RelatedSearchQuerySet, SQ
-from haystack.inputs import Clean, Raw
+from haystack.query import RelatedSearchQuerySet, SQ, SearchQuerySet
+from haystack.inputs import Clean
 
 from feti.models.campus import Campus
+from feti.models.occupation import Occupation
 from feti.serializers.campus_serializer import CampusSerializer
+from feti.serializers.occupation_serializer import OccupationSerializer
 
-from map_administrative.models.country import Country
-from map_administrative.models.province import Province
 from map_administrative.views import get_boundary
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
@@ -122,6 +122,29 @@ class ApiCourse(SearchCampus):
         )
 
 
+class ApiOccupation(SearchCampus):
+    def get(self, request, format=None):
+        query = request.GET.get('q')
+        if len(query) < 3:
+            return Response([])
+
+        occupation = self.filter_model(query)
+
+        serializer = OccupationSerializer([x.object for x in occupation], many=True)
+        return Response(serializer.data)
+
+    def filter_model(self, query):
+        sqs = SearchQuerySet().filter(
+            occupation__icontains=Clean(query)
+        )
+        return sqs
+
+    def additional_filter(self, model, query):
+        return model.distinct().filter(
+            occupation__icontains=query
+        )
+
+
 class ApiAutocomplete(APIView):
     def get(self, request, model):
         q = request.GET.get('q')
@@ -140,6 +163,10 @@ class ApiAutocomplete(APIView):
             filename = os.path.join(
                 settings.CACHE_DIR,
                 'course_strings')
+        elif model == 'occupation':
+            filename = os.path.join(
+                settings.CACHE_DIR,
+                'occupation_strings')
         else:
             return HttpResponse(
                 json.dumps(
@@ -148,7 +175,6 @@ class ApiAutocomplete(APIView):
                     cls=DjangoJSONEncoder),
                 content_type='application/json')
 
-        raw_list = []
         with open(filename, 'r', encoding='utf-8') as file:
             raw_list = file.readlines()
 

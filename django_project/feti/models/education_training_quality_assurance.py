@@ -15,6 +15,9 @@ class EducationTrainingQualityAssurance(models.Model):
 
     objects = models.GeoManager()
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return '%s (%s)' % (self.acronym, self.acronym)
 

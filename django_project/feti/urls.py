@@ -9,7 +9,7 @@ from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import LandingPage
-from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete
+from feti.views.api import ApiCampus, ApiCourse, ApiAutocomplete, ApiOccupation
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
 
@@ -25,6 +25,10 @@ api_urls = patterns(
         r'^api/course',
         ApiCourse.as_view(),
         name='api-campus'),
+    url(
+        r'^api/occupation',
+        ApiOccupation.as_view(),
+        name='api-occupation'),
     url(
         r'^api/autocomplete/(?P<model>.+)',
         ApiAutocomplete.as_view(),
