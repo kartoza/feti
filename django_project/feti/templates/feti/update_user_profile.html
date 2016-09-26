@@ -23,7 +23,10 @@
         <form method="post" style="margin-bottom: 50px;">
             <fieldset id="project-form">
                 {% crispy form.user %}
-                {% crispy form.profile %}
+                <div id="get-location" class="btn btn-warning" style="margin-bottom: 20px;">Get My Current Location</div>
+                {{ form.profile.location }}
+                {{ form.profile.birth_date|as_crispy_field }}
+                {{ form.profile.bio|as_crispy_field }}
                 <div class="form-actions">
                     <input type="submit" name="submit" value="Submit" class="btn btn-primary" id="submit-id-submit">
                 </div>
@@ -31,4 +34,45 @@
         </form>
     </div>
 
+{% endblock %}
+
+{% block js_inline %}
+    <script>
+
+        var map = geodjango_profile_location.map || {};
+        var vector = geodjango_profile_location.layers.vector || {};
+        var tempLat = -24.467150664738977;
+        var tempLng = 24.54757690429687;
+        var zoom = 15;
+
+        $("#get-location").click(function(){
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var center = new OpenLayers.LonLat([
+                        position.coords.longitude,
+                        position.coords.latitude
+                    ]);
+                    var proj = new OpenLayers.Projection("EPSG:4326");
+                    center.transform(proj, map.getProjectionObject());
+                    map.setCenter(center);
+
+                    var point = new OpenLayers.Geometry.Point(position.coords.longitude, position.coords.latitude);
+                    point = point.transform(proj, map.getProjectionObject());
+                    var pointFeature = new OpenLayers.Feature.Vector(point, null, null);
+                    vector.addFeatures([pointFeature]);
+
+                }, function() {
+                    handleLocationError(true);
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false);
+            }
+        });
+
+        function handleLocationError(browserHasGeolocation) {
+            alert(browserHasGeolocation ? 'Error: The Geolocation service failed.': 'Error: Your browser doesn\'t support geolocation.');
+        }
+    </script>
 {% endblock %}

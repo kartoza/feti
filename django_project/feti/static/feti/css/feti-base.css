@@ -217,3 +217,12 @@ p.login-link :hover {
 footer {
     margin-top: -55px;
 }
+
+.user-profile-label {
+    margin-bottom: -10px;
+    color: #31a3de;
+}
+
+.user-profile-text {
+    padding-bottom: 15px;
+}
