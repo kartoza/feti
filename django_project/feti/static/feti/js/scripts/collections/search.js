@@ -2,22 +2,26 @@
 define([
     'common',
     '/static/feti/js/scripts/views/provider-view.js',
-    '/static/feti/js/scripts/models/provider.js'
-], function (Common, ProviderView, Provider) {
+    '/static/feti/js/scripts/models/provider.js',
+    '/static/feti/js/scripts/views/occupation-view.js',
+    '/static/feti/js/scripts/models/occupation.js',
+], function (Common, ProviderView, Provider, OccupationView, Occupation) {
 
     var SearchCollection = Backbone.Collection.extend({
         model: Provider,
-        ProviderViews: [],
+        views: [],
         provider_url_template: _.template("/api/campus?q=<%- q %>&<%- coord %>"),
         course_url_template: _.template("/api/course?q=<%- q %>&<%- coord %>"),
+        occupation_url_template: _.template("/api/occupation?q=<%- q %>&<%- coord %>"),
         url: function () {
             return this.url;
         },
         reset: function () {
-            _.each(this.ProviderViews, function (view) {
+            _.each(this.views, function (view) {
                 view.destroy();
             });
-            this.ProviderViews = [];
+            $('#result-container').html("");
+            this.views = [];
         },
         search: function (mode, q, drawnLayers) {
             var that = this;
@@ -30,27 +34,45 @@ define([
                 parameters.coord = drawnLayers;
             }
 
+            this.model = Provider;
             if (mode == 'provider') {
                 this.url = this.provider_url_template(parameters);
             } else if (mode == 'course') {
                 this.url = this.course_url_template(parameters);
+            } else if (mode == 'occupation') {
+                this.model = Occupation;
+                this.url = this.occupation_url_template(parameters);
             }
 
             this.url = this.url.replace(/&quot;/g, '"');
 
             this.reset();
+            this.updateSearchTitle('0', mode, '');
             this.fetch({
                 success: function (collection, response) {
+                    if (mode == 'occupation') {
+                        that.showing_map_cover(true);
+                    } else {
+                        that.showing_map_cover(false);
+                    }
                     if (that.models.length == 0) {
                         Common.Dispatcher.trigger('search:finish', false);
                     } else {
-                        Common.Dispatcher.trigger('search:finish', true);
                         _.each(that.models, function (model) {
-                            that.ProviderViews.push(new ProviderView({
-                                model: model,
-                                id: "search_" + model.get('id'),
-                            }));
+                            if (model.attributes.model == 'occupation') {
+                                that.views.push(new OccupationView({
+                                    model: model,
+                                    id: "search_" + model.get('id'),
+                                }));
+                            } else {
+                                that.views.push(new ProviderView({
+                                    model: model,
+                                    id: "search_" + model.get('id'),
+                                }));
+
+                            }
                         });
+                        Common.Dispatcher.trigger('search:finish', true);
                     }
                     that.updateSearchTitle(that.models.length, mode, parameters['coord']);
                 },
@@ -85,6 +107,19 @@ define([
                 $("#result-title-place").html('');
             }
 
+        },
+        showing_map_cover: function (showing) {
+            var $cover = $('#shadow-map');
+            if (showing) {
+                if (!$cover.is(":visible")) {
+                    $cover.fadeIn(200);
+                }
+            } else {
+                if ($cover.is(":visible")) {
+                    $cover.fadeOut(200);
+                    $('#result-detail').hide("slide", {direction: "right"}, 500);
+                }
+            }
         }
     });
 

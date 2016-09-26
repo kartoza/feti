@@ -15,8 +15,7 @@ class Provider(models.Model):
     # provider_address = models.ForeignKey(Address)
     primary_institution = models.CharField(
         "Primary institution",
-        max_length=255, blank=True, null=True,
-        unique=True)
+        max_length=255, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     status = models.BooleanField(
         "Public primary institution",

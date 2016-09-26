@@ -285,6 +285,7 @@ update-cache:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_campus_index
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_course_index
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py generate_occupation_index
 
 scraping:
 	@echo

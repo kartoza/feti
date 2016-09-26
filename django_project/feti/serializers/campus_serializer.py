@@ -21,4 +21,5 @@ class CampusSerializer(serializers.ModelSerializer):
             res['location'] = {
                 'lat': instance.location.y,
                 'lng': instance.location.x}
+        res['model'] = 'campus'
         return res

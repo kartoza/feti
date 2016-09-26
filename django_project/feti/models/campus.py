@@ -51,7 +51,6 @@ class Campus(models.Model):
         app_label = 'feti'
         ordering = ['campus']
         verbose_name = 'Provider'
-        unique_together = ('campus', 'provider',)
 
     @property
     def related_course(self):

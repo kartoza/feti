@@ -12,7 +12,8 @@ define([
             "map": "show_map",
             "map/:mode": "show_map",
             "map/:mode/:query": "show_map",
-            "map/:mode/:query/:filter": "show_map"
+            "map/:mode/:query/:filter": "show_map",
+            "map/:mode/:query/:filter/:pathway": "show_map",
         },
         initialize: function () {
             this.loginView = new LoginView();
@@ -43,7 +44,7 @@ define([
         is_previous_route_match: function (regex) {
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
         },
-        show_map: function (mode, query, filter) {
+        show_map: function (mode, query, filter, selected) {
             if (this.pageHistory.length == 0) {
                 this.mapView.fullScreenMap(0);
             } else {
@@ -56,6 +57,12 @@ define([
                 mode = Common.CurrentSearchMode;
             }
 
+            var selected_occupation = null;
+            if (mode == 'occupation' && $.isNumeric(filter)) {
+                selected_occupation = filter;
+            }
+            this.selected_occupation = selected_occupation;
+
             if (query) {
                 this.mapView.search(mode, query, filter);
             } else {
@@ -63,6 +70,10 @@ define([
             }
 
             this.pageHistory.push(Backbone.history.getFragment());
+        },
+        show_map_without_filter: function (mode, query, selected, pathway) {
+            console.log(selected);
+            this.show_map(mode, query, "", selected, pathway)
         },
         back: function (own_route) {
             if (this.pageHistory.length > 0) {

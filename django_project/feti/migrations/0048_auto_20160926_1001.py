@@ -14,15 +14,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StepDetail',
             fields=[
-                ('id', models.AutoField(serialize=False, primary_key=True)),
-                ('title', models.CharField(max_length=255, blank=True, null=True)),
-                ('detail', models.CharField(max_length=1024, blank=True, null=True)),
-                ('course', models.ForeignKey(null=True, blank=True, to='feti.Course')),
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('title', models.CharField(null=True, blank=True, max_length=255)),
+                ('detail', models.CharField(null=True, blank=True, max_length=1024)),
+                ('course', models.ForeignKey(blank=True, to='feti.Course', null=True)),
             ],
             options={
                 'verbose_name_plural': 'steps',
-                'verbose_name': 'step',
                 'managed': True,
+                'verbose_name': 'step',
             },
         ),
         migrations.RenameField(
@@ -63,16 +63,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occupation',
             name='occupation',
-            field=models.CharField(max_length=150, unique=True),
-        ),
-        migrations.AlterField(
-            model_name='provider',
-            name='primary_institution',
-            field=models.CharField(max_length=255, verbose_name='Primary institution', blank=True, unique=True, null=True),
-        ),
-        migrations.AlterUniqueTogether(
-            name='campus',
-            unique_together=set([('campus', 'provider')]),
+            field=models.CharField(unique=True, max_length=150),
         ),
         migrations.AddField(
             model_name='step',
