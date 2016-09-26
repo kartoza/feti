@@ -1,47 +1,14 @@
-{% load pipeline %}
-{% load user_admin %}
-<!DOCTYPE html>
-<html>
-<head lang="en">
+{% extends 'main_base.html' %}
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+{% block navbar %}
+    {% include 'feti/navigation_bar.html' %}
+{% endblock %}
 
-    {% stylesheet 'contrib' %}
-    {% stylesheet 'feti-base' %}
-    {% javascript 'contrib' %}
-    {% javascript 'appjs' %}
+{% block content %}
+{% endblock %}
 
-    <!-- Custom Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"
-          type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <title>{% block title %}{% endblock title %}</title>
-
-    {% block js_head %}{% endblock %}
-    {% block css_head %}{% endblock %}
-</head>
-<body>
-
-<div id="content">
-    {% block content %}
-    {% endblock %}
-</div>
-
-<!-- Footer -->
-<footer>
-    <div class="container">
+{% block footer %}
+    <div class="container foot">
         <div class="row">
             <div class="col-lg-10">
                 <p class="copyright text-muted small">Kartoza 2016</p>
@@ -57,63 +24,4 @@
             </div>
         </div>
     </div>
-</footer>
-<div id="navigation_bar">
-    <!-- Navigation -->
-    <nav class="navbar navbar-default topnav" role="navigation">
-        <div class="container topnav">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand topnav" href="/#">FETI</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        {% if user.is_authenticated %}
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true" aria-expanded="false">
-                                {{ user.username }}
-                                <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="/profile/{{ user.username }}">Your profile</a></li>
-                                <li role="separator" class="divider"></li>
-                                {% if user.is_staff %}
-                                    <li id="nav_project_team">
-                                        <a href="/feti-admin" role="button">
-                                            <i class="mdi-maps-map"></i>
-                                            Admin</a>
-                                    </li>
-                                {% elif user|has_access_user_admin %}
-                                    <li id="nav_project_team">
-                                        <a href="/admin" role="button">
-                                            <i class="mdi-maps-map"></i>
-                                            Admin</a>
-                                    </li>
-                                {% endif %}
-                                <li><a href="/feti-admin/logout/">Log out</a></li>
-                            </ul>
-                        {% else %}
-                            <a href="#login">Log In</a>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-</div>
-
-{% block js_inline %}
 {% endblock %}
-
-</body>
-</html>

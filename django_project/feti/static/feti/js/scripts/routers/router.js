@@ -12,7 +12,7 @@ define([
             "map": "show_map",
             "map/:mode": "show_map",
             "map/:mode/:query": "show_map",
-            "map/:mode/:query/:filter": "show_map",
+            "map/:mode/:query/:filter": "show_map"
         },
         initialize: function () {
             this.loginView = new LoginView();
@@ -56,8 +56,10 @@ define([
                 mode = Common.CurrentSearchMode;
             }
 
-            if(query) {
+            if (query) {
                 this.mapView.search(mode, query, filter);
+            } else {
+                this.mapView.search(mode, '', '');
             }
 
             this.pageHistory.push(Backbone.history.getFragment());

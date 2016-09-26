@@ -6,12 +6,18 @@ INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
     'pipeline',
     'rest_framework',
-    # 'haystack',
+    'rest_framework_gis',
+    'haystack',
     'leaflet',
     'djgeojson',
     'nested_inline',
     'crispy_forms',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 )
+
+SITE_ID = 1
 
 # These get enabled in prod.py
 PIPELINE_ENABLED = False
@@ -44,8 +50,8 @@ LEAFLET_CONFIG = {
 
 }
 
-# HAYSTACK_DEFAULT_OPERATOR = 'AND'
-# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_DEFAULT_OPERATOR = 'AND'
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 GRAPPELLI_ADMIN_TITLE = 'Feti Administration'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

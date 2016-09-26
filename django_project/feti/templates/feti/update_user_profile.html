@@ -1,0 +1,34 @@
+{% extends "feti_base.html" %}
+{% load staticfiles %}
+{% load pipeline %}
+{% load crispy_forms_tags %}
+{% block title %}
+    FORD 2 - Update Profile
+{% endblock title %}
+
+{% block css_head %}
+    {% stylesheet 'custom_page' %}
+    {{ form.media }}
+    {% stylesheet 'contrib' %}
+    <link rel="stylesheet" href="{% static "feti/css/feti-form.css" %}">
+    <style type="text/css">
+        #div_id_profile-birth_date {
+            margin-top: 450px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <form method="post" style="margin-bottom: 50px;">
+            <fieldset id="project-form">
+                {% crispy form.user %}
+                {% crispy form.profile %}
+                <div class="form-actions">
+                    <input type="submit" name="submit" value="Submit" class="btn btn-primary" id="submit-id-submit">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+{% endblock %}

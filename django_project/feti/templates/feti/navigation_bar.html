@@ -1,78 +1,52 @@
-{% load staticfiles %}
-<script type="text/javascript">
-    $(document).ready(function(){
-        initSearchTermChanged();
-    });
-</script>
-<nav class="navbar navbar-bnpb navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
+{% load user_admin %}
+<!-- Navigation -->
+<nav class="navbar navbar-default topnav" role="navigation">
+    <div class="container topnav">
+        <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="/" role="button">
-                <img src='{% static "feti/css/images/logo_ipss.png" %}'>
-                <!--<img src='{% static "feti/css/images/logo_uwc.png" %}'>-->
-                Western Cape Post-School Provision</a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand topnav" href="/#">FETI</a>
         </div>
-
+        <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                <li id="nav_find">
-                    <form id="form-search" method="get"
-                          action="/"
-                          class="navbar-form">
-                        <span>
-                            <i class="mdi-action-search"></i>
-                            <input dir="ltr" maxlength="250"
-                                   id="search-terms"
-                                   name="search_terms"
-                                   value="{{ search_terms }}"
-                                   type="text"
-                                   placeholder="Search"/>
-                            <i id="search-clear"
-                               class="mdi-navigation-close"></i>
-
-                        </span>
-                        <input type="submit" value="FIND"/>
-                        <label for="private-institutes">
-                            Include private institutes
-                        </label>
-                        <input type="checkbox"
-                               id="private-institutes"
-                               name="private_institutes"
-                               {% ifequal private_institutes 'on' %}checked="true"{% endifequal %}>
-                         <div class="form-group">
-                              <select class="form-control"
-                                      id="field-of-study-id"
-                                      name="field_of_study_id">
-                                      <option
-                                        value="0"
-                                        {% ifequal field_of_study_id 0 %} selected="selected" {%  endifequal %}>any</option>
-                                    {% for field_of_study in fields_of_study %}
-                                      <option  {% ifequal field_of_study_id field_of_study.id %} selected="selected" {%  endifequal %} value="{{ field_of_study.id }}">{{ field_of_study.field_of_study_description }}</option>
-                                    {% endfor %}
-                              </select>
-                        </div>
-                    </form>
+                <li class="dropdown">
+                    {% if user.is_authenticated %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true" aria-expanded="false">
+                            {{ user.username }}
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/profile/{{ user.username }}">Your profile</a></li>
+                            <li role="separator" class="divider"></li>
+                            {% if user.is_staff %}
+                                <li id="nav_project_team">
+                                    <a href="/feti-admin" role="button">
+                                        <i class="mdi-maps-map"></i>
+                                        Admin</a>
+                                </li>
+                            {% elif user|has_access_user_admin %}
+                                <li id="nav_project_team">
+                                    <a href="/admin" role="button">
+                                        <i class="mdi-maps-map"></i>
+                                        Admin</a>
+                                </li>
+                            {% endif %}
+                            <li><a href="/feti-admin/logout/">Log out</a></li>
+                        </ul>
+                    {% else %}
+                        <a href="#login">Log In</a>
+                    {% endif %}
                 </li>
-                {% if user.is_authenticated %}
-                <li id="nav_project_team">
-                    <!--<a href="/project-team/">-->
-                    <a href="{% url 'admin:index' %}" role="button">
-                        <i class="mdi-maps-map"></i>
-                        Admin</a>
-                </li>
-                <li id="nav_logout">
-                    <a href="{% url 'logout' %}" role="button">
-                        <i class="mdi-maps-map"></i>
-                        Logout</a>
-                </li>
-                {% else %}
-                <li id="nav_login">
-                    <a href="{% url 'login' %}" role="button">
-                        <i class="mdi-maps-map"></i>
-                        Login</a>
-                </li>
-                {% endif %}
             </ul>
         </div>
+        <!-- /.navbar-collapse -->
     </div>
+    <!-- /.container -->
 </nav>

@@ -1,7 +1,8 @@
 define([
     'common',
-    '/static/feti/js/scripts/views/searchbar.js'
-], function (Common, SearchbarView, SharebarView) {
+    '/static/feti/js/scripts/views/searchbar.js',
+    '/static/feti/js/scripts/views/layer-administrative.js'
+], function (Common, SearchbarView, LayerAdministrativeView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -48,6 +49,7 @@ define([
             this.listenTo(this.searchBarView, 'backHome', this.backHome);
             this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
 
+            this.layerAdministrativeView = new LayerAdministrativeView({parent: this});
             // Common Dispatcher events
             Common.Dispatcher.on('map:pan', this.pan, this);
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
@@ -62,6 +64,22 @@ define([
             this.$el.html(this.template());
             $('#map-section').append(this.$el);
             this.map = L.map(this.$('#feti-map')[0]).setView([-29, 20], 6);
+
+            var that = this;
+            // init click
+            this.map.on('click', function (e) {
+                if (that.isFullScreen) {
+                    if (!that.isDrawing) {
+                        Common.Dispatcher.trigger('map:click', e.latlng);
+                        that.searchBarView.clearAllDrawWithoutRouting();
+                    }
+                }
+            });
+            this.map.on('dblclick', function (e) {
+                console.log("double click");
+            });
+
+
             L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGltYXNjaXB1dCIsImEiOiJjaXNqczJmNW8wMmt4MnRvY25hNTlobnlyIn0.TAdOiFVlAdeKMi5TKzueoQ', {
                 maxZoom: 20,
                 attribution: "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
@@ -90,6 +108,20 @@ define([
             // Draw events
             this.map.on('draw:drawstop', this.drawStop, this);
             this.map.on('draw:created', this.drawCreated, this);
+
+            // Add marker for userlocation
+            if(Common.UserLocation != 'None') {
+                var regExp = /\(([^)]+)\)/;
+                var location = regExp.exec(Common.UserLocation)[1].split(' ');
+                var marker = new L.marker([location[1], location[0]], {
+                    icon: L.ExtraMarkers.icon({
+                        markerColor: 'orange leaflet-clickable',
+                        icon: 'true',
+                        extraClasses: 'fa fa-user',
+                        iconColor: 'white'
+                    })
+                }).bindPopup("<b>My location</b>").addTo(this.map);
+            }
         },
         drawCreated: function (e) {
             var type = e.layerType,
@@ -100,7 +132,7 @@ define([
             if (type === 'polygon') {
                 this.polygonLayer = layer;
                 this.searchBarView.onFinishedCreatedShape('polygon');
-            } else if(type === 'circle') {
+            } else if (type === 'circle') {
                 this.circleLayer = layer;
                 this.searchBarView.onFinishedCreatedShape('circle');
             }
@@ -110,21 +142,25 @@ define([
             this.searchBarView.cancelDraw(type);
         },
         enablePolygonDrawer: function () {
+            this.isDrawing = true;
             this.clearAllDrawnLayer();
-            if(this.polygonDrawer) {
+            if (this.polygonDrawer) {
                 this.polygonDrawer.enable();
             }
         },
         disablePolygonDrawer: function () {
+            this.isDrawing = false;
             this.polygonDrawer.disable();
         },
         enableCircleDrawer: function () {
+            this.isDrawing = true;
             this.clearAllDrawnLayer();
-            if(this.circleDrawer) {
+            if (this.circleDrawer) {
                 this.circleDrawer.enable();
             }
         },
         disableCircleDrawer: function () {
+            this.isDrawing = false;
             this.circleDrawer.disable();
         },
         clearAllDrawnLayer: function () {
@@ -132,22 +168,26 @@ define([
                 this.drawnItems.removeLayer(layer);
             }, this);
         },
-        getCoordinatesQuery: function() {
+        getCoordinatesQuery: function () {
             var drawnLayers = this.drawnItems.getLayers();
             if (drawnLayers.length > 0) {
                 var _layer = drawnLayers[0];
                 var query = '';
                 // check if layer is polygon or circle
-                if(_layer instanceof L.Polygon) {
+                if (_layer instanceof L.Polygon) {
                     var coordinates = _layer.getLatLngs();
                     var coordinates_string = JSON.stringify(coordinates);
-                    query = 'shape=polygon&coordinates='+coordinates_string;
-                } else if(_layer instanceof L.Circle) {
+                    query = 'shape=polygon&coordinates=' + coordinates_string;
+                } else if (_layer instanceof L.Circle) {
                     var circleCoordinate = _layer.getLatLng();
                     var circleRadius = _layer.getRadius();
-                    query = 'shape=circle&coordinate='+JSON.stringify(circleCoordinate)+'&radius='+circleRadius;
+                    query = 'shape=circle&coordinate=' + JSON.stringify(circleCoordinate) + '&radius=' + circleRadius;
                 }
                 return query;
+            } else {
+                if (this.layerAdministrativeView.current_adm) {
+                    return 'administrative=' + this.layerAdministrativeView.current_adm
+                }
             }
         },
         addLayer: function (layer) {
@@ -172,6 +212,12 @@ define([
         },
         search: function (mode, query, filter) {
             this.searchBarView.search(mode, query, filter);
+            if (filter && filter.indexOf('administrative') >= 0) {
+                filter = filter.split('=')[1];
+                this.layerAdministrativeView.showPolygon(filter);
+            } else {
+                this.layerAdministrativeView.resetBasedLayer();
+            }
         },
         exitAllFullScreen: function () {
             this.searchBarView.toggleProvider();
@@ -281,13 +327,18 @@ define([
             this.drawnItems.addLayer(this.polygonLayer);
             this.addLayer(this.drawnItems);
             this.map.fitBounds(this.polygonLayer);
+            this.searchBarView.$clear_draw.show();
         },
-        createCircle: function(coords, radius) {
+        createCircle: function (coords, radius) {
             this.clearAllDrawnLayer();
             this.circleLayer = L.circle([coords['lat'], coords['lng']], radius, this.layerOptions());
             this.drawnItems.addLayer(this.circleLayer);
             this.addLayer(this.drawnItems);
             this.map.fitBounds(this.circleLayer);
+            this.searchBarView.$clear_draw.show();
+
+            var draggable = new L.Draggable(this.circleLayer);
+            draggable.enable();
         }
     });
 

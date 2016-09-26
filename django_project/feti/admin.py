@@ -16,6 +16,7 @@ from feti.models.field_of_study import FieldOfStudy
 from feti.models.provider import Provider
 from feti.models.occupation import Occupation
 from feti.models.learning_pathway import LearningPathway, Step, StepDetail
+from feti.models.url import URL
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -188,6 +189,12 @@ class StepDetailAdmin(admin.ModelAdmin):
     model = StepDetail
     search_fields = ['title', 'detail']
 
+class URLAdmin(admin.ModelAdmin):
+    """Admin Class for URL Model."""
+    list_display = ('url', 'random_string', 'date')
+    list_filter = ['url', 'random_string', 'date']
+    search_fields = ['url', 'random_string', 'date']
+
 
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
@@ -195,7 +202,9 @@ admin.site.site_title = 'Feti Administration'
 admin.site.register(Campus, CampusAdmin)
 admin.site.register(Provider, ProviderAdmin)
 admin.site.register(Course, CourseAdmin)
+
 admin.site.register(Occupation, OccupationAdmin)
 admin.site.register(StepDetail, StepDetailAdmin)
 admin.site.register(Address, admin.ModelAdmin)
 admin.site.register(FieldOfStudy, admin.ModelAdmin)
+admin.site.register(URL, URLAdmin)

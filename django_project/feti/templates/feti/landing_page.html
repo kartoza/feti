@@ -11,10 +11,8 @@
 
 {% block css_head %}
     {% stylesheet 'landing_page' %}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/css/login.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'feti/leaflet-extra-markers/leaflet.extra-markers.css' %}">
 {% endblock %}
+
 
 {% block content %}
     <!-- Header -->
@@ -100,17 +98,23 @@
                     <div id="map-search"></div>
                 </div>
                 <div id="result" class="col-md-4 nopadding" style="height: 100%">
-                    <div id="result-wrapper" style="height: 90%;">
-                        <div id="result-loading">
-                            <div><img width="400" height="300" src="{% static 'feti/images/spinner.gif' %}"></div>
-                            <div>loading</div>
+                    <div id="result-wrapper">
+                        <div id="result-container-wrapper">
+                            <div id="result-loading">
+                                <div><img width="400" height="300" src="{% static 'feti/images/spinner.gif' %}"></div>
+                                <div>loading</div>
+                            </div>
+                            <div id="result-empty">
+                                <h1>No result to show.</h1>
+                            </div>
+                            <div id="result-container"></div>
                         </div>
-                        <div id="result-empty">
-                            <h1>No result to show.</h1>
+                        <div id="result-title">
+                            <span id="result-title-number">0</span> <span id="result-title-mode">Providers</span> <span
+                                id="result-title-place"></span>
                         </div>
-                        <div id="result-container"></div>
-                    </div>
-                    <div id="share-container" style="height: 10%;" >
+                        <div id="share-container">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,6 +180,7 @@
     </div>
 {% endblock %}
 
+
 {% block js_inline %}
     <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
 
@@ -190,6 +195,7 @@
 
     <!-- Django context variables -->
     <script>
+        var user_location = "{{ user.profile.location }}";
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
         var is_login_error = false;
         {% if error %}

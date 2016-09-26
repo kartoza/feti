@@ -30,35 +30,38 @@ def create_course(data):
         course.course_description = data['title']
         # get NQF
         nqf = None
-        if "TBA" not in data['nqf level']:
+        if "TBA" not in data['nqf level'] and "N/A:" not in data['nqf level']:
             data['nqf level'] = data['nqf level'].split(" ")[2]
             try:
                 nqf = NationalQualificationsFramework.objects.get(level=int(data['nqf level']))
             except NationalQualificationsFramework.DoesNotExist:
                 nqf = None
         # get NQF
-        data['field'] = data['field'].replace("0", "").split("-")[0]
-        data['field'] = cleaning(data['field'])
-        field_class = int(data['field'].split(" ")[1])
+        field = data['field'].replace("0", "").split("-")
+        field[0] = cleaning(field[0])
+        field_class = int(field[0].split(" ")[1])
         try:
             fof = FieldOfStudy.objects.get(field_of_study_class=field_class)
         except FieldOfStudy.DoesNotExist:
-            fof = None
+            fof = FieldOfStudy()
+            fof.field_of_study_class = field[0]
+            fof.field_of_study_description = field[1]
 
         course.national_qualifications_framework = nqf
         course.field_of_study = fof
 
         if 'primary or delegated qa functionary' in data:
-            education_training_quality_assurance = data['primary or delegated qa functionary'].split()
-            try:
-                education_training_quality_assurance = EducationTrainingQualityAssurance.objects.get(
-                    acronym=education_training_quality_assurance[0].strip())
-            except EducationTrainingQualityAssurance.DoesNotExist:
-                education_training_quality_assurance = EducationTrainingQualityAssurance.objects.create()
-                education_training_quality_assurance.acronym = education_training_quality_assurance[0].strip()
-                education_training_quality_assurance.body_name = education_training_quality_assurance[1].strip()
-                education_training_quality_assurance.save()
-            course.education_training_quality_assurance = education_training_quality_assurance
+            edu_data = data['primary or delegated qa functionary'].split("-")
+            if len(edu_data) == 2 and len(edu_data[0]) <= 30:
+                try:
+                    education_training_quality_assurance = EducationTrainingQualityAssurance.objects.get(
+                        acronym=edu_data[0].strip())
+                except EducationTrainingQualityAssurance.DoesNotExist:
+                    education_training_quality_assurance = EducationTrainingQualityAssurance()
+                    education_training_quality_assurance.acronym = edu_data[0].strip()
+                    education_training_quality_assurance.body_name = edu_data[1].strip()
+                    education_training_quality_assurance.save()
+                course.education_training_quality_assurance = education_training_quality_assurance
 
         course.save()
 

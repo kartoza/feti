@@ -295,6 +295,15 @@ scraping:
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation
 
+clean-scraping:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to make cache in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_campus True
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course True
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation True
+
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S
 # --no-deps will attach to prod deps if running
@@ -317,6 +326,20 @@ build-devweb: db
 	@echo "Building devweb"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) build devweb
+
+rebuildindex-devweb:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rebuild_index in DEVELOPMENT mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run devweb python manage.py rebuild_index
+
+updateindex-devweb:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update_index in DEVELOPMENT mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run devweb python manage.py update_index
 
 # --------------- help --------------------------------
 

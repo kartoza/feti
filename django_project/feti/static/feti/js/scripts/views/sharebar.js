@@ -26,7 +26,6 @@ define([
             $(this.container).hide();
         },
         show: function () {
-            console.log('show');
             $(this.container).show();
         },
         sharePDF: function() {
@@ -77,13 +76,29 @@ define([
             });
         },
         shareToTwitter: function () {
+
             // get url
-            var url = Backbone.history.location.href.replace("#", "%23");
+            var full_url = Backbone.history.location.href;
+            var host = Backbone.history.location.host;
 
-            var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+url;
-
-            // open twitter box
-            window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+            // generate random string
+            $.ajax({
+                url:'api/generate-random-string/',
+                type:'POST',
+                data: JSON.stringify({
+                    'url': full_url
+                }),
+                success: function(response) {
+                    var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+
+                        host+'/url/'+response;
+                    // open twitter box
+                    window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+                },
+                error: function(response) {
+                },
+                complete: function() {
+                }
+            });
         }
     });
 

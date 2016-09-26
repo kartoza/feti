@@ -23,6 +23,7 @@ DATABASES = {
 INSTALLED_APPS += (
     'feti',
     'user_profile',
+    'map_administrative',
 )
 
 PIPELINE_JS = {

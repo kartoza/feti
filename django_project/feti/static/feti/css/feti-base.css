@@ -189,3 +189,31 @@ p.copyright, p.login-link, p.login-link a {
 p.login-link :hover {
     text-decoration: none;
 }
+
+.single-form-container {
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.profile-wrapper {
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.profile-photo {
+    width: 250px;
+    height: 250px;
+    margin-bottom: 20px;
+    background-color: #f8f8ff;
+}
+
+.partner-section {
+    margin-bottom: 55px;
+}
+
+#content {
+    min-height:100%;
+}
+footer {
+    margin-top: -55px;
+}
