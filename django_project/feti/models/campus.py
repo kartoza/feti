@@ -125,6 +125,8 @@ class Campus(models.Model):
     def save(self, *args, **kwargs):
         # set up long description
         from_inline = False
+        instance = super(Campus, self).save(*args, **kwargs)
+
         try:
             self.address_fk
             self.address
@@ -132,7 +134,6 @@ class Campus(models.Model):
             from_inline = True
 
         if from_inline:
-            super(Campus, self).save(*args, **kwargs)
             # create new address placeholder
             self.address_fk = Address.objects.create()
             self.address = self.address_fk
@@ -205,7 +206,7 @@ class Campus(models.Model):
             if entry.course.id not in course_ids:
                 entry.delete()
 
-        super(Campus, self).save(*args, **kwargs)
+        return instance
 
     def delete(self, *args, **kwargs):
         # delete campus course entries

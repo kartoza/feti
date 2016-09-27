@@ -13,7 +13,7 @@ from feti.models import (
 )
 
 
-class ProviderFactory(factory.Factory):
+class ProviderFactory(factory.DjangoModelFactory):
     """Factory class for provider model."""
     class Meta:
         model = Provider
@@ -22,41 +22,49 @@ class ProviderFactory(factory.Factory):
     website = u'Provider Website'
 
 
-class AddressFactory(factory.Factory):
+class AddressFactory(factory.DjangoModelFactory):
     """Factory class for address model."""
     class Meta:
         model = Address
 
     address_line_1 = factory.Sequence(lambda n: 'address %s' % n)
-    campus_fk = factory.SubFactory('feti.tests.model_factories.CampusFactory')
 
 
-class CampusFactory(factory.Factory):
+class CampusFactory(factory.DjangoModelFactory):
     """Factory class for Campus model."""
     class Meta:
         model = Campus
 
-    id = factory.Sequence(lambda n: n)
     campus = factory.Sequence(lambda n: 'Campus %s' % n)
     address = factory.SubFactory(AddressFactory)
     provider = factory.SubFactory(ProviderFactory)
 
+    @factory.post_generation
+    def courses(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
 
-class EducationTrainingQualityAssuranceFactory(factory.Factory):
+        if extracted:
+            # A list of groups were passed in, use them
+            for course in extracted:
+                self.courses.add(course)
+
+
+class EducationTrainingQualityAssuranceFactory(factory.DjangoModelFactory):
     """Factory for EducationTrainingQualityAssurance."""
     class Meta:
         model = EducationTrainingQualityAssurance
-    id = factory.Sequence(lambda n: n)
+
     acronym = factory.Sequence(lambda n: "Acronym%s" % n)
     body_name = factory.Sequence(lambda n: "Body name %s" % n)
 
 
-class CourseFactory(factory.Factory):
+class CourseFactory(factory.DjangoModelFactory):
     """Factory class for Course model."""
     class Meta:
         model = Course
 
-    id = factory.Sequence(lambda n: n)
     national_learners_records_database = factory.Sequence(lambda n: 'NLRD %s' % n)
     course_description = factory.Sequence(lambda n: 'course %s' % n)
     education_training_quality_assurance = factory.SubFactory(

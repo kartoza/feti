@@ -20,13 +20,15 @@ class TestCampusCRUD(TestCase):
         """
         Sets up before each test
         """
-        pass
+        self.course = CourseFactory.create()
+        self.course.save()
+        self.course2 = CourseFactory.create()
 
     def test_Campus_create(self):
         """
         Tests Campus model creation
         """
-        model = CampusFactory.create()
+        model = CampusFactory.create(courses=(self.course, self.course2))
 
         # check if PK exists
         self.assertTrue(model.id is not None)
@@ -39,7 +41,8 @@ class TestCampusCRUD(TestCase):
         Tests Campus model read
         """
         model = CampusFactory.create(
-            campus=u'Custom Campus'
+            campus=u'Custom Campus',
+            courses=(self.course,)
         )
 
         self.assertTrue(model.campus == 'Custom Campus')
@@ -48,9 +51,9 @@ class TestCampusCRUD(TestCase):
         """
         Tests Campus model update
         """
-        model = CampusFactory.create()
+        model = CampusFactory.create(courses=(self.course,))
         new_model_data = {
-            'campus': u'New Campus Name'
+            'campus': u'New Campus Name',
         }
         model.__dict__.update(new_model_data)
         model.save()
@@ -63,7 +66,7 @@ class TestCampusCRUD(TestCase):
         """
         Tests Campus model delete
         """
-        model = CampusFactory.create()
+        model = CampusFactory.create(courses=(self.course,))
 
         model.delete()
 
