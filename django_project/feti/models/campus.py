@@ -174,12 +174,10 @@ class Campus(models.Model):
         self._campus_popup = template.render(Context(variable))
 
         # save the key in address
-        try:
+        if self.address:
             self.address_fk = self.address
             self.address_fk.campus_fk = self
             self.address_fk.save()
-        except self.address.DoesNotExist:
-            pass
 
         # save campus course link
         from feti.models.campus_course_entry import CampusCourseEntry
