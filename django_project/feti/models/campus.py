@@ -214,6 +214,3 @@ class Campus(models.Model):
 
 def generate_campus_index(sender, instance, **kwargs):
     management.call_command('generate_campus_index')
-
-
-post_save.connect(generate_campus_index, sender=Campus, dispatch_uid="generate_campus_index")

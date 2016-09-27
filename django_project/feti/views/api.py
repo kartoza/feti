@@ -146,7 +146,37 @@ class ApiOccupation(SearchCampus):
 
 
 class ApiAutocomplete(APIView):
+
     def get(self, request, model):
+        q = request.GET.get('q')
+        q = q.lower()
+
+        # read course_strings cache
+        if model == 'provider':
+            api = ApiCampus()
+            sqs = api.filter_model(query=q)
+            suggestions = [result.campus if result.campus != ""
+                           else result.provider_primary_institution for result in sqs]
+        elif model == 'course':
+            sqs = SearchQuerySet().autocomplete(course_description_auto=q)[:10]
+            suggestions = [result.course_description for result in sqs]
+        elif model == 'occupation':
+            api = ApiOccupation()
+            sqs = api.filter_model(query=q)
+            suggestions = [result.occupation for result in sqs]
+        else:
+            return HttpResponse(
+                json.dumps(
+                    {'result': 'error',
+                     'status_code': HttpResponseBadRequest.status_code},
+                    cls=DjangoJSONEncoder),
+                content_type='application/json')
+
+        return HttpResponse(
+            json.dumps(suggestions, cls=DjangoJSONEncoder),
+            content_type='application/json')
+
+    def get_from_file(self, request, model):
         q = request.GET.get('q')
         q = q.lower()
 

@@ -125,9 +125,5 @@ class Course(models.Model):
         app_label = 'feti'
         managed = True
 
-
 def generate_course_index(sender, instance, **kwargs):
     management.call_command('generate_course_index')
-
-
-post_save.connect(generate_course_index, sender=Course, dispatch_uid="generate_course_index")
