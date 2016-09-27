@@ -66,7 +66,7 @@ nginx:
 	@docker-compose -p $(PROJECT_ID) up -d nginx
 	@echo "Site should now be available at http://localhost"
 
-migrate: update-cache
+migrate:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running migrate static in production mode"

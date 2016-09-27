@@ -32,9 +32,5 @@ class Occupation(models.Model):
     def __unicode__(self):
         return u'%s' % self.occupation
 
-
 def generate_occupation_index(sender, instance, **kwargs):
     management.call_command('generate_occupation_index')
-
-
-post_save.connect(generate_occupation_index, sender=Occupation, dispatch_uid="generate_occupation_index")

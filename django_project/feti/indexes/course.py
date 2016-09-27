@@ -8,8 +8,12 @@ __date__ = '24/04/15'
 
 class CourseIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    long_description = indexes.NgramField(
-        model_attr='_long_description',
+    course_description = indexes.NgramField(
+        model_attr='course_description',
+        null=True
+    )
+    course_description_auto = indexes.EdgeNgramField(
+        model_attr='course_description',
         null=True
     )
     # national_learners_records_database = indexes.CharField(
