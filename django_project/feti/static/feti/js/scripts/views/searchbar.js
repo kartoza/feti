@@ -127,6 +127,7 @@ define([
             Backbone.history.navigate(new_url.join("/"), true);
         },
         occupationClicked: function (id, pathway) {
+            Common.Router.inOccupation = true;
             var new_url = this.updateRouting();
             new_url.push(id);
             if (pathway) {
@@ -170,7 +171,13 @@ define([
                 this.shareBarView.hide();
                 this.$result_empty.show();
             }
-            Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
+            if (Common.Router.selected_occupation) {
+                Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
+            } else {
+                if ($('#result-detail').is(":visible")) {
+                    $('#result-detail').hide("slide", {direction: "right"}, 500);
+                }
+            }
         },
         showResult: function () {
             var that = this;

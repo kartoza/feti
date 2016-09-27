@@ -4,6 +4,7 @@ define([
     'text!static/feti/js/scripts/templates/result-detail.html',
     'text!static/feti/js/scripts/templates/step-detail.html'
 ], function (Common, Occupation, Detail, StepDetail) {
+
     var OccupationView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title result-title-occupation',
@@ -20,11 +21,13 @@ define([
             this.update_detail();
         },
         update_detail: function () {
-            this.$detail.html(this.detailTemplate(this.model.attributes));
-            if (!this.$detail.is(":visible")) {
-                this.$detail.show("slide", {direction: "right"}, 500);
+            if (this.model) {
+                this.$detail.html(this.detailTemplate(this.model.attributes));
+                if (!this.$detail.is(":visible")) {
+                    this.$detail.show("slide", {direction: "right"}, 500);
+                }
+                this.renderPathways();
             }
-            this.renderPathways();
         },
         render: function () {
             this.$el.empty();
@@ -48,12 +51,20 @@ define([
             $pathways.html('<ul id="tabs"><ul>');
             var pathways = this.model.attributes.pathways;
             var pathway_keys = Object.keys(this.model.attributes.pathways);
-            pathway_keys.sort();
+            // sort by number
+            pathway_keys.sort(function (a, b) {
+                if (isNaN(a) || isNaN(b)) {
+                    return a > b ? 1 : -1;
+                }
+                return a - b;
+            });
+
+            // render pathways
             _.each(pathway_keys, function (key) {
-                var step_keys = Object.keys(pathways[key]);
-                step_keys.sort();
-                $('#tabs').append('<li><a href="#tabs-' + key + '">Pathway ' + key + '</a></li>');
-                var html = '<div id="tabs-' + key + '"><p>';
+                $('#tabs').append('<li><a id="tab-' + key + '" href="#content-tab-' + key + '">Pathway ' + key + '</a></li>');
+
+                var step_keys = Object.keys(pathways[key]).sort();
+                var html = '<div id="content-tab-' + key + '"><p>';
                 _.each(step_keys, function (step_key) {
                     var step_detail = pathways[key][step_key];
                     step_detail['step_number'] = step_key;
@@ -61,8 +72,17 @@ define([
                 });
                 html += '</p></div>';
                 $pathways.append(html);
+
+                $('#tab-' + key).click(function () {
+                    Common.Dispatcher.trigger('occupation:clicked', that.model.attributes.id, key);
+                });
             });
             $pathways.tabs();
+
+            // check as default
+            if (Common.Router.selected_pathway) {
+                $('#tab-' + Common.Router.selected_pathway).click();
+            }
         }
     });
 

@@ -23,6 +23,7 @@ define([
             this.mapView.render();
 
             this.pageHistory = [];
+            this.inOccupation = false;
         },
         landing_page: function () {
             if (this.is_previous_route_match(/map.*/)) {
@@ -44,7 +45,7 @@ define([
         is_previous_route_match: function (regex) {
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
         },
-        show_map: function (mode, query, filter, selected) {
+        show_map: function (mode, query, filter, pathway) {
             if (this.pageHistory.length == 0) {
                 this.mapView.fullScreenMap(0);
             } else {
@@ -58,15 +59,25 @@ define([
             }
 
             var selected_occupation = null;
+            var selected_pathway = null;
             if (mode == 'occupation' && $.isNumeric(filter)) {
                 selected_occupation = filter;
+                if ($.isNumeric(pathway)) {
+                    selected_pathway = pathway;
+                }
             }
             this.selected_occupation = selected_occupation;
+            this.selected_pathway = selected_pathway;
 
-            if (query) {
-                this.mapView.search(mode, query, filter);
+            if (this.selected_occupation && this.inOccupation) {
+                Common.Dispatcher.trigger('search:finish', true);
             } else {
-                this.mapView.search(mode, '', '');
+                if (query) {
+                    this.mapView.search(mode, query, filter);
+                } else {
+                    this.mapView.search(mode, '', '');
+                }
+                this.inOccupation = false;
             }
 
             this.pageHistory.push(Backbone.history.getFragment());
