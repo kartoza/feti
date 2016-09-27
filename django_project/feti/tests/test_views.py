@@ -1,67 +1,80 @@
-# # coding=utf-8
-# """Module related to test for all the models."""
-# from django.test import TestCase
-# from django.test.client import Client
-# from django.core.urlresolvers import reverse
-# from django.utils.http import urlsafe_base64_encode
-# from django.utils.encoding import force_bytes
-#
-# from feti.tests.model_factories import UserFactory
-#
-#
-# class UserMapViewTests(TestCase):
-#     """Class for testing user map view."""
-#     def setUp(self):
-#         """Run for each test."""
-#         self.email = 'test@gmail.com'
-#         self.password = 'test'
-#         self.user = UserFactory.create(
-#             email=self.email,
-#             password=self.password,
-#             role__name='Test User',
-#             is_confirmed=True)
-#         self.client = Client()
-#
-#     def test_index(self):
-#         """Test for index view."""
-#         response = self.client.get(reverse('feti:index'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'feti/legend.html')
-#         self.assertTemplateUsed(response, 'feti/data_privacy.html')
-#         self.assertContains(response, 'Sign Up')
-#         self.assertContains(response, 'Log In')
-#
-#     def test_show_update_page(self):
-#         """Test showing update user page view."""
-#         # Login first
-#         self.assertTrue(
-#             self.client.login(email=self.email, password=self.password))
-#
-#         response = self.client.get(reverse('feti:update_user'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'feti/account/edit_user.html')
-#
-#     def test_update_basic_information(self):
-#         """Test update basic information."""
-#         # Login first
-#         self.assertTrue(
-#             self.client.login(email=self.email, password=self.password))
-#
-#         form_content = dict(
-#             {
-#                 'name': 'UpdatedName',
-#                 'url': 'http://localhost/cgi-bin/wms?map=foo',
-#                 'layers': 'foo',
-#             }
-#         )
-#         response = self.client.post(
-#             reverse('feti:update'), form_content)
-#         self.assertRedirects(
-#             response,
-#             reverse('feti:update') + '#basic-information',
-#             302,
-#             200)
-#         wms = UserFactory(name=self.name)
-#         self.assertEqual(wms.name, form_content['name'])
-#
-#
+# coding=utf-8
+"""Module related to test for all the models."""
+from django.test import TestCase
+from django.test.client import Client
+from django.core.urlresolvers import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from core.model_factories import UserFactory
+from feti.tests.model_factories import (
+    CampusFactory,
+    ProviderFactory
+)
+
+
+class TestCampusViews(TestCase):
+    """Tests that Campus views work."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = UserFactory.create(**{
+            'username': 'dimas',
+            'password': 'password',
+            'is_staff': True
+        })
+        self.campus = CampusFactory.create()
+
+    def tearDown(self):
+        self.user.delete()
+        self.campus.delete()
+
+    def test_CampusUpdateView_with_login(self):
+        self.client.login(username='dimas', password='password')
+        response = self.client.get(reverse('feti:update_campus', kwargs={
+            'pk': self.campus.id
+        }))
+        self.assertEqual(response.status_code, 200)
+        expected_templates = [
+            'feti/update_campus.html'
+        ]
+        self.assertEqual(response.template_name, expected_templates)
+
+    def test_CampusUpateView_with_no_login(self):
+        response = self.client.get(reverse('feti:update_campus', kwargs={
+            'pk': self.campus.id
+        }))
+        self.assertEqual(response.status_code, 302)
+
+
+class TestProviderViews(TestCase):
+    """Tests that Campus views work."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = UserFactory.create(**{
+            'username': 'dimas',
+            'password': 'password',
+            'is_staff': True
+        })
+        self.provider = ProviderFactory.create()
+
+    def tearDown(self):
+        self.user.delete()
+        self.provider.delete()
+
+    def test_ProviderUpdateView_with_login(self):
+        self.client.login(username='dimas', password='password')
+        response = self.client.get(reverse('feti:primary_institute_campus', kwargs={
+            'pk': self.provider.id
+        }))
+        self.assertEqual(response.status_code, 200)
+        expected_templates = [
+            'feti/update_provider.html'
+        ]
+        self.assertEqual(response.template_name, expected_templates)
+
+    def test_CampusUpateView_with_no_login(self):
+        response = self.client.get(reverse('feti:primary_institute_campus', kwargs={
+            'pk': self.provider.id
+        }))
+        self.assertEqual(response.status_code, 302)
