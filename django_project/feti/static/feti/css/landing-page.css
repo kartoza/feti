@@ -442,6 +442,11 @@
     background: white !important;
 }
 
+#result {
+    height: 100%;
+    border-left: 1px solid rgba(29, 104, 179, 1);
+}
+
 #result-container-wrapper {
     position: absolute;
     height: 100%;
