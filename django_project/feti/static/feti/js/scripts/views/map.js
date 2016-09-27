@@ -220,7 +220,7 @@ define([
             }
         },
         exitAllFullScreen: function () {
-            this.searchBarView.toggleOccupation();
+            this.searchBarView.exitOccupation();
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -311,7 +311,7 @@ define([
                     _map._onResize();
                     that.isFullScreen = false;
                     that.searchBarView.mapResize(false, that.animationSpeed);
-                    that.searchBarView.toggleOccupation(e);
+                    that.searchBarView.exitOccupation(e);
                 });
 
                 // set body content to previous

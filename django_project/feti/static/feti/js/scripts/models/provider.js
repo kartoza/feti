@@ -10,6 +10,7 @@ define([
             } else {
                 data = options;
             }
+            data.counts = data.courses.length;
             return data;
         },
         renderMarker: function () {
@@ -24,7 +25,7 @@ define([
                         iconColor: 'white'
                     })
                 });
-                if(Common.UserLocation != 'None') {
+                if (Common.UserLocation != 'None') {
                     this.getUserLocation(popup, marker);
                     popup += '<div class="user-location">Calculating travel time... </div>';
                 }
@@ -43,14 +44,14 @@ define([
             var destinations = marker_location.lat + ',' + marker_location.lng;
 
             $.ajax({
-                url:'api/travel-time/'+origin+'/'+destinations,
-                type:'GET',
-                success: function(response) {
-                    popup += '<div class="user-location">Travel time: '+response+'</div>';
+                url: 'api/travel-time/' + origin + '/' + destinations,
+                type: 'GET',
+                success: function (response) {
+                    popup += '<div class="user-location">Travel time: ' + response + '</div>';
                 },
-                error: function(response) {
+                error: function (response) {
                 },
-                complete: function() {
+                complete: function () {
                     marker._popup.setContent(popup)
                 }
             });

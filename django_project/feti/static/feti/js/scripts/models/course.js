@@ -5,6 +5,9 @@ define([
     var Course = Backbone.Model.extend({
         initialize: function (options) {
             this.attributes = options;
+            if (this.attributes.national_learners_records_database) {
+                this.attributes.national_learners_records_database = "[" + this.attributes.national_learners_records_database + "]";
+            }
             this.set('marker', options.marker);
         },
         destroy: function () {

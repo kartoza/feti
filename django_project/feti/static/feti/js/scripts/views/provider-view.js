@@ -7,7 +7,7 @@ define([
     var ProviderView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title',
-        template: _.template('<%- title %>'),
+        template: _.template('<img src="/static/feti/images/default-logo.png" width="54" height="54"/><div class="details"><h3><%- title %></h3><p class="courses"><%- counts %> courses <i class="fa fa-angle-down" aria-hidden="true"></i></p></div>'),
         courses_template: _.template('<div id="<%- id %>-courses" class="collapse"></div>'),
         container: '#result-container',
         model: Provider,

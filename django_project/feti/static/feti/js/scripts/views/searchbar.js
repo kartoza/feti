@@ -95,7 +95,7 @@ define([
             this.trigger('categoryClicked', event);
         },
         backHomeClicked: function (e) {
-            this.toggleOccupation(e);
+            this.exitOccupation(e);
             this.trigger('backHome', e);
         },
         updateRouting: function (filter) {
@@ -127,6 +127,7 @@ define([
             Backbone.history.navigate(new_url.join("/"), true);
         },
         occupationClicked: function (id, pathway) {
+            Common.Router.inOccupation = true;
             var new_url = this.updateRouting();
             new_url.push(id);
             if (pathway) {
@@ -170,7 +171,13 @@ define([
                 this.shareBarView.hide();
                 this.$result_empty.show();
             }
-            Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
+            if (Common.Router.selected_occupation) {
+                Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
+            } else {
+                if ($('#result-detail').is(":visible")) {
+                    $('#result-detail').hide("slide", {direction: "right"}, 500);
+                }
+            }
         },
         showResult: function () {
             var that = this;
@@ -192,13 +199,28 @@ define([
                 $(event.target).removeClass('fa-caret-left');
                 $(event.target).addClass('fa-caret-right');
                 if (!$('#result').is(":visible")) {
-                    $('#result').show("slide", {direction: "right"}, 500);
+                    $('#shadow-map').fadeIn(500);
+                    $('#result').show("slide", {direction: "right"}, 500, function () {
+                        if (Common.Router.selected_occupation) {
+                            $('#result-detail').show("slide", {direction: "right"}, 500);
+                        }
+                    });
                 }
             } else {
                 $(event.target).removeClass('fa-caret-right');
                 $(event.target).addClass('fa-caret-left');
-                if ($('#result').is(":visible")) {
-                    $('#result').hide("slide", {direction: "right"}, 500);
+                if ($('#result-detail').is(":visible")) {
+                    $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
+                        $('#shadow-map').fadeOut(500);
+                        if ($('#result').is(":visible")) {
+                            $('#result').hide("slide", {direction: "right"}, 500);
+                        }
+                    });
+                } else {
+                    if ($('#result').is(":visible")) {
+                        $('#result').hide("slide", {direction: "right"}, 500);
+                    }
+
                 }
             }
         },
@@ -332,20 +354,19 @@ define([
                 this.search_bar_hidden = true;
             }
         },
-        toggleOccupation: function () {
+        exitOccupation: function () {
             var that = this;
             var $cover = $('#shadow-map');
             if ($cover.is(":visible")) {
                 $cover.fadeOut(500);
                 $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    that.toggleProvider();
+                    that.exitResult();
                 });
             } else {
-                that.toggleProvider();
+                that.exitResult();
             }
-
         },
-        toggleProvider: function () {
+        exitResult: function () {
             if ($('#result').is(":visible")) {
                 $('#result-toogle').removeClass('fa-caret-right');
                 $('#result-toogle').addClass('fa-caret-left');

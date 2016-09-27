@@ -5,7 +5,7 @@ define([
     var CourseView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-row',
-        template: _.template('<%- title %>'),
+        template: _.template('<strong><%- national_learners_records_database %></strong> <%- _long_description %>'),
         model: Course,
         events: {
             'click': 'clicked'
@@ -16,7 +16,7 @@ define([
         },
         render: function () {
             this.$el.empty();
-            this.$el.html(this.model.attributes.title);
+            this.$el.html(this.template(this.model.attributes));
             $(this.container).append(this.$el);
         },
         initialize: function (options) {
