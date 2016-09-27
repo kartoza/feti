@@ -6,8 +6,8 @@ define([
 ], function (Common, Occupation, Detail, StepDetail) {
     var OccupationView = Backbone.View.extend({
         tagName: 'div',
-        className: 'result-title',
-        template: _.template('<%- title %>'),
+        className: 'result-title result-title-occupation',
+        template: _.template('<h3><%- title %></h3>'),
         detailTemplate: _.template(Detail),
         stepDetailTemplate: _.template(StepDetail),
         container: '#result-container',
