@@ -17,7 +17,7 @@ class Occupation(models.Model):
     occupation = models.CharField(max_length=150, blank=False, null=False, unique=True)
     green_occupation = models.BooleanField(default=False)
     scarce_skill = models.BooleanField(default=False)
-    description = models.CharField(max_length=500)
+    description = models.TextField(blank=True, null=True)
     tasks = models.TextField(blank=True, null=True)
     occupation_regulation = models.TextField(blank=True, null=True)
     learning_pathway_description = models.TextField(blank=True, null=True)
