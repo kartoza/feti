@@ -83,7 +83,6 @@ define([
             this.pageHistory.push(Backbone.history.getFragment());
         },
         show_map_without_filter: function (mode, query, selected, pathway) {
-            console.log(selected);
             this.show_map(mode, query, "", selected, pathway)
         },
         back: function (own_route) {
