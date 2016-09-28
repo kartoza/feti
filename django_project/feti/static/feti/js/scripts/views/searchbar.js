@@ -233,7 +233,7 @@ define([
                 }
             }
         },
-        locationFilterSelected: function(event){
+        locationFilterSelected: function (event) {
             $('#location').hide();
             $('#cancel-location').show();
 
@@ -413,12 +413,15 @@ define([
         enableFilterResult: function () {
             $('#draw-polygon').removeClass('disabled');
             $('#draw-circle').removeClass('disabled');
+            $('#location').removeClass('disabled');
         },
         disableFilterResult: function () {
             this.cancelDraw('circle');
             this.cancelDraw('polygon');
+            this.cancelLocationClicked();
             $('#draw-polygon').addClass('disabled');
             $('#draw-circle').addClass('disabled');
+            $('#location').addClass('disabled');
         }
     });
 
