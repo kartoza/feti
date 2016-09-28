@@ -14,8 +14,10 @@ define([
             'click #choose-occupation': 'categoryClicked',
             'click #back-home': 'backHomeClicked',
             'click #result-toogle': 'toogleResult',
+            'click #location': 'locationFilterSelected',
             'click #draw-polygon': 'drawModeSelected',
             'click #draw-circle': 'drawModeSelected',
+            'click #cancel-location': 'cancelLocationClicked',
             'click #cancel-draw-polygon': 'cancelDrawClicked',
             'click #cancel-draw-circle': 'cancelDrawClicked',
             'click #clear-draw': 'clearAllDraw'
@@ -231,10 +233,28 @@ define([
                 }
             }
         },
+        locationFilterSelected: function(event){
+            $('#location').hide();
+            $('#cancel-location').show();
+
+            this.cancelDraw('circle');
+            this.cancelDraw('polygon');
+
+            // enable location filter
+            this.parent.enableLocationFilter();
+        },
+        cancelLocationClicked: function () {
+            $('#location').show();
+            $('#cancel-location').hide();
+
+            // disable location filter
+            this.parent.disableLocationFilter();
+        },
         drawModeSelected: function (event) {
             if (!$(event.target).hasClass('disabled')) {
                 this.cancelDraw('circle');
                 this.cancelDraw('polygon');
+                this.cancelLocationClicked();
 
                 this.$el.find('.search-bar').find('.m-button').removeClass('active');
                 $(event.target).addClass('active');

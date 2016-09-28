@@ -8,7 +8,14 @@ define([
         cache: {},
         initialize: function (options) {
             this.map = options.parent;
+            this.active = false;
             Common.Dispatcher.on('map:click', this.getAdministrativeByLatlng, this);
+        },
+        activate: function () {
+            this.active = true;
+        },
+        deactivate: function () {
+            this.active = false;
         },
         resetBasedLayer: function (layer) {
             var index_layer = this.layer.indexOf(layer);
@@ -35,33 +42,35 @@ define([
         },
         getAdministrativeByLatlng: function (latlng, layer) {
             var that = this;
-            if (layer == null) {
-                layer = this.layer[0];
-            }
-            $.ajax({
-                url: '/api/administrative',
-                data: {
-                    lat: latlng.lat,
-                    lng: latlng.lng,
-                    layer: layer
-                },
-                success: function (data) {
-                    var polygon = that._createPolygon(data);
-                    that.resetBasedLayer(layer);
-                    if (polygon) {
-                        that.polygons[data.properties.layer] = polygon;
-                    }
-                    that.setCurrentAdm();
-                    if (that.current_adm == "") {
-                        that.map.searchBarView.searchRouting('');
-                    } else {
-                        that.map.searchBarView.searchRouting('administrative=' + that.current_adm);
-                    }
-                    that.showPolygon(that.current_adm);
-                },
-                error: function (request, error) {
+            if(this.active) {
+                if (layer == null) {
+                    layer = this.layer[0];
                 }
-            });
+                $.ajax({
+                    url: '/api/administrative',
+                    data: {
+                        lat: latlng.lat,
+                        lng: latlng.lng,
+                        layer: layer
+                    },
+                    success: function (data) {
+                        var polygon = that._createPolygon(data);
+                        that.resetBasedLayer(layer);
+                        if (polygon) {
+                            that.polygons[data.properties.layer] = polygon;
+                        }
+                        that.setCurrentAdm();
+                        if (that.current_adm == "") {
+                            that.map.searchBarView.searchRouting('');
+                        } else {
+                            that.map.searchBarView.searchRouting('administrative=' + that.current_adm);
+                        }
+                        that.showPolygon(that.current_adm);
+                    },
+                    error: function (request, error) {
+                    }
+                });
+            }
         },
         getAdministrativeByString: function (string) {
             var that = this;
