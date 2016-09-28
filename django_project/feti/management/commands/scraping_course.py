@@ -21,35 +21,8 @@ def create_course(data):
 
     if "id" in data:
         print(("insert to database : %s" % data).encode('utf-8'))
-        try:
-            course = Course.objects.get(
-                national_learners_records_database=int(data['id']))
-        except Course.DoesNotExist:
-            course = Course()
-        course.national_learners_records_database = int(data['id'])
-        course.course_description = data['title']
-        # get NQF
-        nqf = None
-        if "TBA" not in data['nqf level'] and "N/A:" not in data['nqf level']:
-            data['nqf level'] = data['nqf level'].split(" ")[2]
-            try:
-                nqf = NationalQualificationsFramework.objects.get(level=int(data['nqf level']))
-            except NationalQualificationsFramework.DoesNotExist:
-                nqf = None
-        # get NQF
-        field = data['field'].replace("0", "").split("-")
-        field[0] = cleaning(field[0])
-        field_class = int(field[0].split(" ")[1])
-        try:
-            fof = FieldOfStudy.objects.get(field_of_study_class=field_class)
-        except FieldOfStudy.DoesNotExist:
-            fof = FieldOfStudy()
-            fof.field_of_study_class = field[0]
-            fof.field_of_study_description = field[1]
-
-        course.national_qualifications_framework = nqf
-        course.field_of_study = fof
-
+        # getting education_training_quality_assurance
+        education_training_quality_assurance = None
         if 'primary or delegated qa functionary' in data:
             edu_data = data['primary or delegated qa functionary'].split("-")
             if len(edu_data) == 2 and len(edu_data[0]) <= 30:
@@ -61,8 +34,43 @@ def create_course(data):
                     education_training_quality_assurance.acronym = edu_data[0].strip()
                     education_training_quality_assurance.body_name = edu_data[1].strip()
                     education_training_quality_assurance.save()
-                course.education_training_quality_assurance = education_training_quality_assurance
+        # get NQF
+        nqf = None
+        if "TBA" not in data['nqf level'] and "N/A:" not in data['nqf level']:
+            data['nqf level'] = data['nqf level'].split(" ")[2]
+            try:
+                nqf = NationalQualificationsFramework.objects.get(level=int(data['nqf level']))
+            except NationalQualificationsFramework.DoesNotExist:
+                nqf = None
 
+        # get FOF
+        field = data['field'].replace("0", "").split("-")
+        field[0] = cleaning(field[0])
+        field_class = int(field[0].split(" ")[1])
+        try:
+            fof = FieldOfStudy.objects.get(field_of_study_class=field_class)
+        except FieldOfStudy.DoesNotExist:
+            fof = FieldOfStudy()
+            fof.field_of_study_class = field_class
+            fof.field_of_study_description = field[1]
+            fof.save()
+
+        # check current course
+        try:
+            course = Course.objects.get(
+                national_learners_records_database=int(data['id']),
+                course_description=data['title'],
+                education_training_quality_assurance=education_training_quality_assurance,
+                national_qualifications_framework=nqf,
+                field_of_study=fof)
+        except Course.DoesNotExist:
+            course = Course()
+
+        course.education_training_quality_assurance = education_training_quality_assurance
+        course.national_learners_records_database = int(data['id'])
+        course.course_description = data['title']
+        course.national_qualifications_framework = nqf
+        course.field_of_study = fof
         course.save()
 
 
