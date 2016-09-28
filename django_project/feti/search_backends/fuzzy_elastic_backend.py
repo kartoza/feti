@@ -34,13 +34,11 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
         try:
             search_kwargs["min_score"]
         except KeyError:
-            search_kwargs["min_score"] = 0.6
+            search_kwargs["min_score"] = 2
 
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             search_kwargs['query']['filtered']['query']['query_string'][
                 'fuzziness'] = 'AUTO'
-            search_kwargs['query']['filtered']['query']['query_string'][
-                'minimum_should_match'] = '95%'
 
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             search_kwargs['query']['filtered']['query']['query_string'][

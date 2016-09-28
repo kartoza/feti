@@ -43,6 +43,7 @@ define([
             this.polygonLayer = null;
             this.circleDrawer = null;
             this.circleLayer = null;
+            this._tooltip = null;
 
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
@@ -55,7 +56,8 @@ define([
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
-            Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
+            Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this)
+
         },
         backHome: function () {
             Common.Router.navigate('', true);
@@ -122,6 +124,11 @@ define([
                     })
                 }).bindPopup("<b>My location</b>").addTo(this.map);
             }
+
+        },
+        onMouseMove: function (e) {
+            var latlng = e.latlng;
+            this._tooltip.updatePosition(latlng);
         },
         drawCreated: function (e) {
             var type = e.layerType,
@@ -162,6 +169,25 @@ define([
         disableCircleDrawer: function () {
             this.isDrawing = false;
             this.circleDrawer.disable();
+        },
+        enableLocationFilter: function () {
+            $('.leaflet-container').css('cursor','pointer');
+            this.layerAdministrativeView.activate();
+
+            // Add tooltip
+            this._tooltip = new L.Tooltip(this.map);
+            this._tooltip.updateContent({
+				text: 'Click the map to show boundary'
+			});
+            this.map.on('mousemove', this.onMouseMove, this);
+        },
+        disableLocationFilter: function () {
+            $('.leaflet-container').css('cursor','');
+            this.layerAdministrativeView.deactivate();
+
+            // Remove tooltip
+			this._tooltip = null;
+            this.map.off('mousemove', this.onMouseMove, this)
         },
         clearAllDrawnLayer: function () {
             this.drawnItems.eachLayer(function (layer) {
