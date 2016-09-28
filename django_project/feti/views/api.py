@@ -95,7 +95,9 @@ class ApiCampus(SearchCampus):
             SQ(campus_auto=q) |
             SQ(provider_primary_institution=q)).models(Campus).load_all()
 
-        sqs = sqs.load_all_queryset(Campus, Campus.objects.filter(location__isnull=False))
+        sqs = sqs.load_all_queryset(Campus, Campus.objects.filter(
+            location__isnull=False,
+            courses__isnull=False))
         return sqs
 
     def additional_filter(self, model, query):
