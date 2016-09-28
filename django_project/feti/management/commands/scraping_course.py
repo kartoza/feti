@@ -1,5 +1,5 @@
 import urllib
-
+from urllib.error import HTTPError
 from django.core.management.base import BaseCommand
 from feti.models.course import Course
 from feti.models.field_of_study import FieldOfStudy
@@ -88,6 +88,7 @@ class Command(BaseCommand):
         # ----------------------------------------------------------
         # http://regqs.saqa.org.za/search.php
         # ----------------------------------------------------------
+        trying = 0
         increment = 20
         searchResultsATfirst = 0
         while True:
@@ -105,29 +106,36 @@ class Command(BaseCommand):
             data = urllib.parse.urlencode(values)
             data = data.encode('ascii')  # data should be bytes
             req = urllib.request.Request(url, data)
-            with urllib.request.urlopen(req) as response:
-                html_doc = response.read()
-                html = beautify(html_doc)
+            try:
+                with urllib.request.urlopen(req) as response:
+                    html_doc = response.read()
+                    html = beautify(html_doc)
 
-                # check emptiness
-                items = html.findAll("table")
-                last_table = str(items[len(items) - 1])
-                if not "Next" in last_table and not "Prev" in last_table:
-                    print("it is empty")
-                    break
-                # extract courses
-                rows = html.findAll('tr')
-                course = {}
-                for row in rows:
-                    tds = row.findAll('td')
-                    if len(tds) == 2 and tds[0].string != None:
+                    # check emptiness
+                    items = html.findAll("table")
+                    last_table = str(items[len(items) - 1])
+                    if not "Next" in last_table and not "Prev" in last_table:
+                        print("it is empty")
+                        break
+                    # extract courses
+                    rows = html.findAll('tr')
+                    course = {}
+                    for row in rows:
+                        tds = row.findAll('td')
+                        if len(tds) == 2 and tds[0].string != None:
 
-                        key = str(tds[0].string).replace(":", "").strip().lower()
-                        value = str(tds[1].a.string).strip().lower() if tds[1].a != None else str(tds[1].string).strip()
-                        course[key] = cleaning(value)
+                            key = str(tds[0].string).replace(":", "").strip().lower()
+                            value = str(tds[1].a.string).strip().lower() if tds[1].a != None else str(
+                                tds[1].string).strip()
+                            course[key] = cleaning(value)
 
-                        if "title" in tds[0].string.lower():
-                            if "title" in course:
-                                create_course(course)
+                            if "title" in tds[0].string.lower():
+                                if "title" in course:
+                                    create_course(course)
+                trying = 0
+            except HTTPError as e:
+                print("connection error, trying again - %d" % trying)
+                trying += 1
 
-            searchResultsATfirst += increment
+            if trying == 0 or trying >= 3:
+                searchResultsATfirst += increment
