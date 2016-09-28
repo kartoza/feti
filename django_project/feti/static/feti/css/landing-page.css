@@ -121,6 +121,15 @@
     top: 1px;
 }
 
+.m-button.disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.m-button.disabled:hover {
+    background-color: rgba(255, 255, 255, 0.0);
+}
+
 .row {
     margin-right: 0;
     margin-left: 0;
@@ -320,10 +329,6 @@
 
 .result-toogle:hover {
     opacity: 0.7;
-}
-
-.result-row:hover, .result-title:hover {
-    opacity: 0.9;
 }
 
 /* CUSTOMIZE THE CAROUSEL
@@ -531,6 +536,37 @@
     font-weight: 500;
 }
 
-.result-title-occupation{
-    padding: 15px 20px 15px 20px;
+.result-title:hover, .result-row:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.result-title-occupation {
+    padding-left: 0px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.selected-indicator-right {
+    width: 20px;
+    height: 30px;
+}
+
+.selected-indicator-right .fa {
+    color: rgba(29, 104, 179, 1);
+    font-size: 30px;
+    display: none;
+}
+
+.result-title-occupation .selected-indicator-right {
+    float: left;
+}
+
+.result-title-occupation .title {
+    font-size: 16px;
+    color: #515151;
+    font-weight: 600;
+    line-height: 20px;
+    margin-top: 6px;
+    margin-bottom: 0;
+    float: left;
 }

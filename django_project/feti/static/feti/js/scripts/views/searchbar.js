@@ -105,7 +105,11 @@ define([
             var mode = that.categorySelected();
             if (mode == "occupation") {
                 this.clearAllDrawWithoutRouting();
+                this.disableFilterResult();
+            } else {
+                this.enableFilterResult();
             }
+
             var query = that.$search_bar_input.val();
             new_url.push(mode);
             if (query) {
@@ -199,7 +203,9 @@ define([
                 $(event.target).removeClass('fa-caret-left');
                 $(event.target).addClass('fa-caret-right');
                 if (!$('#result').is(":visible")) {
-                    $('#shadow-map').fadeIn(500);
+                    if (this.categorySelected() == 'occupation') {
+                        $('#shadow-map').fadeIn(500);
+                    }
                     $('#result').show("slide", {direction: "right"}, 500, function () {
                         if (Common.Router.selected_occupation) {
                             $('#result-detail').show("slide", {direction: "right"}, 500);
@@ -217,6 +223,7 @@ define([
                         }
                     });
                 } else {
+                    $('#shadow-map').fadeOut(500);
                     if ($('#result').is(":visible")) {
                         $('#result').hide("slide", {direction: "right"}, 500);
                     }
@@ -225,12 +232,18 @@ define([
             }
         },
         drawModeSelected: function (event) {
-            this.$el.find('.search-bar').find('.m-button').removeClass('active');
-            $(event.target).addClass('active');
-            var selected = $(event.target).get(0).id;
+            if (!$(event.target).hasClass('disabled')) {
+                this.cancelDraw('circle');
+                this.cancelDraw('polygon');
 
-            var drawer = this._drawer[selected.split('-').pop()];
-            drawer.call(this);
+                this.$el.find('.search-bar').find('.m-button').removeClass('active');
+                $(event.target).addClass('active');
+                var selected = $(event.target).get(0).id;
+
+                var drawer = this._drawer[selected.split('-').pop()];
+                drawer.call(this);
+                this.clearAllDraw();
+            }
         },
         _initializeDrawPolygon: function () {
             $('#draw-polygon').hide();
@@ -376,6 +389,16 @@ define([
             } else {
                 Common.Dispatcher.trigger('map:exitFullScreen');
             }
+        },
+        enableFilterResult: function () {
+            $('#draw-polygon').removeClass('disabled');
+            $('#draw-circle').removeClass('disabled');
+        },
+        disableFilterResult: function () {
+            this.cancelDraw('circle');
+            this.cancelDraw('polygon');
+            $('#draw-polygon').addClass('disabled');
+            $('#draw-circle').addClass('disabled');
         }
     });
 
