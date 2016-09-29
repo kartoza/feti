@@ -86,6 +86,7 @@ PIPELINE_CSS = {
     'landing_page': {
         'source_filenames': (
             'feti/css/landing-page.css',
+            'feti/css/responsive-tab.css',
         ),
         'output_filename': 'css/landing-page.css',
         'extra_context': {
