@@ -192,6 +192,29 @@
     text-align: center;
     z-index: 99998;
     position: relative;
+    border-bottom: 1px solid #ddd;
+}
+
+.search-category .col {
+    height: 55px;
+}
+
+.search-category .col p {
+    line-height: 55px;
+}
+
+.search-category .col .nav {
+    position: absolute;
+    bottom: 0;
+    border-bottom-width: 0 !important;
+    font-weight: lighter;
+    font-size: 13pt;
+}
+
+.search-category .nav-tabs>li.active>a {
+    background-color: rgba(51, 118, 186, 1);
+    border-bottom-width: 0;
+    color: white;
 }
 
 #map-search {
@@ -235,7 +258,7 @@
     display: inline-block;
     margin-right: 20px;
     margin-top: 11px;
-    width: 30%;
+    width: 100%;
 }
 
 #search-bar i {
@@ -561,6 +584,8 @@
     float: left;
 }
 
+
+
 .result-title-occupation .title {
     font-size: 16px;
     color: #515151;
@@ -570,3 +595,10 @@
     margin-bottom: 0;
     float: left;
 }
+
+@media (min-width:320px)  { /* smartphones, iPhone, portrait 480x320 phones */ }
+@media (min-width:481px)  { /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ }
+@media (min-width:641px)  { /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ }
+@media (min-width:961px)  { /* tablet, landscape iPad, lo-res laptops ands desktops */ }
+@media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }
+@media (min-width:1281px) { /* hi-res laptops and desktops */ }

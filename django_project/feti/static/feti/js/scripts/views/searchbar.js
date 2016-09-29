@@ -305,7 +305,7 @@ define([
             $('#clear-draw').show();
         },
         categorySelected: function () {
-            var button = this.$el.find('.search-category').find('.m-button.active');
+            var button = this.$el.find('.search-category').find('.search-option.active');
             if (button[0]) {
                 return $(button[0]).attr("data-mode");
             } else {
@@ -320,9 +320,9 @@ define([
             this.parent.layerAdministrativeView.resetBasedLayer();
         },
         changeCategoryButton: function (mode) {
-            this.$el.find('.search-category').find('.m-button').removeClass('active');
+            this.$el.find('.search-category').find('.search-option').removeClass('active');
             var $button = null;
-            var highlight = "Choose what are you looking for";
+            var highlight = "";
             if (mode == "provider") {
                 $button = this.$provider_button;
                 highlight = 'Search for provider';
