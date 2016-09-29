@@ -94,9 +94,11 @@ define([
             $('.ui-autocomplete').css('width', width);
         },
         categoryClicked: function (event) {
-            this.changeCategoryButton($(event.target).data("mode"));
-            this.searchRouting();
-            this.trigger('categoryClicked', event);
+            if(!$(event.target).parent().hasClass('active')) {
+                this.changeCategoryButton($(event.target).parent().data("mode"));
+                this.searchRouting();
+                this.trigger('categoryClicked', event);
+            }
         },
         backHomeClicked: function (e) {
             this.exitOccupation(e);

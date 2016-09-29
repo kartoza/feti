@@ -217,6 +217,13 @@
     }
 }
 
+@media (min-width:768px)  {
+    .search-category .col p {
+        font-size: 14pt;
+        font-weight: bolder;
+    }
+}
+
 .search-category .nav-tabs>li.active>a {
     background-color: rgba(51, 118, 186, 1);
     border-bottom-width: 0;

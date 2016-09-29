@@ -20,6 +20,9 @@
         position: absolute;
         bottom: 0;
     }
+    .responsive-tabs.nav-tabs.open > li a {
+        border-bottom-color: #ddd !important;
+    }
 }
 @media (min-width:481px)  { /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ }
 @media (min-width:768px)  { /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */
@@ -43,6 +46,9 @@
         border-bottom-width: 0 !important;
         font-weight: lighter;
         font-size: 13pt;
+    }
+    .responsive-tabs.nav-tabs.open > li a {
+        border-bottom-color: rgba(51, 118, 186, 1) !important;
     }
 
 }
@@ -95,7 +101,6 @@
 }
 .responsive-tabs.nav-tabs.open > li a {
     border-radius: 0;
-    border-bottom-color: #ddd !important;
 }
 .responsive-tabs.nav-tabs.open > li:first-of-type a {
     border-radius: 2px 2px 0 0;
