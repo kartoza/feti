@@ -19,9 +19,9 @@
     </div>
 
     <div class="search-bar">
-            <div class="col-md-3">
+            <div class="col-md-2">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <span id="search-bar" class="right-inner-addon">
                    <i class="icon-search fa fa-search"></i>
                    <input id="search-bar-input"
@@ -32,34 +32,37 @@
                           name="search_input"/>
                 </span>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
+                <div class="filter pull-left">
+                    <span class="m-button map-option" id="location">
+                    Location
+                    </span>
+                    <span class="m-button map-option cancel-button" id="cancel-location" style="display: none">
+                        Cancel
+                    </span>
+                    <span class="m-button map-option" id="draw-polygon">
+                        Draw polygon
+                    </span>
+                    <span class="m-button map-option cancel-button" id="cancel-draw-polygon" style="display: none">
+                        Cancel draw
+                    </span>
+                    <span class="m-button map-option" id="draw-circle">
+                        Draw circle
+                    </span>
+                    <span class="m-button map-option cancel-button" id="cancel-draw-circle" style="display: none">
+                        Cancel draw
+                    </span>
+                    <span class="m-button map-option clear-button" id="clear-draw" style="display: none;">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </span>
+                </div>
             </div>
+
             <!--
-            <span class="m-button map-option" id="location">
-                Location
-            </span>
-            <span class="m-button map-option cancel-button" id="cancel-location" style="display: none">
-                Cancel
-            </span>
-            <span class="m-button map-option" id="draw-polygon">
-                Draw polygon
-            </span>
-            <span class="m-button map-option cancel-button" id="cancel-draw-polygon" style="display: none">
-                Cancel draw
-            </span>
-            <span class="m-button map-option" id="draw-circle">
-                Draw circle
-            </span>
-            <span class="m-button map-option cancel-button" id="cancel-draw-circle" style="display: none">
-                Cancel draw
-            </span>
             <span class="m-button map-option disabled" id="travel-line">
                 Travel line
             </span>
             -->
-            <span class="m-button map-option clear-button" id="clear-draw" style="display: none;">
-                <i class="fa fa-trash" aria-hidden="true"></i>
-            </span>
         <i id="result-toogle" class="result-toogle fa fa-caret-left" aria-hidden="true"></i>
     </div>
 </form>

@@ -44,8 +44,8 @@ define([
                 polygon: this._initializeDrawPolygon,
                 circle: this._initializeDrawCircle
             };
-
-            $('.nav.nav-tabs').responsiveTabs();
+            this.addResponsiveTab($('.nav.nav-tabs'));
+            this.search_query = {};
         },
         render: function () {
             this.$el.empty();
@@ -94,8 +94,10 @@ define([
             $('.ui-autocomplete').css('width', width);
         },
         categoryClicked: function (event) {
+            event.preventDefault();
             if(!$(event.target).parent().hasClass('active')) {
                 this.changeCategoryButton($(event.target).parent().data("mode"));
+                this.$search_bar_input.val('');
                 this.searchRouting();
                 this.trigger('categoryClicked', event);
             }
@@ -117,19 +119,24 @@ define([
             }
 
             var query = that.$search_bar_input.val();
+            if(!query && mode in this.search_query) {
+                query = this.search_query[mode];
+            }
+            if(query=="") {
+                this._hideResultContainer($('#result-toogle'));
+            }
             new_url.push(mode);
-            if (query) {
-                new_url.push(query);
-                if (filter) {
-                    new_url.push(filter);
-                } else {
-                    // Get coordinates query from map
-                    var coordinates = this.parent.getCoordinatesQuery();
-                    if (coordinates) {
-                        new_url.push(coordinates);
-                    }
+            new_url.push(query);
+            if (filter) {
+                new_url.push(filter);
+            } else {
+                // Get coordinates query from map
+                var coordinates = this.parent.getCoordinatesQuery();
+                if (coordinates) {
+                    new_url.push(coordinates);
                 }
             }
+            this.search_query[mode] = query;
             return new_url;
         },
         searchRouting: function (filter) {
@@ -147,31 +154,33 @@ define([
         },
         search: function (mode, query, filter) {
             this.$search_bar_input.val(query);
-            if (!filter) {
-                this.clearAllDraw();
-            } else {
-                var filters = filter.split('&');
+            if(query) {
+                if (!filter) {
+                    this.clearAllDraw();
+                } else {
+                    var filters = filter.split('&');
 
-                if (filters[0].split('=').pop() == 'polygon') { // if polygon
-                    var coordinates_json = JSON.parse(filters[1].split('=').pop());
-                    var coordinates = [];
-                    _.each(coordinates_json, function (coordinate) {
-                        coordinates.push([coordinate.lat, coordinate.lng]);
-                    });
-                    this.parent.createPolygon(coordinates);
-                } else if (filters[0].split('=').pop() == 'circle') { // if circle
-                    var coords = JSON.parse(filters[1].split('=').pop());
-                    var radius = filters[2].split('=').pop();
-                    this.parent.createCircle(coords, radius);
+                    if (filters[0].split('=').pop() == 'polygon') { // if polygon
+                        var coordinates_json = JSON.parse(filters[1].split('=').pop());
+                        var coordinates = [];
+                        _.each(coordinates_json, function (coordinate) {
+                            coordinates.push([coordinate.lat, coordinate.lng]);
+                        });
+                        this.parent.createPolygon(coordinates);
+                    } else if (filters[0].split('=').pop() == 'circle') { // if circle
+                        var coords = JSON.parse(filters[1].split('=').pop());
+                        var radius = filters[2].split('=').pop();
+                        this.parent.createCircle(coords, radius);
+                    }
                 }
-            }
 
-            // search
-            searchCollection.search(mode, query, filter);
-            this.in_show_result = true;
-            this.$result_loading.show();
-            this.$result_empty.hide();
-            this.showResult();
+                // search
+                searchCollection.search(mode, query, filter);
+                this.in_show_result = true;
+                this.$result_loading.show();
+                this.$result_empty.hide();
+                this.showResult();
+            }
         },
         searchingFinish: function (is_not_empty) {
             this.$result_loading.hide();
@@ -204,37 +213,43 @@ define([
                 }
             }
         },
-        toogleResult: function (event) {
-            if ($(event.target).hasClass('fa-caret-left')) {
-                $(event.target).removeClass('fa-caret-left');
-                $(event.target).addClass('fa-caret-right');
-                if (!$('#result').is(":visible")) {
-                    if (this.categorySelected() == 'occupation') {
-                        $('#shadow-map').fadeIn(500);
-                    }
-                    $('#result').show("slide", {direction: "right"}, 500, function () {
-                        if (Common.Router.selected_occupation) {
-                            $('#result-detail').show("slide", {direction: "right"}, 500);
-                        }
-                    });
+        _showResultContainer: function (div) {
+            div.removeClass('fa-caret-left');
+            div.addClass('fa-caret-right');
+            if (!$('#result').is(":visible")) {
+                if (this.categorySelected() == 'occupation') {
+                    $('#shadow-map').fadeIn(500);
                 }
-            } else {
-                $(event.target).removeClass('fa-caret-right');
-                $(event.target).addClass('fa-caret-left');
-                if ($('#result-detail').is(":visible")) {
-                    $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                        $('#shadow-map').fadeOut(500);
-                        if ($('#result').is(":visible")) {
-                            $('#result').hide("slide", {direction: "right"}, 500);
-                        }
-                    });
-                } else {
+                $('#result').show("slide", {direction: "right"}, 500, function () {
+                    if (Common.Router.selected_occupation) {
+                        $('#result-detail').show("slide", {direction: "right"}, 500);
+                    }
+                });
+            }
+        },
+        _hideResultContainer: function (div) {
+            console.log(div);
+            div.removeClass('fa-caret-right');
+            div.addClass('fa-caret-left');
+            if ($('#result-detail').is(":visible")) {
+                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
                     $('#shadow-map').fadeOut(500);
                     if ($('#result').is(":visible")) {
                         $('#result').hide("slide", {direction: "right"}, 500);
                     }
-
+                });
+            } else {
+                $('#shadow-map').fadeOut(500);
+                if ($('#result').is(":visible")) {
+                    $('#result').hide("slide", {direction: "right"}, 500);
                 }
+            }
+        },
+        toogleResult: function (event) {
+            if ($(event.target).hasClass('fa-caret-left')) {
+                this._showResultContainer($(event.target));
+            } else {
+                this._hideResultContainer($(event.target));
             }
         },
         locationFilterSelected: function (event) {
@@ -351,9 +366,7 @@ define([
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
                 this.$('#result-toogle').show();
-                if (this.in_show_result) {
-                    this.showResult();
-                }
+                this._hideResultContainer($('#result-toogle'));
             } else { // Exit fullscreen
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
@@ -427,18 +440,16 @@ define([
             $('#draw-circle').addClass('disabled');
             $('#location').addClass('disabled');
         },
-        addResponsiveTab: function() {
-            this.addClass('responsive-tabs');
-            this.append($('<span class="glyphicon glyphicon-triangle-bottom"></span>'));
-            this.append($('<span class="glyphicon glyphicon-triangle-top"></span>'));
+        addResponsiveTab: function(div) {
+            div.addClass('responsive-tabs');
 
-            this.on('click', 'li.active > a, span.glyphicon', function() {
-                this.toggleClass('open');
-            }.bind(this));
+            div.on('click', 'li.active > a, span.glyphicon', function() {
+                div.toggleClass('open');
+            }.bind(div));
 
-            this.on('click', 'li:not(.active) > a', function() {
-                this.removeClass('open');
-            }.bind(this));
+            div.on('click', 'li:not(.active) > a', function() {
+                div.removeClass('open');
+            }.bind(div));
         }
     });
 
