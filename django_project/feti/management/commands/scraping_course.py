@@ -1,5 +1,5 @@
 import urllib
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from django.core.management.base import BaseCommand
 from feti.models.course import Course
 from feti.models.field_of_study import FieldOfStudy
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                                 if "title" in course:
                                     create_course(course)
                 trying = 0
-            except HTTPError as e:
+            except (HTTPError, URLError):
                 print("connection error, trying again - %d" % trying)
                 trying += 1
 

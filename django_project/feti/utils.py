@@ -6,7 +6,7 @@ __copyright__ = 'kartoza.com'
 import re
 import urllib
 from bs4 import BeautifulSoup
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 
 def cleaning(text):
@@ -26,7 +26,7 @@ def get_soup(url):
         try:
             html_doc = urllib.request.urlopen(url)
             break
-        except HTTPError:
+        except (HTTPError, URLError):
             trying += 1
             print("connection error, trying again - %d" % trying)
             if trying >= 5:
