@@ -44,8 +44,9 @@ define([
                 polygon: this._initializeDrawPolygon,
                 circle: this._initializeDrawCircle
             };
-            this.addResponsiveTab($('.nav.nav-tabs'));
-            this.search_query = {};
+            this._addResponsiveTab($('.nav.nav-tabs'));
+            this._search_query = {};
+            this._current_filter = '';
         },
         render: function () {
             this.$el.empty();
@@ -75,7 +76,7 @@ define([
                         },
                         error: function (request, error) {
                             that.$search_bar_input.css("cursor", "");
-                        },
+                        }
                     });
                 },
                 minLength: 3,
@@ -119,24 +120,28 @@ define([
             }
 
             var query = that.$search_bar_input.val();
-            if(!query && mode in this.search_query) {
-                query = this.search_query[mode];
+            if(!query && mode in this._search_query) {
+                query = this._search_query[mode];
             }
             if(query=="") {
                 this._hideResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
             new_url.push(query);
+
             if (filter) {
                 new_url.push(filter);
             } else {
                 // Get coordinates query from map
                 var coordinates = this.parent.getCoordinatesQuery();
                 if (coordinates) {
+                    this._current_filter = coordinates;
                     new_url.push(coordinates);
+                } else if(this._current_filter && mode != "occupation") {
+                    new_url.push(this._current_filter);
                 }
             }
-            this.search_query[mode] = query;
+            this._search_query[mode] = query;
             return new_url;
         },
         searchRouting: function (filter) {
@@ -228,7 +233,6 @@ define([
             }
         },
         _hideResultContainer: function (div) {
-            console.log(div);
             div.removeClass('fa-caret-right');
             div.addClass('fa-caret-left');
             if ($('#result-detail').is(":visible")) {
@@ -301,11 +305,7 @@ define([
             this.cancelDraw(shape);
         },
         cancelDraw: function (shape) {
-            if (shape == 'circle') {
-                this.parent.disableCircleDrawer();
-            } else if (shape == 'polygon') {
-                this.parent.disablePolygonDrawer();
-            }
+            shape == 'circle' ? this.parent.disableCircleDrawer(): this.parent.disablePolygonDrawer();
             $('#draw-' + shape).show();
             $('#cancel-draw-' + shape).hide();
             this.$el.find('.search-bar').find('.m-button').removeClass('active');
@@ -314,11 +314,11 @@ define([
             $('#clear-draw').hide();
             // remove all drawn layer in map
             this.parent.clearAllDrawnLayer();
-            this.parent.layerAdministrativeView.resetBasedLayer();
         },
         clearAllDraw: function () {
             this.clearAllDrawWithoutRouting();
             this.searchRouting();
+            this._current_filter = '';
         },
         showClearDrawButton: function () {
             $('#clear-draw').show();
@@ -336,7 +336,6 @@ define([
             this.cancelDraw(shape);
             this.showClearDrawButton();
             this.searchRouting();
-            this.parent.layerAdministrativeView.resetBasedLayer();
         },
         changeCategoryButton: function (mode) {
             this.$el.find('.search-category').find('.search-option').removeClass('active');
@@ -440,7 +439,7 @@ define([
             $('#draw-circle').addClass('disabled');
             $('#location').addClass('disabled');
         },
-        addResponsiveTab: function(div) {
+        _addResponsiveTab: function(div) {
             div.addClass('responsive-tabs');
 
             div.on('click', 'li.active > a, span.glyphicon', function() {

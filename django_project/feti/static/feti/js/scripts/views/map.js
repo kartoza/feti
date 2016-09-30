@@ -73,12 +73,10 @@ define([
                 if (that.isFullScreen) {
                     if (!that.isDrawing) {
                         Common.Dispatcher.trigger('map:click', e.latlng);
-                        that.searchBarView.clearAllDrawWithoutRouting();
                     }
                 }
             });
             this.map.on('dblclick', function (e) {
-                console.log("double click");
             });
 
 
@@ -135,6 +133,7 @@ define([
                 layer = e.layer;
 
             this.drawnItems.addLayer(layer);
+            this.layerAdministrativeView.resetBasedLayer();
 
             if (type === 'polygon') {
                 this.polygonLayer = layer;
@@ -193,6 +192,7 @@ define([
             this.drawnItems.eachLayer(function (layer) {
                 this.drawnItems.removeLayer(layer);
             }, this);
+            this.layerAdministrativeView.resetBasedLayer();
         },
         getCoordinatesQuery: function () {
             var drawnLayers = this.drawnItems.getLayers();
