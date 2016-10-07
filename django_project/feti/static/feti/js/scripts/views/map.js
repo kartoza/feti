@@ -28,6 +28,7 @@ define([
             this.$mapSection = $('.map-section');
             this.$navbar = $('.navbar');
             this.$bodyContent = $("#content");
+            this.$cover = $('#shadow-map');
 
             this.isFullScreen = false;
 
@@ -54,10 +55,15 @@ define([
             // Common Dispatcher events
             Common.Dispatcher.on('map:pan', this.pan, this);
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
+            Common.Dispatcher.on('map:addLayerToMode', this.addAddLayerToModeLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this)
 
+            this.modesLayer = {
+                'provider': L.layerGroup(),
+                'course': L.layerGroup()
+            }
         },
         backHome: function () {
             Common.Router.navigate('', true);
@@ -92,6 +98,7 @@ define([
             this.polygonDrawer = new L.Draw.Polygon(this.map);
 
             this.circleDrawer = new L.Draw.Circle(this.map);
+
 
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw({
@@ -216,8 +223,31 @@ define([
                 }
             }
         },
+        addAddLayerToModeLayer: function (layer) {
+            var mode = Common.CurrentSearchMode;
+            var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
+
+            this.modesLayer[mode].addLayer(layer);
+            if(this.map.hasLayer(this.modesLayer[opposite])) {
+                this.map.removeLayer(this.modesLayer[opposite]);
+            }
+            if(!this.map.hasLayer(this.modesLayer[mode])) {
+                this.map.addLayer(this.modesLayer[mode]);
+            }
+        },
         addLayer: function (layer) {
             this.map.addLayer(layer);
+        },
+        changeSearchLayer: function (fromMode, toMode) {
+            if(this.map.hasLayer(this.modesLayer[fromMode])) {
+                this.map.removeLayer(this.modesLayer[fromMode]);
+            }
+            if(toMode=='occupation') {
+                return;
+            }
+            if(!this.map.hasLayer(this.modesLayer[toMode])) {
+                this.map.addLayer(this.modesLayer[toMode]);
+            }
         },
         removeLayer: function (layer) {
             this.map.removeLayer(layer);
@@ -365,6 +395,20 @@ define([
 
             var draggable = new L.Draggable(this.circleLayer);
             draggable.enable();
+        },
+        showMapCover: function () {
+            if (!this.$cover.is(":visible")) {
+                this.$cover.fadeIn(200);
+            }
+        },
+        hideMapCover: function () {
+            if (this.$cover.is(":visible")) {
+                this.$cover.fadeOut(200);
+            }
+        },
+        showResultContainer: function (mode) {
+            $('#result-container-wrapper').find('.result-container').hide();
+            $('#result-container-'+mode).show();
         }
     });
 

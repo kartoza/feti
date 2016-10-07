@@ -2,8 +2,10 @@ define([
     'text!static/feti/js/scripts/templates/searchbar.html',
     'common',
     '/static/feti/js/scripts/collections/search.js',
+    '/static/feti/js/scripts/collections/campus.js',
+    '/static/feti/js/scripts/collections/course.js',
     '/static/feti/js/scripts/views/sharebar.js'
-], function (searchbarTemplate, Common, searchCollection, SharebarView) {
+], function (searchbarTemplate, Common, searchCollection, campusCollection, courseCollection, SharebarView) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -64,7 +66,7 @@ define([
             this.$search_bar_input.autocomplete({
                 source: function (request, response) {
                     that.$search_bar_input.css("cursor", "wait");
-                    var url = "/api/autocomplete/" + that.categorySelected();
+                    var url = "/api/autocomplete/" + Common.CurrentSearchMode;
                     $.ajax({
                         url: url,
                         data: {
@@ -97,7 +99,9 @@ define([
         categoryClicked: function (event) {
             event.preventDefault();
             if(!$(event.target).parent().hasClass('active')) {
-                this.changeCategoryButton($(event.target).parent().data("mode"));
+                var mode = $(event.target).parent().data("mode");
+                this.parent.changeSearchLayer(Common.CurrentSearchMode, mode);
+                this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.searchRouting();
                 this.trigger('categoryClicked', event);
@@ -111,7 +115,7 @@ define([
             // update route based on query and filter
             var that = this;
             var new_url = ['map'];
-            var mode = that.categorySelected();
+            var mode = Common.CurrentSearchMode;
             if (mode == "occupation") {
                 this.clearAllDrawWithoutRouting();
                 this.disableFilterResult();
@@ -141,7 +145,6 @@ define([
                     new_url.push(this._current_filter);
                 }
             }
-            this._search_query[mode] = query;
             return new_url;
         },
         searchRouting: function (filter) {
@@ -180,11 +183,26 @@ define([
                 }
 
                 // search
-                searchCollection.search(mode, query, filter);
-                this.in_show_result = true;
-                this.$result_loading.show();
-                this.$result_empty.hide();
-                this.showResult();
+                if(query == this._search_query[mode] && (filter == null ? "" : filter) == this._current_filter) {
+                    // no need to search
+                    if(query!="") {
+                        this.showResult();
+                    }
+                } else {
+                    if(mode=='provider') {
+                        campusCollection.search(query, filter);
+                    } else if(mode=='course') {
+                        courseCollection.search(query, filter);
+                    } else {
+                        searchCollection.search(mode, query, filter);
+                    }
+
+                    this._search_query[mode] = query;
+                    this.in_show_result = true;
+                    this.$result_loading.show();
+                    this.$result_empty.hide();
+                    this.showResult();
+                }
             }
         },
         searchingFinish: function (is_not_empty) {
@@ -222,7 +240,7 @@ define([
             div.removeClass('fa-caret-left');
             div.addClass('fa-caret-right');
             if (!$('#result').is(":visible")) {
-                if (this.categorySelected() == 'occupation') {
+                if (Common.CurrentSearchMode == 'occupation') {
                     $('#shadow-map').fadeIn(500);
                 }
                 $('#result').show("slide", {direction: "right"}, 500, function () {
@@ -323,14 +341,6 @@ define([
         showClearDrawButton: function () {
             $('#clear-draw').show();
         },
-        categorySelected: function () {
-            var button = this.$el.find('.search-category').find('.search-option.active');
-            if (button[0]) {
-                return $(button[0]).attr("data-mode");
-            } else {
-                return "";
-            }
-        },
         // Draw Events
         onFinishedCreatedShape: function (shape) {
             this.cancelDraw(shape);
@@ -338,6 +348,9 @@ define([
             this.searchRouting();
         },
         changeCategoryButton: function (mode) {
+            // Shows relevant search result container
+            this.parent.showResultContainer(mode);
+
             this.$el.find('.search-category').find('.search-option').removeClass('active');
             var $button = null;
             var highlight = "";

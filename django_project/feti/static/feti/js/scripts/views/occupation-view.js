@@ -11,7 +11,7 @@ define([
         template: _.template('<div class="selected-indicator-right"><i class="fa fa-caret-right" aria-hidden="true"></i> </div><div class="title"><%- title %></div>'),
         detailTemplate: _.template(Detail),
         stepDetailTemplate: _.template(StepDetail),
-        container: '#result-container',
+        container: '#result-container-occupation',
         model: Occupation,
         events: {
             'click': 'clicked'

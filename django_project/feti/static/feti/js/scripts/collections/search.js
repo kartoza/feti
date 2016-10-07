@@ -5,7 +5,8 @@ define([
     '/static/feti/js/scripts/models/provider.js',
     '/static/feti/js/scripts/views/occupation-view.js',
     '/static/feti/js/scripts/models/occupation.js',
-], function (Common, ProviderView, Provider, OccupationView, Occupation) {
+    '/static/feti/js/scripts/views/courses-view.js',
+], function (Common, ProviderView, Provider, OccupationView, Occupation, CourseView) {
 
     var SearchCollection = Backbone.Collection.extend({
         model: Provider,
@@ -34,10 +35,11 @@ define([
                 parameters.coord = drawnLayers;
             }
 
-            this.model = Provider;
             if (mode == 'provider') {
+                this.model = Provider;
                 this.url = this.provider_url_template(parameters);
             } else if (mode == 'course') {
+                this.model = Provider;
                 this.url = this.course_url_template(parameters);
             } else if (mode == 'occupation') {
                 this.model = Occupation;
@@ -59,18 +61,30 @@ define([
                         Common.Dispatcher.trigger('search:finish', false);
                     } else {
                         _.each(that.models, function (model) {
-                            if (model.attributes.model == 'occupation') {
-                                that.views.push(new OccupationView({
-                                    model: model,
-                                    id: "search_" + model.get('id'),
-                                }));
-                            } else {
-                                that.views.push(new ProviderView({
-                                    model: model,
-                                    id: "search_" + model.get('id'),
-                                }));
-
+                            var view = {};
+                            switch (mode) {
+                                case 'provider':
+                                    view = new ProviderView({
+                                        model: model,
+                                        id: "search_" + model.get('id')
+                                    });
+                                    break;
+                                case 'course':
+                                    view = new CourseView({
+                                        model: model,
+                                        id: "search_" + model.get('id')
+                                    });
+                                    break;
+                                case 'occupation':
+                                    view = new OccupationView({
+                                        model: model,
+                                        id: "search_" + model.get('id')
+                                    });
+                                    break;
+                                default:
+                                    break;
                             }
+                            that.views.push(view);
                         });
                         Common.Dispatcher.trigger('search:finish', true);
                     }

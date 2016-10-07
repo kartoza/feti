@@ -517,7 +517,7 @@
     margin-top: 0px !important;
 }
 
-#result-container {
+.result-container {
     background: #f0efef;
     height: 100%;
     overflow-y: scroll;
