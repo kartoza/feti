@@ -56,7 +56,7 @@ define([
             });
         },
         updateSearchTitle: function (number_result, mode, query) {
-            $('#result-title').find('#result-title-course').remove();
+            $('#result-title').find('#result-title-'+mode).remove();
 
             var $result_title_number = $("<span>", {class: "result-title-number"});
             $result_title_number.html(number_result);
