@@ -35,7 +35,6 @@ define([
             this.url = this.url.replace(/&quot;/g, '"');
 
             this.reset();
-            this.updateSearchTitle('0', 'provider', '');
             this.fetch({
                 success: function (collection, response) {
                     if (that.models.length == 0) {
@@ -49,7 +48,7 @@ define([
                         });
                         Common.Dispatcher.trigger('search:finish', true);
                     }
-                    that.updateSearchTitle(that.models.length, 'provider', parameters['coord']);
+                    that.updateSearchTitle(that.models.length, 'course', parameters['coord']);
                 },
                 error: function () {
                     Common.Dispatcher.trigger('search:finish');
@@ -57,30 +56,19 @@ define([
             });
         },
         updateSearchTitle: function (number_result, mode, query) {
-            $("#result-title-number").html(number_result);
-            $("#result-title-mode").html(mode);
-            if (query.indexOf("administrative") >= 0) {
-                query = query.split("=")[1];
-                query = query.split();
-                query.reverse();
-                $("#result-title-place").html('in ' + query.join().replace(",", ", "));
-            } else if (query.indexOf("circle") >= 0) {
-                var coordinates_index = query.indexOf("coordinate=") + "coordinate=".length;
-                var radius_index = query.indexOf("&radius=");
-                var coordinates = query.substring(coordinates_index, radius_index);
-                radius_index = query.indexOf("&radius=") + "&radius=".length;
-                var radius = parseInt(query.substring(radius_index, query.length));
-                var coordinate = JSON.parse(coordinates);
-                if (radius % 1000 > 1) {
-                    radius = (radius % 1000) + " km"
-                } else {
-                    radius = radius + " meters"
-                }
-                $("#result-title-place").html('in radius ' + radius + ' from [' + coordinate['lat'].toFixed(3) + " , " + coordinate['lng'].toFixed(3) + "]");
-            }
-            else {
-                $("#result-title-place").html('');
-            }
+            $('#result-title').find('#result-title-course').remove();
+
+            var $result_title_number = $("<span>", {class: "result-title-number"});
+            $result_title_number.html(number_result);
+
+            var $result_title_mode = $("<span>", {class: "result-title-number"});
+            $result_title_mode.html(number_result > 0 ? '  campuses': ' campus');
+
+            var $result_title_campus = $("<div>", {id: "result-title-" + mode});
+            $result_title_campus.append($result_title_number);
+            $result_title_campus.append($result_title_mode);
+
+            $('#result-title').append($result_title_campus);
         }
     });
 

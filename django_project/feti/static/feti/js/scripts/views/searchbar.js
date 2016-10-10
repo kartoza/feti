@@ -371,6 +371,7 @@ define([
                 $button.addClass('active');
                 this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
+                this._showResultTitle(mode);
             }
         },
         mapResize: function (is_resizing) {
@@ -383,6 +384,10 @@ define([
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
             }
+        },
+        _showResultTitle: function(mode) {
+            $('#result-title').children().hide();
+            $('#result-title-'+mode).show();
         },
         showSearchBar: function (speed) {
             if (this.search_bar_hidden) {
