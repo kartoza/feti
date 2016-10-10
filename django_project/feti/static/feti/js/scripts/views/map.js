@@ -49,7 +49,7 @@ define([
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
             this.listenTo(this.searchBarView, 'backHome', this.backHome);
-            this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
+            this.listenTo(this.searchBarView, 'categoryClicked', this._onSearchBarCategoryClicked);
 
             this.layerAdministrativeView = new LayerAdministrativeView({parent: this});
             // Common Dispatcher events
@@ -134,6 +134,11 @@ define([
         onMouseMove: function (e) {
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
+        },
+        _onSearchBarCategoryClicked: function(event) {
+            this.fullScreenMap();
+            var mode = $(event.target).parent().data("mode");
+            this._changeSearchLayer(Common.CurrentSearchMode, mode);
         },
         drawCreated: function (e) {
             var type = e.layerType,
@@ -238,13 +243,15 @@ define([
         addLayer: function (layer) {
             this.map.addLayer(layer);
         },
-        changeSearchLayer: function (fromMode, toMode) {
+        _changeSearchLayer: function (fromMode, toMode) {
             if(this.map.hasLayer(this.modesLayer[fromMode])) {
                 this.map.removeLayer(this.modesLayer[fromMode]);
             }
             if(toMode=='occupation') {
+                this.showMapCover();
                 return;
             }
+            this.hideMapCover();
             if(!this.map.hasLayer(this.modesLayer[toMode])) {
                 this.map.addLayer(this.modesLayer[toMode]);
             }

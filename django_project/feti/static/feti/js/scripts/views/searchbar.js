@@ -99,12 +99,11 @@ define([
         categoryClicked: function (event) {
             event.preventDefault();
             if(!$(event.target).parent().hasClass('active')) {
+                this.trigger('categoryClicked', event);
                 var mode = $(event.target).parent().data("mode");
-                this.parent.changeSearchLayer(Common.CurrentSearchMode, mode);
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.searchRouting();
-                this.trigger('categoryClicked', event);
             }
         },
         backHomeClicked: function (e) {
@@ -240,9 +239,6 @@ define([
             div.removeClass('fa-caret-left');
             div.addClass('fa-caret-right');
             if (!$('#result').is(":visible")) {
-                if (Common.CurrentSearchMode == 'occupation') {
-                    $('#shadow-map').fadeIn(500);
-                }
                 $('#result').show("slide", {direction: "right"}, 500, function () {
                     if (Common.Router.selected_occupation) {
                         $('#result-detail').show("slide", {direction: "right"}, 500);
@@ -255,13 +251,11 @@ define([
             div.addClass('fa-caret-left');
             if ($('#result-detail').is(":visible")) {
                 $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    $('#shadow-map').fadeOut(500);
                     if ($('#result').is(":visible")) {
                         $('#result').hide("slide", {direction: "right"}, 500);
                     }
                 });
             } else {
-                $('#shadow-map').fadeOut(500);
                 if ($('#result').is(":visible")) {
                     $('#result').hide("slide", {direction: "right"}, 500);
                 }
