@@ -8,9 +8,13 @@ define([
     var OccupationCollection = Backbone.Collection.extend({
         model: Occupation,
         views: [],
+        mode: 'occupation',
         occupation_url_template: _.template("/api/occupation?q=<%- q %>"),
         url: function () {
             return this.url;
+        },
+        count: function() {
+            return this.views.length;
         },
         reset: function () {
             _.each(this.views, function (view) {
@@ -33,7 +37,7 @@ define([
                 success: function (collection, response) {
                     that.showing_map_cover(true);
                     if (that.models.length == 0) {
-                        Common.Dispatcher.trigger('search:finish', false);
+                        Common.Dispatcher.trigger('search:finish', false, that.mode, 0);
                     } else {
                         _.each(that.models, function (model) {
                             var view = new OccupationView({
@@ -42,9 +46,9 @@ define([
                             });
                             that.views.push(view);
                         });
-                        Common.Dispatcher.trigger('search:finish', true);
+                        Common.Dispatcher.trigger('search:finish', true, that.mode, that.views.length);
                     }
-                    that.updateSearchTitle(that.models.length, 'occupation', parameters['coord']);
+                    that.updateSearchTitle(that.models.length, that.mode, parameters['coord']);
                 },
                 error: function () {
                     Common.Dispatcher.trigger('search:finish');

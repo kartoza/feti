@@ -48,6 +48,7 @@ define([
             this._addResponsiveTab($('.nav.nav-tabs'));
             this._search_query = {};
             this._search_filter = {};
+            this._search_results = {};
         },
         render: function () {
             this.$el.empty();
@@ -136,6 +137,13 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
+                if(mode in this._search_results && this._search_results[mode] > 0) {
+                    this.shareBarView.show();
+                    this.$result_empty.hide();
+                } else {
+                    this.shareBarView.hide();
+                    this.$result_empty.show();
+                }
             }
         },
         occupationClicked: function (id, pathway) {
@@ -173,7 +181,7 @@ define([
                 if(query == this._search_query[mode] && filter == this._search_filter[mode]) {
                     // no need to search
                     if(query!="") {
-                        this.showResult();
+                        this.showResult(mode);
                     }
                 } else {
                     switch (mode) {
@@ -199,9 +207,12 @@ define([
                 }
             }
         },
-        onFinishedSearch: function (is_not_empty) {
+        onFinishedSearch: function (is_not_empty, mode, num) {
             this.$result_loading.hide();
             this.shareBarView.show();
+            if(is_not_empty && mode && num) {
+                this._search_results[mode] = num;
+            }
 
             if (!is_not_empty) { // empty
                 this.shareBarView.hide();
@@ -215,7 +226,7 @@ define([
                 }
             }
         },
-        showResult: function () {
+        showResult: function (mode) {
             var that = this;
             if (this.map_in_fullscreen) {
                 var $toogle = $('#result-toogle');

@@ -8,6 +8,7 @@ define([
     var CampusCollection = Backbone.Collection.extend({
         model: Provider,
         campuses: [],
+        mode: 'provider',
         provider_url_template: _.template("/api/campus?q=<%- q %>&<%- coord %>"),
         url: function () {
             return this.url;
@@ -38,7 +39,7 @@ define([
             this.fetch({
                 success: function (collection, response) {
                     if (that.models.length == 0) {
-                        Common.Dispatcher.trigger('search:finish', false);
+                        Common.Dispatcher.trigger('search:finish', false, that.mode, 0);
                     } else {
                         _.each(that.models, function (model) {
                             that.campuses.push(new ProviderView({
@@ -46,9 +47,9 @@ define([
                                 id: "search_" + model.get('id')
                             }));
                         });
-                        Common.Dispatcher.trigger('search:finish', true);
+                        Common.Dispatcher.trigger('search:finish', true, that.mode, that.campuses.length);
                     }
-                    that.updateSearchTitle(that.models.length, 'provider', parameters['coord']);
+                    that.updateSearchTitle(that.models.length, that.mode, parameters['coord']);
                 },
                 error: function () {
                     Common.Dispatcher.trigger('search:finish');
