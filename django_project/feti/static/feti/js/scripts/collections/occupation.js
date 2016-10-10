@@ -1,19 +1,14 @@
 /*global define */
 define([
     'common',
-    '/static/feti/js/scripts/views/provider-view.js',
-    '/static/feti/js/scripts/models/provider.js',
     '/static/feti/js/scripts/views/occupation-view.js',
-    '/static/feti/js/scripts/models/occupation.js',
-    '/static/feti/js/scripts/views/courses-view.js',
-], function (Common, ProviderView, Provider, OccupationView, Occupation, CourseView) {
+    '/static/feti/js/scripts/models/occupation.js'
+], function (Common, OccupationView, Occupation) {
 
-    var SearchCollection = Backbone.Collection.extend({
-        model: Provider,
+    var OccupationCollection = Backbone.Collection.extend({
+        model: Occupation,
         views: [],
-        provider_url_template: _.template("/api/campus?q=<%- q %>&<%- coord %>"),
-        course_url_template: _.template("/api/course?q=<%- q %>&<%- coord %>"),
-        occupation_url_template: _.template("/api/occupation?q=<%- q %>&<%- coord %>"),
+        occupation_url_template: _.template("/api/occupation?q=<%- q %>"),
         url: function () {
             return this.url;
         },
@@ -24,71 +19,33 @@ define([
             $('#result-container').html("");
             this.views = [];
         },
-        search: function (mode, q, drawnLayers) {
+        search: function (q) {
             var that = this;
             var parameters = {
-                q: q,
-                coord: ''
+                q: q
             };
 
-            if (drawnLayers && drawnLayers.length > 0) {
-                parameters.coord = drawnLayers;
-            }
-
-            if (mode == 'provider') {
-                this.model = Provider;
-                this.url = this.provider_url_template(parameters);
-            } else if (mode == 'course') {
-                this.model = Provider;
-                this.url = this.course_url_template(parameters);
-            } else if (mode == 'occupation') {
-                this.model = Occupation;
-                this.url = this.occupation_url_template(parameters);
-            }
-
+            this.url = this.occupation_url_template(parameters);
             this.url = this.url.replace(/&quot;/g, '"');
 
             this.reset();
-            this.updateSearchTitle('0', mode, '');
+            this.updateSearchTitle('0', 'occupation', '');
             this.fetch({
                 success: function (collection, response) {
-                    if (mode == 'occupation') {
-                        that.showing_map_cover(true);
-                    } else {
-                        that.showing_map_cover(false);
-                    }
+                    that.showing_map_cover(true);
                     if (that.models.length == 0) {
                         Common.Dispatcher.trigger('search:finish', false);
                     } else {
                         _.each(that.models, function (model) {
-                            var view = {};
-                            switch (mode) {
-                                case 'provider':
-                                    view = new ProviderView({
-                                        model: model,
-                                        id: "search_" + model.get('id')
-                                    });
-                                    break;
-                                case 'course':
-                                    view = new CourseView({
-                                        model: model,
-                                        id: "search_" + model.get('id')
-                                    });
-                                    break;
-                                case 'occupation':
-                                    view = new OccupationView({
-                                        model: model,
-                                        id: "search_" + model.get('id')
-                                    });
-                                    break;
-                                default:
-                                    break;
-                            }
+                            var view = new OccupationView({
+                                model: model,
+                                id: "search_" + model.get('id')
+                            });
                             that.views.push(view);
                         });
                         Common.Dispatcher.trigger('search:finish', true);
                     }
-                    that.updateSearchTitle(that.models.length, mode, parameters['coord']);
+                    that.updateSearchTitle(that.models.length, 'occupation', parameters['coord']);
                 },
                 error: function () {
                     Common.Dispatcher.trigger('search:finish');
@@ -137,5 +94,5 @@ define([
         }
     });
 
-    return new SearchCollection();
+    return new OccupationCollection();
 });

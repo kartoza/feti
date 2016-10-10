@@ -1,11 +1,11 @@
 define([
     'text!static/feti/js/scripts/templates/searchbar.html',
     'common',
-    '/static/feti/js/scripts/collections/search.js',
+    '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
     '/static/feti/js/scripts/collections/course.js',
     '/static/feti/js/scripts/views/sharebar.js'
-], function (searchbarTemplate, Common, searchCollection, campusCollection, courseCollection, SharebarView) {
+], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, SharebarView) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -188,12 +188,18 @@ define([
                         this.showResult();
                     }
                 } else {
-                    if(mode=='provider') {
-                        campusCollection.search(query, filter);
-                    } else if(mode=='course') {
-                        courseCollection.search(query, filter);
-                    } else {
-                        searchCollection.search(mode, query, filter);
+                    switch (mode) {
+                        case 'provider':
+                            campusCollection.search(query, filter);
+                            break;
+                        case 'course':
+                            courseCollection.search(query, filter);
+                            break;
+                        case 'occupation':
+                            occupationCollection.search(query);
+                            break;
+                        default:
+                            return;
                     }
 
                     this._search_query[mode] = query;
