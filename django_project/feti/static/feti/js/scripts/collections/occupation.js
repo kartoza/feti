@@ -58,7 +58,7 @@ define([
             $result_title_number.html(number_result);
 
             var $result_title_mode = $("<span>", {class: "result-title-number"});
-            $result_title_mode.html(number_result > 0 ? '  occupations': ' occupation');
+            $result_title_mode.html(parseInt(number_result) > 1 ? '  occupations': ' occupation');
 
             var $result_title_campus = $("<div>", {id: "result-title-" + mode});
             $result_title_campus.append($result_title_number);

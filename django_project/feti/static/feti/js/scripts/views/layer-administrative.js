@@ -61,9 +61,9 @@ define([
                         }
                         that.setCurrentAdm();
                         if (that.current_adm == "") {
-                            that.map.searchBarView.searchRouting('');
+                            that.map.searchBarView.updateSearchRoute('');
                         } else {
-                            that.map.searchBarView.searchRouting('administrative=' + that.current_adm);
+                            that.map.searchBarView.updateSearchRoute('administrative=' + that.current_adm);
                         }
                         that.showPolygon(that.current_adm);
                     },

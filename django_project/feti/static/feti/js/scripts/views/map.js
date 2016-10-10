@@ -55,7 +55,7 @@ define([
             // Common Dispatcher events
             Common.Dispatcher.on('map:pan', this.pan, this);
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
-            Common.Dispatcher.on('map:addLayerToMode', this.addAddLayerToModeLayer, this);
+            Common.Dispatcher.on('map:addLayerToMode', this.addLayerToModeLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this)
@@ -98,7 +98,6 @@ define([
             this.polygonDrawer = new L.Draw.Polygon(this.map);
 
             this.circleDrawer = new L.Draw.Circle(this.map);
-
 
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw({
@@ -228,7 +227,7 @@ define([
                 }
             }
         },
-        addAddLayerToModeLayer: function (layer) {
+        addLayerToModeLayer: function (layer) {
             var mode = Common.CurrentSearchMode;
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
 

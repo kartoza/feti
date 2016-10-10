@@ -11,10 +11,9 @@ define([
         container: '#map-search',
         template: _.template(searchbarTemplate),
         events: {
-            'click #where-to-study': 'categoryClicked',
-            'click #what-to-study': 'categoryClicked',
-            'click #choose-occupation': 'categoryClicked',
-            'click #back-home': 'backHomeClicked',
+            'click #where-to-study': '_categoryClicked',
+            'click #what-to-study': '_categoryClicked',
+            'click #choose-occupation': '_categoryClicked',
             'click #result-toogle': 'toogleResult',
             'click #location': 'locationFilterSelected',
             'click #draw-polygon': 'drawModeSelected',
@@ -39,7 +38,7 @@ define([
             this.parent = options.parent;
             this.initAutocomplete();
             this.shareBarView = new SharebarView({parent: this});
-            Common.Dispatcher.on('search:finish', this.searchingFinish, this);
+            Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
 
             this._drawer = {
@@ -48,7 +47,7 @@ define([
             };
             this._addResponsiveTab($('.nav.nav-tabs'));
             this._search_query = {};
-            this._current_filter = '';
+            this._search_filter = {};
         },
         render: function () {
             this.$el.empty();
@@ -57,7 +56,7 @@ define([
             // form submit
             var that = this;
             $("#search-form").submit(function (e) {
-                that.searchRouting();
+                that.updateSearchRoute();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
@@ -96,21 +95,7 @@ define([
             var width = this.$search_bar_input.css('width');
             $('.ui-autocomplete').css('width', width);
         },
-        categoryClicked: function (event) {
-            event.preventDefault();
-            if(!$(event.target).parent().hasClass('active')) {
-                this.trigger('categoryClicked', event);
-                var mode = $(event.target).parent().data("mode");
-                this.changeCategoryButton(mode);
-                this.$search_bar_input.val('');
-                this.searchRouting();
-            }
-        },
-        backHomeClicked: function (e) {
-            this.exitOccupation(e);
-            this.trigger('backHome', e);
-        },
-        updateRouting: function (filter) {
+        updateSearchRoute: function (filter) {
             // update route based on query and filter
             var that = this;
             var new_url = ['map'];
@@ -138,21 +123,24 @@ define([
                 // Get coordinates query from map
                 var coordinates = this.parent.getCoordinatesQuery();
                 if (coordinates) {
-                    this._current_filter = coordinates;
                     new_url.push(coordinates);
-                } else if(this._current_filter && mode != "occupation") {
-                    new_url.push(this._current_filter);
                 }
             }
-            return new_url;
-        },
-        searchRouting: function (filter) {
-            var new_url = this.updateRouting(filter);
             Backbone.history.navigate(new_url.join("/"), true);
+        },
+        _categoryClicked: function (event) {
+            event.preventDefault();
+            if(!$(event.target).parent().hasClass('active')) {
+                this.trigger('categoryClicked', event);
+                var mode = $(event.target).parent().data("mode");
+                this.changeCategoryButton(mode);
+                this.$search_bar_input.val('');
+                this.updateSearchRoute();
+            }
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
-            var new_url = this.updateRouting();
+            var new_url = this.updateSearchRoute();
             new_url.push(id);
             if (pathway) {
                 new_url.push(pathway);
@@ -182,7 +170,7 @@ define([
                 }
 
                 // search
-                if(query == this._search_query[mode] && (filter == null ? "" : filter) == this._current_filter) {
+                if(query == this._search_query[mode] && filter == this._search_filter[mode]) {
                     // no need to search
                     if(query!="") {
                         this.showResult();
@@ -203,6 +191,7 @@ define([
                     }
 
                     this._search_query[mode] = query;
+                    this._search_filter[mode] = filter;
                     this.in_show_result = true;
                     this.$result_loading.show();
                     this.$result_empty.hide();
@@ -210,7 +199,7 @@ define([
                 }
             }
         },
-        searchingFinish: function (is_not_empty) {
+        onFinishedSearch: function (is_not_empty) {
             this.$result_loading.hide();
             this.shareBarView.show();
 
@@ -335,8 +324,7 @@ define([
         },
         clearAllDraw: function () {
             this.clearAllDrawWithoutRouting();
-            this.searchRouting();
-            this._current_filter = '';
+            this.updateSearchRoute();
         },
         showClearDrawButton: function () {
             $('#clear-draw').show();
@@ -345,7 +333,7 @@ define([
         onFinishedCreatedShape: function (shape) {
             this.cancelDraw(shape);
             this.showClearDrawButton();
-            this.searchRouting();
+            this.updateSearchRoute();
         },
         changeCategoryButton: function (mode) {
             // Shows relevant search result container
