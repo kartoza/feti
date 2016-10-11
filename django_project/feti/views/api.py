@@ -66,12 +66,19 @@ class SearchCampus(APIView):
         if drawn_polygon:
             campuses = campuses.load_all_queryset(
                 Campus,
-                Campus.objects.filter(location__within=drawn_polygon)
+                Campus.objects.filter(
+                    location__within=drawn_polygon,
+                    courses__isnull=False
+                )
             )
         elif drawn_circle:
             campuses = campuses.load_all_queryset(
                 Campus,
-                Campus.objects.filter(location__distance_lt=(drawn_circle, Distance(m=radius))))
+                Campus.objects.filter(
+                    location__distance_lt=(drawn_circle, Distance(m=radius)),
+                    courses__isnull=False
+                )
+            )
 
         serializer = CampusSerializer([x.object for x in campuses], many=True)
         return Response(serializer.data)
