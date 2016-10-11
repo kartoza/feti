@@ -137,6 +137,7 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
+                // hide or show share buttons
                 if(mode in this._search_results && this._search_results[mode] > 0) {
                     this.shareBarView.show();
                     this.$result_empty.hide();
@@ -210,7 +211,7 @@ define([
         onFinishedSearch: function (is_not_empty, mode, num) {
             this.$result_loading.hide();
             this.shareBarView.show();
-            if(is_not_empty && mode && num) {
+            if(mode) {
                 this._search_results[mode] = num;
             }
 
