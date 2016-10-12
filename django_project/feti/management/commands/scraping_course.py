@@ -60,16 +60,6 @@ def create_course(data):
             fof.field_of_study_description = field[1]
             fof.save()
 
-        # # check current course
-        # try:
-        #     course = Course.objects.get(
-        #         national_learners_records_database=int(data['id']),
-        #         course_description=data['title'],
-        #         education_training_quality_assurance=education_training_quality_assurance,
-        #         national_qualifications_framework=nqf,
-        #         field_of_study=fof)
-        # except Course.DoesNotExist:
-
         course = Course()
         course.education_training_quality_assurance = education_training_quality_assurance
         course.national_learners_records_database = int(data['id'])
