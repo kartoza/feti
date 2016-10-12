@@ -17,6 +17,8 @@ from feti.models.provider import Provider
 from feti.models.occupation import Occupation
 from feti.models.learning_pathway import LearningPathway, Step, StepDetail
 from feti.models.url import URL
+from feti.models.education_training_quality_assurance import EducationTrainingQualityAssurance
+from feti.models.national_qualifications_framework import NationalQualificationsFramework
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -51,18 +53,18 @@ class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
     openlayers_url = '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js'
     inlines = [AddressAdminInline]
-    list_display = ('id', 'campus', 'primary_institution', '_complete',)
+    list_display = ('id', 'campus', 'primary_institution', '_complete', '_campus_popup')
     list_filter = ['provider__primary_institution', '_complete']
     search_fields = ['campus', 'provider__primary_institution']
     readonly_fields = ['provider_url']
     fieldsets = (
         ('General Information', {
             'fields': ('provider_url', 'campus', 'location',
-                       'courses')
+                       'courses', '_campus_popup')
         }),
     )
     exclude = ('_long_description', '_complete',
-               '_campus_popup', 'address', 'provider')
+               'address', 'provider')
     filter_horizontal = ['courses']
     related_lookup_fields = {
         'fk': ['provider'],
@@ -208,3 +210,6 @@ admin.site.register(StepDetail, StepDetailAdmin)
 admin.site.register(Address, admin.ModelAdmin)
 admin.site.register(FieldOfStudy, admin.ModelAdmin)
 admin.site.register(URL, URLAdmin)
+
+admin.site.register(EducationTrainingQualityAssurance)
+admin.site.register(NationalQualificationsFramework)

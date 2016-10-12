@@ -103,7 +103,7 @@ class Command(BaseCommand):
                                 (char, page))
                 items = html.findAll("div", {"class": "SearchResultItem"})
                 if len(items) == 0:
-                    # if no item
+                    print('this page is empty')
                     break
                 elif len(items) >= 1:
                     is_empty = False
@@ -128,75 +128,83 @@ class Command(BaseCommand):
 
                             # get detail
                             html = get_soup(item.a.get('href'))
-                            content = str(html.find("div", {"class": "BodyPanel642"}))
-                            content = content.split("<b>Description</b>")[1]
-                            # description
-                            occupation['description'] = beautify(content.split("<b>")[0]).get_text()
-                            occupation['description'] = cleaning(occupation['description'])
+                            body = html.find("div", {"class": "BodyPanel642"})
+                            if body:
+                                content = str(body)
+                                content = content.split("<b>Description</b>")
+                                if len(content) > 1:
+                                    content = content[1]
+                                    # description
+                                    occupation['description'] = beautify(content.split("<b>")[0]).get_text()
+                                    occupation['description'] = cleaning(occupation['description'])
 
-                            # tasks
-                            splits = content.split("<b>Tasks</b>")
-                            occupation['tasks'] = beautify(splits[1].split("<b>")[0]).get_text() \
-                                if len(splits) > 1 else ""
-                            occupation['tasks'] = cleaning(occupation['tasks'])
+                                    # tasks
+                                    splits = content.split("<b>Tasks</b>")
+                                    occupation['tasks'] = beautify(splits[1].split("<b>")[0]).get_text() \
+                                        if len(splits) > 1 else ""
+                                    occupation['tasks'] = cleaning(occupation['tasks'])
 
-                            # Occupation Regulation
-                            splits = content.split("<b>Occupation Regulation</b>")
-                            occupation['occupation_regulation'] = beautify(splits[1].split("<b>")[0]).get_text() \
-                                if len(splits) > 1 else ""
-                            occupation['occupation_regulation'] = cleaning(occupation['occupation_regulation'])
+                                    # Occupation Regulation
+                                    splits = content.split("<b>Occupation Regulation</b>")
+                                    occupation['occupation_regulation'] = beautify(splits[1].split("<b>")[0])\
+                                        .get_text() \
+                                        if len(splits) > 1 else ""
+                                    occupation['occupation_regulation'] = cleaning(occupation['occupation_regulation'])
 
-                            # Learning Pathway Description
-                            splits = content.split("<b>Learning Pathway Description</b>")
-                            occupation['learning_pathway_description'] = beautify(splits[1].split("<a")[0]).get_text() \
-                                if len(splits) > 1 else ""
-                            occupation['learning_pathway_description'] = cleaning(
-                                occupation['learning_pathway_description'])
+                                    # Learning Pathway Description
+                                    splits = content.split("<b>Learning Pathway Description</b>")
+                                    occupation['learning_pathway_description'] = beautify(
+                                        splits[1].split("<a")[0]).get_text() \
+                                        if len(splits) > 1 else ""
+                                    occupation['learning_pathway_description'] = cleaning(
+                                        occupation['learning_pathway_description'])
 
-                            # get learning pathway
-                            pathway_button = html.find("a", {"class": "btn_showLearningPathway"})
-                            if pathway_button:
-                                html = get_soup(pathway_button.get('href'))
-                                wrapper = html.find("div", {"id": "tabwrapper"})
-                                if wrapper:
-                                    pathways = []
-                                    pathways_html = wrapper.findAll("div")
-                                    pathway_number = 1
+                                    # get learning pathway
+                                    pathway_button = html.find("a", {"class": "btn_showLearningPathway"})
+                                    occupation['learning_pathways'] = []
+                                    if pathway_button:
+                                        html = get_soup(pathway_button.get('href'))
+                                        wrapper = html.find("div", {"id": "tabwrapper"})
+                                        if wrapper:
+                                            pathways = []
+                                            pathways_html = wrapper.findAll("div")
+                                            pathway_number = 1
 
-                                    # check every pathways
-                                    for pathway_html in pathways_html:
-                                        if pathway_html.get('id') and 'pathway' in pathway_html.get('id'):
-                                            steps_html = pathway_html.findAll("table")
-                                            steps = []
-                                            step_number = 1
-                                            # get steps
-                                            for step_html in steps_html:
-                                                step_content = step_html.find("div", {"class": "pathItemContent"})
-                                                title = step_content.b.string
-                                                detail = str(step_content).split("<br/>")
-                                                detail = detail[len(detail) - 1]
+                                            # check every pathways
+                                            for pathway_html in pathways_html:
+                                                if pathway_html.get('id') and 'pathway' in pathway_html.get('id'):
+                                                    steps_html = pathway_html.findAll("table")
+                                                    steps = []
+                                                    step_number = 1
+                                                    # get steps
+                                                    for step_html in steps_html:
+                                                        step_content = step_html.\
+                                                            find("div", {"class": "pathItemContent"})
+                                                        title = step_content.b.string
+                                                        detail = str(step_content).split("<br/>")
+                                                        detail = detail[len(detail) - 1]
 
-                                                # assign value
-                                                step = {}
-                                                step['step_number'] = step_number
+                                                        # assign value
+                                                        step = {}
+                                                        step['step_number'] = step_number
 
-                                                # cleaning value
-                                                step['title'] = cleaning(beautify(title).get_text())
-                                                step['detail'] = cleaning(beautify(detail).get_text())
-                                                steps.append(step)
-                                                step_number += 1
+                                                        # cleaning value
+                                                        step['title'] = cleaning(beautify(title).get_text())
+                                                        step['detail'] = cleaning(beautify(detail).get_text())
+                                                        steps.append(step)
+                                                        step_number += 1
 
-                                            pathway = {}
-                                            pathway['pathway_number'] = pathway_number
-                                            pathway['steps'] = steps
-                                            pathways.append(pathway)
-                                            pathway_number += 1
+                                                    pathway = {}
+                                                    pathway['pathway_number'] = pathway_number
+                                                    pathway['steps'] = steps
+                                                    pathways.append(pathway)
+                                                    pathway_number += 1
 
-                            occupation['learning_pathways'] = pathways
+                                            occupation['learning_pathways'] = pathways
 
-                            print(("occupation : %s" % occupation).encode('utf-8'))
-                            # set to database
-                            create_occupation(occupation)
+                                    print(("occupation : %s" % occupation).encode('utf-8'))
+                                    # set to database
+                                    create_occupation(occupation)
                     if is_empty:
                         break
                 page += 1
