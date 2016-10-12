@@ -64,7 +64,10 @@ def scrape_campus(div):
     name = div.a.string
     print("found : %s ----------------------------------------" % name)
     provider['primary_institution'] = name.split('-')[0]
-    campus['campus'] = name.split('-')[1] if name.split('-')[1] else ""
+    try:
+        campus['campus'] = name.split('-')[1]
+    except IndexError:
+        campus['campus'] = ""
 
     # address
     html = get_soup(div.a.get('href'))
@@ -123,11 +126,18 @@ def scrape_campus(div):
     addr = create_address(address, camp)
 
 
-def scrape_all_campuses():
+def scrape_all_campuses(start_page=0, max_page=0):
     # ----------------------------------------------------------
     # http://ncap.careerhelp.org.za/
     # ----------------------------------------------------------
     page = 1
+
+    if start_page > 1:
+        page = start_page
+
+    if max_page < start_page:
+        return
+
     print("GETTING CAMPUSS AND PROVIDE IN http://ncap.careerhelp.org.za/")
     print("----------------------------------------------------------")
     while True:
@@ -150,6 +160,8 @@ def scrape_all_campuses():
             if is_empty:
                 break
         page += 1
+        if page > max_page > 0:
+            break
         print("----------------------------------------------------------")
     print("----------------------------------------------------------")
 
@@ -168,4 +180,4 @@ class Command(BaseCommand):
             elif args[len(args) - 1].lower() == "false":
                 args.pop(len(args) - 1)
 
-        scrape_all_campuses()
+        scrape_all_campuses(0, 1)

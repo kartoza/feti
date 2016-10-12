@@ -146,7 +146,8 @@ class Command(BaseCommand):
 
                                     # Occupation Regulation
                                     splits = content.split("<b>Occupation Regulation</b>")
-                                    occupation['occupation_regulation'] = beautify(splits[1].split("<b>")[0]).get_text() \
+                                    occupation['occupation_regulation'] = beautify(splits[1].split("<b>")[0])\
+                                        .get_text() \
                                         if len(splits) > 1 else ""
                                     occupation['occupation_regulation'] = cleaning(occupation['occupation_regulation'])
 
@@ -177,7 +178,8 @@ class Command(BaseCommand):
                                                     step_number = 1
                                                     # get steps
                                                     for step_html in steps_html:
-                                                        step_content = step_html.find("div", {"class": "pathItemContent"})
+                                                        step_content = step_html.\
+                                                            find("div", {"class": "pathItemContent"})
                                                         title = step_content.b.string
                                                         detail = str(step_content).split("<br/>")
                                                         detail = detail[len(detail) - 1]

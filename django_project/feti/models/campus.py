@@ -122,7 +122,7 @@ class Campus(models.Model):
     def save(self, *args, **kwargs):
         # set up long description
         from_inline = False
-        instance = super(Campus, self).save(*args, **kwargs)
+        super(Campus, self).save(*args, **kwargs)
 
         try:
             self.address_fk
@@ -141,11 +141,14 @@ class Campus(models.Model):
                 self.campus_name.strip()
             )
 
-        if not self.courses.count() or not self.location:
-            # Only mark campuses without courses as incomplete
-            self._complete = False
-        else:
-            self._complete = True
+        try:
+            if not self.courses.count() or not self.location:
+                # Only mark campuses without courses as incomplete
+                self._complete = False
+            else:
+                self._complete = True
+        except ValueError:
+            pass
 
         # set up campus popup
         template = loader.get_template('feti/campus_popup.html')
@@ -201,7 +204,7 @@ class Campus(models.Model):
             if entry.course.id not in course_ids:
                 entry.delete()
 
-        return instance
+        super(Campus, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         # delete campus course entries
