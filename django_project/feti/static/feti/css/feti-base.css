@@ -115,6 +115,7 @@ h6 {
 
 #content {
     margin-top: 0px !important;
+    min-height:100%;
 }
 
 .left-inner-addon {
@@ -211,9 +212,6 @@ p.login-link :hover {
     margin-bottom: 55px;
 }
 
-#content {
-    min-height:100%;
-}
 footer {
     margin-top: -55px;
 }

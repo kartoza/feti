@@ -1,28 +1,56 @@
 h1 {
-    color: white;
-    background-color: #1D68B3;
-    padding: 10px;
-    margin: 0px !important;
+    color: #222020;
+    font-weight: 400 !important;
+    font-size: 30px;
+    margin: 0 !important;
+    padding: 40px 20px 20px;
 }
-
 h4 {
-    color: #1D68B3;
+    color: #1d68b3;
+    font-weight: 400 !important;
 }
-
 #content {
     margin-bottom: 20px;
     margin-top: 20px;
+    background: #f4f4f4;
+    padding: 1px 0;
 }
-
 .section {
-    border: solid 1px rgba(29, 104, 179, 0.5);
-    padding: 0px !important;
+    border-top: 10px solid #1d68b3;
     margin-top: 20px !important;
+    padding: 0 !important;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.15);
+    background: #fff;
+    margin-bottom: 80px;
 }
-
 .section .section-container {
+    border-top: 1px solid #e7e7e7;
     padding-left: 20px;
     padding-right: 20px;
-    border-bottom: solid 1px rgba(29, 104, 179, 0.5);
+    padding-bottom: 20px;
+}
+.providers {
+    color: #616161;
+    font-size: 14px;
+    line-height: 24px;
+}
+.title-holder {
+    vertical-align: middle;
+    padding-top: 20px;
+    margin-bottom: 10px;
+}
+.title-holder img {
+    vertical-align: middle;
+    margin-right: 20px;
+}
+.title-holder h3 {
+    display: inline-block;
+    margin: 0;
+}
 
+.provider-col {
+    display: inline-block;
+    vertical-align: top; /* here */
+    min-height: 160px;
+    max-height: 200px;
 }
