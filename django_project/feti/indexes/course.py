@@ -16,8 +16,8 @@ class CourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='course_description',
         null=True
     )
-    # national_learners_records_database = indexes.CharField(
-    #     model_attr='national_learners_records_database', null=True)
+    national_learners_records_database = indexes.CharField(
+        model_attr='national_learners_records_database', null=True)
 
     class Meta:
         app_label = 'feti'
