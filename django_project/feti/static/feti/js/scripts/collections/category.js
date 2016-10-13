@@ -60,7 +60,11 @@ define([
             $result_title_number.html(number_result);
 
             var $result_title_mode = $("<span>", {class: "result-title-mode"});
-            $result_title_mode.html(parseInt(number_result) > 1 ? '  campuses': ' campus');
+            if(mode == 'occupation') {
+                $result_title_mode.html(parseInt(number_result) > 1 ? '  occupations': ' occupation');
+            } else {
+                $result_title_mode.html(parseInt(number_result) > 1 ? '  campuses': ' campus');
+            }
 
             var $result_title_campus = $("<div>", {id: "result-title-" + mode});
             $result_title_campus.append($result_title_number);

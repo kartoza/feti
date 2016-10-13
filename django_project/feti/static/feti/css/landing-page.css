@@ -505,7 +505,7 @@
     background: white !important;
     padding: 55px 20px 20px 20px !important;
     display: none;
-    z-index: 1002;
+    z-index: 99;
     overflow-y: scroll;
 }
 
@@ -611,4 +611,8 @@
     margin-top: 6px;
     margin-bottom: 0;
     float: left;
+}
+
+.leaflet-top {
+    z-index: 98;
 }

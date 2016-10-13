@@ -96,8 +96,7 @@ define([
             var width = this.$search_bar_input.css('width');
             $('.ui-autocomplete').css('width', width);
         },
-        updateSearchRoute: function (filter) {
-            // update route based on query and filter
+        getSearchRoute: function (filter) {
             var that = this;
             var new_url = ['map'];
             var mode = Common.CurrentSearchMode;
@@ -127,6 +126,11 @@ define([
                     new_url.push(coordinates);
                 }
             }
+            return new_url;
+        },
+        updateSearchRoute: function (filter) {
+            // update route based on query and filter
+            var new_url = this.getSearchRoute(filter);
             Backbone.history.navigate(new_url.join("/"), true);
         },
         _categoryClicked: function (event) {
@@ -137,6 +141,9 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
+                if ($('#result-detail').is(":visible")) {
+                    $('#result-detail').hide("slide", {direction: "right"}, 500);
+                }
                 // hide or show share buttons
                 if(mode in this._search_results && this._search_results[mode] > 0) {
                     this.shareBarView.show();
@@ -149,7 +156,7 @@ define([
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
-            var new_url = this.updateSearchRoute();
+            var new_url = this.getSearchRoute();
             new_url.push(id);
             if (pathway) {
                 new_url.push(pathway);

@@ -10,12 +10,13 @@ define([
             "": "landing_page",
             "login": "login_page",
             "map": "show_map",
-            "map/:mode": "show_map",
+            "map/:mode/": "show_map",
             "map/:mode/:query": "show_map",
             "map/:mode/:query/:filter": "show_map",
             "map/:mode/:query/:filter/:pathway": "show_map",
         },
         initialize: function () {
+            console.log('initialize');
             this.loginView = new LoginView();
             this.loginView.render();
 
