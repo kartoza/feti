@@ -25,13 +25,15 @@
             <h1>Primary Institutes</h1>
             {% for prim_inst in providers %}
                 <div class="section-container">
-                    <h3>{{ prim_inst.primary_institution }}
-                        <a href="/primary-institute/{{ prim_inst.id }}/update/"
-                           class="tiny material-icons" style="font-size: 14px">mode_edit</a></h3>
+                    <div class="title-holder"><img src="{% static 'feti/images/default-logo.png' %}"/><h3>{{ prim_inst.primary_institution }}
+                        <a href="/primary-institute/{{ prim_inst.id }}/update/" class="tiny material-icons" style="font-size: 14px">mode_edit</a></h3>
+                    </div>
+
                     {% if prim_inst.campus %}
-                        <div id="providers" class="row">
+                        <div class="providers">
+                            <div class="row">
                             {% for provider in prim_inst.campus %}
-                                <div class="span3">
+                                <div class="col-md-4">
                                     <p>
                                     <h4>
                                         {% if provider.campus %}
@@ -45,10 +47,15 @@
                                         <p> {{ provider.long_description }}</p>
                                     {% endif %}
                                     {% if provider.address %}
-                                        <p><i> {{ provider.address }}</i></p>
+                                        <p><i><i class="material-icons">location_on</i> {{ provider.address }}</i></p>
                                     {% endif %}
                                 </div>
+                                {% if forloop.counter|divisibleby:3 %}
+                                    </div>
+                                    <div class="row">
+                                {% endif %}
                             {% endfor %}
+                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -61,7 +68,7 @@
             <div class="section-container">
                 <div id="providers" class="row">
                     {% for provider in campus %}
-                        <div class="span3">
+                        <div class="provider-col col-md-4">
                             <p>
                             <h4>{{ provider.campus }}
                                 <a href="/provider/{{ provider.id }}/update/"
