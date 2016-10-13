@@ -8,8 +8,15 @@ __date__ = '24/07/15'
 
 class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    course_long_description = indexes.NgramField(
+    campus_campus = indexes.NgramField(
+        model_attr='campus__campus', indexed=True
+    )
+    course_long_description_auto = indexes.EdgeNgramField(
         model_attr='course__long_description'
+    )
+
+    course_course_description = indexes.EdgeNgramField(
+        model_attr='course__course_description'
     )
 
     class Meta:

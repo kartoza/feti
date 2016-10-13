@@ -15,6 +15,7 @@ from haystack.inputs import Clean
 
 from feti.models.campus import Campus
 from feti.models.occupation import Occupation
+from feti.models.campus_course_entry import CampusCourseEntry
 from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
 
@@ -164,11 +165,11 @@ class ApiAutocomplete(APIView):
         if model == 'provider':
             api = ApiCampus()
             sqs = api.filter_model(query=q)
-            suggestions = [result.campus if q in result.campus.lower()
-                           else result.provider_primary_institution for result in sqs]
+            suggestions = list(set([result.campus if q in result.campus.lower()
+                           else result.provider_primary_institution for result in sqs]))
         elif model == 'course':
-            sqs = SearchQuerySet().autocomplete(course_description_auto=q)[:10]
-            suggestions = [result.course_description for result in sqs if result.national_learners_records_database]
+            sqs = SearchQuerySet().autocomplete(course_course_description=q).models(CampusCourseEntry)[:10]
+            suggestions = list(set([result.course_course_description for result in sqs]))
         elif model == 'occupation':
             api = ApiOccupation()
             sqs = api.filter_model(query=q)
