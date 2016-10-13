@@ -2,7 +2,6 @@
 import abc
 import os
 import json
-from difflib import SequenceMatcher
 from django.db.models import Q
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
@@ -165,8 +164,7 @@ class ApiAutocomplete(APIView):
         if model == 'provider':
             api = ApiCampus()
             sqs = api.filter_model(query=q)
-            suggestions = [result.campus if SequenceMatcher(None, result.campus, q).ratio() > SequenceMatcher(
-                                                            None, result.provider_primary_institution, q).ratio()
+            suggestions = [result.campus if q in result.campus.lower()
                            else result.provider_primary_institution for result in sqs]
         elif model == 'course':
             sqs = SearchQuerySet().autocomplete(course_description_auto=q)[:10]
