@@ -28,6 +28,7 @@ define([
             this.$mapSection = $('.map-section');
             this.$navbar = $('.navbar');
             this.$bodyContent = $("#content");
+            this.$cover = $('#shadow-map');
 
             this.isFullScreen = false;
 
@@ -48,16 +49,21 @@ define([
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
             this.listenTo(this.searchBarView, 'backHome', this.backHome);
-            this.listenTo(this.searchBarView, 'categoryClicked', this.fullScreenMap);
+            this.listenTo(this.searchBarView, 'categoryClicked', this._onSearchBarCategoryClicked);
 
             this.layerAdministrativeView = new LayerAdministrativeView({parent: this});
             // Common Dispatcher events
             Common.Dispatcher.on('map:pan', this.pan, this);
             Common.Dispatcher.on('map:addLayer', this.addLayer, this);
+            Common.Dispatcher.on('map:addLayerToMode', this.addLayerToModeLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this)
 
+            this.modesLayer = {
+                'provider': L.layerGroup(),
+                'course': L.layerGroup()
+            }
         },
         backHome: function () {
             Common.Router.navigate('', true);
@@ -73,12 +79,10 @@ define([
                 if (that.isFullScreen) {
                     if (!that.isDrawing) {
                         Common.Dispatcher.trigger('map:click', e.latlng);
-                        that.searchBarView.clearAllDrawWithoutRouting();
                     }
                 }
             });
             this.map.on('dblclick', function (e) {
-                console.log("double click");
             });
 
 
@@ -130,11 +134,17 @@ define([
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
         },
+        _onSearchBarCategoryClicked: function(event) {
+            this.fullScreenMap();
+            var mode = $(event.target).parent().data("mode");
+            this._changeSearchLayer(Common.CurrentSearchMode, mode);
+        },
         drawCreated: function (e) {
             var type = e.layerType,
                 layer = e.layer;
 
             this.drawnItems.addLayer(layer);
+            this.layerAdministrativeView.resetBasedLayer();
 
             if (type === 'polygon') {
                 this.polygonLayer = layer;
@@ -193,6 +203,7 @@ define([
             this.drawnItems.eachLayer(function (layer) {
                 this.drawnItems.removeLayer(layer);
             }, this);
+            this.layerAdministrativeView.resetBasedLayer();
         },
         getCoordinatesQuery: function () {
             var drawnLayers = this.drawnItems.getLayers();
@@ -216,8 +227,33 @@ define([
                 }
             }
         },
+        addLayerToModeLayer: function (layer) {
+            var mode = Common.CurrentSearchMode;
+            var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
+
+            this.modesLayer[mode].addLayer(layer);
+            if(this.map.hasLayer(this.modesLayer[opposite])) {
+                this.map.removeLayer(this.modesLayer[opposite]);
+            }
+            if(!this.map.hasLayer(this.modesLayer[mode])) {
+                this.map.addLayer(this.modesLayer[mode]);
+            }
+        },
         addLayer: function (layer) {
             this.map.addLayer(layer);
+        },
+        _changeSearchLayer: function (fromMode, toMode) {
+            if(this.map.hasLayer(this.modesLayer[fromMode])) {
+                this.map.removeLayer(this.modesLayer[fromMode]);
+            }
+            if(toMode=='occupation') {
+                this.showMapCover();
+                return;
+            }
+            this.hideMapCover();
+            if(!this.map.hasLayer(this.modesLayer[toMode])) {
+                this.map.addLayer(this.modesLayer[toMode]);
+            }
         },
         removeLayer: function (layer) {
             this.map.removeLayer(layer);
@@ -365,6 +401,20 @@ define([
 
             var draggable = new L.Draggable(this.circleLayer);
             draggable.enable();
+        },
+        showMapCover: function () {
+            if (!this.$cover.is(":visible")) {
+                this.$cover.fadeIn(200);
+            }
+        },
+        hideMapCover: function () {
+            if (this.$cover.is(":visible")) {
+                this.$cover.fadeOut(200);
+            }
+        },
+        showResultContainer: function (mode) {
+            $('#result-container-wrapper').find('.result-container').hide();
+            $('#result-container-'+mode).show();
         }
     });
 

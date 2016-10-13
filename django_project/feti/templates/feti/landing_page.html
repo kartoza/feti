@@ -109,11 +109,13 @@
                             <div id="result-empty">
                                 <h1>No result to show.</h1>
                             </div>
-                            <div id="result-container"></div>
+                            <div class="result-container" id="result-container-provider" style="display: none;"></div>
+                            <div class="result-container" id="result-container-course" style="display: none;"></div>
+                            <div class="result-container" id="result-container-occupation" style="display: none;"></div>
                         </div>
                         <div id="result-title">
-                            <span id="result-title-number">0</span> <span id="result-title-mode">Providers</span> <span
-                                id="result-title-place"></span>
+{#                            <span id="result-title-number">0</span> <span id="result-title-mode">Providers</span> <span#}
+{#                                id="result-title-place"></span>#}
                         </div>
                         <div id="share-container">
                         </div>
@@ -200,6 +202,19 @@
 
     <!-- Django context variables -->
     <script>
+
+        $.fn.responsiveTabs = function() {
+            this.addClass('responsive-tabs');
+
+            this.on('click', 'li.active > a, span.fa', function() {
+                this.toggleClass('open');
+            }.bind(this));
+
+            this.on('click', 'li:not(.active) > a', function() {
+                this.removeClass('open');
+            }.bind(this));
+        };
+
         var user_location = "{{ user.profile.location }}";
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
         var is_login_error = false;

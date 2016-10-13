@@ -33,7 +33,7 @@ define([
                 this.set('marker', marker);
             }
             this.set('layer', L.layerGroup([this.get('marker')]));
-            Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
+            Common.Dispatcher.trigger('map:addLayerToMode', this.get('layer'));
         },
         getUserLocation: function (popup, marker) {
             var marker_location = this.attributes.location;
