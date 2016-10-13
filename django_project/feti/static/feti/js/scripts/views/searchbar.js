@@ -141,6 +141,9 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
+                if ($('#result-detail').is(":visible")) {
+                    $('#result-detail').hide("slide", {direction: "right"}, 500);
+                }
                 // hide or show share buttons
                 if(mode in this._search_results && this._search_results[mode] > 0) {
                     this.shareBarView.show();
