@@ -180,4 +180,4 @@ class Command(BaseCommand):
             elif args[len(args) - 1].lower() == "false":
                 args.pop(len(args) - 1)
 
-        scrape_all_campuses(0, 1)
+        scrape_all_campuses()
