@@ -58,7 +58,7 @@ define([
             Common.Dispatcher.on('map:addLayerToMode', this.addLayerToModeLayer, this);
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
-            Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this)
+            Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
 
             this.modesLayer = {
                 'provider': L.layerGroup(),
