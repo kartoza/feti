@@ -270,6 +270,7 @@ define([
             this.map.panTo(latLng);
         },
         changeCategory: function (mode) {
+            this._changeSearchLayer(Common.CurrentSearchMode, mode);
             this.searchBarView.changeCategoryButton(mode);
         },
         search: function (mode, query, filter) {
