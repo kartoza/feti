@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 PROJECT_ID := feti
+DOMAIN := staging.feti.kartoza.com
 
 # ----------------------------------------------------------------------------
 #    P R O D U C T I O N     C O M M A N D S
@@ -243,6 +244,13 @@ reload:
 	@echo "Reload django project in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)-uwsgi uwsgi --reload  /tmp/django.pid
+
+runcertbot:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Run certbot to get certificate"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)-uwsgi /certbot-auto --non-interactive --agree-tos certonly --webroot --email dimas@kartoza.com -w /var/www/webroot -d $(DOMAIN)
 
 superuser:
 	@echo

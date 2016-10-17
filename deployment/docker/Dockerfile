@@ -41,6 +41,10 @@ RUN pip install uwsgi
 # Problems with current version on pip
 RUN pip install git+https://github.com/django-haystack/django-haystack
 
+# Download cerbort
+RUN wget https://dl.eff.org/certbot-auto
+RUN chmod a+x certbot-auto
+
 # Add latest haystack. uncomment this if we have v 2.4.0
 #RUN wget -c "https://github.com/django-haystack/django-haystack/archive/v2.4.0.zip"
 #RUN apt-get install unzip
