@@ -119,7 +119,6 @@ web:
     - uwsgi:uwsgi
   ports:
     - "63100:8080"
-    - "443:443"
 
 # This is the entry point for a development server.
 # Run with --no-deps to run attached to the services
