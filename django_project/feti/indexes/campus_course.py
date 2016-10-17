@@ -11,6 +11,11 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     campus_campus = indexes.NgramField(
         model_attr='campus__campus', indexed=True
     )
+    campus_location_isnull = indexes.BooleanField()
+    courses_isnull = indexes.BooleanField()
+    campus_provider = indexes.NgramField(
+        model_attr='campus__provider'
+    )
     course_long_description_auto = indexes.EdgeNgramField(
         model_attr='course__long_description'
     )
@@ -18,6 +23,12 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     course_course_description = indexes.EdgeNgramField(
         model_attr='course__course_description'
     )
+
+    def prepare_campus_location_isnull(self, obj):
+        return obj.campus.location is None
+
+    def prepare_courses_isnull(self, obj):
+        return obj.campus.courses is None
 
     class Meta:
         app_label = 'feti'
