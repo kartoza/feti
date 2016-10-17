@@ -399,7 +399,7 @@ define([
                     // change map width
                     var $mapContainer = $('#feti-map');
                     var d = {};
-                    d.width = $mapContainer.width() - 500;
+                    d.width = $mapContainer.width() - $('#result-wrapper').width();
                     d.height = '100%';
                     $mapContainer.animate(d, 20, function () {
                         $mapContainer.css('padding-right', '500px');
