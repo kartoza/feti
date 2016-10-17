@@ -65,6 +65,9 @@ define([
                 'course': L.layerGroup()
             }
         },
+        updateMapSize: function() {
+            this.map._onResize();
+        },
         backHome: function () {
             Common.Router.navigate('', true);
         },
@@ -382,6 +385,56 @@ define([
 
                 // edit url
                 Backbone.history.navigate('/');
+            }
+        },
+        openResultContainer: function (div) {
+
+            div.removeClass('fa-caret-left');
+            div.addClass('fa-caret-right');
+
+            var $result_div = $('#result');
+            var that = this;
+            if (!$result_div.is(":visible")) {
+                $result_div.show("slide", {direction: "right"}, 500, function () {
+                    // change map width
+                    var $mapContainer = $('#feti-map');
+                    var d = {};
+                    d.width = $mapContainer.width() - 500;
+                    d.height = '100%';
+                    $mapContainer.animate(d, 20, function () {
+                        $mapContainer.css('padding-right', '500px');
+                        that.updateMapSize();
+                    });
+                });
+            }
+        },
+        closeResultContainer: function (div) {
+            div.removeClass('fa-caret-right');
+            div.addClass('fa-caret-left');
+
+            var $mapContainer = $('#feti-map');
+            var $result_div = $('#result');
+
+            var d = {};
+            d.width = '100%';
+            d.height = '100%';
+            var that = this;
+
+            $mapContainer.animate(d, 20, function () {
+                $mapContainer.css('padding-right', '0');
+                that.updateMapSize();
+            });
+
+            if ($('#result-detail').is(":visible")) {
+                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
+                    if ($result_div.is(":visible")) {
+                        $result_div.hide("slide", {direction: "right"}, 500);
+                    }
+                });
+            } else {
+                if ($result_div.is(":visible")) {
+                    $result_div.hide("slide", {direction: "right"}, 500);
+                }
             }
         },
         createPolygon: function (coordinates) {

@@ -112,7 +112,7 @@ define([
                 query = this._search_query[mode];
             }
             if(query=="") {
-                this._hideResultContainer($('#result-toogle'));
+                this.parent.closeResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
             new_url.push(query);
@@ -237,49 +237,15 @@ define([
         showResult: function (mode) {
             var that = this;
             if (this.map_in_fullscreen) {
-                var $toogle = $('#result-toogle');
-                if ($toogle.hasClass('fa-caret-left')) {
-                    $toogle.removeClass('fa-caret-left');
-                    $toogle.addClass('fa-caret-right');
-                    if (!$('#result').is(":visible")) {
-                        $('#result').show("slide", {direction: "right"}, 500, function () {
-                            that.in_show_result = false;
-                        });
-                    }
-                }
-            }
-        },
-        _showResultContainer: function (div) {
-            div.removeClass('fa-caret-left');
-            div.addClass('fa-caret-right');
-            if (!$('#result').is(":visible")) {
-                $('#result').show("slide", {direction: "right"}, 500, function () {
-                    if (Common.Router.selected_occupation) {
-                        $('#result-detail').show("slide", {direction: "right"}, 500);
-                    }
-                });
-            }
-        },
-        _hideResultContainer: function (div) {
-            div.removeClass('fa-caret-right');
-            div.addClass('fa-caret-left');
-            if ($('#result-detail').is(":visible")) {
-                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    if ($('#result').is(":visible")) {
-                        $('#result').hide("slide", {direction: "right"}, 500);
-                    }
-                });
-            } else {
-                if ($('#result').is(":visible")) {
-                    $('#result').hide("slide", {direction: "right"}, 500);
-                }
+                var $toggle = $('#result-toogle');
+                this.parent.openResultContainer($toggle);
             }
         },
         toogleResult: function (event) {
             if ($(event.target).hasClass('fa-caret-left')) {
-                this._showResultContainer($(event.target));
+                this.parent.openResultContainer($(event.target));
             } else {
-                this._hideResultContainer($(event.target));
+                this.parent.closeResultContainer($(event.target));
             }
         },
         locationFilterSelected: function (event) {
@@ -386,7 +352,7 @@ define([
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
                 this.$('#result-toogle').show();
-                this._hideResultContainer($('#result-toogle'));
+                this.parent.closeResultContainer($('#result-toogle'));
             } else { // Exit fullscreen
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
