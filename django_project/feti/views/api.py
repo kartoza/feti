@@ -65,23 +65,15 @@ class SearchCampus(APIView):
         campuses = self.filter_model(query)
 
         if drawn_polygon:
-            campuses = campuses.load_all_queryset(
-                Campus,
-                Campus.objects.filter(
-                    location__within=drawn_polygon,
-                    courses__isnull=False
+            campuses = campuses.filter(
+                    location__within=drawn_polygon
                 )
-            )
         elif drawn_circle:
-            campuses = campuses.load_all_queryset(
-                Campus,
-                Campus.objects.filter(
-                    location__distance_lt=(drawn_circle, Distance(m=radius)),
-                    courses__isnull=False
+            campuses = campuses.filter(
+                    location__distance_lt=(drawn_circle, Distance(m=radius))
                 )
-            )
 
-        serializer = CampusSerializer([x.object for x in campuses], many=True)
+        serializer = CampusSerializer(campuses, many=True)
         return Response(serializer.data)
 
     @abc.abstractmethod
@@ -99,14 +91,14 @@ class ApiCampus(SearchCampus):
 
     def filter_model(self, query):
         q = Clean(query)
-        sqs = RelatedSearchQuerySet().filter(
-            SQ(campus_auto=q) |
-            SQ(provider_primary_institution=q)).models(Campus).load_all()
-
-        sqs = sqs.load_all_queryset(Campus, Campus.objects.filter(
-            location__isnull=False,
-            courses__isnull=False))
-        return sqs
+        sqs = SearchQuerySet().filter(
+                SQ(campus_campus=q) |
+                SQ(campus_provider=q),
+                campus_location_isnull='false',
+                courses_isnull='false'
+        ).models(CampusCourseEntry)
+        campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+        return campuses
 
     def additional_filter(self, model, query):
         return model.filter(
@@ -119,12 +111,12 @@ class ApiCourse(SearchCampus):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query):
-        sqs = RelatedSearchQuerySet().filter(
-            courses__course_description=Clean(query)
-        ).models(Campus).load_all()
-
-        sqs = sqs.load_all_queryset(Campus, Campus.objects.filter(location__isnull=False))
-        return sqs
+        sqs = SearchQuerySet().filter(
+            course_course_description=query,
+            campus_location_isnull='false',
+        ).models(CampusCourseEntry)
+        campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+        return campuses
 
     def additional_filter(self, model, query):
         return model.distinct().filter(
@@ -163,10 +155,14 @@ class ApiAutocomplete(APIView):
 
         # read course_strings cache
         if model == 'provider':
-            api = ApiCampus()
-            sqs = api.filter_model(query=q)
-            suggestions = list(set([result.campus if q in result.campus.lower()
-                           else result.provider_primary_institution for result in sqs]))
+            sqs = SearchQuerySet().filter(
+                SQ(campus_campus=q) |
+                SQ(campus_provider=q),
+                campus_location_isnull='false',
+                courses_isnull='false'
+            ).models(CampusCourseEntry)[:10]
+            suggestions = list(set([result.object.campus.campus if q in result.object.campus.campus.lower()
+                           else result.object.campus.provider.primary_institution for result in sqs]))
         elif model == 'course':
             sqs = SearchQuerySet().autocomplete(course_course_description=q).models(CampusCourseEntry)[:10]
             suggestions = list(set([result.course_course_description for result in sqs]))
