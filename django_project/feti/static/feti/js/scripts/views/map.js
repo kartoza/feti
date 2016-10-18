@@ -65,7 +65,8 @@ define([
 
             this.modesLayer = {
                 'provider': L.layerGroup(),
-                'course': L.layerGroup()
+                'course': L.layerGroup(),
+                'favorites': L.layerGroup()
             }
         },
         updateMapSize: function() {

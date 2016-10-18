@@ -13,6 +13,7 @@ define([
             'click #where-to-study': '_categoryClicked',
             'click #what-to-study': '_categoryClicked',
             'click #choose-occupation': '_categoryClicked',
+            'click #favorites': '_categoryClicked',
             'click #result-toogle': 'toogleResult',
             'click #location': 'locationFilterSelected',
             'click #draw-polygon': 'drawModeSelected',
@@ -31,6 +32,7 @@ define([
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
+            this.$favorites_button = $("#favorites");
             this.$clear_draw = $("#clear-draw");
 
             this.search_bar_hidden = true;
@@ -58,7 +60,10 @@ define([
         },
         render: function () {
             this.$el.empty();
-            this.$el.html(this.template());
+            var attributes = {
+                'is_logged_in' : Common.IsLoggedIn
+            };
+            this.$el.html(this.template(attributes));
             $(this.container).append(this.$el);
         },
         initAutocomplete: function () {
@@ -316,13 +321,19 @@ define([
             } else if (mode == "occupation") {
                 $button = this.$occupation_button;
                 highlight = 'Search for occuption';
+            } else if (mode == "favorites") {
+                $button = this.$favorites_button;
+                highlight = '';
+                this.hideSearchBar();
             }
 
             // change placeholder of input
             this.$search_bar_input.attr("placeholder", highlight);
+            if(highlight) {
+                this.showSearchBar(0);
+            }
             if ($button) {
                 $button.addClass('active');
-                this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
                 Common.Dispatcher.trigger('sidebar:change_title', mode);
             }
@@ -358,7 +369,6 @@ define([
         hideSearchBar: function (e) {
             if (!this.search_bar_hidden) {
                 this.$search_bar.slideToggle(500, function () {
-                    Common.Dispatcher.trigger('map:exitFullScreen');
                 });
                 // zoom control animation
                 var $zoom_control = $('.leaflet-control-zoom');
