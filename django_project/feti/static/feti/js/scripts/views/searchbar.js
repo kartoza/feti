@@ -42,6 +42,8 @@ define([
             this.initAutocomplete();
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
+            Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
+            Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
 
             this._drawer = {
                 polygon: this._initializeDrawPolygon,
@@ -51,6 +53,11 @@ define([
             this._search_query = {};
             this._search_filter = {};
             this._search_results = {};
+            this._search_need_update = {
+                'provider' : false,
+                'course': false,
+                'favorite': false
+            };
 
             var that = this;
 
@@ -148,22 +155,35 @@ define([
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
                 if(mode == 'favorites') {
-                    this.openFavorites();
+                    this._openFavorites();
                 } else {
                     $('.search-row').show();
                 }
             }
         },
-        openFavorites: function() {
+        _favoriteAdded: function (mode) {
+            this._search_need_update['favorites'] = true;
+        },
+        _favoriteDeleted: function (mode) {
+            if(mode == 'favorites') {
+                this._getFavorites();
+            }
+            this._search_need_update['provider'] = true;
+        },
+        _openFavorites: function() {
             $('.search-row').hide();
             this.showResult();
-            var mode = 'favorites';
-            if(!(mode in this._search_query)) {
-                favoritesCollection.search();
-                this._search_query[mode] = '';
-                this._search_filter[mode] = '';
-                Common.Dispatcher.trigger('sidebar:show_loading', mode);
+            if(!('favorites' in this._search_query) || this._search_need_update['favorites']) {
+                this._getFavorites();
             }
+        },
+        _getFavorites: function () {
+            var mode = 'favorites';
+            favoritesCollection.search();
+            this._search_query[mode] = '';
+            this._search_filter[mode] = '';
+            Common.Dispatcher.trigger('sidebar:show_loading', mode);
+            this._search_need_update['favorites'] = false;
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
@@ -197,7 +217,7 @@ define([
                 }
 
                 // search
-                if(query == this._search_query[mode] && filter == this._search_filter[mode]) {
+                if(query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
                     if(query!="") {
                         this.showResult(mode);
@@ -218,13 +238,14 @@ define([
                     }
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
+                    this._search_need_update[mode] = false;
                     this.in_show_result = true;
                     Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult();
                 }
             } else {
                 if(mode == 'favorites') {
-                    this.openFavorites();
+                    this._openFavorites();
                 }
             }
         },

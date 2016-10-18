@@ -8,7 +8,7 @@ define([
         tagName: 'div',
         className: 'result-title',
         template: _.template('<img src="/static/feti/images/default-logo.png" width="54" height="54"/><div class="details"><h3><%- title %></h3><p class="courses"><%- counts %> courses <i class="fa fa-angle-down" aria-hidden="true"></i></p></div>'),
-        courses_template: _.template('<div id="<%- id %>-courses" class="collapse"></div>'),
+        courses_template: _.template('<div id="<%- id %>-courses-course" class="collapse"></div>'),
         container: '#result-container-course',
         model: Provider,
         events: {
@@ -22,9 +22,9 @@ define([
             this.$el.html(this.template(this.model.attributes));
             $(this.container).append(this.$el);
             $(this.container).append(this.courses_template(this.model.attributes));
-            this.$elCourses = $("#" + this.model.attributes.id + "-courses");
+            this.$elCourses = $("#" + this.model.attributes.id + "-courses-course");
             // toogling
-            this.$el.attr("href", "#" + this.model.attributes.id + "-courses");
+            this.$el.attr("href", "#" + this.model.attributes.id + "-courses-course");
             this.$el.attr("data-toggle", "collapse");
             this.model.renderMarker();
             this.renderCourses();
@@ -37,7 +37,7 @@ define([
                 var model = new Course(course);
                 that.courses.push(new ProviderCourseView({
                     model: model,
-                    container: "#" + that.model.attributes.id + "-courses"
+                    container: "#" + that.model.attributes.id + "-courses-course"
                 }));
             });
         },

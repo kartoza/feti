@@ -85,3 +85,37 @@ class UpdateUserCampusView(LoginRequiredMixin, UpdateView):
             return HttpResponseForbidden()
 
         return HttpResponse(status)
+
+
+class DeleteUserCampusView(LoginRequiredMixin, UpdateView):
+    model = User
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.body
+
+        # Get campus id from request
+        try:
+            retrieved_data = json.loads(data.decode("utf-8"))
+        except ValueError:
+            raise Http404(
+                'Error json value'
+            )
+        campus_id = retrieved_data['campus']
+
+        # Get campus
+        try:
+            campus = Campus.objects.get(id=campus_id)
+        except Campus.DoesNotExist:
+            raise Http404(
+                'Campus not found'
+            )
+
+        # Add to favorites
+        if user.profile.campus_favorites.filter(id=campus.id).exists():
+            user.profile.campus_favorites.remove(campus)
+            status = 'deleted'
+        else:
+            return HttpResponseForbidden()
+
+        return HttpResponse(status)
