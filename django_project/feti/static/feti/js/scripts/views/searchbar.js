@@ -3,8 +3,9 @@ define([
     'common',
     '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
-    '/static/feti/js/scripts/collections/course.js'
-], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, SharebarView) {
+    '/static/feti/js/scripts/collections/course.js',
+    '/static/feti/js/scripts/collections/favorites.js'
+], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, favoritesCollection) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -116,7 +117,7 @@ define([
             if(!query && mode in this._search_query) {
                 query = this._search_query[mode];
             }
-            if(query=="") {
+            if(query=="" && mode!='favorites') {
                 this.parent.closeResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
@@ -146,7 +147,22 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
-
+                if(mode == 'favorites') {
+                    this.openFavorites();
+                } else {
+                    $('.search-row').show();
+                }
+            }
+        },
+        openFavorites: function() {
+            $('.search-row').hide();
+            this.showResult();
+            var mode = 'favorites';
+            if(!(mode in this._search_query)) {
+                favoritesCollection.search();
+                this._search_query[mode] = '';
+                this._search_filter[mode] = '';
+                Common.Dispatcher.trigger('sidebar:show_loading', mode);
             }
         },
         occupationClicked: function (id, pathway) {
@@ -200,12 +216,15 @@ define([
                         default:
                             return;
                     }
-
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this.in_show_result = true;
                     Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult();
+                }
+            } else {
+                if(mode == 'favorites') {
+                    this.openFavorites();
                 }
             }
         },
@@ -324,14 +343,11 @@ define([
             } else if (mode == "favorites") {
                 $button = this.$favorites_button;
                 highlight = '';
-                this.hideSearchBar();
             }
 
             // change placeholder of input
             this.$search_bar_input.attr("placeholder", highlight);
-            if(highlight) {
-                this.showSearchBar(0);
-            }
+            this.showSearchBar(0);
             if ($button) {
                 $button.addClass('active');
                 Common.CurrentSearchMode = mode;
