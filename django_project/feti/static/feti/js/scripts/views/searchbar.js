@@ -32,8 +32,6 @@ define([
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
-            this.$result_loading = $("#result-loading");
-            this.$result_empty = $("#result-empty");
             this.$clear_draw = $("#clear-draw");
 
             this.search_bar_hidden = true;
@@ -145,16 +143,12 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
-                if ($('#result-detail').is(":visible")) {
-                    $('#result-detail').hide("slide", {direction: "right"}, 500);
-                }
+
                 // hide or show share buttons
                 if(mode in this._search_results && this._search_results[mode] > 0) {
                     this.shareBarView.show();
-                    this.$result_empty.hide();
                 } else {
                     this.shareBarView.hide();
-                    this.$result_empty.show();
                 }
             }
         },
@@ -213,14 +207,13 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this.in_show_result = true;
-                    this.$result_loading.show();
-                    this.$result_empty.hide();
+                    Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult();
                 }
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
-            this.$result_loading.hide();
+            Common.Dispatcher.trigger('sidebar:hide_loading', mode);
             this.shareBarView.show();
             if(mode) {
                 this._search_results[mode] = num;
@@ -228,7 +221,6 @@ define([
 
             if (!is_not_empty) { // empty
                 this.shareBarView.hide();
-                this.$result_empty.show();
             }
             if (Common.Router.selected_occupation) {
                 Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
