@@ -1,7 +1,8 @@
 define([
     'text!static/feti/js/scripts/templates/sidebar.html',
-    'common'
-], function (sidebarTemplate, Common) {
+    'common',
+    '/static/feti/js/scripts/views/sharebar.js'
+], function (sidebarTemplate, Common, SharebarView) {
     var SideBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#result',
@@ -15,10 +16,20 @@ define([
             this.$empty_result_div = $('.result-empty');
             this.$loading_div = $('.result-loading');
             this.$result_title = $('#result-title');
+            this.$result_detail = $('#result-detail');
+            this.sharebar = new SharebarView();
             Common.Dispatcher.on('sidebar:change_title', this.showResultTitle, this);
             Common.Dispatcher.on('sidebar:update_title', this.updateResultTitle, this);
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
+        },
+        showOccupationDetail: function () {
+            this.$result_detail.show("slide", {direction: "right"}, 300);
+        },
+        hideOccupationDetail: function () {
+            if (this.$result_detail.is(":visible")) {
+                this.$result_detail.hide("slide", {direction: "right"}, 300);
+            }
         },
         render: function () {
             $(this.container).append(this.template());
@@ -33,27 +44,42 @@ define([
         close: function () {
             this._isOpen = false;
             $(this.container).hide("slide", {direction: "right"}, 500);
+            this.hideOccupationDetail();
         },
         addLoadingView: function (mode) {
             this.clearContainerDiv(mode);
+            this.$result_title.find('#result-title-'+mode).remove();
             $('#result-container-'+mode).append(this.$loading_div.show());
         },
         showEmptyResult: function (mode) {
             var $_empty_result_div = this.$empty_result_div.clone();
             $('#result-container-'+mode).append($_empty_result_div.show());
         },
-        clearContainerDiv: function(mode) {
+        clearContainerDiv: function (mode) {
             if($('#result-container-'+mode+' .result-empty').length > 0) {
                 $('#result-container-'+mode+' .result-empty').remove();
             }
             if($('#result-container-'+mode+' .result-loading').length > 0) {
                 $('#result-container-'+mode+' .result-loading').remove();
             }
+            if($('#result-container-'+mode+' .share-container').length > 0) {
+                $('#result-container-'+mode+' .share-container').remove();
+            }
+        },
+        addShareBar: function (mode) {
+            var $share_container = $("<div>", {class: "share-container"});
+            $share_container.append(this.sharebar.$el.clone().show());
+            $('#result-container-'+mode).append($share_container);
         },
         updateResultTitle: function(number_result, mode, query) {
+            if(mode == 'occupation') {
+                this.hideOccupationDetail();
+            }
             this.clearContainerDiv(mode);
             if(number_result == 0) {
                 this.showEmptyResult(mode);
+            } else {
+                this.addShareBar(mode);
             }
             this.$result_title.find('#result-title-'+mode).remove();
 

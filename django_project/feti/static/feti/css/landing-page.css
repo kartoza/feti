@@ -452,7 +452,7 @@
     padding: 7px !important;
 }
 
-#share-container {
+.share-container {
     position: absolute;
     bottom: 0px;
     width: 100%;

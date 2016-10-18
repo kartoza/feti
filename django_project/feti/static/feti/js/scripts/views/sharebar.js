@@ -4,7 +4,7 @@ define([
 ], function (sharebarTemplate, Common) {
     var ShareBarView = Backbone.View.extend({
         tagName: 'div',
-        container: '#share-container',
+        container: '.share-container',
         template: _.template(sharebarTemplate),
         events: {
             'click #share-pdf': 'sharePDF',
@@ -13,7 +13,6 @@ define([
         },
         initialize: function (options) {
             this.render();
-            this.parent = options.parent;
             this.hide();
         },
         render: function () {

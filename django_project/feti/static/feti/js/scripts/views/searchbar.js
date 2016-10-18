@@ -3,8 +3,7 @@ define([
     'common',
     '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
-    '/static/feti/js/scripts/collections/course.js',
-    '/static/feti/js/scripts/views/sharebar.js'
+    '/static/feti/js/scripts/collections/course.js'
 ], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, SharebarView) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
@@ -38,7 +37,6 @@ define([
             this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
-            this.shareBarView = new SharebarView({parent: this});
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
 
@@ -144,12 +142,6 @@ define([
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
 
-                // hide or show share buttons
-                if(mode in this._search_results && this._search_results[mode] > 0) {
-                    this.shareBarView.show();
-                } else {
-                    this.shareBarView.hide();
-                }
             }
         },
         occupationClicked: function (id, pathway) {
@@ -214,20 +206,12 @@ define([
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
-            this.shareBarView.show();
             if(mode) {
                 this._search_results[mode] = num;
             }
 
-            if (!is_not_empty) { // empty
-                this.shareBarView.hide();
-            }
             if (Common.Router.selected_occupation) {
                 Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
-            } else {
-                if ($('#result-detail').is(":visible")) {
-                    $('#result-detail').hide("slide", {direction: "right"}, 500);
-                }
             }
         },
         showResult: function (mode) {
