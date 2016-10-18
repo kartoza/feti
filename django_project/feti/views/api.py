@@ -73,7 +73,11 @@ class SearchCampus(APIView):
                     location__distance_lt=(drawn_circle, Distance(m=radius))
                 )
 
-        serializer = CampusSerializer(campuses, many=True)
+        user_campuses = []
+        if self.request.user.is_authenticated():
+            user_campuses = list(self.request.user.profile.campus_favorites.all().values_list('id', flat=True))
+
+        serializer = CampusSerializer(campuses, many=True, context={'user_campuses': user_campuses})
         return Response(serializer.data)
 
     @abc.abstractmethod
