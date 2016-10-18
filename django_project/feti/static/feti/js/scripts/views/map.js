@@ -1,8 +1,9 @@
 define([
     'common',
     '/static/feti/js/scripts/views/searchbar.js',
+    '/static/feti/js/scripts/views/sidebar.js',
     '/static/feti/js/scripts/views/layer-administrative.js'
-], function (Common, SearchbarView, LayerAdministrativeView) {
+], function (Common, SearchbarView, SidebarView, LayerAdministrativeView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -48,6 +49,8 @@ define([
 
             this.render();
             this.searchBarView = new SearchbarView({parent: this});
+            this.sideBarView = new SidebarView({parent: this});
+
             this.listenTo(this.searchBarView, 'backHome', this.backHome);
             this.listenTo(this.searchBarView, 'categoryClicked', this._onSearchBarCategoryClicked);
 
@@ -87,7 +90,6 @@ define([
             });
             this.map.on('dblclick', function (e) {
             });
-
 
             L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGltYXNjaXB1dCIsImEiOiJjaXNqczJmNW8wMmt4MnRvY25hNTlobnlyIn0.TAdOiFVlAdeKMi5TKzueoQ', {
                 maxZoom: 20,
@@ -378,6 +380,7 @@ define([
                     that.isFullScreen = false;
                     that.searchBarView.mapResize(false, that.animationSpeed);
                     that.searchBarView.exitOccupation(e);
+                    $('#feti-map').css('width', '100%');
                 });
 
                 // set body content to previous
@@ -392,19 +395,17 @@ define([
             div.removeClass('fa-caret-left');
             div.addClass('fa-caret-right');
 
-            var $result_div = $('#result');
             var that = this;
-            if (!$result_div.is(":visible")) {
-                $result_div.show("slide", {direction: "right"}, 500, function () {
-                    // change map width
-                    var $mapContainer = $('#feti-map');
-                    var d = {};
-                    d.width = $mapContainer.width() - $('#result-wrapper').width();
-                    d.height = '100%';
-                    $mapContainer.animate(d, 20, function () {
-                        $mapContainer.css('padding-right', '500px');
-                        that.updateMapSize();
-                    });
+            if(!this.sideBarView.is_open()) {
+                this.sideBarView.open();
+                // change map width
+                var $mapContainer = $('#feti-map');
+                var d = {};
+                d.width = $mapContainer.width() - $('#result-wrapper').width();
+                d.height = '100%';
+                $mapContainer.animate(d, 500, function () {
+                    $mapContainer.css('padding-right', '500px');
+                    that.updateMapSize();
                 });
             }
         },
@@ -413,28 +414,19 @@ define([
             div.addClass('fa-caret-left');
 
             var $mapContainer = $('#feti-map');
-            var $result_div = $('#result');
 
             var d = {};
             d.width = '100%';
             d.height = '100%';
             var that = this;
 
-            $mapContainer.animate(d, 20, function () {
+            $mapContainer.animate(d, 500, function () {
                 $mapContainer.css('padding-right', '0');
                 that.updateMapSize();
             });
 
-            if ($('#result-detail').is(":visible")) {
-                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    if ($result_div.is(":visible")) {
-                        $result_div.hide("slide", {direction: "right"}, 500);
-                    }
-                });
-            } else {
-                if ($result_div.is(":visible")) {
-                    $result_div.hide("slide", {direction: "right"}, 500);
-                }
+            if(this.sideBarView.is_open()) {
+                this.sideBarView.close();
             }
         },
         createPolygon: function (coordinates) {

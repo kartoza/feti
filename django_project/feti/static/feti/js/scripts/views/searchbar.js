@@ -25,16 +25,19 @@ define([
         },
         initialize: function (options) {
             this.render();
-            $("#result-toogle").hide();
+            this.$result_toggle = $('#result-toogle');
             this.$search_bar = $(".search-bar");
             this.$search_bar_input = $("#search-bar-input");
+            this.$search_form = $("#search-form");
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.$result_loading = $("#result-loading");
             this.$result_empty = $("#result-empty");
             this.$clear_draw = $("#clear-draw");
+
             this.search_bar_hidden = true;
+            this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
             this.shareBarView = new SharebarView({parent: this});
@@ -49,17 +52,18 @@ define([
             this._search_query = {};
             this._search_filter = {};
             this._search_results = {};
+
+            var that = this;
+
+            this.$search_form.submit(function (e) {
+                that.updateSearchRoute();
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+            });
         },
         render: function () {
             this.$el.empty();
             this.$el.html(this.template());
             $(this.container).append(this.$el);
-            // form submit
-            var that = this;
-            $("#search-form").submit(function (e) {
-                that.updateSearchRoute();
-                e.preventDefault(); // avoid to execute the actual submit of the form.
-            });
         },
         initAutocomplete: function () {
             var that = this;
@@ -344,7 +348,7 @@ define([
                 $button.addClass('active');
                 this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
-                this._showResultTitle(mode);
+                Common.Dispatcher.trigger('sidebar:change_title', mode);
             }
         },
         mapResize: function (is_resizing) {
@@ -357,10 +361,6 @@ define([
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
             }
-        },
-        _showResultTitle: function(mode) {
-            $('#result-title').children().hide();
-            $('#result-title-'+mode).show();
         },
         showSearchBar: function (speed) {
             if (this.search_bar_hidden) {

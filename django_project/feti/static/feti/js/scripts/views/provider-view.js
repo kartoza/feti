@@ -2,8 +2,9 @@ define([
     'common',
     '/static/feti/js/scripts/models/provider.js',
     '/static/feti/js/scripts/views/provider-course-view.js',
-    '/static/feti/js/scripts/models/course.js'
-], function (Common, Provider, ProviderCourseView, Course) {
+    '/static/feti/js/scripts/models/course.js',
+    '/static/feti/js/scripts/views/sidebar.js',
+], function (Common, Provider, ProviderCourseView, Course, SidebarView) {
     var ProviderView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title',
