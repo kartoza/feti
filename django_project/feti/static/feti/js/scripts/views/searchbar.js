@@ -3,8 +3,7 @@ define([
     'common',
     '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
-    '/static/feti/js/scripts/collections/course.js',
-    '/static/feti/js/scripts/views/sharebar.js'
+    '/static/feti/js/scripts/collections/course.js'
 ], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, SharebarView) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
@@ -25,19 +24,19 @@ define([
         },
         initialize: function (options) {
             this.render();
-            $("#result-toogle").hide();
+            this.$result_toggle = $('#result-toogle');
             this.$search_bar = $(".search-bar");
             this.$search_bar_input = $("#search-bar-input");
+            this.$search_form = $("#search-form");
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
-            this.$result_loading = $("#result-loading");
-            this.$result_empty = $("#result-empty");
             this.$clear_draw = $("#clear-draw");
+
             this.search_bar_hidden = true;
+            this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
-            this.shareBarView = new SharebarView({parent: this});
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
 
@@ -49,17 +48,18 @@ define([
             this._search_query = {};
             this._search_filter = {};
             this._search_results = {};
+
+            var that = this;
+
+            this.$search_form.submit(function (e) {
+                that.updateSearchRoute();
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+            });
         },
         render: function () {
             this.$el.empty();
             this.$el.html(this.template());
             $(this.container).append(this.$el);
-            // form submit
-            var that = this;
-            $("#search-form").submit(function (e) {
-                that.updateSearchRoute();
-                e.preventDefault(); // avoid to execute the actual submit of the form.
-            });
         },
         initAutocomplete: function () {
             var that = this;
@@ -141,17 +141,7 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
-                if ($('#result-detail').is(":visible")) {
-                    $('#result-detail').hide("slide", {direction: "right"}, 500);
-                }
-                // hide or show share buttons
-                if(mode in this._search_results && this._search_results[mode] > 0) {
-                    this.shareBarView.show();
-                    this.$result_empty.hide();
-                } else {
-                    this.shareBarView.hide();
-                    this.$result_empty.show();
-                }
+
             }
         },
         occupationClicked: function (id, pathway) {
@@ -209,29 +199,19 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this.in_show_result = true;
-                    this.$result_loading.show();
-                    this.$result_empty.hide();
+                    Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult();
                 }
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
-            this.$result_loading.hide();
-            this.shareBarView.show();
+            Common.Dispatcher.trigger('sidebar:hide_loading', mode);
             if(mode) {
                 this._search_results[mode] = num;
             }
 
-            if (!is_not_empty) { // empty
-                this.shareBarView.hide();
-                this.$result_empty.show();
-            }
             if (Common.Router.selected_occupation) {
                 Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
-            } else {
-                if ($('#result-detail').is(":visible")) {
-                    $('#result-detail').hide("slide", {direction: "right"}, 500);
-                }
             }
         },
         showResult: function (mode) {
@@ -344,7 +324,7 @@ define([
                 $button.addClass('active');
                 this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
-                this._showResultTitle(mode);
+                Common.Dispatcher.trigger('sidebar:change_title', mode);
             }
         },
         mapResize: function (is_resizing) {
@@ -357,10 +337,6 @@ define([
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
             }
-        },
-        _showResultTitle: function(mode) {
-            $('#result-title').children().hide();
-            $('#result-title-'+mode).show();
         },
         showSearchBar: function (speed) {
             if (this.search_bar_hidden) {
