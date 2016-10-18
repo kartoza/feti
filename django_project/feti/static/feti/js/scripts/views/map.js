@@ -401,7 +401,7 @@ define([
                 // change map width
                 var $mapContainer = $('#feti-map');
                 var d = {};
-                d.width = $mapContainer.width() - $('#result-wrapper').width();
+                d.width = $('#shadow-map').width() - $('#result-wrapper').width();
                 d.height = '100%';
                 $mapContainer.animate(d, 500, function () {
                     $mapContainer.css('padding-right', '500px');
