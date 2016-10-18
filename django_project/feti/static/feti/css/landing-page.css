@@ -579,7 +579,7 @@
 }
 
 .result-title:hover, .result-row:hover {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(200, 200, 200, 0.2);
 }
 
 .result-title-occupation {
@@ -615,4 +615,16 @@
 
 .leaflet-top {
     z-index: 98;
+}
+
+.favorites {
+    padding-top: 5px;
+}
+
+.favorites:hover {
+    color: orange;
+}
+
+.filled {
+    color: orange;
 }
