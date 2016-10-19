@@ -20,10 +20,11 @@ define([
             this.model.clicked();
         },
         deleteFavorite: function (e) {
-            if ($(e.target).hasClass('fa-star filled')) {
+            var result = confirm("Delete this campus?");
+
+            if (result && $(e.target).hasClass('fa-star filled')) {
                 var id = this.model.id;
                 // Remove from favorites
-                // Add to favorites
                 $.ajax({
                     url:'profile/delete-campus/',
                     type:'POST',
@@ -32,7 +33,6 @@ define([
                     }),
                     success: function(response) {
                         if(response=='deleted') {
-                            alert('Campus deleted from favorites');
                             Common.Dispatcher.trigger('favorites:deleted', 'favorites');
                             $(e.target).removeClass('fa-star filled');
                             $(e.target).addClass('fa-star-o');
@@ -45,6 +45,8 @@ define([
                     }
                 });
             }
+
+            return false;
         },
         render: function () {
             this.$el.empty();

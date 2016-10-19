@@ -2,20 +2,59 @@ define([
     'common',
     '/static/feti/js/scripts/models/provider.js',
     '/static/feti/js/scripts/views/provider-course-view.js',
-    '/static/feti/js/scripts/models/course.js'
-], function (Common, Provider, ProviderCourseView, Course) {
+    '/static/feti/js/scripts/models/course.js',
+    'text!static/feti/js/scripts/templates/provider-detail.html'
+], function (Common, Provider, ProviderCourseView, Course, providerTemplate) {
     var ProviderView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title',
-        template: _.template('<img src="/static/feti/images/default-logo.png" width="54" height="54"/><div class="details"><h3><%- title %></h3><p class="courses"><%- counts %> courses <i class="fa fa-angle-down" aria-hidden="true"></i></p></div>'),
+        template: _.template(providerTemplate),
         courses_template: _.template('<div id="<%- id %>-courses-course" class="collapse"></div>'),
         container: '#result-container-course',
         model: Provider,
         events: {
-            'click': 'clicked'
+            'click': 'clicked',
+            'click .favorites': 'addToFavorites'
         },
         clicked: function () {
             this.model.clicked();
+        },
+        addToFavorites: function (e) {
+            if(!Common.IsLoggedIn) {
+                alert('You need to log in first');
+                return false;
+            }
+            // get id
+            var id = this.model.id;
+            if($(e.target).hasClass('fa-star-o')) {
+                // Add to favorites
+                $.ajax({
+                    url:'profile/add-campus/',
+                    type:'POST',
+                    data: JSON.stringify({
+                        'campus': id
+                    }),
+                    success: function(response) {
+                        if(response=='added') {
+                            alert('Campus added to favorites');
+                            Common.Dispatcher.trigger('favorites:added', 'course');
+                            $(e.target).removeClass('fa-star-o');
+                            $(e.target).addClass('fa-star filled');
+                        }
+                    },
+                    error: function(response) {
+                        console.log(response);
+                    },
+                    complete: function() {
+                    }
+                });
+
+            } else if ($(e.target).hasClass('fa-star filled')) {
+                // $(e.target).removeClass('fa-star filled');
+                // $(e.target).addClass('fa-star-o');
+                // Remove from favorites
+            }
+            return false;
         },
         render: function () {
             this.$el.empty();

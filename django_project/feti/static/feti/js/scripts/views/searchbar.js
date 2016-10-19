@@ -162,13 +162,25 @@ define([
             }
         },
         _favoriteAdded: function (mode) {
-            this._search_need_update['favorites'] = true;
+            for (var key in this._search_need_update) {
+                if (this._search_need_update.hasOwnProperty(key)) {
+                    if (key != mode) {
+                        this._search_need_update[key] = true;
+                    }
+                }
+            }
         },
         _favoriteDeleted: function (mode) {
             if(mode == 'favorites') {
                 this._getFavorites();
             }
-            this._search_need_update['provider'] = true;
+            for (var key in this._search_need_update) {
+                if (this._search_need_update.hasOwnProperty(key)) {
+                    if (key != mode && key != 'favorites') {
+                        this._search_need_update[key] = true;
+                    }
+                }
+            }
         },
         _openFavorites: function() {
             $('.search-row').hide();
