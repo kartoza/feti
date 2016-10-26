@@ -30,7 +30,7 @@ __copyright__ = 'kartoza.com'
 class SearchCampus(APIView):
     def get(self, request, format=None):
         query = request.GET.get('q')
-        if len(query) < 3:
+        if query and len(query) < 3:
             return Response([])
 
         # Get coordinates from request and create a polygon
@@ -73,7 +73,11 @@ class SearchCampus(APIView):
                     location__distance_lt=(drawn_circle, Distance(m=radius))
                 )
 
-        serializer = CampusSerializer(campuses, many=True)
+        user_campuses = []
+        if self.request.user.is_authenticated():
+            user_campuses = list(self.request.user.profile.campus_favorites.all().values_list('id', flat=True))
+
+        serializer = CampusSerializer(campuses, many=True, context={'user_campuses': user_campuses})
         return Response(serializer.data)
 
     @abc.abstractmethod
@@ -145,6 +149,18 @@ class ApiOccupation(SearchCampus):
         return model.distinct().filter(
             occupation__icontains=query
         )
+
+
+class ApiSavedCampus(SearchCampus):
+    def get(self, request, format=None):
+        return SearchCampus.get(self, request)
+
+    def filter_model(self, query):
+        campuses = list(self.request.user.profile.campus_favorites.all())
+        return campuses
+
+    def additional_filter(self, model, query):
+        pass
 
 
 class ApiAutocomplete(APIView):

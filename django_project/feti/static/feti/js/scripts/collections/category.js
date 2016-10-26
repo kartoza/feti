@@ -21,9 +21,13 @@ define([
         search: function (q, drawnLayers) {
             var that = this;
             var parameters = {
-                q: q,
+                q: '',
                 coord: ''
             };
+
+            if(q && q.length > 0) {
+                parameters.q = q;
+            }
 
             if (drawnLayers && drawnLayers.length > 0) {
                 parameters.coord = drawnLayers;

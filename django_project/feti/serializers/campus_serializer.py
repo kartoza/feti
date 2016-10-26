@@ -11,8 +11,13 @@ class CampusSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         res = super(CampusSerializer, self).to_representation(instance)
+        user_campuses = self.context.get("user_campuses")
         res['long_description'] = instance.long_description
         res['courses'] = CourseSerializer(instance.courses.all(), many=True).data
+        if res['id'] in user_campuses:
+            res['saved'] = True
+        else:
+            res['saved'] = False
         if instance.address:
             res['address'] = instance.address.__unicode__()
         if instance.provider:

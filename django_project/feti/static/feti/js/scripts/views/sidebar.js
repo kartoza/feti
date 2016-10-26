@@ -67,9 +67,11 @@ define([
             }
         },
         addShareBar: function (mode) {
-            var $share_container = $("<div>", {class: "share-container"});
-            $share_container.append(this.sharebar.$el.clone().show());
-            $('#result-container-'+mode).append($share_container);
+            if(mode!='favorites') {
+                var $share_container = $("<div>", {class: "share-container"});
+                $share_container.append(this.sharebar.$el.clone().show());
+                $('#result-container-'+mode).append($share_container);
+            }
         },
         updateResultTitle: function(number_result, mode, query) {
             if(mode == 'occupation') {

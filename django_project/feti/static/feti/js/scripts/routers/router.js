@@ -54,7 +54,11 @@ define([
                 this.mapView.fullScreenMap();
             }
             if (mode) {
-                this.mapView.changeCategory(mode);
+                if(mode == 'favorites' && !Common.IsLoggedIn) {
+                    this.navigate('', true);
+                } else {
+                    this.mapView.changeCategory(mode);
+                }
             } else {
                 this.mapView.changeCategory(Common.CurrentSearchMode);
                 mode = Common.CurrentSearchMode;

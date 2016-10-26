@@ -65,7 +65,8 @@ define([
 
             this.modesLayer = {
                 'provider': L.layerGroup(),
-                'course': L.layerGroup()
+                'course': L.layerGroup(),
+                'favorites': L.layerGroup()
             }
         },
         updateMapSize: function() {
@@ -391,12 +392,10 @@ define([
             }
         },
         openResultContainer: function (div) {
-
-            div.removeClass('fa-caret-left');
-            div.addClass('fa-caret-right');
-
             var that = this;
             if(!this.sideBarView.is_open()) {
+                div.removeClass('fa-caret-left');
+                div.addClass('fa-caret-right');
                 this.sideBarView.open();
                 // change map width
                 var $mapContainer = $('#feti-map');
@@ -410,23 +409,21 @@ define([
             }
         },
         closeResultContainer: function (div) {
-            div.removeClass('fa-caret-right');
-            div.addClass('fa-caret-left');
-
             var $mapContainer = $('#feti-map');
 
-            var d = {};
-            d.width = '100%';
-            d.height = '100%';
-            var that = this;
-
-            $mapContainer.animate(d, 500, function () {
-                $mapContainer.css('padding-right', '0');
-                that.updateMapSize();
-            });
-
             if(this.sideBarView.is_open()) {
+                div.removeClass('fa-caret-right');
+                div.addClass('fa-caret-left');
                 this.sideBarView.close();
+                var d = {};
+                d.width = '100%';
+                d.height = '100%';
+                var that = this;
+
+                $mapContainer.animate(d, 500, function () {
+                    $mapContainer.css('padding-right', '0');
+                    that.updateMapSize();
+                });
             }
         },
         createPolygon: function (coordinates) {

@@ -5,41 +5,37 @@ define([
     '/static/feti/js/scripts/models/course.js',
     'text!static/feti/js/scripts/templates/provider-detail.html'
 ], function (Common, Provider, ProviderCourseView, Course, providerTemplate) {
-    var ProviderView = Backbone.View.extend({
+    var FavoritesView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title',
         template: _.template(providerTemplate),
-        courses_template: _.template('<div id="<%- id %>-courses-course" class="collapse"></div>'),
-        container: '#result-container-course',
+        courses_template: _.template('<div id="<%- id %>-courses-favorites" class="collapse"></div>'),
+        container: '#result-container-favorites',
         model: Provider,
         events: {
             'click': 'clicked',
-            'click .favorites': 'addToFavorites'
+            'click .favorites': 'deleteFavorite'
         },
         clicked: function () {
             this.model.clicked();
         },
-        addToFavorites: function (e) {
-            if(!Common.IsLoggedIn) {
-                alert('You need to log in first');
-                return false;
-            }
-            // get id
-            var id = this.model.id;
-            if($(e.target).hasClass('fa-star-o')) {
-                // Add to favorites
+        deleteFavorite: function (e) {
+            var result = confirm("Delete this campus?");
+
+            if (result && $(e.target).hasClass('fa-star filled')) {
+                var id = this.model.id;
+                // Remove from favorites
                 $.ajax({
-                    url:'profile/add-campus/',
+                    url:'profile/delete-campus/',
                     type:'POST',
                     data: JSON.stringify({
                         'campus': id
                     }),
                     success: function(response) {
-                        if(response=='added') {
-                            alert('Campus added to favorites');
-                            Common.Dispatcher.trigger('favorites:added', 'course');
-                            $(e.target).removeClass('fa-star-o');
-                            $(e.target).addClass('fa-star filled');
+                        if(response=='deleted') {
+                            Common.Dispatcher.trigger('favorites:deleted', 'favorites');
+                            $(e.target).removeClass('fa-star filled');
+                            $(e.target).addClass('fa-star-o');
                         }
                     },
                     error: function(response) {
@@ -48,12 +44,8 @@ define([
                     complete: function() {
                     }
                 });
-
-            } else if ($(e.target).hasClass('fa-star filled')) {
-                // $(e.target).removeClass('fa-star filled');
-                // $(e.target).addClass('fa-star-o');
-                // Remove from favorites
             }
+
             return false;
         },
         render: function () {
@@ -61,9 +53,9 @@ define([
             this.$el.html(this.template(this.model.attributes));
             $(this.container).append(this.$el);
             $(this.container).append(this.courses_template(this.model.attributes));
-            this.$elCourses = $("#" + this.model.attributes.id + "-courses-course");
+            this.$elCourses = $("#" + this.model.attributes.id + "-courses-favorites");
             // toogling
-            this.$el.attr("href", "#" + this.model.attributes.id + "-courses-course");
+            this.$el.attr("href", "#" + this.model.attributes.id + "-courses-favorites");
             this.$el.attr("data-toggle", "collapse");
             this.model.renderMarker();
             this.renderCourses();
@@ -76,7 +68,7 @@ define([
                 var model = new Course(course);
                 that.courses.push(new ProviderCourseView({
                     model: model,
-                    container: "#" + that.model.attributes.id + "-courses-course"
+                    container: "#" + that.model.attributes.id + "-courses-favorites"
                 }));
             });
         },
@@ -98,5 +90,5 @@ define([
         }
     });
 
-    return ProviderView;
+    return FavoritesView;
 });

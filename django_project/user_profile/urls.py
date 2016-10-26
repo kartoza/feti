@@ -2,7 +2,12 @@
 """URI Routing configuration for this apps."""
 from django.conf.urls import patterns, url
 from user_profile.views.admin import UserAdminPage
-from user_profile.views.profile import UserProfileView, UpdateUserProfileView
+from user_profile.views.profile import (
+    UserProfileView,
+    UpdateUserProfileView,
+    UpdateUserCampusView,
+    DeleteUserCampusView
+)
 
 urlpatterns = patterns(
     '',
@@ -29,4 +34,12 @@ urlpatterns = patterns(
         r'^profile/update/(?P<pk>\d+)$',
         UpdateUserProfileView.as_view(),
         name='update-user-profile-view'),
+    url(
+        r'^profile/add-campus/',
+        UpdateUserCampusView.as_view(),
+        name='update-user-campus-view'),
+    url(
+        r'^profile/delete-campus/',
+        DeleteUserCampusView.as_view(),
+        name='delete-user-campus-view'),
 )

@@ -3,8 +3,9 @@ define([
     'common',
     '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
-    '/static/feti/js/scripts/collections/course.js'
-], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, SharebarView) {
+    '/static/feti/js/scripts/collections/course.js',
+    '/static/feti/js/scripts/collections/favorites.js'
+], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, favoritesCollection) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -13,6 +14,7 @@ define([
             'click #where-to-study': '_categoryClicked',
             'click #what-to-study': '_categoryClicked',
             'click #choose-occupation': '_categoryClicked',
+            'click #favorites': '_categoryClicked',
             'click #result-toogle': 'toogleResult',
             'click #location': 'locationFilterSelected',
             'click #draw-polygon': 'drawModeSelected',
@@ -31,6 +33,7 @@ define([
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
+            this.$favorites_button = $("#favorites");
             this.$clear_draw = $("#clear-draw");
 
             this.search_bar_hidden = true;
@@ -39,6 +42,8 @@ define([
             this.initAutocomplete();
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
+            Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
+            Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
 
             this._drawer = {
                 polygon: this._initializeDrawPolygon,
@@ -48,6 +53,11 @@ define([
             this._search_query = {};
             this._search_filter = {};
             this._search_results = {};
+            this._search_need_update = {
+                'provider' : false,
+                'course': false,
+                'favorite': false
+            };
 
             var that = this;
 
@@ -58,7 +68,10 @@ define([
         },
         render: function () {
             this.$el.empty();
-            this.$el.html(this.template());
+            var attributes = {
+                'is_logged_in' : Common.IsLoggedIn
+            };
+            this.$el.html(this.template(attributes));
             $(this.container).append(this.$el);
         },
         initAutocomplete: function () {
@@ -111,7 +124,7 @@ define([
             if(!query && mode in this._search_query) {
                 query = this._search_query[mode];
             }
-            if(query=="") {
+            if(query=="" && mode!='favorites') {
                 this.parent.closeResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
@@ -141,8 +154,48 @@ define([
                 this.changeCategoryButton(mode);
                 this.$search_bar_input.val('');
                 this.updateSearchRoute();
-
+                if(mode == 'favorites') {
+                    this._openFavorites();
+                } else {
+                    $('.search-row').show();
+                }
             }
+        },
+        _favoriteAdded: function (mode) {
+            for (var key in this._search_need_update) {
+                if (this._search_need_update.hasOwnProperty(key)) {
+                    if (key != mode) {
+                        this._search_need_update[key] = true;
+                    }
+                }
+            }
+        },
+        _favoriteDeleted: function (mode) {
+            if(mode == 'favorites') {
+                this._getFavorites();
+            }
+            for (var key in this._search_need_update) {
+                if (this._search_need_update.hasOwnProperty(key)) {
+                    if (key != mode && key != 'favorites') {
+                        this._search_need_update[key] = true;
+                    }
+                }
+            }
+        },
+        _openFavorites: function() {
+            $('.search-row').hide();
+            this.showResult();
+            if(!('favorites' in this._search_query) || this._search_need_update['favorites']) {
+                this._getFavorites();
+            }
+        },
+        _getFavorites: function () {
+            var mode = 'favorites';
+            favoritesCollection.search();
+            this._search_query[mode] = '';
+            this._search_filter[mode] = '';
+            Common.Dispatcher.trigger('sidebar:show_loading', mode);
+            this._search_need_update['favorites'] = false;
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
@@ -176,7 +229,7 @@ define([
                 }
 
                 // search
-                if(query == this._search_query[mode] && filter == this._search_filter[mode]) {
+                if(query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
                     if(query!="") {
                         this.showResult(mode);
@@ -195,12 +248,16 @@ define([
                         default:
                             return;
                     }
-
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
+                    this._search_need_update[mode] = false;
                     this.in_show_result = true;
                     Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult();
+                }
+            } else {
+                if(mode == 'favorites') {
+                    this._openFavorites();
                 }
             }
         },
@@ -316,13 +373,16 @@ define([
             } else if (mode == "occupation") {
                 $button = this.$occupation_button;
                 highlight = 'Search for occuption';
+            } else if (mode == "favorites") {
+                $button = this.$favorites_button;
+                highlight = '';
             }
 
             // change placeholder of input
             this.$search_bar_input.attr("placeholder", highlight);
+            this.showSearchBar(0);
             if ($button) {
                 $button.addClass('active');
-                this.showSearchBar(0);
                 Common.CurrentSearchMode = mode;
                 Common.Dispatcher.trigger('sidebar:change_title', mode);
             }
@@ -358,7 +418,6 @@ define([
         hideSearchBar: function (e) {
             if (!this.search_bar_hidden) {
                 this.$search_bar.slideToggle(500, function () {
-                    Common.Dispatcher.trigger('map:exitFullScreen');
                 });
                 // zoom control animation
                 var $zoom_control = $('.leaflet-control-zoom');
