@@ -31,6 +31,9 @@ class SearchCampus(APIView):
     additional_context = {}
 
     def get(self, request, format=None):
+
+        self.additional_context['courses'] = None
+
         query = request.GET.get('q')
         if query and len(query) < 3:
             return Response([])
@@ -106,8 +109,6 @@ class ApiCampus(SearchCampus):
                 courses_isnull='false'
         ).models(CampusCourseEntry)
         campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
-        # Get all courses
-        self.additional_context['courses'] = None
         return campuses
 
     def additional_filter(self, model, query):
