@@ -26,21 +26,30 @@ define([
                     })
                 });
                 if (Common.UserLocation != 'None') {
-                    this.getUserLocation(popup, marker);
+                    var regExp = /\(([^)]+)\)/;
+                    var user_location = regExp.exec(Common.UserLocation)[1].split(' ');
+                    var origin = user_location[1] + ',' + user_location[0];
+
+                    popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
+                        ' <a href="https://www.google.com/maps/dir/'+origin+'/'+location.lat+','+location.lng+'" target="_blank">' +
+                        'Get direction</a>';
+                    this.getUserLocation(popup, marker, origin);
                     popup += '<div class="user-location">Calculating travel time... </div>';
+                } else {
+                    popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
+                        ' <a href="https://www.google.com/maps/dir/Current+Location/'+location.lat+','+location.lng+'" target="_blank">' +
+                    'Get direction</a>';
                 }
+
                 marker.bindPopup(popup);
                 this.set('marker', marker);
             }
             this.set('layer', L.layerGroup([this.get('marker')]));
             Common.Dispatcher.trigger('map:addLayerToMode', this.get('layer'));
         },
-        getUserLocation: function (popup, marker) {
+        getUserLocation: function (popup, marker, origin) {
             var marker_location = this.attributes.location;
-            var regExp = /\(([^)]+)\)/;
-            var user_location = regExp.exec(Common.UserLocation)[1].split(' ');
 
-            var origin = user_location[1] + ',' + user_location[0];
             var destinations = marker_location.lat + ',' + marker_location.lng;
 
             $.ajax({
