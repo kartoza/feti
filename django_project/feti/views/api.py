@@ -28,6 +28,8 @@ __copyright__ = 'kartoza.com'
 
 
 class SearchCampus(APIView):
+    additional_context = {}
+
     def get(self, request, format=None):
         query = request.GET.get('q')
         if query and len(query) < 3:
@@ -77,7 +79,9 @@ class SearchCampus(APIView):
         if self.request.user.is_authenticated():
             user_campuses = list(self.request.user.profile.campus_favorites.all().values_list('id', flat=True))
 
-        serializer = CampusSerializer(campuses, many=True, context={'user_campuses': user_campuses})
+        self.additional_context['user_campuses'] = user_campuses
+
+        serializer = CampusSerializer(campuses, many=True, context=self.additional_context)
         return Response(serializer.data)
 
     @abc.abstractmethod
@@ -102,6 +106,8 @@ class ApiCampus(SearchCampus):
                 courses_isnull='false'
         ).models(CampusCourseEntry)
         campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+        # Get all courses
+        self.additional_context['courses'] = None
         return campuses
 
     def additional_filter(self, model, query):
@@ -120,6 +126,8 @@ class ApiCourse(SearchCampus):
             campus_location_isnull='false',
         ).models(CampusCourseEntry)
         campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+        # Only shows this courses
+        self.additional_context['courses'] = set([x.object.course_id for x in sqs])
         return campuses
 
     def additional_filter(self, model, query):
