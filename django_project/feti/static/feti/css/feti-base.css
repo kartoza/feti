@@ -224,3 +224,12 @@ footer {
 .user-profile-text {
     padding-bottom: 15px;
 }
+
+.easy-button-button.deactivate-active {
+    color: #a92121;
+}
+
+.easy-button-button.deactivate-active:hover {
+    background-color: #a92121;
+    color: white;
+}

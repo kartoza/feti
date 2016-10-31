@@ -135,6 +135,115 @@ define([
                 }).bindPopup("<b>My location</b>").addTo(this.map);
             }
 
+            // Add control button
+            var _this = this;
+
+            var deactivateState = function (previousState) {
+                return {
+                    stateName: 'deactivate',
+                    icon: 'fa-times',
+                    title: 'cancel',
+                    onClick: function (btn, map) {
+                        btn.state(previousState);
+                        _this._enableOtherControlButtons();
+                        switch (previousState)
+                        {
+                            case 'locationButton':
+                                _this.disableLocationFilter();
+                                break;
+                            case 'polygonButton':
+                                _this.disablePolygonDrawer();
+                                break;
+                            case 'circleButton':
+                                _this.disableCircleDrawer();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            };
+
+            this.locationButton = L.easyButton({
+                states: [
+                    {
+                        stateName: 'locationButton',
+                        icon: 'fa-map-pin',
+                        title: 'location',
+                        onClick: function (btn, map) {
+                            btn.state('deactivate');
+                            _this.searchBarView.clearAllDraw();
+                            _this.enableLocationFilter();
+                            _this._disableOtherControlButtons(btn);
+                        }
+                    },
+                    deactivateState('locationButton')
+                ]
+            });
+
+            this.polygonButton = L.easyButton({
+                states: [
+                    {
+                        stateName: 'polygonButton',
+                        icon: 'fa-square-o',
+                        title: 'polygon',
+                        onClick: function (btn, map) {
+                            btn.state('deactivate');
+                            _this.searchBarView.clearAllDraw();
+                            _this.enablePolygonDrawer();
+                            _this._disableOtherControlButtons(btn);
+                            btn._map.on('finishedDrawing', function (e) {
+                                if (e.layerType == 'polygon') {
+                                    btn.state('polygonButton');
+                                }
+                            });
+                        }
+                    },
+                    deactivateState('polygonButton')
+                ]
+            });
+
+            this.circleButton = L.easyButton({
+                states: [
+                    {
+                        stateName: 'circleButton',
+                        icon: 'fa-circle-o',
+                        title: 'circle',
+                        onClick: function (btn, map) {
+                            btn.state('deactivate');
+                            _this.searchBarView.clearAllDraw();
+                            _this.enableCircleDrawer();
+                            _this._disableOtherControlButtons(btn);
+                            btn._map.on('finishedDrawing', function (e) {
+                                if (e.layerType == 'circle') {
+                                    btn.state('circleButton');
+                                }
+                            });
+                        }
+                    },
+                    deactivateState('circleButton')
+                ]
+            });
+
+            this.locationFilterBar = L.easyBar([
+                this.locationButton,
+                this.polygonButton,
+                this.circleButton
+            ]);
+
+            this.locationFilterBar.addTo(this.map);
+        },
+        _disableOtherControlButtons: function (currentControl) {
+            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
+                if(this.locationFilterBar._buttons[i] != currentControl) {
+                    this.locationFilterBar._buttons[i].disable();
+                }
+            }
+        },
+        _enableOtherControlButtons: function () {
+            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
+                this.locationFilterBar._buttons[i].enable();
+            }
         },
         onMouseMove: function (e) {
             var latlng = e.latlng;
@@ -155,10 +264,13 @@ define([
             if (type === 'polygon') {
                 this.polygonLayer = layer;
                 this.searchBarView.onFinishedCreatedShape('polygon');
+                this.map.fire('finishedDrawing', { 'layerType' : 'polygon'});
             } else if (type === 'circle') {
                 this.circleLayer = layer;
                 this.searchBarView.onFinishedCreatedShape('circle');
+                this.map.fire('finishedDrawing', { 'layerType' : 'circle'});
             }
+            this._enableOtherControlButtons();
         },
         drawStop: function (e) {
             var type = e.layerType;
