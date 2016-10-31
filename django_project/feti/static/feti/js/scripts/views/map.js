@@ -168,7 +168,7 @@ define([
                 states: [
                     {
                         stateName: 'locationButton',
-                        icon: 'fa-map-pin',
+                        icon: 'fa-globe',
                         title: 'location',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
@@ -225,10 +225,28 @@ define([
                 ]
             });
 
+            this.clearButton = L.easyButton({
+                states: [
+                    {
+                        stateName: 'clearButton',
+                        icon: 'fa-trash-o',
+                        title: 'clear',
+                        onClick: function (btn, map) {
+                            btn.disable();
+                            _this.clearAllDrawnLayer();
+                            _this.searchBarView.updateSearchRoute();
+                        }
+                    }
+                ]
+            });
+
+            this.clearButton.disable();
+
             this.locationFilterBar = L.easyBar([
                 this.locationButton,
                 this.polygonButton,
-                this.circleButton
+                this.circleButton,
+                this.clearButton
             ]);
 
             this.locationFilterBar.addTo(this.map);
@@ -258,6 +276,7 @@ define([
             var type = e.layerType,
                 layer = e.layer;
 
+            this.clearButton.enable();
             this.drawnItems.addLayer(layer);
             this.layerAdministrativeView.resetBasedLayer();
 
@@ -314,6 +333,7 @@ define([
             this.layerAdministrativeView.deactivate();
 
             // Remove tooltip
+            $('.leaflet-draw-tooltip').hide();
 			this._tooltip = null;
             this.map.off('mousemove', this.onMouseMove, this)
         },
@@ -544,7 +564,7 @@ define([
             this.drawnItems.addLayer(this.polygonLayer);
             this.addLayer(this.drawnItems);
             this.map.fitBounds(this.polygonLayer);
-            this.searchBarView.$clear_draw.show();
+            this.clearButton.enable();
         },
         createCircle: function (coords, radius) {
             this.clearAllDrawnLayer();
@@ -552,7 +572,7 @@ define([
             this.drawnItems.addLayer(this.circleLayer);
             this.addLayer(this.drawnItems);
             this.map.fitBounds(this.circleLayer);
-            this.searchBarView.$clear_draw.show();
+            this.clearButton.enable();
 
             var draggable = new L.Draggable(this.circleLayer);
             draggable.enable();

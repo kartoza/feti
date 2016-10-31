@@ -233,3 +233,23 @@ footer {
     background-color: #a92121;
     color: white;
 }
+
+#feti-map .easy-button-button.clearButton-active {
+    transition-duration: .3s;
+    position: relative;
+    border: solid 0 transparent;
+}
+
+#feti-map .easy-button-container.clearButton-active {
+    background-color: white;
+}
+
+#feti-map .clearButton-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#feti-map .easy-button-button.clearButton-active.disabled {
+    height: 0;
+}
