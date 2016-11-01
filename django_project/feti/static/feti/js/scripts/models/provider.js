@@ -37,7 +37,7 @@ define([
                     popup += '<div class="user-location">Calculating travel time... </div>';
                 } else {
                     popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
-                        ' <a href="https://www.google.com/maps/dir/Current+Location/'+location.lat+','+location.lng+'" target="_blank">' +
+                        ' <a href="https://maps.google.com?saddr=My+Location&daddr='+location.lat+','+location.lng+'" target="_blank">' +
                     'Get direction</a>';
                 }
 
