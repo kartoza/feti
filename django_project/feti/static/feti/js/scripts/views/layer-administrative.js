@@ -95,7 +95,7 @@ define([
             }
             this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
             Common.Dispatcher.trigger('map:addLayer', polygon);
-            this.map.searchBarView.$clear_draw.show();
+            this.map.clearButton.enable();
         },
         showPolygon: function (adm_list) {
             this.resetBasedLayer();
