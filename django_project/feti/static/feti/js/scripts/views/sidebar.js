@@ -77,8 +77,8 @@ define([
         },
         addShareBar: function (mode) {
             if(mode!='favorites') {
-                var $share_container = $('.share-container').show();
-                $('#result-container-'+mode).append($share_container.clone());
+                var $share_container = $('.share-container');
+                $('#result-container-'+mode).append($share_container.clone().show());
             }
         },
         updateResultTitle: function(number_result, mode, query) {
