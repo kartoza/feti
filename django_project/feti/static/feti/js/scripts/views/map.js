@@ -282,18 +282,16 @@ define([
 
             if (type === 'polygon') {
                 this.polygonLayer = layer;
-                this.searchBarView.onFinishedCreatedShape('polygon');
                 this.map.fire('finishedDrawing', { 'layerType' : 'polygon'});
             } else if (type === 'circle') {
                 this.circleLayer = layer;
-                this.searchBarView.onFinishedCreatedShape('circle');
                 this.map.fire('finishedDrawing', { 'layerType' : 'circle'});
             }
             this._enableOtherControlButtons();
         },
         drawStop: function (e) {
             var type = e.layerType;
-            this.searchBarView.cancelDraw(type);
+            this.searchBarView.updateSearchRoute();
         },
         enablePolygonDrawer: function () {
             this.isDrawing = true;
