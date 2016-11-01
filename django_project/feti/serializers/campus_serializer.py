@@ -12,11 +12,10 @@ class CampusSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         res = super(CampusSerializer, self).to_representation(instance)
 
+        res['saved'] = False
         if self.context.get("user_campuses"):
             if res['id'] in self.context.get("user_campuses"):
                 res['saved'] = True
-            else:
-                res['saved'] = False
 
         if self.context.get("courses"):
             res['courses'] = CourseSerializer(

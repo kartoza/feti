@@ -1,8 +1,7 @@
 define([
     'text!static/feti/js/scripts/templates/sidebar.html',
-    'common',
-    '/static/feti/js/scripts/views/sharebar.js'
-], function (sidebarTemplate, Common, SharebarView) {
+    'common'
+], function (sidebarTemplate, Common) {
     var SideBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#result',
@@ -17,11 +16,21 @@ define([
             this.$loading_div = $('.result-loading');
             this.$result_title = $('#result-title');
             this.$result_detail = $('#result-detail');
-            this.sharebar = new SharebarView();
             Common.Dispatcher.on('sidebar:change_title', this.showResultTitle, this);
             Common.Dispatcher.on('sidebar:update_title', this.updateResultTitle, this);
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
+
+            var _this = this;
+            $('.share-pdf').click(function () {
+                _this.sharePDF();
+            });
+            $('.share-social-twitter').click(function () {
+                _this.shareToTwitter();
+            });
+            $('.share-email').click(function () {
+                _this.shareEmail();
+            })
         },
         showOccupationDetail: function () {
             this.$result_detail.show("slide", {direction: "right"}, 300);
@@ -68,9 +77,8 @@ define([
         },
         addShareBar: function (mode) {
             if(mode!='favorites') {
-                var $share_container = $("<div>", {class: "share-container"});
-                $share_container.append(this.sharebar.$el.clone().show());
-                $('#result-container-'+mode).append($share_container);
+                var $share_container = $('.share-container').show();
+                $('#result-container-'+mode).append($share_container.clone());
             }
         },
         updateResultTitle: function(number_result, mode, query) {
@@ -130,6 +138,79 @@ define([
         showResultTitle: function(mode) {
             $('#result-title').children().hide();
             $('#result-title-'+mode).show();
+        },
+        sharePDF: function() {
+            var url = '/pdf_report/';
+            var currentRoute = Backbone.history.getFragment().split('/');
+            if(currentRoute.length > 2) {
+                window.location = url + currentRoute[1] + '/' + currentRoute[2];
+            }
+
+        },
+        shareEmail: function() {
+            console.log('share');
+            var currentRoute = Backbone.history.getFragment().split('/');
+            // Open Modal
+            if(currentRoute.length > 1) {
+                $('#email-modal').modal('toggle');
+            }
+
+            $('#email-form').submit(function (e) {
+                e.preventDefault();
+                var all_data = {};
+
+                all_data.email = $('#email').val();
+                all_data.provider = currentRoute[1];
+                all_data.query = currentRoute[2];
+                all_data.link = Backbone.history.location.href;
+
+                $('#email-submit').prop('disabled', true);
+                $('#email').prop('disabled', true);
+
+                $.ajax({
+                    url:'share_email/',
+                    type:'POST',
+                    data: JSON.stringify(all_data),
+                    success: function(response) {
+                        if(response=='success') {
+                            $('#email-modal').modal('toggle');
+                            alert('Email sent!');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error sending email');
+                    },
+                    complete: function() {
+                        $('#email-submit').prop('disabled', false);
+                        $('#email').prop('disabled', false);
+                    }
+                });
+            });
+        },
+        shareToTwitter: function () {
+
+            // get url
+            var full_url = Backbone.history.location.href;
+            var host = Backbone.history.location.host;
+
+            // generate random string
+            $.ajax({
+                url:'api/generate-random-string/',
+                type:'POST',
+                data: JSON.stringify({
+                    'url': full_url
+                }),
+                success: function(response) {
+                    var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+
+                        host+'/url/'+response;
+                    // open twitter box
+                    window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+                },
+                error: function(response) {
+                },
+                complete: function() {
+                }
+            });
         }
     });
 
