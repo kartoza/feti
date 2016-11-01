@@ -21,16 +21,7 @@ define([
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
 
-            var _this = this;
-            $('.share-pdf').click(function () {
-                _this.sharePDF();
-            });
-            $('.share-social-twitter').click(function () {
-                _this.shareToTwitter();
-            });
-            $('.share-email').click(function () {
-                _this.shareEmail();
-            })
+
         },
         showOccupationDetail: function () {
             this.$result_detail.show("slide", {direction: "right"}, 300);
@@ -79,6 +70,16 @@ define([
             if(mode!='favorites') {
                 var $share_container = $('.share-container');
                 $('#result-container-'+mode).append($share_container.clone().show());
+                var _this = this;
+                $('#result-container-'+mode+' .share-pdf').click(function () {
+                    _this.sharePDF();
+                });
+                $('#result-container-'+mode+' .share-social-twitter').click(function () {
+                    _this.shareToTwitter();
+                });
+                $('#result-container-'+mode+' .share-email').click(function () {
+                    _this.shareEmail();
+                })
             }
         },
         updateResultTitle: function(number_result, mode, query) {

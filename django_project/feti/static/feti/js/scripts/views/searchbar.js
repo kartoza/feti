@@ -15,14 +15,7 @@ define([
             'click #what-to-study': '_categoryClicked',
             'click #choose-occupation': '_categoryClicked',
             'click #favorites': '_categoryClicked',
-            'click #result-toogle': 'toogleResult',
-            'click #location': 'locationFilterSelected',
-            'click #draw-polygon': 'drawModeSelected',
-            'click #draw-circle': 'drawModeSelected',
-            'click #cancel-location': 'cancelLocationClicked',
-            'click #cancel-draw-polygon': 'cancelDrawClicked',
-            'click #cancel-draw-circle': 'cancelDrawClicked',
-            'click #clear-draw': 'clearAllDraw'
+            'click #result-toogle': 'toogleResult'
         },
         initialize: function (options) {
             this.render();
@@ -113,12 +106,6 @@ define([
             var that = this;
             var new_url = ['map'];
             var mode = Common.CurrentSearchMode;
-            if (mode == "occupation") {
-                this.clearAllDrawWithoutRouting();
-                this.disableFilterResult();
-            } else {
-                this.enableFilterResult();
-            }
 
             var query = that.$search_bar_input.val();
             if(!query && mode in this._search_query) {
@@ -158,6 +145,11 @@ define([
                     this._openFavorites();
                 } else {
                     $('.search-row').show();
+                }
+                if(mode != 'occupation') {
+                    if ($('#result-detail').is(":visible")) {
+                        $('#result-detail').hide("slide", {direction: "right"}, 500);
+                    }
                 }
             }
         },
@@ -285,38 +277,6 @@ define([
                 this.parent.closeResultContainer($(event.target));
             }
         },
-        locationFilterSelected: function (event) {
-            $('#location').hide();
-            $('#cancel-location').show();
-
-            this.cancelDraw('circle');
-            this.cancelDraw('polygon');
-
-            // enable location filter
-            this.parent.enableLocationFilter();
-        },
-        cancelLocationClicked: function () {
-            $('#location').show();
-            $('#cancel-location').hide();
-
-            // disable location filter
-            this.parent.disableLocationFilter();
-        },
-        drawModeSelected: function (event) {
-            if (!$(event.target).hasClass('disabled')) {
-                this.cancelDraw('circle');
-                this.cancelDraw('polygon');
-                this.cancelLocationClicked();
-
-                this.$el.find('.search-bar').find('.m-button').removeClass('active');
-                $(event.target).addClass('active');
-                var selected = $(event.target).get(0).id;
-
-                var drawer = this._drawer[selected.split('-').pop()];
-                drawer.call(this);
-                this.clearAllDraw();
-            }
-        },
         _initializeDrawPolygon: function () {
             $('#draw-polygon').hide();
             $('#cancel-draw-polygon').show();
@@ -329,32 +289,8 @@ define([
             // enable circle drawer
             this.parent.enableCircleDrawer();
         },
-        cancelDrawClicked: function (element) {
-            var shape = $(element.target).attr('id').split('-').pop();
-            this.cancelDraw(shape);
-        },
-        cancelDraw: function (shape) {
-            shape == 'circle' ? this.parent.disableCircleDrawer(): this.parent.disablePolygonDrawer();
-            $('#draw-' + shape).show();
-            $('#cancel-draw-' + shape).hide();
-            this.$el.find('.search-bar').find('.m-button').removeClass('active');
-        },
-        clearAllDrawWithoutRouting: function () {
-            $('#clear-draw').hide();
-            // remove all drawn layer in map
-            this.parent.clearAllDrawnLayer();
-        },
         clearAllDraw: function () {
-            this.clearAllDrawWithoutRouting();
-            this.updateSearchRoute();
-        },
-        showClearDrawButton: function () {
-            $('#clear-draw').show();
-        },
-        // Draw Events
-        onFinishedCreatedShape: function (shape) {
-            this.cancelDraw(shape);
-            this.showClearDrawButton();
+            this.parent.clearAllDrawnLayer();
             this.updateSearchRoute();
         },
         changeCategoryButton: function (mode) {
@@ -451,19 +387,6 @@ define([
             } else {
                 Common.Dispatcher.trigger('map:exitFullScreen');
             }
-        },
-        enableFilterResult: function () {
-            $('#draw-polygon').removeClass('disabled');
-            $('#draw-circle').removeClass('disabled');
-            $('#location').removeClass('disabled');
-        },
-        disableFilterResult: function () {
-            this.cancelDraw('circle');
-            this.cancelDraw('polygon');
-            this.cancelLocationClicked();
-            $('#draw-polygon').addClass('disabled');
-            $('#draw-circle').addClass('disabled');
-            $('#location').addClass('disabled');
         },
         _addResponsiveTab: function(div) {
             div.addClass('responsive-tabs');
