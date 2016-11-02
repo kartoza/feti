@@ -56,7 +56,7 @@ class UpdateUserProfileView(LoginRequiredMixin, UpdateView):
                             kwargs={'username': username})
 
 
-class UpdateUserCampusCourseView(LoginRequiredMixin, UpdateView):
+class UpdateUserFavoritesView(LoginRequiredMixin, UpdateView):
     model = User
 
     def post(self, request, *args, **kwargs):
@@ -108,7 +108,7 @@ class UpdateUserCampusCourseView(LoginRequiredMixin, UpdateView):
         return HttpResponse(status)
 
 
-class DeleteUserCampusView(LoginRequiredMixin, UpdateView):
+class DeleteUserFavoritesView(LoginRequiredMixin, UpdateView):
     model = User
 
     def post(self, request, *args, **kwargs):
