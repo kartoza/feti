@@ -33,6 +33,8 @@ define([
             return false;
         },
         addToFavorites: function (e, campus_id, courses_id) {
+            console.log(campus_id);
+            console.log(courses_id);
             $.ajax({
                 url:'profile/add-campus/',
                 type:'POST',

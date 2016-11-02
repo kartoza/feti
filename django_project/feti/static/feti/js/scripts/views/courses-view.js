@@ -88,7 +88,8 @@ define([
                 var model = new Course(course);
                 that.courses.push(new ProviderCourseView({
                     model: model,
-                    container: "#" + that.model.attributes.id + "-courses-course"
+                    container: "#" + that.model.attributes.id + "-courses-course",
+                    campus_id: that.model.attributes.id
                 }));
             });
         },
