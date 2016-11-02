@@ -37,6 +37,7 @@ define([
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
             Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
+            Common.Dispatcher.on('search:updateRouter', this._updateSearchRoute, this);
 
             this._drawer = {
                 polygon: this._initializeDrawPolygon,
@@ -126,6 +127,12 @@ define([
                     new_url.push(coordinates);
                 }
             }
+
+            if(mode == 'favorites') {
+                // Remove empty strings from array if there is filter
+                new_url.clean("");
+            }
+
             return new_url;
         },
         _updateSearchRoute: function (filter) {
@@ -265,7 +272,7 @@ define([
                     this.showResult();
                 }
             } else if(mode == 'favorites') {
-                this._openFavorites(filter);
+                this._openFavorites(query);
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {

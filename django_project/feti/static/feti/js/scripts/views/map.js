@@ -234,7 +234,7 @@ define([
                         onClick: function (btn, map) {
                             btn.disable();
                             _this.clearAllDrawnLayer();
-                            _this.searchView.updateSearchRoute();
+                            Common.Dispatcher.trigger('search:updateRouter');
                         }
                     }
                 ]
@@ -289,8 +289,7 @@ define([
             this._enableOtherControlButtons();
         },
         drawStop: function (e) {
-            var type = e.layerType;
-            this.searchView.updateSearchRoute();
+            Common.Dispatcher.trigger('search:updateRouter');
         },
         enablePolygonDrawer: function () {
             this.isDrawing = true;
