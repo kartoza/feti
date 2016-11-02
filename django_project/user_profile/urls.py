@@ -5,7 +5,6 @@ from user_profile.views.admin import UserAdminPage
 from user_profile.views.profile import (
     UserProfileView,
     UpdateUserProfileView,
-    UpdateUserCampusView,
     DeleteUserCampusView,
     UpdateUserCampusCourseView
 )

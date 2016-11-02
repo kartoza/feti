@@ -18,6 +18,7 @@ from feti.models.occupation import Occupation
 from feti.models.campus_course_entry import CampusCourseEntry
 from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
+from feti.serializers.favorite_serializer import FavoriteSerializer
 from user_profile.models import CampusCoursesFavorite
 
 from map_administrative.views import get_boundary
@@ -162,16 +163,13 @@ class ApiOccupation(SearchCampus):
         )
 
 
-class ApiSavedCampus(SearchCampus):
+class ApiSavedCampus(APIView):
+
     def get(self, request, format=None):
-        return SearchCampus.get(self, request)
-
-    def filter_model(self, query):
-        campuses = list(self.request.user.profile.campus_favorites.all())
-        return campuses
-
-    def additional_filter(self, model, query):
-        pass
+        campus_course_fav = CampusCoursesFavorite.objects.filter(
+            user=self.request.user)
+        serializer = FavoriteSerializer(campus_course_fav, many=True)
+        return Response(serializer.data)
 
 
 class ApiAutocomplete(APIView):

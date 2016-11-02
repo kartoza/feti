@@ -163,15 +163,15 @@ define([
             }
         },
         _favoriteDeleted: function (mode) {
-            if(mode == 'favorites') {
-                this._getFavorites();
-            }
             for (var key in this._search_need_update) {
                 if (this._search_need_update.hasOwnProperty(key)) {
-                    if (key != mode && key != 'favorites') {
+                    if (key != mode) {
                         this._search_need_update[key] = true;
                     }
                 }
+            }
+            if(mode == 'favorites') {
+                this._getFavorites();
             }
         },
         _openFavorites: function() {
