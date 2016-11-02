@@ -6,7 +6,8 @@ from user_profile.views.profile import (
     UserProfileView,
     UpdateUserProfileView,
     UpdateUserCampusView,
-    DeleteUserCampusView
+    DeleteUserCampusView,
+    UpdateUserCampusCourseView
 )
 
 urlpatterns = patterns(
@@ -36,7 +37,7 @@ urlpatterns = patterns(
         name='update-user-profile-view'),
     url(
         r'^profile/add-campus/',
-        UpdateUserCampusView.as_view(),
+        UpdateUserCampusCourseView.as_view(),
         name='update-user-campus-view'),
     url(
         r'^profile/delete-campus/',

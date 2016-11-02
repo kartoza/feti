@@ -18,6 +18,7 @@ from feti.models.occupation import Occupation
 from feti.models.campus_course_entry import CampusCourseEntry
 from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
+from user_profile.models import CampusCoursesFavorite
 
 from map_administrative.views import get_boundary
 
@@ -78,11 +79,12 @@ class SearchCampus(APIView):
                     location__distance_lt=(drawn_circle, Distance(m=radius))
                 )
 
-        user_campuses = []
         if self.request.user.is_authenticated():
-            user_campuses = list(self.request.user.profile.campus_favorites.all().values_list('id', flat=True))
-
-        self.additional_context['user_campuses'] = user_campuses
+            campus_courses_favorite = list(CampusCoursesFavorite.objects.filter(
+                user=self.request.user,
+                campus__in=campuses))
+            if campus_courses_favorite:
+                self.additional_context['campus_saved'] = campus_courses_favorite
 
         serializer = CampusSerializer(campuses, many=True, context=self.additional_context)
         return Response(serializer.data)

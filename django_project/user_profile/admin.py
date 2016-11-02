@@ -1,5 +1,5 @@
 from django.contrib import admin
-from user_profile.models import CampusOfficial, ProviderOfficial
+from user_profile.models import CampusOfficial, ProviderOfficial, CampusCoursesFavorite
 from user_profile.models.profile import Profile
 
 
@@ -30,3 +30,4 @@ class ProfileAdmin(admin.ModelAdmin):
 
 admin.site.register(ProviderOfficial, ProviderOfficialAdmin)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(CampusCoursesFavorite)
