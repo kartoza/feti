@@ -166,6 +166,7 @@ class ApiOccupation(SearchCampus):
 class ApiSavedCampus(APIView):
 
     def get(self, request, format=None):
+        coord_string = request.GET.get('coordinates')
         campus_course_fav = CampusCoursesFavorite.objects.filter(
             user=self.request.user)
         serializer = FavoriteSerializer(campus_course_fav, many=True)

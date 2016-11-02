@@ -55,7 +55,7 @@ define([
             var that = this;
 
             this.$search_form.submit(function (e) {
-                that.updateSearchRoute();
+                that._updateSearchRoute();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         },
@@ -102,7 +102,7 @@ define([
             var width = this.$search_bar_input.css('width');
             $('.ui-autocomplete').css('width', width);
         },
-        getSearchRoute: function (filter) {
+        _getSearchRoute: function (filter) {
             var that = this;
             var new_url = ['map'];
             var mode = Common.CurrentSearchMode;
@@ -128,24 +128,36 @@ define([
             }
             return new_url;
         },
-        updateSearchRoute: function (filter) {
+        _updateSearchRoute: function (filter) {
             // update route based on query and filter
-            var new_url = this.getSearchRoute(filter);
+            var new_url = this._getSearchRoute(filter);
             Backbone.history.navigate(new_url.join("/"), true);
         },
         _categoryClicked: function (event) {
             event.preventDefault();
             if(!$(event.target).parent().hasClass('active')) {
-                this.trigger('categoryClicked', event);
+
                 var mode = $(event.target).parent().data("mode");
+
+                // Change active button
                 this.changeCategoryButton(mode);
+
+                // Trigger category click event
+                Common.Dispatcher.trigger('sidebar:categoryClicked', mode, Common.CurrentSearchMode);
+
+                // Update current search mode
+                Common.CurrentSearchMode = mode;
+
                 this.$search_bar_input.val('');
-                this.updateSearchRoute();
-                if(mode == 'favorites') {
-                    this._openFavorites();
-                } else {
+
+                // Update url
+                this._updateSearchRoute();
+                
+                if(mode != 'favorites') {
+                    // Hide search bar if in favorite mode
                     $('.search-row').show();
                 }
+
                 if(mode != 'occupation') {
                     if ($('#result-detail').is(":visible")) {
                         $('#result-detail').hide("slide", {direction: "right"}, 500);
@@ -174,24 +186,29 @@ define([
                 this._getFavorites();
             }
         },
-        _openFavorites: function() {
+        _openFavorites: function(filter) {
             $('.search-row').hide();
             this.showResult();
-            if(!('favorites' in this._search_query) || this._search_need_update['favorites']) {
-                this._getFavorites();
+            var mode = 'favorites';
+            if(!(mode in this._search_query) ||
+                this._search_need_update[mode] ||
+                this._search_filter[mode] != filter
+            ) {
+                this._getFavorites(filter);
             }
         },
-        _getFavorites: function () {
+        _getFavorites: function (filter) {
+            console.log(filter);
             var mode = 'favorites';
-            favoritesCollection.search();
+            favoritesCollection.search(filter);
             this._search_query[mode] = '';
-            this._search_filter[mode] = '';
+            this._search_filter[mode] = filter ? filter : '';
             Common.Dispatcher.trigger('sidebar:show_loading', mode);
             this._search_need_update['favorites'] = false;
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
-            var new_url = this.getSearchRoute();
+            var new_url = this._getSearchRoute();
             new_url.push(id);
             if (pathway) {
                 new_url.push(pathway);
@@ -199,8 +216,8 @@ define([
             Backbone.history.navigate(new_url.join("/"), false);
         },
         search: function (mode, query, filter) {
-            this.$search_bar_input.val(query);
-            if(query) {
+            if(query && mode != 'favorites') {
+                this.$search_bar_input.val(query);
                 if (!filter) {
                     this.clearAllDraw();
                 } else {
@@ -247,10 +264,8 @@ define([
                     Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult();
                 }
-            } else {
-                if(mode == 'favorites') {
-                    this._openFavorites();
-                }
+            } else if(mode == 'favorites') {
+                this._openFavorites(filter);
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
@@ -291,7 +306,7 @@ define([
         },
         clearAllDraw: function () {
             this.parent.clearAllDrawnLayer();
-            this.updateSearchRoute();
+            this._updateSearchRoute();
         },
         changeCategoryButton: function (mode) {
             // Shows relevant search result container
@@ -319,8 +334,6 @@ define([
             this.showSearchBar(0);
             if ($button) {
                 $button.addClass('active');
-                Common.CurrentSearchMode = mode;
-                Common.Dispatcher.trigger('sidebar:change_title', mode);
             }
         },
         mapResize: function (is_resizing) {

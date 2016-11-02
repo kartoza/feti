@@ -52,7 +52,6 @@ define([
             this.sideBarView = new SidebarView({parent: this});
 
             this.listenTo(this.searchView, 'backHome', this.backHome);
-            this.listenTo(this.searchView, 'categoryClicked', this._onSearchBarCategoryClicked);
 
             this.layerAdministrativeView = new LayerAdministrativeView({parent: this});
             // Common Dispatcher events
@@ -62,6 +61,7 @@ define([
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
+            Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
 
             this.modesLayer = {
                 'provider': L.layerGroup(),
@@ -267,10 +267,9 @@ define([
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
         },
-        _onSearchBarCategoryClicked: function(event) {
+        _onSearchBarCategoryClicked: function(newMode, oldMode) {
             this.fullScreenMap();
-            var mode = $(event.target).parent().data("mode");
-            this._changeSearchLayer(Common.CurrentSearchMode, mode);
+            this._changeSearchLayer(oldMode, newMode);
         },
         drawCreated: function (e) {
             var type = e.layerType,
