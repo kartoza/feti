@@ -166,9 +166,44 @@ class ApiOccupation(SearchCampus):
 class ApiSavedCampus(APIView):
 
     def get(self, request, format=None):
-        coord_string = request.GET.get('coordinates')
+        # Get coordinates from request and create a polygon
+        shape = request.GET.get('shape')
+        drawn_polygon = None
+        drawn_circle = None
+        radius = 0
+
+        if shape == 'polygon':
+            coord_string = request.GET.get('coordinates')
+            if coord_string:
+                coord_obj = json.loads(coord_string)
+                poly = []
+                for c in coord_obj:
+                    poly.append((c['lng'], c['lat']))
+                poly.append(poly[0])
+                drawn_polygon = Polygon(poly)
+        elif shape == 'circle':
+            coord_string = request.GET.get('coordinate')
+            radius = request.GET.get('radius')
+            if coord_string:
+                coord_obj = json.loads(coord_string)
+                drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
+
+        boundary = get_boundary(request.GET.get('administrative'))
+        if boundary:
+            drawn_polygon = boundary.polygon_geometry
+
         campus_course_fav = CampusCoursesFavorite.objects.filter(
             user=self.request.user)
+
+        if drawn_polygon:
+            campus_course_fav = campus_course_fav.filter(
+                    campus__location__within=drawn_polygon
+                )
+        elif drawn_circle:
+            campus_course_fav = campus_course_fav.filter(
+                    campus__location__distance_lt=(drawn_circle, Distance(m=radius))
+                )
+
         serializer = FavoriteSerializer(campus_course_fav, many=True)
         return Response(serializer.data)
 

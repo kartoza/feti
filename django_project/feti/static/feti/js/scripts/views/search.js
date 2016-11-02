@@ -106,7 +106,10 @@ define([
         _getSearchRoute: function (filter) {
             var that = this;
             var new_url = ['map'];
-            var mode = Common.CurrentSearchMode;
+            var mode = this.$el.find('.search-category').find('.search-option.active').data('mode');
+            if(Common.CurrentSearchMode != mode) {
+                Common.CurrentSearchMode = mode;
+            }
 
             var query = that.$search_bar_input.val();
             if(!query && mode in this._search_query) {
@@ -205,7 +208,6 @@ define([
             }
         },
         _getFavorites: function (filter) {
-            console.log(filter);
             var mode = 'favorites';
             favoritesCollection.search(filter);
             this._search_query[mode] = '';
@@ -272,6 +274,25 @@ define([
                     this.showResult();
                 }
             } else if(mode == 'favorites') {
+                if(query) {
+                    filter = query;
+
+                    var filters = filter.split('&');
+
+                    if (filters[0].split('=').pop() == 'polygon') { // if polygon
+                        var coordinates_json = JSON.parse(filters[1].split('=').pop());
+                        var coordinates = [];
+                        _.each(coordinates_json, function (coordinate) {
+                            coordinates.push([coordinate.lat, coordinate.lng]);
+                        });
+                        this.parent.createPolygon(coordinates);
+                    } else if (filters[0].split('=').pop() == 'circle') { // if circle
+                        var coords = JSON.parse(filters[1].split('=').pop());
+                        var radius = filters[2].split('=').pop();
+                        this.parent.createCircle(coords, radius);
+                    }
+                }
+
                 this._openFavorites(query);
             }
         },

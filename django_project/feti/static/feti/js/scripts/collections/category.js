@@ -33,6 +33,11 @@ define([
                 parameters.coord = drawnLayers;
             }
 
+            if(Common.CurrentSearchMode == 'favorites') {
+                if(q && q.length > 0)
+                    parameters.coord = q;
+            }
+
             this.url = this.url_template(parameters);
             this.url = this.url.replace(/&quot;/g, '"');
 
