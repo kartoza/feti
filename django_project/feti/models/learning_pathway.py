@@ -12,7 +12,7 @@ class StepDetail(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, null=True, blank=True)
     detail = models.CharField(max_length=1024, null=True, blank=True)
-    course = models.ForeignKey(Course, null=True, blank=True)
+    course = models.ManyToManyField(Course, blank=True)
 
     class Meta:
         app_label = 'feti'
