@@ -44,14 +44,26 @@ def get_providers(html):
                 course_title = course_content[0: course_content.index("(")].strip()
 
                 course = Course.objects.filter(
-                    national_learners_records_database=course_id,
-                    course_description__contains=course_title.lower()
+                    national_learners_records_database=course_id
                 )
-                if len(course) > 0:
-                    step_courses.append(course[len(course)-1])
-                else:
-                    # create course
-                    continue
+
+                # if there are more than 1 courses, something wrong
+                if len(course) > 1:
+                    # find the closest one
+                    current_ratio = 0
+                    correct_course = None
+
+                    for c in course:
+                        ratio = SequenceMatcher(None, course_title, c.course_description).ratio()
+
+                        if 0.5 < ratio > current_ratio:
+                            # delete course
+                            # if correct_course:
+                            #     correct_course.delete()
+                            correct_course = c
+
+                    if correct_course:
+                        step_courses.append(correct_course)
 
                 print(course)
             print(split)
