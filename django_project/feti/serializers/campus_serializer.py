@@ -15,12 +15,10 @@ class CampusSerializer(serializers.ModelSerializer):
 
         res['saved'] = False
         if self.context.get("campus_saved"):
-            try:
-                fav = next(item for item in self.context.get("campus_saved") if item.campus.id == res['id'])
-                res['saved'] = True
-                course_context['course_saved'] = list(fav.courses.all().values_list('id', flat=True))
-            except StopIteration:
-                pass
+            for item in self.context.get("campus_saved"):
+                if item.campus.id == res['id']:
+                    res['saved'] = True
+                    course_context['course_saved'] = list(item.courses.all().values_list('id', flat=True))
 
         if self.context.get("courses"):
             res['courses'] = CourseSerializer(
