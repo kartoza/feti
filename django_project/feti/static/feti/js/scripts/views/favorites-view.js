@@ -23,23 +23,29 @@ define([
             var result = confirm("Delete this campus?");
 
             if (result && $(e.target).hasClass('fa-star filled')) {
-                var id = this.model.id;
+                // get id
+                var id = this.model.attributes.id;
+                var course_id = [];
+
+                // get all courses id
+                _.each(this.model.attributes.courses, function (course) {
+                    course_id.push(course.id);
+                });
+
                 // Remove from favorites
                 $.ajax({
                     url:'profile/delete-campus/',
                     type:'POST',
                     data: JSON.stringify({
-                        'campus': id
+                        'campus': id,
+                        'courses_id': course_id
                     }),
                     success: function(response) {
                         if(response=='deleted') {
                             Common.Dispatcher.trigger('favorites:deleted', 'favorites');
-                            $(e.target).removeClass('fa-star filled');
-                            $(e.target).addClass('fa-star-o');
                         }
                     },
                     error: function(response) {
-                        console.log(response);
                     },
                     complete: function() {
                     }
@@ -68,7 +74,8 @@ define([
                 var model = new Course(course);
                 that.courses.push(new ProviderCourseView({
                     model: model,
-                    container: "#" + that.model.attributes.id + "-courses-favorites"
+                    container: "#" + that.model.attributes.id + "-courses-favorites",
+                    campus_id: that.model.attributes.id
                 }));
             });
         },

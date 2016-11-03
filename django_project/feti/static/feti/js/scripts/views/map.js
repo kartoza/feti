@@ -1,9 +1,9 @@
 define([
     'common',
-    '/static/feti/js/scripts/views/searchbar.js',
+    '/static/feti/js/scripts/views/search.js',
     '/static/feti/js/scripts/views/sidebar.js',
     '/static/feti/js/scripts/views/layer-administrative.js'
-], function (Common, SearchbarView, SidebarView, LayerAdministrativeView) {
+], function (Common, SearchView, SidebarView, LayerAdministrativeView) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -48,11 +48,10 @@ define([
             this._tooltip = null;
 
             this.render();
-            this.searchBarView = new SearchbarView({parent: this});
+            this.searchView = new SearchView({parent: this});
             this.sideBarView = new SidebarView({parent: this});
 
-            this.listenTo(this.searchBarView, 'backHome', this.backHome);
-            this.listenTo(this.searchBarView, 'categoryClicked', this._onSearchBarCategoryClicked);
+            this.listenTo(this.searchView, 'backHome', this.backHome);
 
             this.layerAdministrativeView = new LayerAdministrativeView({parent: this});
             // Common Dispatcher events
@@ -62,6 +61,7 @@ define([
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
+            Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
 
             this.modesLayer = {
                 'provider': L.layerGroup(),
@@ -172,7 +172,7 @@ define([
                         title: 'location',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
-                            _this.searchBarView.clearAllDraw();
+                            _this.searchView.clearAllDraw();
                             _this.enableLocationFilter();
                             _this._disableOtherControlButtons(btn);
                         }
@@ -189,7 +189,7 @@ define([
                         title: 'polygon',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
-                            _this.searchBarView.clearAllDraw();
+                            _this.searchView.clearAllDraw();
                             _this.enablePolygonDrawer();
                             _this._disableOtherControlButtons(btn);
                             btn._map.on('finishedDrawing', function (e) {
@@ -211,7 +211,7 @@ define([
                         title: 'circle',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
-                            _this.searchBarView.clearAllDraw();
+                            _this.searchView.clearAllDraw();
                             _this.enableCircleDrawer();
                             _this._disableOtherControlButtons(btn);
                             btn._map.on('finishedDrawing', function (e) {
@@ -234,7 +234,7 @@ define([
                         onClick: function (btn, map) {
                             btn.disable();
                             _this.clearAllDrawnLayer();
-                            _this.searchBarView.updateSearchRoute();
+                            Common.Dispatcher.trigger('search:updateRouter');
                         }
                     }
                 ]
@@ -267,10 +267,9 @@ define([
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
         },
-        _onSearchBarCategoryClicked: function(event) {
+        _onSearchBarCategoryClicked: function(newMode, oldMode) {
             this.fullScreenMap();
-            var mode = $(event.target).parent().data("mode");
-            this._changeSearchLayer(Common.CurrentSearchMode, mode);
+            this._changeSearchLayer(oldMode, newMode);
         },
         drawCreated: function (e) {
             var type = e.layerType,
@@ -290,8 +289,7 @@ define([
             this._enableOtherControlButtons();
         },
         drawStop: function (e) {
-            var type = e.layerType;
-            this.searchBarView.updateSearchRoute();
+            Common.Dispatcher.trigger('search:updateRouter');
         },
         enablePolygonDrawer: function () {
             this.isDrawing = true;
@@ -407,10 +405,10 @@ define([
         },
         changeCategory: function (mode) {
             this._changeSearchLayer(Common.CurrentSearchMode, mode);
-            this.searchBarView.changeCategoryButton(mode);
+            this.searchView.changeCategoryButton(mode);
         },
         search: function (mode, query, filter) {
-            this.searchBarView.search(mode, query, filter);
+            this.searchView.search(mode, query, filter);
             if (filter && filter.indexOf('administrative') >= 0) {
                 filter = filter.split('=')[1];
                 this.layerAdministrativeView.showPolygon(filter);
@@ -419,7 +417,7 @@ define([
             }
         },
         exitAllFullScreen: function () {
-            this.searchBarView.exitOccupation();
+            this.searchView.exitOccupation();
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -467,7 +465,7 @@ define([
                 this.$mapContainer.animate(d, _speed, function () {
                     _map._onResize();
                     that.isFullScreen = true;
-                    that.searchBarView.mapResize(true, _speed);
+                    that.searchView.mapResize(true, _speed);
                     // set focus on search text
                     document.search_form.search_input.focus();
                 });
@@ -509,8 +507,8 @@ define([
                 this.$mapContainer.animate(d, this.animationSpeed, function () {
                     _map._onResize();
                     that.isFullScreen = false;
-                    that.searchBarView.mapResize(false, that.animationSpeed);
-                    that.searchBarView.exitOccupation(e);
+                    that.searchView.mapResize(false, that.animationSpeed);
+                    that.searchView.exitOccupation(e);
                     $('#feti-map').css('width', '100%');
                 });
 

@@ -18,6 +18,8 @@ from feti.models.occupation import Occupation
 from feti.models.campus_course_entry import CampusCourseEntry
 from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
+from feti.serializers.favorite_serializer import FavoriteSerializer
+from user_profile.models import CampusCoursesFavorite
 
 from map_administrative.views import get_boundary
 
@@ -78,11 +80,12 @@ class SearchCampus(APIView):
                     location__distance_lt=(drawn_circle, Distance(m=radius))
                 )
 
-        user_campuses = []
         if self.request.user.is_authenticated():
-            user_campuses = list(self.request.user.profile.campus_favorites.all().values_list('id', flat=True))
-
-        self.additional_context['user_campuses'] = user_campuses
+            campus_courses_favorite = list(CampusCoursesFavorite.objects.filter(
+                user=self.request.user,
+                campus__in=campuses))
+            if campus_courses_favorite:
+                self.additional_context['campus_saved'] = campus_courses_favorite
 
         serializer = CampusSerializer(campuses, many=True, context=self.additional_context)
         return Response(serializer.data)
@@ -160,16 +163,49 @@ class ApiOccupation(SearchCampus):
         )
 
 
-class ApiSavedCampus(SearchCampus):
+class ApiSavedCampus(APIView):
+
     def get(self, request, format=None):
-        return SearchCampus.get(self, request)
+        # Get coordinates from request and create a polygon
+        shape = request.GET.get('shape')
+        drawn_polygon = None
+        drawn_circle = None
+        radius = 0
 
-    def filter_model(self, query):
-        campuses = list(self.request.user.profile.campus_favorites.all())
-        return campuses
+        if shape == 'polygon':
+            coord_string = request.GET.get('coordinates')
+            if coord_string:
+                coord_obj = json.loads(coord_string)
+                poly = []
+                for c in coord_obj:
+                    poly.append((c['lng'], c['lat']))
+                poly.append(poly[0])
+                drawn_polygon = Polygon(poly)
+        elif shape == 'circle':
+            coord_string = request.GET.get('coordinate')
+            radius = request.GET.get('radius')
+            if coord_string:
+                coord_obj = json.loads(coord_string)
+                drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
 
-    def additional_filter(self, model, query):
-        pass
+        boundary = get_boundary(request.GET.get('administrative'))
+        if boundary:
+            drawn_polygon = boundary.polygon_geometry
+
+        campus_course_fav = CampusCoursesFavorite.objects.filter(
+            user=self.request.user)
+
+        if drawn_polygon:
+            campus_course_fav = campus_course_fav.filter(
+                    campus__location__within=drawn_polygon
+                )
+        elif drawn_circle:
+            campus_course_fav = campus_course_fav.filter(
+                    campus__location__distance_lt=(drawn_circle, Distance(m=radius))
+                )
+
+        serializer = FavoriteSerializer(campus_course_fav, many=True)
+        return Response(serializer.data)
 
 
 class ApiAutocomplete(APIView):

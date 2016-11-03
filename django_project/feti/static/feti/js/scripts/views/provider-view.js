@@ -25,14 +25,22 @@ define([
                 return false;
             }
             // get id
-            var id = this.model.id;
+            var id = this.model.attributes.id;
+            var course_id = [];
+
+            // get all courses id
+            _.each(this.model.attributes.courses, function (course) {
+                course_id.push(course.id);
+            });
+
             if($(e.target).hasClass('fa-star-o')) {
                 // Add to favorites
                 $.ajax({
                     url:'profile/add-campus/',
                     type:'POST',
                     data: JSON.stringify({
-                        'campus': id
+                        'campus': id,
+                        'courses_id': course_id
                     }),
                     success: function(response) {
                         if(response=='added') {
@@ -40,10 +48,15 @@ define([
                             Common.Dispatcher.trigger('favorites:added', 'provider');
                             $(e.target).removeClass('fa-star-o');
                             $(e.target).addClass('fa-star filled');
+
+                            for(var i=0; i < course_id.length; i++) {
+                                $('#'+id+'-courses #favorite-course-'+course_id[i]).children().removeClass('fa-star-o');
+                                $('#'+id+'-courses #favorite-course-'+course_id[i]).children().addClass('fa-star filled');
+                            }
                         }
                     },
                     error: function(response) {
-                        console.log(response);
+                        alert('Adding campus to favorites failed');
                     },
                     complete: function() {
                     }
@@ -54,6 +67,7 @@ define([
                 // $(e.target).addClass('fa-star-o');
                 // Remove from favorites
             }
+
             return false;
         },
         render: function () {
@@ -76,6 +90,7 @@ define([
                 var model = new Course(course);
                 that.courses.push(new ProviderCourseView({
                     model: model,
+                    campus_id: that.model.attributes.id,
                     container: "#" + that.model.attributes.id + "-courses"
                 }));
             });

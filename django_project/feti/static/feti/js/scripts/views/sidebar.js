@@ -16,7 +16,7 @@ define([
             this.$loading_div = $('.result-loading');
             this.$result_title = $('#result-title');
             this.$result_detail = $('#result-detail');
-            Common.Dispatcher.on('sidebar:change_title', this.showResultTitle, this);
+            Common.Dispatcher.on('sidebar:categoryClicked', this.showResultTitle, this);
             Common.Dispatcher.on('sidebar:update_title', this.updateResultTitle, this);
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
@@ -136,9 +136,9 @@ define([
 
             this.$result_title.append($result_title_campus);
         },
-        showResultTitle: function(mode) {
-            $('#result-title').children().hide();
-            $('#result-title-'+mode).show();
+        showResultTitle: function(newMode, oldMode) {
+            $('#result-title-'+oldMode).hide();
+            $('#result-title-'+newMode).show();
         },
         sharePDF: function() {
             var url = '/pdf_report/';

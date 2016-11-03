@@ -8,7 +8,7 @@ define([
 
     var FavoritesCollection = Category.extend({
         model: Provider,
-        provider_url_template: _.template("/api/saved-campus/"),
+        provider_url_template: _.template("/api/saved-campus?<%- coord %>"),
         initialize: function() {
             this.url_template = this.provider_url_template;
             this.view = FavoritesView;

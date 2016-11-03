@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse_lazy
 from feti.models.campus import Campus
+from feti.models.campus_course_entry import CampusCourseEntry
+from feti.models.course import Course
 from user_profile.forms.profile_form import UserEditMultiForm
+from user_profile.models import CampusCoursesFavorite
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '21/09/16'
@@ -53,14 +56,14 @@ class UpdateUserProfileView(LoginRequiredMixin, UpdateView):
                             kwargs={'username': username})
 
 
-class UpdateUserCampusView(LoginRequiredMixin, UpdateView):
+class UpdateUserFavoritesView(LoginRequiredMixin, UpdateView):
     model = User
 
     def post(self, request, *args, **kwargs):
         user = request.user
         data = request.body
+        status = ""
 
-        # Get campus id from request
         try:
             retrieved_data = json.loads(data.decode("utf-8"))
         except ValueError:
@@ -68,6 +71,7 @@ class UpdateUserCampusView(LoginRequiredMixin, UpdateView):
                 'Error json value'
             )
         campus_id = retrieved_data['campus']
+        courses_id = retrieved_data['courses_id']
 
         # Get campus
         try:
@@ -77,22 +81,40 @@ class UpdateUserCampusView(LoginRequiredMixin, UpdateView):
                 'Campus not found'
             )
 
-        # Add to favorites
-        if not user.profile.campus_favorites.filter(id=campus.id).exists():
-            user.profile.campus_favorites.add(campus)
-            status = 'added'
-        else:
-            return HttpResponseForbidden()
+        try:
+            campus_course = CampusCoursesFavorite.objects.get(
+                user=user,
+                campus=campus
+            )
+        except CampusCoursesFavorite.DoesNotExist:
+            campus_course = CampusCoursesFavorite.objects.create(
+                user=user,
+                campus=campus
+            )
+
+        for course_id in courses_id:
+            # Get course
+            try:
+                course = Course.objects.get(id=course_id)
+            except Course.DoesNotExist:
+                continue
+
+            if not campus_course.courses.filter(id=course.id).exists():
+                campus_course.courses.add(course)
+                status = "added"
+            else:
+                continue
 
         return HttpResponse(status)
 
 
-class DeleteUserCampusView(LoginRequiredMixin, UpdateView):
+class DeleteUserFavoritesView(LoginRequiredMixin, UpdateView):
     model = User
 
     def post(self, request, *args, **kwargs):
         user = request.user
         data = request.body
+        status = ""
 
         # Get campus id from request
         try:
@@ -102,6 +124,7 @@ class DeleteUserCampusView(LoginRequiredMixin, UpdateView):
                 'Error json value'
             )
         campus_id = retrieved_data['campus']
+        courses_id = retrieved_data['courses_id']
 
         # Get campus
         try:
@@ -111,11 +134,31 @@ class DeleteUserCampusView(LoginRequiredMixin, UpdateView):
                 'Campus not found'
             )
 
-        # Add to favorites
-        if user.profile.campus_favorites.filter(id=campus.id).exists():
-            user.profile.campus_favorites.remove(campus)
-            status = 'deleted'
-        else:
-            return HttpResponseForbidden()
+        try:
+            campus_course = CampusCoursesFavorite.objects.get(
+                user=user,
+                campus=campus
+            )
+        except CampusCoursesFavorite.DoesNotExist:
+            raise Http404(
+                'Campus not found'
+            )
+
+        # Delete favorites
+        for course_id in courses_id:
+            # Get course
+            try:
+                course = Course.objects.get(id=course_id)
+            except Course.DoesNotExist:
+                continue
+
+            if campus_course.courses.filter(id=course.id).exists():
+                campus_course.courses.remove(course)
+                status = "deleted"
+            else:
+                continue
+
+        if not list(campus_course.courses.all()):
+            campus_course.delete()
 
         return HttpResponse(status)

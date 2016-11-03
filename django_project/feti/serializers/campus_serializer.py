@@ -11,17 +11,25 @@ class CampusSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         res = super(CampusSerializer, self).to_representation(instance)
+        course_context = {}
 
         res['saved'] = False
-        if self.context.get("user_campuses"):
-            if res['id'] in self.context.get("user_campuses"):
-                res['saved'] = True
+        if self.context.get("campus_saved"):
+            for item in self.context.get("campus_saved"):
+                if item.campus.id == res['id']:
+                    res['saved'] = True
+                    course_context['course_saved'] = list(item.courses.all().values_list('id', flat=True))
 
         if self.context.get("courses"):
             res['courses'] = CourseSerializer(
-                instance.courses.filter(id__in=self.context.get('courses')), many=True).data
+                instance.courses.filter(id__in=self.context.get('courses')),
+                many=True,
+                context=course_context).data
         else:
-            res['courses'] = CourseSerializer(instance.courses.all(), many=True).data
+            res['courses'] = CourseSerializer(
+                instance.courses.all(),
+                many=True,
+                context=course_context).data
 
         res['long_description'] = instance.long_description
         if instance.address:
