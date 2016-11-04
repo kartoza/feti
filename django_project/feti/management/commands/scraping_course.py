@@ -9,7 +9,7 @@ from feti.models.provider import Provider
 from feti.models.field_of_study import FieldOfStudy
 from feti.models.national_qualifications_framework import NationalQualificationsFramework
 from feti.models.education_training_quality_assurance import EducationTrainingQualityAssurance
-from feti.utils import beautify, cleaning, get_soup
+from feti.utils import beautify, cleaning, get_soup, save_html, get_raw_soup, open_saved_html
 from feti.management.commands.scraping_campus import scrape_campus
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
@@ -102,6 +102,34 @@ def process_saqa_qualification_table(table):
         data['field'] = saqa_details[index + 3]
 
     return data
+
+
+def get_course_detail_from_saqa(qualification_id):
+    # Get full detail of a course from SAQA
+    # http://regqs.saqa.org.za/viewQualification.php?id=<qualification-id>
+
+    saqa_detail = open_saved_html('saqa-course', qualification_id)
+
+    if not saqa_detail:
+        while True:
+            try:
+                saqa_detail = get_raw_soup(
+                    'http://regqs.saqa.org.za/viewQualification.php?id=%s' % qualification_id
+                )
+                save_html('saqa-course', qualification_id, saqa_detail.content)
+                saqa_detail = beautify(saqa_detail.content)
+                break
+            except HTTPError as detail:
+                if detail.errno == 500:
+                    time.sleep(1)
+                    continue
+                else:
+                    raise
+
+    if saqa_detail:
+        tables = saqa_detail.findAll('table')
+        processed_table = process_saqa_qualification_table(tables[5])
+        print(processed_table)
 
 
 def scraping_course_ncap(start_page=0, max_page=0):
@@ -245,14 +273,24 @@ def scraping_course_saqa():
 
 
 class Command(BaseCommand):
+    help = 'Scrapping the courses information'
     args = '<args>'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--id',
+            dest='id',
+            help='Qualification id'
+        )
+        parser.add_argument(
+            '--re_cache',
+            dest='re_cache',
+            help='Update html cache'
+        )
+
     def handle(self, *args, **options):
-        args = list(args)
-        if len(args) > 0:
-            if args[len(args) - 1].lower() == "true":
-                Course.objects.all().delete()
-                args.pop(len(args) - 1)
-            elif args[len(args) - 1].lower() == "false":
-                args.pop(len(args) - 1)
-        scraping_course_ncap()
+
+        if options['id']:
+            get_course_detail_from_saqa(options['id'])
+        else:
+            scraping_course_ncap()
