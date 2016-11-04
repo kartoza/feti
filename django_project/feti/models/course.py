@@ -100,10 +100,10 @@ class Course(models.Model):
         null=True
     )
 
-    registration_status = models.NullBooleanField(
+    registration_status = models.CharField(
+        max_length=100,
         blank=True,
-        null=True,
-        default=None
+        null=True
     )
 
     saqa_decision_number = models.CharField(
