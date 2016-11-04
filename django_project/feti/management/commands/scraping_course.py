@@ -70,36 +70,27 @@ def create_course(data):
         return course
 
 
-def process_saqa_qualification_table(table):
-    saqa_details = list(filter(None, table.text.split('\n')))
-    row_title = {
-        'saqa_qual_id': 'SAQA QUAL ID',
-        'title': 'QUALIFICATION TITLE',
-        'primary_or_delegated': 'PRIMARY OR DELEGATED QUALITY ASSURANCE FUNCTIONARY',
-        'nqf_level': 'NQF LEVEL',
-        'field': 'FIELD'
-    }
+def parse_saqa_qualification_table(table):
     data = {}
+    key_array = []
+    value_array = []
 
-    if row_title['saqa_qual_id'] in saqa_details:
-        index = saqa_details.index(row_title['saqa_qual_id'])
-        data['id'] = saqa_details[index + 2]
+    rows = table.findAll('tr')
 
-    if row_title['title'] in saqa_details:
-        index = saqa_details.index(row_title['title'])
-        data['title'] = saqa_details[index + 2]
+    for idx, row in enumerate(rows):
+        cols = row.findAll('td')
+        for col in cols:
+            if idx % 2:
+                value_array.append(cleaning(col.get_text()))
+            else:
+                key_array.append(cleaning(col.get_text())
+                                 .replace(" ", "_")
+                                 .replace("-", "_")
+                                 .lower())
 
-    if row_title['primary_or_delegated'] in saqa_details:
-        index = saqa_details.index(row_title['primary_or_delegated'])
-        data['primary or delegated qa functionary'] = saqa_details[index + 2]
-
-    if row_title['nqf_level'] in saqa_details:
-        index = saqa_details.index(row_title['nqf_level'])
-        data['nqf level'] = saqa_details[index + 5]
-
-    if row_title['field'] in saqa_details:
-        index = saqa_details.index(row_title['field'])
-        data['field'] = saqa_details[index + 3]
+    if len(key_array) == len(value_array):
+        for i in range(len(key_array)):
+            data[key_array[i]] = value_array[i]
 
     return data
 
@@ -128,7 +119,7 @@ def get_course_detail_from_saqa(qualification_id):
 
     if saqa_detail:
         tables = saqa_detail.findAll('table')
-        processed_table = process_saqa_qualification_table(tables[5])
+        processed_table = parse_saqa_qualification_table(tables[5])
         print(processed_table)
 
 
@@ -183,7 +174,7 @@ def scraping_course_ncap(start_page=0, max_page=0):
                 tables = saqa.findAll('table')
                 if len(tables) == 0:
                     continue
-                processed_table = process_saqa_qualification_table(tables[5])
+                processed_table = parse_saqa_qualification_table(tables[5])
                 course = create_course(processed_table)
 
             # Update campus
