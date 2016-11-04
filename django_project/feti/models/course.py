@@ -21,6 +21,8 @@ from feti.models.qual_class import QualClass
 from feti.models.national_qualification_framework_subframework import \
     NationalQualificationFrameworkSubFramework
 from feti.models.abet_band import AbetBand
+from feti.models.pre_2009_national_qualifications_framework import \
+    Pre2009NationalQualificationsFramework
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -52,13 +54,13 @@ class Course(models.Model):
         NationalQualificationsFramework, blank=True, null=True)
 
     national_qualifications_subframework = models.ForeignKey(
-        NationalQualificationFrameworkSubFramework,
-        blank=True,
-        null=True
+            NationalQualificationFrameworkSubFramework,
+            blank=True,
+            null=True
     )
 
     pre_2009_national_qualifications_framework = models.ForeignKey(
-            NationalQualificationsFramework,
+            Pre2009NationalQualificationsFramework,
             blank=True,
             null=True
     )
@@ -135,7 +137,8 @@ class Course(models.Model):
         null=True
     )
 
-    learning_assumed_to_be_in_place_and_recognition_of_prior_learning = models.TextField(
+    learning_assumed_to_be_in_place_and_recognition = models.TextField(
+        verbose_name="Learning Assumed To Be In Place And Recognition Of Prior Learning",
         blank=True,
         null=True
     )
