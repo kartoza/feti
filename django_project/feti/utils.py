@@ -54,9 +54,9 @@ def get_soup(url):
 
 
 def open_saved_html(folder, filename):
-    full_filename = os.path.join(settings.MEDIA_ROOT, folder, filename + '.html')
+    full_filename = os.path.join(settings.MEDIA_ROOT, folder, cleaning(filename) + '.html')
     try:
-        with open(full_filename) as f:
+        with open(full_filename, 'r', encoding='ISO-8859-1') as f:
             return BeautifulSoup(f, 'html.parser')
     except FileNotFoundError:
         return

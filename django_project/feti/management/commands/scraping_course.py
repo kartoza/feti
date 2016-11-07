@@ -102,16 +102,19 @@ def create_or_update_course(data):
         nqfs = None
         if 'nqf_sub_framework' in data:
             sub_framework = data['nqf_sub_framework'].split(" - ")
-            try:
-                nqfs = NationalQualificationFrameworkSubFramework.objects.get(
-                    code=sub_framework[0],
-                    title=sub_framework[1]
-                )
-            except NationalQualificationFrameworkSubFramework.DoesNotExist:
-                nqfs = NationalQualificationFrameworkSubFramework.objects.create(
-                    code=sub_framework[0],
-                    title=sub_framework[1]
-                )
+            if len(sub_framework) > 1:
+                _title = sub_framework[1]
+                _code = sub_framework[0]
+                try:
+                    nqfs = NationalQualificationFrameworkSubFramework.objects.get(
+                        code=_code,
+                        title=_title
+                    )
+                except NationalQualificationFrameworkSubFramework.DoesNotExist:
+                    nqfs = NationalQualificationFrameworkSubFramework.objects.create(
+                        code=_code,
+                        title=_title
+                    )
 
         # Pre-2009 National Qualifications Framework
         pnqf = None
@@ -239,20 +242,30 @@ def parse_saqa_qualification_table(table):
     return data
 
 
-def get_course_detail_from_saqa(qualification_id):
+def get_course_detail_from_saqa(qualification_id, no_cache):
     # Get full detail of a course from SAQA
     # http://regqs.saqa.org.za/viewQualification.php?id=<qualification-id>
 
-    saqa_detail = open_saved_html('saqa-course', qualification_id)
+    print('Qualification ID : {}'.format(qualification_id))
+    not_exist_message = 'Details for this qualification are not available'
+    saqa_detail = None
+    if not no_cache:
+        saqa_detail = open_saved_html('saqa-course', qualification_id)
 
     if not saqa_detail:
+        print('No cached sites')
+        print('Fetching...')
         while True:
             try:
                 saqa_detail = get_raw_soup(
                     'http://regqs.saqa.org.za/viewQualification.php?id=%s' % qualification_id
                 )
-                save_html('saqa-course', qualification_id, saqa_detail.content)
-                saqa_detail = beautify(saqa_detail.content)
+                if not_exist_message not in str(saqa_detail.content):
+                    if not no_cache:
+                        save_html('saqa-course', qualification_id, saqa_detail.content)
+                    saqa_detail = beautify(saqa_detail.content)
+                else:
+                    saqa_detail = None
                 break
             except HTTPError as detail:
                 if detail.errno == 500:
@@ -262,6 +275,7 @@ def get_course_detail_from_saqa(qualification_id):
                     raise
 
     if saqa_detail:
+        print('Processing html element from saqa...')
         tables = saqa_detail.findAll('table')
         last_idx = 0
         parsed_data = {}
@@ -281,8 +295,12 @@ def get_course_detail_from_saqa(qualification_id):
                 if last_title:
                     parsed_data[last_title] = table.get_text().lstrip()
                     last_title = None
-
+        print('Updating course...')
         create_or_update_course(parsed_data)
+        print('Course updated')
+    else:
+        print(not_exist_message)
+        print('Course not updated')
 
 
 def scraping_course_ncap(start_page=0, max_page=0):
@@ -440,10 +458,16 @@ class Command(BaseCommand):
             dest='re_cache',
             help='Update html cache'
         )
+        parser.add_argument(
+            '--no_cache',
+            dest='no_cache',
+            help='Do not use cached html'
+        )
 
     def handle(self, *args, **options):
 
         if options['id']:
-            get_course_detail_from_saqa(options['id'])
+            no_cache = True if options['no_cache'] else False
+            get_course_detail_from_saqa(options['id'], no_cache)
         else:
             scraping_course_ncap()
