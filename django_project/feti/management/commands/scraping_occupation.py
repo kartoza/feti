@@ -8,6 +8,7 @@ from feti.models.course import Course
 from feti.models.campus import Campus
 from feti.models.learning_pathway import LearningPathway, Step, StepDetail
 from feti.utils import beautify, get_soup, cleaning
+from feti.management.commands.scraping_course import get_course_detail_from_saqa
 
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
@@ -16,58 +17,80 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
-def get_providers(html):
-    step_courses = []
-    beautified = beautify(html)
-    body = beautified.find("div", {"class": "BodyPanel642"})
+def process_course_and_provider(html, step_detail):
+    body = html.find("div", {"class": "BodyPanel642"})
     if body:
         contents = str(body)
+        if 'No Records Found' in contents:
+            print('No courses found')
+            return
         contents = contents.split('<hr class="hrdivider"/>')
         for content in contents:
-            cleaned = cleaning(content)
-            split = list(filter(None, cleaned.split('<br/>')))
-            if not beautify(split[0]).find('b'):
+
+            if 'learningprovider' not in content:
                 continue
-            # get provider
 
-            # get course
-            if 'SAQA Qualification ID' in split[2]:
-                course_content = split[2]
+            content_html = beautify(content)
+            content_text_list = list(filter(None, content_html.get_text().split('\n')))
 
-                # get value inside parenthesis
-                value = course_content[course_content.index("(") + 1:course_content.rindex(")")]
+            if len(content_text_list) < 2:
+                # there is no courses, continue loop
+                continue
 
-                # get id
-                course_id = value.split(',')[0].split(':')[1].strip()
+            provider_url = content_html.find('a').get('href')
+            provider_detail = content_text_list[0]
+            campus = None
 
-                # course title
-                course_title = course_content[0: course_content.index("(")].strip()
+            # Get campus object
+            try:
+                campus_provider = provider_detail.split(' - ')
+                provider_name = campus_provider[0]
+                campus_name = '' if len(campus_provider) == 1 else campus_provider[1].strip()
+                if campus_name:
+                    campus = Campus.objects.get(
+                        provider__primary_institution=provider_name,
+                        campus__iexact=campus_name)
+                else:
+                    campus = Campus.objects.filter(
+                        provider__primary_institution=provider_name
+                    )[0]
+            except (Campus.DoesNotExist, IndexError):
+                # Create provider with provider url
+                print('Campus not exists')
+                pass
 
-                course = Course.objects.filter(
-                    national_learners_records_database=course_id
-                )
+            if len(content_text_list) > 2:
+                for course_detail in content_text_list[2:]:
+                    try:
+                        saqa_id = course_detail[
+                            course_detail.lower().find('saqa qualification id'): course_detail.find(',')
+                        ].split(':')[1].strip()
+                    except IndexError as e:
+                        print(e)
 
-                # if there are more than 1 courses, something wrong
-                if len(course) > 1:
-                    # find the closest one
-                    current_ratio = 0
-                    correct_course = None
+                    # Get course object
+                    try:
+                        course = Course.objects.get(
+                            national_learners_records_database=saqa_id
+                        )
+                    except Course.DoesNotExist:
+                        # Create a course by saqa id
+                        course = get_course_detail_from_saqa(saqa_id, False)
 
-                    for c in course:
-                        ratio = SequenceMatcher(None, course_title, c.course_description).ratio()
+                    if not course:
+                        continue
+                    if course.course_description == 'National Certificate: N1 Engineering Studies':
+                        print(course)
 
-                        if 0.5 < ratio > current_ratio:
-                            # delete course
-                            # if correct_course:
-                            #     correct_course.delete()
-                            correct_course = c
+                    print('Add course {}'.format(course.course_description))
 
-                    if correct_course:
-                        step_courses.append(correct_course)
+                    # If course doesn't exist in campus, then add it
+                    if campus and not campus.courses.filter(id=course.id).exists():
+                        campus.courses.add(course)
 
-                print(course)
-            print(split)
-    print(step_courses)
+                    # If course doesn't exist in step detail occupation, then add it
+                    if not step_detail.course.filter(id=course.id).exists():
+                        step_detail.course.add(course)
 
 
 def create_step(data, learning_pathway):
@@ -80,18 +103,6 @@ def create_step(data, learning_pathway):
     step_detail.title = data['title']
     step_detail.detail = data['detail']
 
-    if data['provider_link']:
-        # open link
-        provider_list_html = get_soup(data['provider_link'])
-        body = provider_list_html.find("div", {"class": "BodyPanel642"})
-
-        if body:
-            content = str(body)
-
-        # iterate on provider list
-
-    # step_detail.save()
-
     try:
         step = Step.objects.get(
             step_number=data['step_number'],
@@ -102,6 +113,14 @@ def create_step(data, learning_pathway):
     step.learning_pathway = learning_pathway
     step.step_detail = step_detail
     step.save()
+
+    if 'provider_link' in data:
+        # open link
+        provider_list_html = get_soup(data['provider_link'])
+        if provider_list_html:
+            print('Add courses in step detail')
+            process_course_and_provider(provider_list_html, step.step_detail)
+
     return step
 
 
@@ -132,8 +151,10 @@ def create_occupation(data):
     LearningPathway.objects.filter(occupation=occupation).delete()
     pathways = []
     for learning_pathway in data['learning_pathways']:
+        print('Create learning pathway...')
         pathway = create_learning_pathway(learning_pathway, occupation)
         for step in learning_pathway['steps']:
+            print('Create step...')
             create_step(step, pathway)
         pathways.append(pathway)
     return occupation
@@ -148,13 +169,16 @@ def scraping_occupations(html):
         is_empty = False
         # tracing each of item
         for item in items:
+            print('--------------------------------')
             if item.string and item.string == "No Records Found.":
                 is_empty = True
+                print('No records found')
                 break
             # get occupation information
             if item.find("a", {"class": "linkNoMore"}):
                 pass
             else:
+                print('Parsing the occupation list html...')
                 occupation = dict()
                 occupation['occupation'] = cleaning(item.a.string.split("Occupation Code")[0][:-1])
                 occupation['green_occupation'] = False
@@ -166,9 +190,11 @@ def scraping_occupations(html):
                     occupation['scarce_skill'] = True
 
                 # get detail
+                print('Open learning pathway...')
                 html = get_soup(item.a.get('href'))
                 body = html.find("div", {"class": "BodyPanel642"})
                 if body:
+                    print('Parsing learning pathway...')
                     content = str(body)
                     content = content.split("<b>Description</b>")
                     if len(content) > 1:
@@ -223,8 +249,12 @@ def scraping_occupations(html):
                                             detail = detail[len(detail) - 1]
 
                                             # assign value
-                                            step = {}
+                                            step = dict()
                                             step['step_number'] = step_number
+
+                                            # check if there is a provider link
+                                            if step_content.find('a'):
+                                                step['provider_link'] = step_content.find('a').get('href')
 
                                             # cleaning value
                                             step['title'] = cleaning(beautify(title).get_text())
@@ -237,7 +267,7 @@ def scraping_occupations(html):
                                             steps.append(step)
                                             step_number += 1
 
-                                        pathway = {}
+                                        pathway = dict()
                                         pathway['pathway_number'] = pathway_number
                                         pathway['steps'] = steps
                                         pathways.append(pathway)
@@ -245,7 +275,7 @@ def scraping_occupations(html):
 
                                 occupation['learning_pathways'] = pathways
 
-                        print(("occupation : %s" % occupation).encode('utf-8'))
+                        print('Update or create for occupation {}'.format(occupation['occupation']))
                         # set to database
                         create_occupation(occupation)
         if is_empty:
@@ -290,14 +320,23 @@ class Command(BaseCommand):
         page = 1
 
         print("GETTING OCCUPATIONS IN http://ncap.careerhelp.org.za/")
-        print("----------------------------------------------------------")
 
         # For testing, get occupations from engineer page
         html = get_soup('http://ncap.careerhelp.org.za/occupations/search/engineer/page/1/')
-        # status = scraping_occupations(html=html)
+        status = scraping_occupations(html=html)
 
-        html_text = open(os.path.join(settings.STATIC_ROOT, 'feti/html/ncap1.html'), 'rb').read()
-        get_providers(html_text)
+        print(status)
+
+        # occupation_title = 'COMPUTER ENGINEERING MECHANIC'
+        #
+        # occupation = Occupation.objects.get(occupation__iexact=occupation_title)
+        # learning_pathway = LearningPathway.objects.filter(occupation=occupation)
+        # step = Step.objects.get(learning_pathway=learning_pathway[5], step_number=2)
+        # html_text = get_soup('http://ncap.careerhelp.org.za/learningprovidersforqualification/'
+        #                      'generalqualification/6ffde8f3-cd3d-4f63-a10c-4ddf460cb590/'
+        #                      'occupation/3c5fb117-0f81-423b-8b1d-58c76fd71c71')
+        #
+        # process_course_and_provider(html_text, step.step_detail)
 
         # for char in character:
         #     while True:
