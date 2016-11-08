@@ -56,4 +56,4 @@ class Command(BaseCommand):
                     duplicates.delete()
 
                 print('Updating from saqa sites by qualification id')
-                get_course_detail_from_saqa(course.national_learners_records_database)
+                get_course_detail_from_saqa(course.national_learners_records_database, False)

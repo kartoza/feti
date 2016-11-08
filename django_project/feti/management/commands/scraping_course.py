@@ -242,6 +242,45 @@ def parse_saqa_qualification_table(table):
     return data
 
 
+def fetch_from_saqa_form(qualification_id):
+    """
+    Fetch from saqa search form
+    :param qualification_id: Saqa qualification id
+    :return: Saqa recorded id
+    """
+    url = 'http://regqs.saqa.org.za/search.php'
+    values = {"GO": "Go", "searchResultsATfirst": 0,
+              "cat": "qual", "view": "table", "QUALIFICATION_TITLE": "",
+              "QUALIFICATION_ID": qualification_id, "NQF_LEVEL_ID": "", "NQF_LEVEL_G2_ID": "", "ABET_BAND_ID": "",
+              "SUBFIELD_ID": "", "QUALIFICATION_TYPE_ID": "", "ORIGINATOR_ID": "", "FIELD_ID": "",
+              "ETQA_ID": "",
+              "SEARCH_TEXT": "", "ACCRED_PROVIDER_ID": "", "NQF_SUBFRAMEWORK_ID": "", }
+    data = urllib.parse.urlencode(values)
+    data = data.encode('ascii')
+    req = urllib.request.Request(url, data)
+    try:
+        with urllib.request.urlopen(req) as response:
+            html_doc = response.read()
+            html = beautify(html_doc)
+
+            # check emptiness
+            items = html.findAll("table")
+
+            if 'No results were found for this search' in str(html):
+                return None
+            else:
+                for table in items:
+                    if 'Qualification against which Learning Programme is recorded' in str(table):
+                        rows = table.findAll('td')
+                        if 'viewQualification' in str(rows[len(rows)-1]):
+                            return rows[len(rows)-1].get_text()
+                        else:
+                            return None
+    except (HTTPError, URLError) as e:
+        print(e)
+        return None
+
+
 def get_course_detail_from_saqa(qualification_id, no_cache):
     # Get full detail of a course from SAQA
     # http://regqs.saqa.org.za/viewQualification.php?id=<qualification-id>
@@ -296,11 +335,16 @@ def get_course_detail_from_saqa(qualification_id, no_cache):
                     parsed_data[last_title] = table.get_text().lstrip()
                     last_title = None
         print('Updating course...')
-        create_or_update_course(parsed_data)
         print('Course updated')
+        return create_or_update_course(parsed_data)
     else:
+        # Try to search from saqa form
+        saqa_id = fetch_from_saqa_form(qualification_id)
+        if saqa_id:
+            return get_course_detail_from_saqa(saqa_id, no_cache)
         print(not_exist_message)
         print('Course not updated')
+    return None
 
 
 def scraping_course_ncap(start_page=0, max_page=0):
@@ -468,6 +512,6 @@ class Command(BaseCommand):
 
         if options['id']:
             no_cache = True if options['no_cache'] else False
-            get_course_detail_from_saqa(options['id'], no_cache)
+            course = get_course_detail_from_saqa(options['id'], no_cache)
         else:
             scraping_course_ncap()
