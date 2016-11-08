@@ -3,6 +3,7 @@ import urllib
 import time
 from urllib.error import HTTPError, URLError
 from django.core.management.base import BaseCommand
+from django.db.utils import IntegrityError
 from feti.models.course import Course
 from feti.models.campus import Campus
 from feti.models.provider import Provider
@@ -154,10 +155,11 @@ def create_or_update_course(data):
             fof.save()
 
         try:
-            course = Course.objects.get(
+            course = Course.objects.filter(
                 national_learners_records_database=int(data['id'])
             )
-        except Course.DoesNotExist:
+            course = remove_duplicates(data['id'], course[0])
+        except (Course.DoesNotExist, IndexError):
             course = Course.objects.create(
                 national_learners_records_database=int(data['id'])
             )
@@ -345,6 +347,23 @@ def get_course_detail_from_saqa(qualification_id, no_cache):
         print(not_exist_message)
         print('Course not updated')
     return None
+
+
+def remove_duplicates(qual_id, course):
+    duplicates = Course.objects.filter(
+        national_learners_records_database=qual_id
+    ).exclude(id=course.id)
+    if len(duplicates) > 0:
+        print("Removing duplicates")
+        campuses = Campus.objects.filter(courses__in=duplicates)
+        for campus in campuses:
+            try:
+                campus.courses.add(course)
+            except IntegrityError as e:
+                print(e)
+                break
+        duplicates.delete()
+    return course
 
 
 def scraping_course_ncap(start_page=0, max_page=0):
