@@ -9,6 +9,7 @@ from feti.models.campus import Campus
 from feti.models.learning_pathway import LearningPathway, Step, StepDetail
 from feti.utils import beautify, get_soup, cleaning
 from feti.management.commands.scraping_course import get_course_detail_from_saqa
+from feti.management.commands.scraping_course import scrape_campus
 
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
@@ -56,8 +57,9 @@ def process_course_and_provider(html, step_detail):
                     )[0]
             except (Campus.DoesNotExist, IndexError):
                 # Create provider with provider url
-                print('Campus not exists')
-                pass
+                campus = scrape_campus(
+                    provider_detail,
+                    'http://ncap.careerhelp.org.za/' + provider_url)
 
             if len(content_text_list) > 2:
                 for course_detail in content_text_list[2:]:
@@ -320,6 +322,10 @@ class Command(BaseCommand):
         page = 1
 
         print("GETTING OCCUPATIONS IN http://ncap.careerhelp.org.za/")
+
+        # For testing, get occupations from engineer page
+        # html = get_soup('http://ncap.careerhelp.org.za/occupations/search/engineer/page/1/')
+        # status = scraping_occupations(html=html)
 
         for char in character:
             while True:
