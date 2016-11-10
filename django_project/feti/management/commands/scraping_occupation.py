@@ -321,36 +321,19 @@ class Command(BaseCommand):
 
         print("GETTING OCCUPATIONS IN http://ncap.careerhelp.org.za/")
 
-        # For testing, get occupations from engineer page
-        html = get_soup('http://ncap.careerhelp.org.za/occupations/search/engineer/page/1/')
-        status = scraping_occupations(html=html)
+        for char in character:
+            while True:
+                # get all of list
+                print("processing '%s' page %d" % (char, page))
+                html = get_soup('http://ncap.careerhelp.org.za/occupations/alphabetical/%s/page/%s/' %
+                                (char, page))
+                status = scraping_occupations(html)
+                if not status:
+                    break
+                page += 1
+                if page > limit_page > 0:
+                    break
 
-        print(status)
-
-        # occupation_title = 'COMPUTER ENGINEERING MECHANIC'
-        #
-        # occupation = Occupation.objects.get(occupation__iexact=occupation_title)
-        # learning_pathway = LearningPathway.objects.filter(occupation=occupation)
-        # step = Step.objects.get(learning_pathway=learning_pathway[5], step_number=2)
-        # html_text = get_soup('http://ncap.careerhelp.org.za/learningprovidersforqualification/'
-        #                      'generalqualification/6ffde8f3-cd3d-4f63-a10c-4ddf460cb590/'
-        #                      'occupation/3c5fb117-0f81-423b-8b1d-58c76fd71c71')
-        #
-        # process_course_and_provider(html_text, step.step_detail)
-
-        # for char in character:
-        #     while True:
-        #         # get all of list
-        #         print("processing '%s' page %d" % (char, page))
-        #         html = get_soup('http://ncap.careerhelp.org.za/occupations/alphabetical/%s/page/%s/' %
-        #                         (char, page))
-        #         status = scraping_occupations(html)
-        #         if not status:
-        #             break
-        #         page += 1
-        #         if page > limit_page > 0:
-        #             break
-        #
-        #         print("----------------------------------------------------------")
-        #     page = 1
-        # print("----------------------------------------------------------")
+                print("----------------------------------------------------------")
+            page = 1
+        print("----------------------------------------------------------")
