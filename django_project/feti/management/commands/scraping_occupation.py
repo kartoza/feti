@@ -69,6 +69,7 @@ def process_course_and_provider(html, step_detail):
                         ].split(':')[1].strip()
                     except IndexError as e:
                         print(e)
+                        continue
 
                     # Get course object
                     try:
