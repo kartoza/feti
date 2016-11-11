@@ -141,6 +141,8 @@ def create_occupation(data):
     except Occupation.DoesNotExist:
         occupation = Occupation()
 
+    print('Create/Update occupation {}'.format(data['occupation']))
+
     occupation.occupation = data['occupation']
     occupation.green_occupation = data['green_occupation']
     occupation.scarce_skill = data['scarce_skill']
@@ -163,7 +165,7 @@ def create_occupation(data):
 
 
 def scraping_occupations(html):
-    items = html.findAll("div", {"class": "LinkResult"})
+    items = html.findAll("div", {"class": "SearchResultItem"})
     if len(items) == 0:
         print('this page is empty')
         return False
