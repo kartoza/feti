@@ -1,8 +1,14 @@
 <table>
     <tr style="margin-bottom: 30px">
         <td style="width: 50px" valign="top">Step <%- step_number %></td>
-        <td valign="top" style="padding-bottom: 20px"><a href="/#map/course/<%- title %>"><h4><%- title %></h4></a>
+        <td valign="top" style="padding-bottom: 20px"><h4><%- title %></h4>
             <%- detail %>
+            <% if (typeof(course_detail) !== "undefined") { %>
+                <h5>Courses:</h5>
+                <% _.each(course_detail, function(course) { %>
+                    <div class="step-course"><a href="/#map/course/saqa_id=<%= course.saqa_id %>"><%= course.title %></a></div>
+                <% }); %>
+            <% } %>
         </td>
     </tr>
 </table>

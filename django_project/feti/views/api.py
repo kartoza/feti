@@ -139,11 +139,10 @@ class ApiCourse(SearchCampus):
                         national_learners_records_database=saqa_id
                     ).models(Course)
                     courses_id = [l.object.id for l in sqs]
-                    campus_ids = SearchQuerySet().filter(
-                        courses_id__contains=courses_id[0]
-                    ).models(Campus)
 
-                    campuses = Campus.objects.filter(id__in=set([x.object.id for x in campus_ids]))
+                    campuses = Campus.objects.filter(
+                        courses__in=courses_id
+                    )
 
                     self.additional_context['courses'] = courses_id
                 except MultipleObjectsReturned as e:
