@@ -6,7 +6,7 @@
             <% if (typeof(course_detail) !== "undefined") { %>
                 <h5>Courses:</h5>
                 <% _.each(course_detail, function(course) { %>
-                    <div class="step-course"><a href="/#map/course/saqa_id=<%= course.saqa_id %>"><%= course.title %></a></div>
+                    <div class="step-course"><a href="#map/course/saqa_id=<%= course.saqa_id %>"><%= course.title %></a></div>
                 <% }); %>
             <% } %>
         </td>
