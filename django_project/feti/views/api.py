@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.measure import Distance
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.core.exceptions import MultipleObjectsReturned
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from haystack.query import RelatedSearchQuerySet, SQ, SearchQuerySet
@@ -16,6 +17,7 @@ from haystack.inputs import Clean
 from feti.models.campus import Campus
 from feti.models.occupation import Occupation
 from feti.models.campus_course_entry import CampusCourseEntry
+from feti.models.course import Course
 from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
 from feti.serializers.favorite_serializer import FavoriteSerializer
@@ -125,13 +127,38 @@ class ApiCourse(SearchCampus):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query):
-        sqs = SearchQuerySet().filter(
-            course_course_description=query,
-            campus_location_isnull='false',
-        ).models(CampusCourseEntry)
-        campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
-        # Only shows this courses
-        self.additional_context['courses'] = set([x.object.course_id for x in sqs])
+        sqs = None
+        campuses = None
+
+        if '=' in query:
+            queries = query.split('=')
+            if 'saqa_id' in queries[0] and len(queries) > 1:
+                saqa_id = queries[1].strip()
+                try:
+                    sqs = SearchQuerySet().filter(
+                        national_learners_records_database=saqa_id
+                    ).models(Course)
+                    courses_id = [l.object.id for l in sqs]
+                    campus_ids = SearchQuerySet().filter(
+                        courses_id__contains=courses_id[0]
+                    ).models(Campus)
+
+                    campuses = Campus.objects.filter(id__in=set([x.object.id for x in campus_ids]))
+
+                    self.additional_context['courses'] = courses_id
+                except MultipleObjectsReturned as e:
+                    print(e)
+
+        if not sqs:
+            sqs = SearchQuerySet().filter(
+                course_course_description=query,
+                campus_location_isnull='false',
+            ).models(CampusCourseEntry)
+
+            campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+            # Only shows this courses
+            self.additional_context['courses'] = set([x.object.course_id for x in sqs])
+
         return campuses
 
     def additional_filter(self, model, query):

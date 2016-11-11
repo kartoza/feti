@@ -43,7 +43,7 @@ def create_or_update_course(data):
         data['title'] = data['qualification_title']
 
     if "id" in data:
-        print(("insert to database : %s" % data).encode('utf-8'))
+        print("insert to database")
         # getting education_training_quality_assurance
         education_training_quality_assurance = None
         if 'primary or delegated qa functionary' in data:

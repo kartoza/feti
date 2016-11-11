@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand
 
-import os
-from difflib import SequenceMatcher
-from django.conf import settings
+from django.db.utils import IntegrityError
 from feti.models.occupation import Occupation
 from feti.models.course import Course
 from feti.models.campus import Campus
@@ -112,10 +110,14 @@ def create_step(data, learning_pathway):
             learning_pathway=learning_pathway)
     except Step.DoesNotExist:
         step = Step()
-    step.step_number = data['step_number']
-    step.learning_pathway = learning_pathway
-    step.step_detail = step_detail
-    step.save()
+    try:
+        step.step_number = data['step_number']
+        step.learning_pathway = learning_pathway
+        step.step_detail = step_detail
+        step.save()
+    except IntegrityError as e:
+        print(e)
+        return None
 
     if 'provider_link' in data:
         # open link
