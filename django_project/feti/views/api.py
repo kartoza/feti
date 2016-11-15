@@ -2,6 +2,7 @@
 import abc
 import os
 import json
+from itertools import chain
 from django.db.models import Q
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
@@ -107,13 +108,22 @@ class ApiCampus(SearchCampus):
 
     def filter_model(self, query):
         q = Clean(query)
-        sqs = SearchQuerySet().filter(
-                SQ(campus_campus=q) |
-                SQ(campus_provider=q),
+
+        sqs1 = SearchQuerySet().filter(
+                campus_campus=q,
                 campus_location_isnull='false',
                 courses_isnull='false'
         ).models(CampusCourseEntry)
-        campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+
+        sqs2 = SearchQuerySet().filter(
+            campus_provider=q,
+            campus_location_isnull='false',
+            courses_isnull='false'
+        ).models(CampusCourseEntry)
+
+        result_list = list(chain(sqs1, sqs2))
+
+        campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in result_list]))
         return campuses
 
     def additional_filter(self, model, query):
@@ -242,12 +252,17 @@ class ApiAutocomplete(APIView):
 
         # read course_strings cache
         if model == 'provider':
-            sqs = SearchQuerySet().filter(
-                SQ(campus_campus=q) |
-                SQ(campus_provider=q),
+            sqs1 = SearchQuerySet().filter(
+                campus_campus=q,
                 campus_location_isnull='false',
                 courses_isnull='false'
-            ).models(CampusCourseEntry)[:10]
+            ).models(CampusCourseEntry)[:5]
+            sqs2 = SearchQuerySet().filter(
+                campus_provider=q,
+                campus_location_isnull='false',
+                courses_isnull='false'
+            ).models(CampusCourseEntry)[:5]
+            sqs = list(chain(sqs1, sqs2))
             suggestions = list(set([result.object.campus.campus if q in result.object.campus.campus.lower()
                            else result.object.campus.provider.primary_institution for result in sqs]))
         elif model == 'course':

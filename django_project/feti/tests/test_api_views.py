@@ -1,5 +1,6 @@
 import json
 from django.test import TestCase
+from django.core.management import call_command
 from rest_framework.test import APIRequestFactory
 from feti.tests.model_factories import (
     CampusFactory,
@@ -15,42 +16,33 @@ from feti.views.api import (
 )
 
 
-class TestCampusApiView(TestCase):
+class TestApiView(TestCase):
     """ Test Campus Api """
 
     def setUp(self):
         self.factory = APIRequestFactory()
+        self.course = CourseFactory.create(
+            course_description=u'science'
+        )
+        self.campus = CampusFactory.create(
+            campus=u'campus_test',
+            courses=(self.course,)
+        )
+        call_command('rebuild_index', '--noinput')
 
     def test_get_campus_by_query(self):
-        campus = CampusFactory.create(
-            campus=u'campus_test'
-        )
         view = ApiCampus.as_view()
         request = self.factory.get('/api/campus?q=campus')
         response = view(request)
-
-        self.assertEqual(campus.campus, response.data[0]['campus'])
-
-
-class TestCourseApiView(TestCase):
-    """ Test Course API """
-
-    def setUp(self):
-        self.factory = APIRequestFactory()
+        self.assertEqual(self.campus.campus, response.data[0]['campus'])
 
     def test_get_course_by_query(self):
-        course = CourseFactory.create(
-            course_description=u'science'
-        )
-        campus = CampusFactory.create(
-            courses=(course,)
-        )
         view = ApiCourse.as_view()
-        request = self.factory.get('/api/course?q=science')
+        request = self.factory.get('/api/course?q=scien')
         response = view(request)
 
         self.assertTrue(len(response.data) > 0)
-        self.assertEqual(campus.campus, response.data[0]['campus'])
+        self.assertEqual(self.campus.campus, response.data[0]['campus'])
 
 
 class TestApiAutocomplete(TestCase):
@@ -58,11 +50,16 @@ class TestApiAutocomplete(TestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory()
+        self.course = CourseFactory.create(
+            course_description=u'engineering'
+        )
+        self.campus = CampusFactory.create(
+            campus=u'campus_tests',
+            courses=(self.course,)
+        )
+        call_command('rebuild_index', '--noinput')
 
     def test_get_autcomplete_campus(self):
-        campus = CampusFactory.create(
-            campus=u'campus_test'
-        )
         view = ApiAutocomplete.as_view()
         model = 'provider'
         request = self.factory.get('/api/autocomplete/%s?q=cam' % model)
@@ -71,18 +68,4 @@ class TestApiAutocomplete(TestCase):
         response_data = json.loads(response.content.decode('utf-8'))
 
         self.assertTrue(len(response_data) > 0)
-        self.assertEqual(campus.campus, response_data[0])
-
-    def test_get_autcomplete_course(self):
-        course = CourseFactory.create(
-            course_description=u'science'
-        )
-        view = ApiAutocomplete.as_view()
-        model = 'course'
-        request = self.factory.get('/api/autocomplete/%s?q=scie' % model)
-        response = view(request, model)
-
-        response_data = json.loads(response.content.decode('utf-8'))
-
-        self.assertTrue(len(response_data) > 0)
-        self.assertEqual(course.course_description, response_data[0])
+        self.assertEqual(self.campus.campus, response_data[0])
