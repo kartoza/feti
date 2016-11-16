@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import *  # noqa
+import os
 
 # Extra installed apps
 INSTALLED_APPS += (
@@ -15,6 +16,7 @@ INSTALLED_APPS += (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'celery',
 )
 
 SITE_ID = 1
@@ -55,3 +57,9 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 GRAPPELLI_ADMIN_TITLE = 'Feti Administration'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

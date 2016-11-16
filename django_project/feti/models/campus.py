@@ -3,12 +3,15 @@
 
 from django.contrib.gis.db import models
 from django.core import management
-from django.db.models.signals import post_save
 from django.template import Context, loader
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from feti.models.provider import Provider
 from feti.models.course import Course
 from feti.models.address import Address
+
+from feti.celery import update_search_index
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -215,3 +218,8 @@ class Campus(models.Model):
 
 def generate_campus_index(sender, instance, **kwargs):
     management.call_command('generate_campus_index')
+
+
+@receiver(post_save, sender=Campus)
+def update_index(sender, instance, **kwargs):
+    update_search_index.delay()

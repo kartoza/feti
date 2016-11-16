@@ -27,3 +27,4 @@ requests<2.12
 beautifulsoup4
 django-allauth
 django-betterforms
+celery<3.2
