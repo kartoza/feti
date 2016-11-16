@@ -13,6 +13,7 @@ class ProvinceSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Province
         geo_field = 'polygon_geometry'
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(ProvinceSerializer, self).to_representation(instance)

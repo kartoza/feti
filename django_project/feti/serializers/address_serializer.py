@@ -7,3 +7,4 @@ __author__ = 'irwan'
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
+        fields = '__all__'

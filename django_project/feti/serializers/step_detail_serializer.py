@@ -7,6 +7,7 @@ __author__ = 'irwan'
 class StepDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = StepDetail
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(StepDetailSerializer, self).to_representation(instance)
