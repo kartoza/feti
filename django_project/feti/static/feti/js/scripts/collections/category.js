@@ -41,6 +41,13 @@ define([
             this.url = this.url_template(parameters);
             this.url = this.url.replace(/&quot;/g, '"');
 
+            if(parameters.q == "" && parameters.coord == "") {
+                // check if last string is question mark
+                if(this.url.slice('-1') == '?') {
+                    this.url = this.url.replace('?', '/')
+                }
+            }
+
             this.reset();
             this.fetch({
                 success: function (collection, response) {
