@@ -43,7 +43,6 @@ def create_or_update_course(data):
         data['title'] = data['qualification_title']
 
     if "id" in data:
-        print("insert to database")
         # getting education_training_quality_assurance
         education_training_quality_assurance = None
         if 'primary or delegated qa functionary' in data:
@@ -174,40 +173,45 @@ def create_or_update_course(data):
         course.national_qualifications_subframework = nqfs
         course.pre_2009_national_qualifications_framework = pnqf
         course.abet_band = aband
-        course.minimum_credits = int(data['minimum_credits']) if 'minimum_credits' in data else None
-        course.registration_status = data['registration_status'] if 'registration_status' in data else None
-        course.saqa_decision_number = data['saqa_decision_number'] \
-            if 'saqa_decision_number' in data else None
-        course.registration_start_date = data['registration_start_date'] \
-            if 'registration_start_date' in data else None
-        course.registration_end_date = data['registration_end_date'] \
-            if 'registration_end_date' in data else None
-        course.last_date_for_enrolment = data['last_date_for_enrolment'] \
-            if 'last_date_for_enrolment' in data else None
-        course.last_date_for_achievement = data['last_date_for_achievement'] \
-            if 'last_date_for_achievement' in data else None
-        course.purpose_and_rationale_of_the_qualification = data['purpose_and_rationale_of_the_qualification'] \
-            if 'purpose_and_rationale_of_the_qualification' in data else None
-        course.learning_assumed_to_be_in_place_and_recognition = \
-            data['learning_assumed_to_be_in_place_and_recognition_of_prior_learning'] \
-            if 'learning_assumed_to_be_in_place_and_recognition_of_prior_learning' in data else None
-        course.qualification_rules = data['qualification_rules'] if 'qualification_rules' in data else None
-        course.exit_level_outcomes = data['exit_level_outcomes'] if 'exit_level_outcomes' in data else None
-        course.associated_assessment_criteria = data['associated_assessment_criteria'] \
-            if 'associated_assessment_criteria' in data else None
-        course.international_comparability = data['international_comparability'] \
-            if 'international_comparability' in data else None
-        course.articulation_options = data['articulation_options'] \
-            if 'articulation_options' in data else None
-        course.moderation_options = data['moderation_options'].lstrip() \
-            if 'moderation_options' in data else None
-        course.criteria_for_the_registration_of_assessors = \
-            data['criteria_for_the_registration_of_assessors'] \
-            if 'criteria_for_the_registration_of_assessors' in data else None
-        course.reregistration_history = data['reregistration_history'] \
-            if 'reregistration_history' in data else None
-        course.notes = data['notes'] if 'notes' in data else None
 
+        if 'minimum_credits' in data:
+            course.minimum_credits = int(data['minimum_credits'])
+        if 'registration_status' in data:
+            course.registration_status = data['registration_status']
+        if 'saqa_decision_number' in data:
+            course.saqa_decision_number = data['saqa_decision_number']
+        if 'registration_start_date' in data:
+            course.registration_start_date = data['registration_start_date']
+        if 'registration_end_date' in data:
+            course.registration_end_date = data['registration_end_date']
+        if 'last_date_for_enrolment' in data:
+            course.last_date_for_enrolment = data['last_date_for_enrolment']
+        if 'last_date_for_achievement' in data:
+            course.last_date_for_achievement = data['last_date_for_achievement']
+        if 'purpose_and_rationale_of_the_qualification' in data:
+            course.purpose_and_rationale_of_the_qualification = data['purpose_and_rationale_of_the_qualification']
+        if 'learning_assumed_to_be_in_place_and_recognition_of_prior_learning' in data:
+            course.learning_assumed_to_be_in_place_and_recognition = \
+                data['learning_assumed_to_be_in_place_and_recognition_of_prior_learning']
+        if 'qualification_rules' in data:
+            course.qualification_rules = data['qualification_rules']
+        if 'exit_level_outcomes' in data:
+            course.exit_level_outcomes = data['exit_level_outcomes']
+        if 'associated_assessment_criteria' in data:
+            course.associated_assessment_criteria = data['associated_assessment_criteria']
+        if 'international_comparability' in data:
+            course.international_comparability = data['international_comparability']
+        if 'articulation_options' in data:
+            course.articulation_options = data['articulation_options']
+        if 'moderation_options' in data:
+            course.moderation_options = data['moderation_options'].lstrip()
+        if 'criteria_for_the_registration_of_assessors' in data:
+            course.criteria_for_the_registration_of_assessors = \
+                data['criteria_for_the_registration_of_assessors']
+        if 'reregistration_history' in data:
+            course.reregistration_history = data['reregistration_history']
+        if 'notes' in data:
+            course.notes = data['notes']
         if 'recognise_previous_learning?' in data:
             course.recognise_previous_learning = True \
                 if cleaning(data['recognise_previous_learning?']) == 'Y' \

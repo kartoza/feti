@@ -116,15 +116,11 @@ def scrape_campus(campus_name, campus_url):
                 except IndexError:
                     print('no location')
 
-    print(("provider : %s" % provider).encode('utf-8'))
-    print(("campus : %s" % campus).encode('utf-8'))
-    print(("address : %s" % address).encode('utf-8'))
-
     # save to database
-    prov = create_provider(provider)
-    camp = create_campus(campus, prov)
-    addr = create_address(address, camp)
-    return camp
+    provider_obj = create_provider(provider)
+    campus_obj = create_campus(campus, provider_obj)
+    address_obj = create_address(address, campus_obj)
+    return campus_obj
 
 
 def scrape_all_campuses(start_page=0, max_page=0):

@@ -144,8 +144,6 @@ def create_occupation(data):
     except Occupation.DoesNotExist:
         occupation = Occupation()
 
-    print('Create/Update occupation {}'.format(data['occupation']))
-
     occupation.occupation = data['occupation']
     occupation.green_occupation = data['green_occupation']
     occupation.scarce_skill = data['scarce_skill']
@@ -207,28 +205,31 @@ def scraping_occupations(html):
                     if len(content) > 1:
                         content = content[1]
                         # description
-                        occupation['description'] = cleaning(beautify(content.split("<b>")[0]).get_text())
+                        occupation['description'] = \
+                            cleaning(beautify(content.split("<b>")[0]).get_text())
 
                         # tasks
                         splits = content.split("<b>Tasks</b>")
-                        occupation['tasks'] = beautify(splits[1].split("<b>")[0]).get_text() \
-                            if len(splits) > 1 else ""
-                        occupation['tasks'] = cleaning(occupation['tasks'])
+                        if len(splits) > 1:
+                            occupation['tasks'] = cleaning(beautify(splits[1].split("<b>")[0]).get_text())
+                        else:
+                            occupation['tasks'] = ""
 
                         # Occupation Regulation
                         splits = content.split("<b>Occupation Regulation</b>")
-                        occupation['occupation_regulation'] = beautify(splits[1].split("<b>")[0]) \
-                            .get_text() \
-                            if len(splits) > 1 else ""
-                        occupation['occupation_regulation'] = cleaning(occupation['occupation_regulation'])
+                        if len(splits) > 1:
+                            occupation['occupation_regulation'] = cleaning(
+                                beautify(splits[1].split("<b>")[0]).get_text())
+                        else:
+                            occupation['occupation_regulation'] = ""
 
                         # Learning Pathway Description
                         splits = content.split("<b>Learning Pathway Description</b>")
-                        occupation['learning_pathway_description'] = beautify(
-                            splits[1].split("<a")[0]).get_text() \
-                            if len(splits) > 1 else ""
-                        occupation['learning_pathway_description'] = cleaning(
-                            occupation['learning_pathway_description'])
+                        if len(splits) > 1:
+                            occupation['learning_pathway_description'] = cleaning(beautify(
+                                splits[1].split("<a")[0]).get_text())
+                        else:
+                            occupation['learning_pathway_description'] = ""
 
                         # get learning pathway
                         pathway_button = html.find("a", {"class": "btn_showLearningPathway"})
@@ -274,9 +275,10 @@ def scraping_occupations(html):
                                             steps.append(step)
                                             step_number += 1
 
-                                        pathway = dict()
-                                        pathway['pathway_number'] = pathway_number
-                                        pathway['steps'] = steps
+                                        pathway = {
+                                            'pathway_number': pathway_number,
+                                            'steps': steps
+                                        }
                                         pathways.append(pathway)
                                         pathway_number += 1
 
