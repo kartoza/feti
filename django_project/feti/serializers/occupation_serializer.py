@@ -9,6 +9,7 @@ __author__ = 'irwan'
 class OccupationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Occupation
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(OccupationSerializer, self).to_representation(instance)

@@ -83,9 +83,7 @@ define([
             }
         },
         updateResultTitle: function(number_result, mode, query) {
-            if(mode == 'occupation') {
-                this.hideOccupationDetail();
-            }
+            this.hideOccupationDetail();
             this.clearContainerDiv(mode);
             if(number_result == 0) {
                 this.showEmptyResult(mode);

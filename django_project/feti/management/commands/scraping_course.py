@@ -3,14 +3,26 @@ import urllib
 import time
 from urllib.error import HTTPError, URLError
 from django.core.management.base import BaseCommand
+from django.db.utils import IntegrityError
 from feti.models.course import Course
 from feti.models.campus import Campus
 from feti.models.provider import Provider
-from feti.models.field_of_study import FieldOfStudy
-from feti.models.national_qualifications_framework import NationalQualificationsFramework
-from feti.models.education_training_quality_assurance import EducationTrainingQualityAssurance
-from feti.utils import beautify, cleaning, get_soup
+from feti.utils import beautify, cleaning, get_soup, save_html, get_raw_soup, open_saved_html
 from feti.management.commands.scraping_campus import scrape_campus
+
+from feti.models.education_training_quality_assurance import (
+    EducationTrainingQualityAssurance)
+from feti.models.national_qualifications_framework import (
+    NationalQualificationsFramework)
+from feti.models.field_of_study import FieldOfStudy
+from feti.models.subfield_of_study import SubFieldOfStudy
+from feti.models.qualification_type import QualificationType
+from feti.models.qual_class import QualClass
+from feti.models.national_qualification_framework_subframework import \
+    NationalQualificationFrameworkSubFramework
+from feti.models.abet_band import AbetBand
+from feti.models.pre_2009_national_qualifications_framework import \
+    Pre2009NationalQualificationsFramework
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '15/09/16'
@@ -18,14 +30,19 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
-def create_course(data):
+def create_or_update_course(data):
     # save to database
     # provider
     if "ID" in data:
         data['id'] = data['ID']
 
+    if "saqa_qual_id" in data:
+        data['id'] = data['saqa_qual_id']
+
+    if "title" not in data and "qualification_title" in data:
+        data['title'] = data['qualification_title']
+
     if "id" in data:
-        print(("insert to database : %s" % data).encode('utf-8'))
         # getting education_training_quality_assurance
         education_training_quality_assurance = None
         if 'primary or delegated qa functionary' in data:
@@ -41,12 +58,88 @@ def create_course(data):
                     education_training_quality_assurance.save()
         # get NQF
         nqf = None
-        if "TBA" not in data['nqf level'] and "N/A:" not in data['nqf level']:
-            data['nqf level'] = data['nqf level'].split(" ")[2]
+        if "TBA" not in data['nqf_level'] and "N/A:" not in data['nqf_level']:
+            data['nqf_level'] = data['nqf_level'].split(" ")[2]
             try:
-                nqf = NationalQualificationsFramework.objects.get(level=int(data['nqf level']))
+                nqf = NationalQualificationsFramework.objects.get(level=int(data['nqf_level']))
             except NationalQualificationsFramework.DoesNotExist:
                 nqf = None
+
+        # SubField of study
+        sos = None
+        if 'subfield' in data:
+            subfield = data['subfield']
+            try:
+                sos = SubFieldOfStudy.objects.get(learning_subfield=subfield)
+            except SubFieldOfStudy.DoesNotExist:
+                sos = SubFieldOfStudy.objects.create(
+                    learning_subfield=subfield
+                )
+
+        # Qualification Type
+        qt = None
+        if 'qualification_type' in data:
+            qual_type = data['qualification_type']
+            try:
+                qt = QualificationType.objects.get(type=qual_type)
+            except QualificationType.DoesNotExist:
+                qt = QualificationType.objects.create(
+                    type=qual_type
+                )
+
+        # Qual class
+        qc = None
+        if 'qual_class' in data:
+            qual_class = data['qual_class']
+            try:
+                qc = QualClass.objects.get(title=qual_class)
+            except QualClass.DoesNotExist:
+                qc = QualClass.objects.create(
+                    title=qual_class
+                )
+
+        # National Qualification Framework Sub-Framework
+        nqfs = None
+        if 'nqf_sub_framework' in data:
+            sub_framework = data['nqf_sub_framework'].split(" - ")
+            if len(sub_framework) > 1:
+                _title = sub_framework[1]
+                _code = sub_framework[0]
+                try:
+                    nqfs = NationalQualificationFrameworkSubFramework.objects.get(
+                        code=_code,
+                        title=_title
+                    )
+                except NationalQualificationFrameworkSubFramework.DoesNotExist:
+                    nqfs = NationalQualificationFrameworkSubFramework.objects.create(
+                        code=_code,
+                        title=_title
+                    )
+
+        # Pre-2009 National Qualifications Framework
+        pnqf = None
+        if 'pre_2009_nqf_level' in data:
+            pre_level = data['pre_2009_nqf_level']
+            try:
+                pnqf = Pre2009NationalQualificationsFramework.objects.get(
+                    level=pre_level
+                )
+            except Pre2009NationalQualificationsFramework.DoesNotExist:
+                pnqf = Pre2009NationalQualificationsFramework.objects.create(
+                    level=pre_level
+                )
+
+        # Abet Band
+        aband = None
+        if 'abet_band' in data:
+            try:
+                aband = AbetBand.objects.get(
+                    band=data['abet_band']
+                )
+            except AbetBand.DoesNotExist:
+                aband = AbetBand.objects.create(
+                    band=data['abet_band']
+                )
 
         # get FOF
         field = data['field'].replace("0", "").split("-")
@@ -60,48 +153,221 @@ def create_course(data):
             fof.field_of_study_description = field[1]
             fof.save()
 
-        course = Course()
+        try:
+            course = Course.objects.filter(
+                national_learners_records_database=int(data['id'])
+            )
+            course = remove_duplicates(data['id'], course[0])
+        except (Course.DoesNotExist, IndexError):
+            course = Course.objects.create(
+                national_learners_records_database=int(data['id'])
+            )
+
         course.education_training_quality_assurance = education_training_quality_assurance
-        course.national_learners_records_database = int(data['id'])
         course.course_description = data['title']
         course.national_qualifications_framework = nqf
         course.field_of_study = fof
+        course.subfield_of_study = sos
+        course.qualification_type = qt
+        course.qual_class = qc
+        course.national_qualifications_subframework = nqfs
+        course.pre_2009_national_qualifications_framework = pnqf
+        course.abet_band = aband
+
+        if 'minimum_credits' in data:
+            course.minimum_credits = int(data['minimum_credits'])
+        if 'registration_status' in data:
+            course.registration_status = data['registration_status']
+        if 'saqa_decision_number' in data:
+            course.saqa_decision_number = data['saqa_decision_number']
+        if 'registration_start_date' in data:
+            course.registration_start_date = data['registration_start_date']
+        if 'registration_end_date' in data:
+            course.registration_end_date = data['registration_end_date']
+        if 'last_date_for_enrolment' in data:
+            course.last_date_for_enrolment = data['last_date_for_enrolment']
+        if 'last_date_for_achievement' in data:
+            course.last_date_for_achievement = data['last_date_for_achievement']
+        if 'purpose_and_rationale_of_the_qualification' in data:
+            course.purpose_and_rationale_of_the_qualification = data['purpose_and_rationale_of_the_qualification']
+        if 'learning_assumed_to_be_in_place_and_recognition_of_prior_learning' in data:
+            course.learning_assumed_to_be_in_place_and_recognition = \
+                data['learning_assumed_to_be_in_place_and_recognition_of_prior_learning']
+        if 'qualification_rules' in data:
+            course.qualification_rules = data['qualification_rules']
+        if 'exit_level_outcomes' in data:
+            course.exit_level_outcomes = data['exit_level_outcomes']
+        if 'associated_assessment_criteria' in data:
+            course.associated_assessment_criteria = data['associated_assessment_criteria']
+        if 'international_comparability' in data:
+            course.international_comparability = data['international_comparability']
+        if 'articulation_options' in data:
+            course.articulation_options = data['articulation_options']
+        if 'moderation_options' in data:
+            course.moderation_options = data['moderation_options'].lstrip()
+        if 'criteria_for_the_registration_of_assessors' in data:
+            course.criteria_for_the_registration_of_assessors = \
+                data['criteria_for_the_registration_of_assessors']
+        if 'reregistration_history' in data:
+            course.reregistration_history = data['reregistration_history']
+        if 'notes' in data:
+            course.notes = data['notes']
+        if 'recognise_previous_learning?' in data:
+            course.recognise_previous_learning = True \
+                if cleaning(data['recognise_previous_learning?']) == 'Y' \
+                else False
+
         course.save()
         return course
 
 
-def process_saqa_qualification_table(table):
-    saqa_details = list(filter(None, table.text.split('\n')))
-    row_title = {
-        'saqa_qual_id': 'SAQA QUAL ID',
-        'title': 'QUALIFICATION TITLE',
-        'primary_or_delegated': 'PRIMARY OR DELEGATED QUALITY ASSURANCE FUNCTIONARY',
-        'nqf_level': 'NQF LEVEL',
-        'field': 'FIELD'
-    }
+def parse_saqa_qualification_table(table):
+    # parse table element to python dictionary
+
     data = {}
+    key_array = []
+    value_array = []
 
-    if row_title['saqa_qual_id'] in saqa_details:
-        index = saqa_details.index(row_title['saqa_qual_id'])
-        data['id'] = saqa_details[index + 2]
+    rows = table.findAll('tr')
 
-    if row_title['title'] in saqa_details:
-        index = saqa_details.index(row_title['title'])
-        data['title'] = saqa_details[index + 2]
+    for idx, row in enumerate(rows):
+        cols = row.findAll('td')
+        for col in cols:
+            if idx % 2:
+                value_array.append(cleaning(col.get_text()))
+            else:
+                key_array.append(cleaning(col.get_text())
+                                 .replace(" ", "_")
+                                 .replace("-", "_")
+                                 .lower())
 
-    if row_title['primary_or_delegated'] in saqa_details:
-        index = saqa_details.index(row_title['primary_or_delegated'])
-        data['primary or delegated qa functionary'] = saqa_details[index + 2]
-
-    if row_title['nqf_level'] in saqa_details:
-        index = saqa_details.index(row_title['nqf_level'])
-        data['nqf level'] = saqa_details[index + 5]
-
-    if row_title['field'] in saqa_details:
-        index = saqa_details.index(row_title['field'])
-        data['field'] = saqa_details[index + 3]
+    if len(key_array) == len(value_array):
+        for i in range(len(key_array)):
+            data[key_array[i]] = value_array[i]
 
     return data
+
+
+def fetch_from_saqa_form(qualification_id):
+    """
+    Fetch from saqa search form
+    :param qualification_id: Saqa qualification id
+    :return: Saqa recorded id
+    """
+    url = 'http://regqs.saqa.org.za/search.php'
+    values = {"GO": "Go", "searchResultsATfirst": 0,
+              "cat": "qual", "view": "table", "QUALIFICATION_TITLE": "",
+              "QUALIFICATION_ID": qualification_id, "NQF_LEVEL_ID": "", "NQF_LEVEL_G2_ID": "", "ABET_BAND_ID": "",
+              "SUBFIELD_ID": "", "QUALIFICATION_TYPE_ID": "", "ORIGINATOR_ID": "", "FIELD_ID": "",
+              "ETQA_ID": "",
+              "SEARCH_TEXT": "", "ACCRED_PROVIDER_ID": "", "NQF_SUBFRAMEWORK_ID": "", }
+    data = urllib.parse.urlencode(values)
+    data = data.encode('ascii')
+    req = urllib.request.Request(url, data)
+    try:
+        with urllib.request.urlopen(req) as response:
+            html_doc = response.read()
+            html = beautify(html_doc)
+
+            # check emptiness
+            items = html.findAll("table")
+
+            if 'No results were found for this search' in str(html):
+                return None
+            else:
+                for table in items:
+                    if 'Qualification against which Learning Programme is recorded' in str(table):
+                        rows = table.findAll('td')
+                        if 'viewQualification' in str(rows[len(rows)-1]):
+                            return rows[len(rows)-1].get_text()
+                        else:
+                            return None
+    except (HTTPError, URLError) as e:
+        print(e)
+        return None
+
+
+def get_course_detail_from_saqa(qualification_id, no_cache):
+    # Get full detail of a course from SAQA
+    # http://regqs.saqa.org.za/viewQualification.php?id=<qualification-id>
+
+    print('Qualification ID : {}'.format(qualification_id))
+    not_exist_message = 'Details for this qualification are not available'
+    saqa_detail = None
+    if not no_cache:
+        saqa_detail = open_saved_html('saqa-course', qualification_id)
+
+    if not saqa_detail:
+        print('No cached sites')
+        print('Fetching...')
+        while True:
+            try:
+                saqa_detail = get_raw_soup(
+                    'http://regqs.saqa.org.za/viewQualification.php?id=%s' % qualification_id
+                )
+                if not_exist_message not in str(saqa_detail.content):
+                    if not no_cache:
+                        save_html('saqa-course', qualification_id, saqa_detail.content)
+                    saqa_detail = beautify(saqa_detail.content)
+                else:
+                    saqa_detail = None
+                break
+            except HTTPError as detail:
+                if detail.errno == 500:
+                    time.sleep(1)
+                    continue
+                else:
+                    raise
+
+    if saqa_detail:
+        print('Processing html element from saqa...')
+        tables = saqa_detail.findAll('table')
+        last_idx = 0
+        parsed_data = {}
+        for idx, table in enumerate(tables):
+            if 'SAQA QUAL ID' in table.get_text():
+                parsed_data = parse_saqa_qualification_table(table)
+                last_idx = idx
+                break
+
+        last_title = None
+        for table in tables[last_idx+1:len(tables)]:
+            if table.find('b'):
+                last_title = table.find('b').get_text().replace(' ', '_').lower()
+                if last_title not in parsed_data:
+                    parsed_data[last_title] = ''
+            else:
+                if last_title:
+                    parsed_data[last_title] = table.get_text().lstrip()
+                    last_title = None
+        print('Updating course...')
+        print('Course updated')
+        return create_or_update_course(parsed_data)
+    else:
+        # Try to search from saqa form
+        saqa_id = fetch_from_saqa_form(qualification_id)
+        if saqa_id:
+            return get_course_detail_from_saqa(saqa_id, no_cache)
+        print(not_exist_message)
+        print('Course not updated')
+    return None
+
+
+def remove_duplicates(qual_id, course):
+    duplicates = Course.objects.filter(
+        national_learners_records_database=qual_id
+    ).exclude(id=course.id)
+    if len(duplicates) > 0:
+        print("Removing duplicates")
+        campuses = Campus.objects.filter(courses__in=duplicates)
+        for campus in campuses:
+            try:
+                campus.courses.add(course)
+            except IntegrityError as e:
+                print(e)
+                break
+        duplicates.delete()
+    return course
 
 
 def scraping_course_ncap(start_page=0, max_page=0):
@@ -155,8 +421,8 @@ def scraping_course_ncap(start_page=0, max_page=0):
                 tables = saqa.findAll('table')
                 if len(tables) == 0:
                     continue
-                processed_table = process_saqa_qualification_table(tables[5])
-                course = create_course(processed_table)
+                processed_table = parse_saqa_qualification_table(tables[5])
+                course = create_or_update_course(processed_table)
 
             # Update campus
             try:
@@ -234,7 +500,7 @@ def scraping_course_saqa():
 
                         if "title" in tds[0].string.lower():
                             if "title" in course:
-                                create_course(course)
+                                create_or_update_course(course)
             trying = 0
         except (HTTPError, URLError):
             print("connection error, trying again - %d" % trying)
@@ -245,14 +511,30 @@ def scraping_course_saqa():
 
 
 class Command(BaseCommand):
+    help = 'Scrapping the courses information'
     args = '<args>'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--id',
+            dest='id',
+            help='Qualification id'
+        )
+        parser.add_argument(
+            '--re_cache',
+            dest='re_cache',
+            help='Update html cache'
+        )
+        parser.add_argument(
+            '--no_cache',
+            dest='no_cache',
+            help='Do not use cached html'
+        )
+
     def handle(self, *args, **options):
-        args = list(args)
-        if len(args) > 0:
-            if args[len(args) - 1].lower() == "true":
-                Course.objects.all().delete()
-                args.pop(len(args) - 1)
-            elif args[len(args) - 1].lower() == "false":
-                args.pop(len(args) - 1)
-        scraping_course_ncap()
+
+        if options['id']:
+            no_cache = True if options['no_cache'] else False
+            course = get_course_detail_from_saqa(options['id'], no_cache)
+        else:
+            scraping_course_ncap()

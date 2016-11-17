@@ -17,12 +17,16 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
 
     provider_primary_institution = indexes.EdgeNgramField()
     courses = indexes.CharField()
+    courses_id = indexes.CharField()
 
     def prepare_provider_primary_institution(self, obj):
         return obj.provider.primary_institution
 
     def prepare_courses(self, obj):
         return [l.course_description for l in obj.courses.all()]
+
+    def prepare_courses_id(self, obj):
+        return [l.id for l in obj.courses.all()]
 
     class Meta:
         app_label = 'feti'

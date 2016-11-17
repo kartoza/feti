@@ -55,22 +55,22 @@ def create_address(data, campus):
     return address
 
 
-def scrape_campus(div):
+def scrape_campus(campus_name, campus_url):
     provider = {}
     campus = {}
     address = {}
 
     # parsing information
-    name = div.a.string
+    name = campus_name
     print("found : %s ----------------------------------------" % name)
-    provider['primary_institution'] = name.split('-')[0]
+    provider['primary_institution'] = name.split(' - ')[0]
     try:
         campus['campus'] = name.split('-')[1]
     except IndexError:
         campus['campus'] = ""
 
     # address
-    html = get_soup(div.a.get('href'))
+    html = get_soup(campus_url)
     html_address = html.find("div", {"class": "InstitutionAddress"})
     if html_address:
         website = html_address.a.string if html_address.a and "@" not in html_address.a.string else ""
@@ -116,14 +116,11 @@ def scrape_campus(div):
                 except IndexError:
                     print('no location')
 
-    print(("provider : %s" % provider).encode('utf-8'))
-    print(("campus : %s" % campus).encode('utf-8'))
-    print(("address : %s" % address).encode('utf-8'))
-
     # save to database
-    prov = create_provider(provider)
-    camp = create_campus(campus, prov)
-    addr = create_address(address, camp)
+    provider_obj = create_provider(provider)
+    campus_obj = create_campus(campus, provider_obj)
+    address_obj = create_address(address, campus_obj)
+    return campus_obj
 
 
 def scrape_all_campuses(start_page=0, max_page=0):
@@ -156,7 +153,7 @@ def scrape_all_campuses(start_page=0, max_page=0):
                 if div:
                     is_empty = False
                     print(div)
-                    scrape_campus(div)
+                    scrape_campus(div.a.string, div.a.get('href'))
             if is_empty:
                 break
         page += 1

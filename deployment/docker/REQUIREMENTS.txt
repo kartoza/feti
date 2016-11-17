@@ -10,7 +10,7 @@ raven
 django-user-map
 django-forms-bootstrap
 # Django rest framework support
-djangorestframework>=3.2
+djangorestframework==3.5.3
 markdown
 django-filter
 # Django haystack support
@@ -27,3 +27,4 @@ requests<2.12
 beautifulsoup4
 django-allauth
 django-betterforms
+celery<3.2

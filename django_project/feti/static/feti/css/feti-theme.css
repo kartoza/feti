@@ -197,3 +197,7 @@ body {
 select[multiple].form-control, select[multiple].form-control.focus, select[multiple].form-control:focus{
     height: 500px;
 }
+
+.step-course a:hover {
+    text-decoration: underline;
+}

@@ -2,11 +2,10 @@
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '16/09/16'
 import requests
-from core.settings.secret import GOOGLE_DISTANCE_MATRIX
 
 
 def get_travel_time(origin, destination, response_type='text'):
-    ''' Get the travel time between two positions.
+    """Get the travel time between two positions.
 
     :param origin: The origin.
     :type origin: basestring
@@ -16,7 +15,12 @@ def get_travel_time(origin, destination, response_type='text'):
     :type response_type: basestring
 
     :return: Travel time in words text or seconds int.
-    '''
+    """
+    try:
+        from core.settings.secret import GOOGLE_DISTANCE_MATRIX
+    except ImportError:
+        return
+
     data = {
         'url': GOOGLE_DISTANCE_MATRIX['url'],
         'units': 'imperial',

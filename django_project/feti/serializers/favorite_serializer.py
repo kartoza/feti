@@ -10,6 +10,7 @@ __date__ = '02/11/16'
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampusCoursesFavorite
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(FavoriteSerializer, self).to_representation(instance)

@@ -108,6 +108,7 @@ define([
             var new_url = ['map'];
             var mode = this.$el.find('.search-category').find('.search-option.active').data('mode');
             if(Common.CurrentSearchMode != mode) {
+                $('#result-title').find('#result-title-'+Common.CurrentSearchMode).hide();
                 Common.CurrentSearchMode = mode;
             }
 

@@ -304,6 +304,13 @@ scraping:
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation
 
+scrape-occupation:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to scrap occupation data from internet"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation > occupation_scrape.log
+
 clean-scraping:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -312,6 +319,20 @@ clean-scraping:
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_campus True
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course True
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation True
+
+workerlogs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Showing celery worker logs in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) logs worker
+
+worker:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running worker production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) up -d worker
 
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S

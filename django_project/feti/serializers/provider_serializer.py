@@ -9,6 +9,7 @@ __author__ = 'irwan'
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provider
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(ProviderSerializer, self).to_representation(instance)

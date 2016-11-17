@@ -8,6 +8,7 @@ __author__ = 'irwan'
 class CampusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campus
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(CampusSerializer, self).to_representation(instance)

@@ -13,6 +13,7 @@ class CountrySerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Country
         geo_field = 'polygon_geometry'
+        fields = '__all__'
 
     def to_representation(self, instance):
         res = super(CountrySerializer, self).to_representation(instance)

@@ -3,12 +3,15 @@
 
 from django.contrib.gis.db import models
 from django.core import management
-from django.db.models.signals import post_save
 from django.template import Context, loader
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from feti.models.provider import Provider
 from feti.models.course import Course
 from feti.models.address import Address
+
+from feti.celery import update_search_index
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'
@@ -122,7 +125,7 @@ class Campus(models.Model):
     def save(self, *args, **kwargs):
         # set up long description
         from_inline = False
-        super(Campus, self).save(*args, **kwargs)
+        # super(Campus, self).save(*args, **kwargs)
 
         try:
             self.address_fk
@@ -176,6 +179,8 @@ class Campus(models.Model):
         }
         self._campus_popup = template.render(Context(variable))
 
+        super(Campus, self).save(*args, **kwargs)
+
         # save the key in address
         if self.address:
             self.address_fk = self.address
@@ -204,8 +209,6 @@ class Campus(models.Model):
             if entry.course.id not in course_ids:
                 entry.delete()
 
-        super(Campus, self).save(*args, **kwargs)
-
     def delete(self, *args, **kwargs):
         # delete campus course entries
         from feti.models.campus_course_entry import CampusCourseEntry
@@ -215,3 +218,8 @@ class Campus(models.Model):
 
 def generate_campus_index(sender, instance, **kwargs):
     management.call_command('generate_campus_index')
+
+
+@receiver(post_save, sender=Campus)
+def update_index(sender, instance, **kwargs):
+    update_search_index.delay()

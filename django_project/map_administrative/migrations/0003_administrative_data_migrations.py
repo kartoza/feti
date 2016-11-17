@@ -85,7 +85,3 @@ class Migration(migrations.Migration):
     dependencies = [
         ('map_administrative', '0002_province'),
     ]
-
-    operations = [
-        migrations.RunPython(import_countries),
-    ]
