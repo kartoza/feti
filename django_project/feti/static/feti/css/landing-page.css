@@ -628,3 +628,8 @@
 .filled {
     color: orange;
 }
+
+.step-course a {
+    color: #3376ba;
+    font-weight: bold;
+}
