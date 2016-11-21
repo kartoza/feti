@@ -58,7 +58,10 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 GRAPPELLI_ADMIN_TITLE = 'Feti Administration'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
+try:
+    BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
+except KeyError:
+    pass
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
