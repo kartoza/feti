@@ -108,3 +108,6 @@ deployment/docker-prod/71-apt-cacher-ng
 deployment/docker-dev/71-apt-cacher-ng
 deployment/docker-cron/71-apt-cacher-ng
 deployment/docker/71-apt-cacher-ng
+
+# Celery schedule
+django_project/celerybeat-schedule
