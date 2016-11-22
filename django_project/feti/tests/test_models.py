@@ -1,7 +1,7 @@
 # coding=utf-8
 """Module related to test for all the models."""
+from unittest.mock import patch
 from django.test import TestCase
-
 from feti.tests.model_factories import (
     CampusFactory,
     AddressFactory,
@@ -24,11 +24,15 @@ class TestCampusCRUD(TestCase):
         self.course.save()
         self.course2 = CourseFactory.create()
 
-    def test_Campus_create(self):
+    @patch('feti.celery.update_search_index.delay')
+    def test_Campus_create(self, mock):
         """
         Tests Campus model creation
         """
         model = CampusFactory.create(courses=(self.course, self.course2))
+
+        # check if signal triggered
+        self.assertTrue(mock.called)
 
         # check if PK exists
         self.assertTrue(model.id is not None)
@@ -36,7 +40,8 @@ class TestCampusCRUD(TestCase):
         # check if name exists
         self.assertTrue(model.campus is not None)
 
-    def test_Campus_read(self):
+    @patch('feti.celery.update_search_index.delay')
+    def test_Campus_read(self, mock):
         """
         Tests Campus model read
         """
@@ -45,9 +50,13 @@ class TestCampusCRUD(TestCase):
             courses=(self.course,)
         )
 
+        # check if signal triggered
+        self.assertTrue(mock.called)
+
         self.assertTrue(model.campus == 'Custom Campus')
 
-    def test_Campus_update(self):
+    @patch('feti.celery.update_search_index.delay')
+    def test_Campus_update(self, mock):
         """
         Tests Campus model update
         """
@@ -58,15 +67,22 @@ class TestCampusCRUD(TestCase):
         model.__dict__.update(new_model_data)
         model.save()
 
+        # check if signal triggered
+        self.assertTrue(mock.called)
+
         # check if updated
         for key, val in new_model_data.items():
             self.assertEqual(model.__dict__.get(key), val)
 
-    def test_Campus_delete(self):
+    @patch('feti.celery.update_search_index.delay')
+    def test_Campus_delete(self, mock):
         """
         Tests Campus model delete
         """
         model = CampusFactory.create(courses=(self.course,))
+
+        # check if signal triggered
+        self.assertTrue(mock.called)
 
         model.delete()
 

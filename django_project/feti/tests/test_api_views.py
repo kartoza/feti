@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 from django.test import TestCase
 from django.core.management import call_command
 from rest_framework.test import APIRequestFactory
@@ -24,10 +25,12 @@ class TestApiView(TestCase):
         self.course = CourseFactory.create(
             course_description=u'science'
         )
-        self.campus = CampusFactory.create(
-            campus=u'campus_test',
-            courses=(self.course,)
-        )
+        with patch('feti.celery.update_search_index.delay') as mock:
+            self.campus = CampusFactory.create(
+                campus=u'campus_tests',
+                courses=(self.course,)
+            )
+            self.mock = mock
         call_command('rebuild_index', '--noinput')
 
     def test_get_campus_by_query(self):
@@ -53,10 +56,12 @@ class TestApiAutocomplete(TestCase):
         self.course = CourseFactory.create(
             course_description=u'engineering'
         )
-        self.campus = CampusFactory.create(
-            campus=u'campus_tests',
-            courses=(self.course,)
-        )
+        with patch('feti.celery.update_search_index.delay') as mock:
+            self.campus = CampusFactory.create(
+                campus=u'campus_tests',
+                courses=(self.course,)
+            )
+            self.mock = mock
         call_command('rebuild_index', '--noinput')
 
     def test_get_autcomplete_campus(self):
@@ -67,5 +72,6 @@ class TestApiAutocomplete(TestCase):
 
         response_data = json.loads(response.content.decode('utf-8'))
 
+        self.assertTrue(self.mock.called)
         self.assertTrue(len(response_data) > 0)
         self.assertEqual(self.campus.campus, response_data[0])
