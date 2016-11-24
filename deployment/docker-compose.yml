@@ -36,7 +36,7 @@ elasticsearch:
   container_name: feti-elasticsearch
   restart: on-failure:5
   #  read_only: true
-  image: elasticsearch
+  image: elasticsearch:2.4.2
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
