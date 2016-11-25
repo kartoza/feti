@@ -15,7 +15,7 @@ markdown
 django-filter
 # Django haystack support
 django-haystack
-elasticsearch
+elasticsearch==5.0.1
 django-leaflet==0.16.0
 django-geojson==2.8.0
 django-nested-inline
