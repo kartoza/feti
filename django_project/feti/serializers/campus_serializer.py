@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from feti.models.campus import Campus
+from feti.models.course import Course
 from feti.serializers.course_serializer import CourseSerializer
 
 __author__ = 'irwan'
@@ -22,8 +23,21 @@ class CampusSerializer(serializers.ModelSerializer):
                     course_context['course_saved'] = list(item.courses.all().values_list('id', flat=True))
 
         if self.context.get("courses"):
+            # order courses
+            pk_name = ('id' if not getattr(Course._meta, 'pk', None)
+                       else Course._meta.pk.name)
+            pk_name = '%s.%s' % (Course._meta.db_table, pk_name)
+            clauses = ' '.join(
+                ['WHEN %s=\'%s\' THEN %s' % (pk_name, pk, i)
+                 for i, pk in enumerate(self.context.get("courses"))]
+            )
+            ordering = 'CASE %s END' % clauses
             res['courses'] = CourseSerializer(
-                instance.courses.filter(id__in=self.context.get('courses')),
+                instance.courses.filter(
+                    id__in=self.context.get('courses')
+                ).extra(
+                    select={'ordering': ordering}, order_by=('ordering',)
+                ),
                 many=True,
                 context=course_context).data
         else:

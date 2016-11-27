@@ -3,6 +3,7 @@ import abc
 import os
 import json
 from itertools import chain
+from more_itertools import unique_everseen
 from django.db.models import Q
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
@@ -133,8 +134,22 @@ class ApiCampus(SearchCampus):
 
 
 class ApiCourse(SearchCampus):
+    """
+    Api to filter courses by query
+    """
+    context = {}
+
     def get(self, request, format=None):
-        return SearchCampus.get(self, request)
+        self.context = {
+            'courses': None
+        }
+        query = request.GET.get('q')
+        if query and len(query) < 3:
+            return Response([])
+
+        filtered = self.filter_model(query)
+        serializer = CampusSerializer(filtered, many=True, context=self.context)
+        return Response(serializer.data)
 
     def filter_model(self, query):
         sqs = None
@@ -142,6 +157,7 @@ class ApiCourse(SearchCampus):
 
         if '=' in query:
             queries = query.split('=')
+            # search by saqa id
             if 'saqa_id' in queries[0] and len(queries) > 1:
                 saqa_id = queries[1].strip()
                 try:
@@ -164,16 +180,11 @@ class ApiCourse(SearchCampus):
                 campus_location_isnull='false',
             ).models(CampusCourseEntry)
 
-            campuses = Campus.objects.filter(id__in=set([x.object.campus.id for x in sqs]))
+            campuses = list(unique_everseen([x.object.campus for x in sqs]))
             # Only shows this courses
-            self.additional_context['courses'] = set([x.object.course_id for x in sqs])
+            self.context['courses'] = list(unique_everseen([x.object.course_id for x in sqs]))
 
         return campuses
-
-    def additional_filter(self, model, query):
-        return model.distinct().filter(
-            courses__course_description__icontains=query
-        )
 
 
 class ApiOccupation(SearchCampus):

@@ -28,3 +28,4 @@ beautifulsoup4
 django-allauth
 django-betterforms
 celery<3.2
+more_itertools

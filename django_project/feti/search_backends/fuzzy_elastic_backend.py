@@ -34,13 +34,11 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
         try:
             search_kwargs["min_score"]
         except KeyError:
-            search_kwargs["min_score"] = 2
+            search_kwargs["min_score"] = 2.5
 
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             search_kwargs['query']['filtered']['query']['query_string'][
                 'fuzziness'] = 'AUTO'
-
-        if 'query_string' in search_kwargs['query']['filtered']['query']:
             search_kwargs['query']['filtered']['query']['query_string'][
                 'default_operator'] = 'OR'
 
