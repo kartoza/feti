@@ -376,20 +376,24 @@
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
+#introduction_carousel {
+    height: 450px;
+}
+
 #myCarousel, .carousel {
     width: 100% !important;
 }
 
 /* Carousel base class */
 .carousel {
-    height: 500px;
+    height: 450px;
 }
 
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
     text-align: left;
     z-index: 10;
-    padding-bottom: 8%;
+    padding-bottom: 5%;
     text-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
@@ -400,7 +404,7 @@
 
 /* Declare heights because of positioning of img element */
 .carousel .item {
-    height: 500px;
+    height: 450px;
     background-color: #777;
 }
 
@@ -409,7 +413,6 @@
     top: 0;
     left: 0;
     min-width: 100%;
-    height: 500px;
 }
 
 .carousel-control.left {
