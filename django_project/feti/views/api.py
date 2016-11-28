@@ -34,6 +34,7 @@ __copyright__ = 'kartoza.com'
 
 class SearchCampus(APIView):
     additional_context = {}
+    courses_name = []
 
     def get(self, request, format=None):
 
@@ -133,6 +134,7 @@ class ApiCampus(SearchCampus):
 
 
 class ApiCourse(SearchCampus):
+
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
 
@@ -149,6 +151,7 @@ class ApiCourse(SearchCampus):
                         national_learners_records_database__in=saqa_ids
                     ).models(Course)
                     courses_id = [l.object.id for l in sqs]
+                    self.courses_name = list(set([l.object.course_description for l in sqs]))
 
                     campuses = Campus.objects.filter(
                         courses__in=courses_id

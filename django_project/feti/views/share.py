@@ -17,22 +17,31 @@ from django.core.mail import EmailMessage
 from django.shortcuts import redirect
 from feti.models.campus import Campus
 from feti.models.url import URL
+from feti.views.api import (
+    ApiCourse,
+    ApiCampus
+)
 
 
 class SharingMixin(object):
     """Mixin class to query campus and download map"""
+    courses_name = []
+
+    def get_course_names(self):
+        return self.courses_name
+
     def get_campus(self, provider, query):
-        campuses = Campus.objects.filter(location__isnull=False)
+        api = None
         # Get data
         if provider == 'provider':
-            campuses = campuses.filter(
-                provider__primary_institution__icontains=query
-            )
+            api = ApiCampus()
         elif provider == 'course':
-            campuses = campuses.distinct().filter(
-                courses__course_description__icontains=query
-            )
-        return campuses
+            api = ApiCourse()
+        if api:
+            campuses = api.filter_model(query)
+            self.courses_name = api.courses_name
+            return campuses
+        return None
 
     def download_map(self, filename, markers):
         osm_static_url = 'http://staticmap.openstreetmap.de/staticmap.php?center=-30.5,24&' \
@@ -72,6 +81,7 @@ class PDFDownload(TemplateView, SharingMixin):
         slug = self.kwargs.get('provider', None)
         query = self.kwargs.get('query', None)
         campuses = self.get_campus(provider=slug, query=query)
+        course_names = self.get_course_names()
 
         markers = ''
         for idx, campus in enumerate(campuses):
@@ -82,6 +92,9 @@ class PDFDownload(TemplateView, SharingMixin):
         self.download_map(filename=filename, markers=markers)
 
         template = get_template("feti/pdf_template.html")
+
+        if course_names:
+            query = ", ".join(course_names)
 
         context = {
             "type": "pdf",

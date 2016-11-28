@@ -88,7 +88,7 @@ urlpatterns = patterns(
     url(regex='^provider/(?P<pk>\d+)/update/$',
         view=UpdateCampusView.as_view(),
         name='update_campus'),
-    url(regex='^pdf_report/(?P<provider>[\w-]+)/(?P<query>[\w\ ]+)',
+    url(regex='^pdf_report/(?P<provider>[\w-]+)/(?P<query>[\w\=, ]+)',
         view=PDFDownload.as_view(),
         name='get_pdf'),
     url(regex='^share_email/',

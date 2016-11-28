@@ -67,7 +67,7 @@ define([
             }
         },
         addShareBar: function (mode) {
-            if(mode!='favorites') {
+            if(mode!='favorites' && mode!='occupation') {
                 var $share_container = $('.share-container');
                 $('#result-container-'+mode).append($share_container.clone().show());
                 var _this = this;
@@ -141,13 +141,13 @@ define([
         sharePDF: function() {
             var url = '/pdf_report/';
             var currentRoute = Backbone.history.getFragment().split('/');
+            console.log(currentRoute);
             if(currentRoute.length > 2) {
                 window.location = url + currentRoute[1] + '/' + currentRoute[2];
             }
 
         },
         shareEmail: function() {
-            console.log('share');
             var currentRoute = Backbone.history.getFragment().split('/');
             // Open Modal
             if(currentRoute.length > 1) {
