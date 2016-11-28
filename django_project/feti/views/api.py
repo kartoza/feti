@@ -172,7 +172,7 @@ class ApiCourse(SearchCampus):
                         courses__in=courses_id
                     )
 
-                    self.additional_context['courses'] = courses_id
+                    self.context['courses'] = courses_id
                 except MultipleObjectsReturned as e:
                     print(e)
 
