@@ -73,16 +73,23 @@ class SearchCampus(APIView):
         if not query:
             query = ""
 
-        campuses = self.filter_model(query)
-
         if drawn_polygon:
-            campuses = campuses.filter(
-                    location__within=drawn_polygon
-                )
+            campuses = self.filter_model(
+                query=query,
+                options={
+                    'shape': drawn_polygon
+                }
+            )
         elif drawn_circle:
-            campuses = campuses.filter(
-                    location__distance_lt=(drawn_circle, Distance(m=radius))
-                )
+            campuses = self.filter_model(
+                query=query,
+                options={
+                    'shape': drawn_circle,
+                    'radius': radius
+                }
+            )
+        else:
+            campuses = self.filter_model(query)
 
         if self.request.user.is_authenticated():
             campus_courses_favorite = list(CampusCoursesFavorite.objects.filter(
@@ -99,7 +106,7 @@ class SearchCampus(APIView):
         return
 
     @abc.abstractmethod
-    def filter_model(self, query):
+    def filter_model(self, query, options=None):
         return
 
 
@@ -107,7 +114,7 @@ class ApiCampus(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
 
-    def filter_model(self, query):
+    def filter_model(self, query, options=None):
         q = Clean(query)
 
         sqs1 = SearchQuerySet().filter(
@@ -153,7 +160,7 @@ class ApiCourse(SearchCampus):
         serializer = CampusSerializer(filtered, many=True, context=self.context)
         return Response(serializer.data)
 
-    def filter_model(self, query):
+    def filter_model(self, query, options=None):
         sqs = None
         campuses = None
 
