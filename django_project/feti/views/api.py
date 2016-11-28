@@ -147,6 +147,8 @@ class ApiCourse(SearchCampus):
         if query and len(query) < 3:
             return Response([])
 
+        self.context['query'] = query
+
         filtered = self.filter_model(query)
         serializer = CampusSerializer(filtered, many=True, context=self.context)
         return Response(serializer.data)

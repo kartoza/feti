@@ -23,6 +23,7 @@ class CampusSerializer(serializers.ModelSerializer):
                     course_context['course_saved'] = list(item.courses.all().values_list('id', flat=True))
 
         if self.context.get("courses"):
+            course_context['query'] = self.context.get("query")
             # order courses
             pk_name = ('id' if not getattr(Course._meta, 'pk', None)
                        else Course._meta.pk.name)
