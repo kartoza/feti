@@ -18,6 +18,7 @@
 
 .section-heading {
     margin-bottom: 30px;
+    color: #777;
 }
 
 .section-heading-spacer {
@@ -73,8 +74,19 @@
 }
 
 .partner {
+    white-space: nowrap;
     height: 120px;
-    background-color: #eeeeee;
+}
+
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.partner img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .m-button {
@@ -381,7 +393,7 @@
 }
 
 #myCarousel, .carousel {
-    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Carousel base class */
@@ -398,8 +410,9 @@
 }
 
 .carousel-caption h1 {
-    font-size: 3.5em;
+    font-size: 3em;
     width: 600px;
+    font-weight: lighter;
 }
 
 /* Declare heights because of positioning of img element */
@@ -412,7 +425,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    min-width: 100%;
+    min-height: 100%;
+    width: auto !important;
+    max-width:none !important;
 }
 
 .carousel-control.left {
