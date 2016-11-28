@@ -2,7 +2,7 @@
 """Model factory definitions for models."""
 
 import factory
-
+from unittest.mock import MagicMock
 from feti.models import (
     Campus,
     Address,
@@ -38,6 +38,7 @@ class CampusFactory(factory.DjangoModelFactory):
     campus = factory.Sequence(lambda n: 'Campus %s' % n)
     address = factory.SubFactory(AddressFactory)
     provider = factory.SubFactory(ProviderFactory)
+    Campus.update_index = MagicMock(print('call update index'))
 
     @factory.post_generation
     def courses(self, create, extracted, **kwargs):

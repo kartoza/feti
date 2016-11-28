@@ -1,5 +1,6 @@
 # coding=utf-8
 """Module related to test for all the models."""
+from unittest.mock import patch
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
@@ -22,7 +23,8 @@ class TestCampusViews(TestCase):
             'password': 'password',
             'is_staff': True
         })
-        self.campus = CampusFactory.create()
+        with patch('feti.celery.update_search_index.delay') as mock:
+            self.campus = CampusFactory.create()
 
     def tearDown(self):
         self.user.delete()

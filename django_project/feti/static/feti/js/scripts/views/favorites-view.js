@@ -60,7 +60,7 @@ define([
             $(this.container).append(this.$el);
             $(this.container).append(this.courses_template(this.model.attributes));
             this.$elCourses = $("#" + this.model.attributes.id + "-courses-favorites");
-            // toogling
+            // toggling
             this.$el.attr("href", "#" + this.model.attributes.id + "-courses-favorites");
             this.$el.attr("data-toggle", "collapse");
             this.model.renderMarker();

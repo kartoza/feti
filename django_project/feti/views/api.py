@@ -143,10 +143,10 @@ class ApiCourse(SearchCampus):
         if '=' in query:
             queries = query.split('=')
             if 'saqa_id' in queries[0] and len(queries) > 1:
-                saqa_id = queries[1].strip()
+                saqa_ids = queries[1].split(',')
                 try:
                     sqs = SearchQuerySet().filter(
-                        national_learners_records_database=saqa_id
+                        national_learners_records_database__in=saqa_ids
                     ).models(Course)
                     courses_id = [l.object.id for l in sqs]
 
