@@ -73,8 +73,18 @@
 }
 
 .partner {
+    white-space: nowrap;
     height: 120px;
-    background-color: #eeeeee;
+}
+
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.partner img {
+    max-width: 100%;
 }
 
 .m-button {
@@ -381,7 +391,7 @@
 }
 
 #myCarousel, .carousel {
-    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Carousel base class */
@@ -412,7 +422,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    min-width: 100%;
+    min-height: 100%;
+    width: auto !important;
+    max-width:none !important;
 }
 
 .carousel-control.left {

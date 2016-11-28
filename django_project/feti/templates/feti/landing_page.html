@@ -30,7 +30,7 @@
             <div class="carousel-inner" role="listbox">
                 <div class="item active">
                     <img class="first-slide"
-                         src="{% static 'feti/images/landing_page_1.jpg' %}"
+                         src="{% static 'feti/images/slide1.jpg' %}"
                          alt="First slide">
                     <div class="container">
                         <div class="carousel-caption">
@@ -41,8 +41,30 @@
                 </div>
                 <div class="item">
                     <img class="second-slide"
-                         src="{% static 'feti/images/landing_page_2.jpg' %}"
+                         src="{% static 'feti/images/slide2.jpg' %}"
                          alt="Second slide">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h1>WE HELP YOU TO FIND YOUR CAREER</h1>
+                            <h2>{{ occupations }} OCCUPATIONS FOUND</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <img class="second-slide"
+                         src="{% static 'feti/images/slide3.jpg' %}"
+                         alt="Third slide">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h1>WE HELP YOU TO FIND YOUR CAREER</h1>
+                            <h2>{{ occupations }} COURSES FOUND</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <img class="second-slide"
+                         src="{% static 'feti/images/slide4.jpg' %}"
+                         alt="Fourth slide">
                     <div class="container">
                         <div class="carousel-caption">
                             <h1>WE HELP YOU TO FIND YOUR CAREER</h1>
@@ -88,23 +110,21 @@
                     <div class="clearfix"></div>
                     <h2 class="section-heading">OUR PARTNERS</h2>
                     <div class="row">
-                        <div class="col-sm-2">
-                            <div class="partner"></div>
+                        <div class="col-sm-3 partner">
+                            <span class="helper"></span>
+                            <img src="{% static 'feti/images/partner1.jpg' %}" />
                         </div>
-                        <div class="col-sm-2">
-                            <div class="partner"></div>
+                        <div class="col-sm-3 partner">
+                            <span class="helper"></span>
+                            <img src="{% static 'feti/images/partner2.jpg' %}" />
                         </div>
-                        <div class="col-sm-2">
-                            <div class="partner"></div>
+                        <div class="col-sm-3 partner">
+                            <span class="helper"></span>
+                            <img src="{% static 'feti/images/partner3.jpg' %}" />
                         </div>
-                        <div class="col-sm-2">
-                            <div class="partner"></div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="partner"></div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="partner"></div>
+                        <div class="col-sm-3">
+                            <span class="helper"></span>
+                            <img src="{% static 'feti/images/kartoza-logo.jpg' %}" />
                         </div>
                     </div>
                 </div>
