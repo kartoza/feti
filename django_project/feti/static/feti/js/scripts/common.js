@@ -7,6 +7,7 @@ define([], function () {
         UserLocation: user_location || 'None',
         Dispatcher: _.extend({}, Backbone.Events),
         Router: {},
-        CurrentSearchMode: 'provider'
+        CurrentSearchMode: 'provider',
+        FetchXHR: null
 	};
 });
