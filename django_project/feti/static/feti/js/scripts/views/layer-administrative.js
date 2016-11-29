@@ -54,16 +54,17 @@ define([
                         layer: layer
                     },
                     success: function (data) {
+                        console.log(data);
                         var polygon = that._createPolygon(data);
                         that.resetBasedLayer(layer);
                         if (polygon) {
-                            that.polygons[data.properties.layer] = polygon;
+                            that.polygons[data.layer] = polygon;
                         }
                         that.setCurrentAdm();
                         if (that.current_adm == "") {
-                            that.map.searchBarView.updateSearchRoute('');
+                            Common.Dispatcher.trigger('search:updateRouter', '');
                         } else {
-                            that.map.searchBarView.updateSearchRoute('administrative=' + that.current_adm);
+                            Common.Dispatcher.trigger('search:updateRouter', 'administrative=' + that.current_adm);
                         }
                         that.showPolygon(that.current_adm);
                     },
@@ -117,17 +118,17 @@ define([
         },
         _createPolygon: function (data) {
             var that = this;
-            if (data.geometry) {
+            if (data.polygon_geometry) {
                 var mp = {
                     "type": "Feature",
                     "geometry": {
                         "type": "MultiPolygon",
-                        "coordinates": data.geometry.coordinates
+                        "coordinates": data.polygon_geometry.coordinates
                     },
                     "properties": {
                         "name": "MultiPolygon",
-                        "title": data.properties.title,
-                        "layer": data.properties.layer,
+                        "title": data.title,
+                        "layer": data.layer,
                         "style": that.map.layerOptions(),
                         "parent": ""
                     }
@@ -147,7 +148,7 @@ define([
                         });
                     }
                 });
-                that.cache[data.properties.title] = polygon;
+                that.cache[data.title] = polygon;
                 return polygon;
             }
             return null;
