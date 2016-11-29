@@ -28,6 +28,11 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='course__course_description'
     )
 
+    course_nlrd = indexes.CharField(
+        model_attr='course__national_learners_records_database',
+        null=True
+    )
+
     def prepare_campus_location_isnull(self, obj):
         return obj.campus.location is None
 

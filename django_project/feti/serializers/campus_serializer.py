@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from feti.models.campus import Campus
 from feti.models.course import Course
+from feti.utilities.highlighter import QueryHighlighter
 from feti.serializers.course_serializer import CourseSerializer
 
 __author__ = 'irwan'
@@ -14,6 +15,9 @@ class CampusSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         res = super(CampusSerializer, self).to_representation(instance)
         course_context = {}
+        title = None
+        if instance.provider:
+            title = instance.provider.__unicode__()
 
         res['saved'] = False
         if self.context.get("campus_saved"):
@@ -46,12 +50,15 @@ class CampusSerializer(serializers.ModelSerializer):
                 instance.courses.all(),
                 many=True,
                 context=course_context).data
+            # Highlight campus
+            highlight = QueryHighlighter(self.context.get("query"))
+            if title:
+                title = highlight.highlight(title)
 
         res['long_description'] = instance.long_description
+        res['title'] = title
         if instance.address:
             res['address'] = instance.address.__unicode__()
-        if instance.provider:
-            res['title'] = instance.provider.__unicode__()
         if instance.location:
             res['location'] = {
                 'lat': instance.location.y,

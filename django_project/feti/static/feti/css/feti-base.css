@@ -253,3 +253,7 @@ footer {
 #feti-map .easy-button-button.clearButton-active.disabled {
     height: 0;
 }
+
+.highlighted {
+    background-color: yellow;
+}

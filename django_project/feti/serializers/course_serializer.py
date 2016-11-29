@@ -1,5 +1,5 @@
-import re
 from rest_framework import serializers
+from feti.utilities.highlighter import QueryHighlighter
 from feti.models.course import Course
 
 __author__ = 'irwan'
@@ -20,12 +20,12 @@ class CourseSerializer(serializers.ModelSerializer):
                 res['saved'] = True
 
         if self.context.get("query"):
-            query_words = self.context.get("query")
-            queries = query_words.split()
-            title = re.sub(
-                '(?i)(' + '|'.join(map(re.escape, queries)) + ')', r'<mark>\1</mark>',
-                title
-            )
+            highlight = QueryHighlighter(self.context.get("query"))
+            title = highlight.highlight(title)
+            if instance.national_learners_records_database:
+                title = title.replace('...', instance.national_learners_records_database + ' - ')
+            else:
+                title = title.replace('...', '')
 
         res['title'] = title
         res['model'] = 'course'
