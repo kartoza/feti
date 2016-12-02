@@ -15,7 +15,8 @@ define([
             'click #what-to-study': '_categoryClicked',
             'click #choose-occupation': '_categoryClicked',
             'click #favorites': '_categoryClicked',
-            'click #result-toogle': 'toogleResult'
+            'click #result-toogle': 'toogleResult',
+            'click #search-clear': 'clearSearch'
         },
         initialize: function (options) {
             this.render();
@@ -28,6 +29,9 @@ define([
             this.$occupation_button = $("#choose-occupation");
             this.$favorites_button = $("#favorites");
             this.$clear_draw = $("#clear-draw");
+            this.$search_clear = $("#search-clear");
+
+            this.$search_clear.hide();
 
             this.search_bar_hidden = true;
             this.$result_toggle.hide();
@@ -301,6 +305,7 @@ define([
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
             if(mode) {
                 this._search_results[mode] = num;
+                this.$search_clear.show();
             }
 
             if (Common.Router.selected_occupation) {
@@ -440,6 +445,27 @@ define([
             div.on('click', 'li:not(.active) > a', function() {
                 div.removeClass('open');
             }.bind(div));
+        },
+        clearSearch: function (e) {
+            e.preventDefault();
+
+            // Clear search input
+            this.$search_bar_input.val('');
+
+            // Clear saved query
+            this._search_query[Common.CurrentSearchMode] = '';
+
+            // Clear saved marker
+            this.parent.clearLayerMode(Common.CurrentSearchMode);
+
+            // Hide clear button
+            this.$search_clear.hide();
+
+            // Update search
+            this._updateSearchRoute();
+
+            // Update sidebar
+            Common.Dispatcher.trigger('sidebar:clear_search', Common.CurrentSearchMode);
         }
     });
 

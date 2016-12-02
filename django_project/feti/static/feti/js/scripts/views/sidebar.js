@@ -20,7 +20,7 @@ define([
             Common.Dispatcher.on('sidebar:update_title', this.updateResultTitle, this);
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
-
+            Common.Dispatcher.on('sidebar:clear_search', this.clearSidebar, this);
 
         },
         showOccupationDetail: function () {
@@ -50,6 +50,15 @@ define([
             this.clearContainerDiv(mode);
             this.$result_title.find('#result-title-'+mode).remove();
             $('#result-container-'+mode).append(this.$loading_div.show());
+        },
+        clearSidebar: function (mode) {
+            if($('#result-container-'+mode+' .result-title').length > 0) {
+                $('#result-container-'+mode+' .result-title').remove();
+            }
+            if($('#result-container-'+mode+' .share-item').length > 0) {
+                $('#result-container-'+mode+' .share-item').remove();
+            }
+            this.$result_title.find('#result-title-'+mode).remove();
         },
         showEmptyResult: function (mode) {
             var $_empty_result_div = this.$empty_result_div.clone();
