@@ -479,7 +479,6 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    padding-bottom: 60px;
     padding-top: 45px;
 }
 
@@ -642,4 +641,12 @@
 .step-course a {
     color: #3376ba;
     font-weight: bold;
+}
+
+.leaflet-right {
+    margin-top: 55px;
+}
+
+.button-state {
+    margin-top: -5px;
 }

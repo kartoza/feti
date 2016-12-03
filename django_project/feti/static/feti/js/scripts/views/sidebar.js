@@ -20,8 +20,6 @@ define([
             Common.Dispatcher.on('sidebar:update_title', this.updateResultTitle, this);
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
-
-
         },
         showOccupationDetail: function () {
             this.$result_detail.show("slide", {direction: "right"}, 300);
@@ -62,33 +60,12 @@ define([
             if($('#result-container-'+mode+' .result-loading').length > 0) {
                 $('#result-container-'+mode+' .result-loading').remove();
             }
-            if($('#result-container-'+mode+' .share-container').length > 0) {
-                $('#result-container-'+mode+' .share-container').remove();
-            }
-        },
-        addShareBar: function (mode) {
-            if(mode!='favorites' && mode!='occupation') {
-                var $share_container = $('.share-container');
-                $('#result-container-'+mode).append($share_container.clone().show());
-                var _this = this;
-                $('#result-container-'+mode+' .share-pdf').click(function () {
-                    _this.sharePDF();
-                });
-                $('#result-container-'+mode+' .share-social-twitter').click(function () {
-                    _this.shareToTwitter();
-                });
-                $('#result-container-'+mode+' .share-email').click(function () {
-                    _this.shareEmail();
-                })
-            }
         },
         updateResultTitle: function(number_result, mode, query) {
             this.hideOccupationDetail();
             this.clearContainerDiv(mode);
             if(number_result == 0) {
                 this.showEmptyResult(mode);
-            } else {
-                this.addShareBar(mode);
             }
             this.$result_title.find('#result-title-'+mode).remove();
 
@@ -137,79 +114,6 @@ define([
         showResultTitle: function(newMode, oldMode) {
             $('#result-title-'+oldMode).hide();
             $('#result-title-'+newMode).show();
-        },
-        sharePDF: function() {
-            var url = '/pdf_report/';
-            var currentRoute = Backbone.history.getFragment().split('/');
-            console.log(currentRoute);
-            if(currentRoute.length > 2) {
-                window.location = url + currentRoute[1] + '/' + currentRoute[2];
-            }
-
-        },
-        shareEmail: function() {
-            var currentRoute = Backbone.history.getFragment().split('/');
-            // Open Modal
-            if(currentRoute.length > 1) {
-                $('#email-modal').modal('toggle');
-            }
-
-            $('#email-form').submit(function (e) {
-                e.preventDefault();
-                var all_data = {};
-
-                all_data.email = $('#email').val();
-                all_data.provider = currentRoute[1];
-                all_data.query = currentRoute[2];
-                all_data.link = Backbone.history.location.href;
-
-                $('#email-submit').prop('disabled', true);
-                $('#email').prop('disabled', true);
-
-                $.ajax({
-                    url:'share_email/',
-                    type:'POST',
-                    data: JSON.stringify(all_data),
-                    success: function(response) {
-                        if(response=='success') {
-                            $('#email-modal').modal('toggle');
-                            alert('Email sent!');
-                        }
-                    },
-                    error: function(response) {
-                        alert('Error sending email');
-                    },
-                    complete: function() {
-                        $('#email-submit').prop('disabled', false);
-                        $('#email').prop('disabled', false);
-                    }
-                });
-            });
-        },
-        shareToTwitter: function () {
-
-            // get url
-            var full_url = Backbone.history.location.href;
-            var host = Backbone.history.location.host;
-
-            // generate random string
-            $.ajax({
-                url:'api/generate-random-string/',
-                type:'POST',
-                data: JSON.stringify({
-                    'url': full_url
-                }),
-                success: function(response) {
-                    var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+
-                        host+'/url/'+response;
-                    // open twitter box
-                    window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-                },
-                error: function(response) {
-                },
-                complete: function() {
-                }
-            });
         }
     });
 

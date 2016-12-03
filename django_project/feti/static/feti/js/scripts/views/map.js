@@ -2,8 +2,9 @@ define([
     'common',
     '/static/feti/js/scripts/views/search.js',
     '/static/feti/js/scripts/views/sidebar.js',
-    '/static/feti/js/scripts/views/layer-administrative.js'
-], function (Common, SearchView, SidebarView, LayerAdministrativeView) {
+    '/static/feti/js/scripts/views/layer-administrative.js',
+    '/static/feti/js/scripts/share.js',
+], function (Common, SearchView, SidebarView, LayerAdministrativeView, Share) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -61,6 +62,8 @@ define([
             Common.Dispatcher.on('map:removeLayer', this.removeLayer, this);
             Common.Dispatcher.on('map:exitFullScreen', this.exitFullScreen, this);
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
+            Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
+            Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
             Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
 
             this.modesLayer = {
@@ -243,13 +246,85 @@ define([
             this.clearButton.disable();
 
             this.locationFilterBar = L.easyBar([
-                this.locationButton,
-                this.polygonButton,
-                this.circleButton,
-                this.clearButton
+                    this.locationButton,
+                    this.polygonButton,
+                    this.circleButton,
+                    this.clearButton
+                ]);
+
+            this.locationFilterBar.options.position = 'topleft';
+            this.locationFilterBar.options.id = 'filter-bar-container';
+            this.locationFilterBar.addTo(this.map);
+
+            // Share bar
+
+            this.sharePDF = L.easyButton({
+                id: 'share-pdf-button',
+                position: 'topright',
+                states: [
+                    {
+                        stateName: 'sharePDF',
+                        icon: 'fa-file-pdf-o',
+                        title: 'Download PDF Summary',
+                        onClick: function (btn, map) {
+                            Share.sharePDF();
+                        }
+                    }
+                ]
+            });
+
+            this.shareEmail = L.easyButton({
+                id: 'share-email-button',
+                position: 'topright',
+                states: [
+                    {
+                        stateName: 'shareEmail',
+                        icon: 'fa-envelope-o',
+                        title: 'Send Summary Via Email',
+                        onClick: function (btn, map) {
+                            Share.shareEmail();
+                        }
+                    }
+                ]
+            });
+
+            this.shareTwitter = L.easyButton({
+                id: 'share-twitter-button',
+                position: 'topright',
+                states: [
+                    {
+                        stateName: 'shareTwitter',
+                        icon: 'fa-twitter',
+                        title: 'Share To Twitter',
+                        onClick: function (btn, map) {
+                            Share.shareToTwitter();
+                        }
+                    }
+                ]
+            });
+
+            this.shareBar = L.easyBar([
+                this.sharePDF,
+                this.shareEmail,
+                this.shareTwitter
             ]);
 
-            this.locationFilterBar.addTo(this.map);
+            this.shareBar.options.position = 'topright';
+            this.shareBar.options.id = 'share-bar-container';
+
+            this.shareBar.addTo(this.map);
+
+            this.hideShareBar();
+        },
+        hideShareBar: function () {
+            $('#share-pdf-button').hide();
+            $('#share-email-button').hide();
+            $('#share-twitter-button').hide();
+        },
+        showShareBar: function () {
+            $('#share-pdf-button').show();
+            $('#share-email-button').show();
+            $('#share-twitter-button').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
