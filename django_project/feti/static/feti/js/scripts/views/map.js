@@ -303,10 +303,25 @@ define([
                 ]
             });
 
+            this.shareURL = L.easyButton({
+                id: 'share-url-button',
+                states: [
+                    {
+                        stateName: 'shareURL',
+                        icon: 'fa-link',
+                        title: 'Share Link',
+                        onClick: function (btn, map) {
+                            Share.shareURL();
+                        }
+                    }
+                ]
+            });
+
             this.shareBar = L.easyBar([
                 this.sharePDF,
                 this.shareEmail,
-                this.shareTwitter
+                this.shareTwitter,
+                this.shareURL
             ]);
 
             this.shareBar.options.position = 'topright';
@@ -320,11 +335,13 @@ define([
             $('#share-pdf-button').hide();
             $('#share-email-button').hide();
             $('#share-twitter-button').hide();
+            $('#share-url-button').hide();
         },
         showShareBar: function () {
             $('#share-pdf-button').show();
             $('#share-email-button').show();
             $('#share-twitter-button').show();
+            $('#share-url-button').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for(var i=0; i < this.locationFilterBar._buttons.length; i++) {

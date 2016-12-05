@@ -55,31 +55,38 @@ define([
         };
 
         this.shareToTwitter = function () {
-
             // get url
-            var full_url = Backbone.history.location.href;
             var host = Backbone.history.location.host;
 
-            // generate random string
+            _generateURL(function (data) {
+                var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+
+                    host+'/url/'+data;
+                // open twitter box
+                window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+            });
+        };
+
+        this.shareURL = function () {
+            // get url
+            var host = Backbone.history.location.host;
+
+            _generateURL(function (data) {
+                window.prompt("Copy to clipboard: Ctrl+C, Enter", host+'/url/'+data);
+            });
+        };
+
+        var _generateURL = function (callback) {
+            var full_url = Backbone.history.location.href;
+
             $.ajax({
                 url:'api/generate-random-string/',
                 type:'POST',
                 data: JSON.stringify({
                     'url': full_url
                 }),
-                success: function(response) {
-                    var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+
-                        host+'/url/'+response;
-                    // open twitter box
-                    window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-                },
-                error: function(response) {
-                },
-                complete: function() {
-                }
+                success: callback
             });
         }
-
     };
 
     return Share;
