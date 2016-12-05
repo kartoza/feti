@@ -32,7 +32,7 @@ PIPELINE_JS = {
             'js/jquery-1.11.3.min.js',
             'js/bootstrap.js',
             'js/moment.min.js',
-            'feti/js/libs/Leaflet/0.7.7/leaflet.js',
+            'feti/js/libs/Leaflet/1.0.2/leaflet.js',
             'feti/js/libs/ripples.min.js',
             'feti/js/libs/validate.js',
             'feti/leaflet-extra-markers/leaflet.extra-markers.js',
@@ -64,7 +64,7 @@ PIPELINE_CSS = {
     'contrib': {
         'source_filenames': (
             'css/bootstrap.min.css',
-            'feti/css/leaflet.css',
+            'feti/css/Leaflet-1.0.2/leaflet.css',
             'css/bootstrap-datetimepicker.min.css',
             'feti/leaflet-extra-markers/leaflet.extra-markers.css',
             'feti/font-awesome/css/font-awesome.css',

@@ -346,3 +346,11 @@ footer {
   filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
   opacity: 1;
 }
+
+.leaflet-top {
+    z-index: 500;
+}
+
+#feti-map {
+    z-index: 5;
+}
