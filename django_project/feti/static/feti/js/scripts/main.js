@@ -2,8 +2,7 @@
 require.config({
 	paths: {
 		text: '/static/feti/js/libs/text',
-        common: '/static/feti/js/scripts/common',
-		service: '/static/feti/js/scripts/service'
+        common: '/static/feti/js/scripts/common'
 	}
 });
 
