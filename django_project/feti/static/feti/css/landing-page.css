@@ -623,10 +623,6 @@
     float: left;
 }
 
-.leaflet-top {
-    z-index: 98;
-}
-
 .favorites {
     padding-top: 5px;
 }
