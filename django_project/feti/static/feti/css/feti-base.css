@@ -350,3 +350,7 @@ footer {
 .highlighted {
     background-color: yellow;
 }
+
+#feti-map {
+    z-index: 5;
+}

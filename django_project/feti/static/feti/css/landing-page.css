@@ -593,7 +593,7 @@
 }
 
 .leaflet-top {
-    z-index: 98;
+    z-index: 500;
     margin-top: 10px;
 }
 

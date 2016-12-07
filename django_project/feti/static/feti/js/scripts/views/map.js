@@ -67,9 +67,9 @@ define([
             Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
 
             this.modesLayer = {
-                'provider': L.layerGroup(),
-                'course': L.layerGroup(),
-                'favorites': L.layerGroup()
+                'provider': L.featureGroup(),
+                'course': L.featureGroup(),
+                'favorites': L.featureGroup()
             }
         },
         updateMapSize: function() {
@@ -467,12 +467,17 @@ define([
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
 
             this.modesLayer[mode].addLayer(layer);
+            this.repositionMap(mode);
+
             if(this.map.hasLayer(this.modesLayer[opposite])) {
                 this.map.removeLayer(this.modesLayer[opposite]);
             }
             if(!this.map.hasLayer(this.modesLayer[mode])) {
                 this.map.addLayer(this.modesLayer[mode]);
             }
+        },
+        repositionMap: function (mode) {
+            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
