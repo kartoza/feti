@@ -1,4 +1,4 @@
-define([<%- counts %>
+define([
     'common',
     '/static/feti/js/scripts/models/provider.js',
     '/static/feti/js/scripts/views/provider-course-view.js',
