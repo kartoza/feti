@@ -172,7 +172,7 @@ define([
                     {
                         stateName: 'locationButton',
                         icon: 'fa-globe',
-                        title: 'location',
+                        title: 'Filter map by location',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
                             _this.searchView.clearAllDraw();
@@ -189,7 +189,7 @@ define([
                     {
                         stateName: 'polygonButton',
                         icon: 'fa-square-o',
-                        title: 'polygon',
+                        title: 'Filter map by polygon',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
                             _this.searchView.clearAllDraw();
@@ -211,7 +211,7 @@ define([
                     {
                         stateName: 'circleButton',
                         icon: 'fa-circle-o',
-                        title: 'circle',
+                        title: 'Filter map by circle',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
                             _this.searchView.clearAllDraw();
@@ -233,7 +233,7 @@ define([
                     {
                         stateName: 'clearButton',
                         icon: 'fa-trash-o',
-                        title: 'clear',
+                        title: 'Clear filter',
                         onClick: function (btn, map) {
                             btn.disable();
                             _this.clearAllDrawnLayer();
