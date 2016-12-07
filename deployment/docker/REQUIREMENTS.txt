@@ -14,7 +14,7 @@ djangorestframework==3.5.3
 markdown
 django-filter
 # Django haystack support
-django-haystack
+git+https://github.com/dimasciput/django-haystack.git
 elasticsearch==5.0.1
 django-leaflet==0.16.0
 django-geojson==2.8.0
@@ -28,3 +28,4 @@ beautifulsoup4
 django-allauth
 django-betterforms
 celery<3.2
+more_itertools
