@@ -10,6 +10,9 @@ define([
             } else {
                 data = options;
             }
+            if (!data.icon) {
+                data.icon = '/static/feti/images/default-logo.png';
+            }
             data.counts = data.courses.length;
             return data;
         },
@@ -31,14 +34,14 @@ define([
                     var origin = user_location[1] + ',' + user_location[0];
 
                     popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
-                        ' <a href="https://www.google.com/maps/dir/'+origin+'/'+location.lat+','+location.lng+'" target="_blank">' +
+                        ' <a href="https://www.google.com/maps/dir/' + origin + '/' + location.lat + ',' + location.lng + '" target="_blank">' +
                         'Get direction</a>';
                     this.getUserLocation(popup, marker, origin);
                     popup += '<div class="user-location">Calculating travel time... </div>';
                 } else {
                     popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
-                        ' <a href="https://maps.google.com?saddr=My+Location&daddr='+location.lat+','+location.lng+'" target="_blank">' +
-                    'Get direction</a>';
+                        ' <a href="https://maps.google.com?saddr=My+Location&daddr=' + location.lat + ',' + location.lng + '" target="_blank">' +
+                        'Get direction</a>';
                 }
 
                 marker.bindPopup(popup);
