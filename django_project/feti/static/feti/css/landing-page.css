@@ -449,7 +449,6 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    padding-bottom: 60px;
     padding-top: 45px;
 }
 
@@ -662,4 +661,12 @@
     right: 18px;
     top: 15px;
     color: #b3b3b3;
+}
+
+.leaflet-right {
+    margin-top: 65px;
+}
+
+.button-state {
+    margin-top: -5px;
 }
