@@ -44,7 +44,7 @@ define([
                 marker.bindPopup(popup);
                 this.set('marker', marker);
             }
-            this.set('layer', L.layerGroup([this.get('marker')]));
+            this.set('layer', L.featureGroup([this.get('marker')]));
             Common.Dispatcher.trigger('map:addLayerToMode', this.get('layer'));
         },
         getUserLocation: function (popup, marker, origin) {
