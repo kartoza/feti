@@ -244,6 +244,7 @@ footer {
     position: absolute;
     top: 0;
     left: 0;
+    margin-top: 0 !important;
 }
 
 #feti-map .easy-button-button.clearButton-active.disabled {

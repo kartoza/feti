@@ -308,6 +308,13 @@ define([
                 this.$search_clear.show();
             }
 
+            if(num > 0) {
+                // Show share bar
+                Common.Dispatcher.trigger('map:showShareBar');
+            } else {
+                Common.Dispatcher.trigger('map:hideShareBar');
+            }
+
             if (Common.Router.selected_occupation) {
                 Common.Dispatcher.trigger('occupation-' + Common.Router.selected_occupation + ':routed');
             }
