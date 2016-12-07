@@ -123,7 +123,7 @@ class ProviderAdmin(admin.OSMGeoAdmin):
 
     fieldsets = (
         ('General', {
-            'fields': ['primary_institution', 'website', 'status']
+            'fields': ['primary_institution', 'website', 'status', 'icon']
         }),
     )
     list_display = ('id', 'primary_institution', 'website',)
@@ -190,6 +190,7 @@ class OccupationAdmin(NestedModelAdmin):
 class StepDetailAdmin(admin.ModelAdmin):
     model = StepDetail
     search_fields = ['title', 'detail']
+
 
 class URLAdmin(admin.ModelAdmin):
     """Admin Class for URL Model."""
