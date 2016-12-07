@@ -361,6 +361,15 @@ define([
                 }
             }
         },
+        clearLayerMode: function (mode) {
+            if(this.map.hasLayer(this.modesLayer[mode])) {
+                var layers = this.modesLayer[mode].getLayers();
+                for(var i = 0; i < layers.length; i++){
+                    this.modesLayer[mode].removeLayer(layers[i]);
+                }
+                this.map.removeLayer(this.modesLayer[mode]);
+            }
+        },
         addLayerToModeLayer: function (layer) {
             var mode = Common.CurrentSearchMode;
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
