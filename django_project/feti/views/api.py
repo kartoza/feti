@@ -266,7 +266,7 @@ class ApiSavedCampus(APIView):
         if boundary:
             drawn_polygon = boundary.polygon_geometry
 
-        dcampus_course_fav = CampusCoursesFavorite.objects.filter(
+        campus_course_fav = CampusCoursesFavorite.objects.filter(
             user=self.request.user)
 
         if drawn_polygon:

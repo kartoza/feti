@@ -51,12 +51,7 @@ define([
             $('#result-container-'+mode).append(this.$loading_div.show());
         },
         clearSidebar: function (mode) {
-            if($('#result-container-'+mode+' .result-title').length > 0) {
-                $('#result-container-'+mode+' .result-title').remove();
-            }
-            if($('#result-container-'+mode+' .share-item').length > 0) {
-                $('#result-container-'+mode+' .share-item').remove();
-            }
+            $('#result-container-'+mode).empty();
             this.$result_title.find('#result-title-'+mode).remove();
         },
         showEmptyResult: function (mode) {
