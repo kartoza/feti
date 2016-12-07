@@ -49,8 +49,13 @@ define([
             }
 
             this.reset();
-            this.fetch({
+            if(Common.FetchXHR != null) {
+                Common.FetchXHR.abort();
+            }
+
+            Common.FetchXHR = this.fetch({
                 success: function (collection, response) {
+                    Common.FetchXHR = null;
                     if (that.models.length == 0) {
                         Common.Dispatcher.trigger('search:finish', false, that.mode, 0);
                     } else {
@@ -65,6 +70,7 @@ define([
                     Common.Dispatcher.trigger('sidebar:update_title', that.models.length, that.mode, parameters['coord']);
                 },
                 error: function () {
+                    Common.FetchXHR = null;
                     Common.Dispatcher.trigger('search:finish');
                 }
             });
