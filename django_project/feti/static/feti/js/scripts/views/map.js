@@ -148,7 +148,7 @@ define([
                     title: 'cancel',
                     onClick: function (btn, map) {
                         btn.state(previousState);
-                        _this._enableOtherControlButtons();
+                        _this._enableOtherControlButtons('clear');
                         switch (previousState)
                         {
                             case 'locationButton':
@@ -350,9 +350,15 @@ define([
                 }
             }
         },
-        _enableOtherControlButtons: function () {
+        _enableOtherControlButtons: function (excluded) {
             for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
+                var button_title = this.locationFilterBar._buttons[i]._states[0].title;
+
                 this.locationFilterBar._buttons[i].enable();
+
+                if(typeof excluded != 'undefined' && excluded == button_title) {
+                    this.locationFilterBar._buttons[i].disable();
+                }
             }
         },
         onMouseMove: function (e) {

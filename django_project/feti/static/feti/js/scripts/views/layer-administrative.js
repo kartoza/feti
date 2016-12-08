@@ -43,6 +43,8 @@ define([
         getAdministrativeByLatlng: function (latlng, layer) {
             var that = this;
             if(this.active) {
+                console.log('clicked');
+
                 if (layer == null) {
                     layer = this.layer[0];
                 }
