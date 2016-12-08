@@ -40,6 +40,7 @@ class Command(BaseCommand):
                         geometry = geometry.geojson
                     country.polygon_geometry = geometry
                 country.save()
+                break
 
         print("Processing provinces")
 
