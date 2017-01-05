@@ -1,8 +1,9 @@
 from rest_framework.response import Response
 
-from .models import Province, Country
+from .models import Province, Country, District, Municipality
 from .serializers.country_serializer import CountrySerializer
 from .serializers.province_serializer import ProvinceSerializer
+from .serializers.district_serializer import DistrictSerializer
 from rest_framework.views import APIView
 
 ALLOWED_COUNTRIES = ["South Africa"]
@@ -52,6 +53,13 @@ class GetAdministrative(APIView):
                         serializer = ProvinceSerializer(province)
                         return Response(serializer.data)
                     except Country.DoesNotExist:
+                        pass
+                elif layer == 'district':
+                    try:
+                        district = District.objects.get(polygon_geometry__contains=point)
+                        serializer = DistrictSerializer(district)
+                        return Response(serializer.data)
+                    except District.DoesNotExist:
                         pass
             else:
                 boundary = get_boundary(request.GET.get('administrative'))
