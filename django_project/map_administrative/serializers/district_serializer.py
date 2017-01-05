@@ -12,7 +12,7 @@ class DistrictSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = District
-        fields = '__all__'
+        exclude = ('province',)
 
     def to_representation(self, instance):
         res = super(DistrictSerializer, self).to_representation(instance)
