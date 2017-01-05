@@ -22,9 +22,6 @@ class Province(Boundary):
         verbose_name_plural = 'Provinces'
         ordering = ['name']
 
-    def parent(self):
-        return self.country.name
-
 
 Province._meta.get_field('name').verbose_name = 'Province or State name'
 Province._meta.get_field('name').help_text = (

@@ -6,10 +6,9 @@ print(os.environ)
 ALLOWED_HOSTS = ['*']
 
 ADMINS = (
-    ('Tim Sutton', 'tim@kartoza.com'),
-    ('Ismail Sunni', 'ismail@kartoza.com'),
     ('Christian Christelis', 'christian@kartoza.com'),
-    ('Rizky Maulana Nugraha', 'lana.pcfre@gmail.com'))
+    ('Dimas Tri Ciputra', 'dimas@kartoza.com'),
+    ('Irwan Fathurrahman', 'irwan@kartoza.com'))
 
 DATABASES = {
     'default': {

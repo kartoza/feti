@@ -13,6 +13,7 @@ class Command(BaseCommand):
     }
 
     def handle(self, *args, **options):
+        District.objects.all().delete()
         data_source = DataSource('map_administrative/data/district.shp')
         layer = data_source[0]
         for feature in layer:

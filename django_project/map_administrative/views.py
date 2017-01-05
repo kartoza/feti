@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 ALLOWED_COUNTRIES = ["South Africa"]
 
 
+# disabled country administrative
 def get_boundary(administrative):
     boundary = None
     if (administrative):
@@ -18,10 +19,11 @@ def get_boundary(administrative):
         try:
             for administrative in administratives:
                 if index == 0:
-                    if administrative in ALLOWED_COUNTRIES:
-                        boundary = Country.objects.get(name=administrative)
+                    boundary = Province.objects.get(name=administrative)
                 elif index == 1:
-                    boundary = Province.objects.get(name=administrative, country=boundary)
+                    boundary = District.objects.get(name=administrative, province=boundary)
+                elif index == 2:
+                    boundary = Municipality.objects.get(name=administrative, district=boundary)
                 index += 1
         except Country.DoesNotExist:
             pass

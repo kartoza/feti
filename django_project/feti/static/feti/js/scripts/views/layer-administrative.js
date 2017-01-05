@@ -3,7 +3,7 @@ define([
 ], function (Common) {
     var LayerAdministrative = Backbone.View.extend({
         MAX_SIZE: 100,
-        layer: ['country', 'province'],
+        layer: ['province', 'district', 'municiple'],
         polygons: {},
         cache: {},
         initialize: function (options) {
@@ -42,9 +42,7 @@ define([
         },
         getAdministrativeByLatlng: function (latlng, layer) {
             var that = this;
-            if(this.active) {
-                console.log('clicked');
-
+            if (this.active) {
                 if (layer == null) {
                     layer = this.layer[0];
                 }

@@ -371,6 +371,15 @@ updateindex-devweb:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run devweb python manage.py update_index
 
+import-map-administrative:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Import map administrative"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py import_countries
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py import_district
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py import_municipalities
+
 # --------------- help --------------------------------
 
 help:

@@ -9,6 +9,7 @@ class Command(BaseCommand):
     help = 'Import municipalities'
 
     def handle(self, *args, **options):
+        Municipality.objects.all().delete()
         data_source = DataSource('map_administrative/data/municipalities.shp')
         layer = data_source[0]
         for feature in layer:

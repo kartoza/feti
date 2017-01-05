@@ -18,7 +18,7 @@ class Municipality(Boundary):
         ordering = ['name']
 
     def parent(self):
-        return self.district.name
+        return '%s,%s' % (self.district.parent(), self.district.name)
 
 
 Municipality._meta.get_field('name').verbose_name = 'Municipality'

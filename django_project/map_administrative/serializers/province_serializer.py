@@ -14,6 +14,6 @@ class ProvinceSerializer(serializers.ModelSerializer):
         res = super(ProvinceSerializer, self).to_representation(instance)
         res['id'] = instance.id
         res['layer'] = 'province'
-        res['title'] = instance.parent() + "," + instance.name
+        res['title'] = instance.name
         res['color'] = '#f44a52'
         return res
