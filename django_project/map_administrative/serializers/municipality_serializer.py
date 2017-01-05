@@ -11,7 +11,7 @@ class MunicipalitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Municipality
-        fields = '__all__'
+        exclude = ('district',)
 
     def to_representation(self, instance):
         res = super(MunicipalitySerializer, self).to_representation(instance)

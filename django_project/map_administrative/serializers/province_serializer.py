@@ -8,7 +8,7 @@ __author__ = 'irwan'
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
-        fields = '__all__'
+        exclude = ('country',)
 
     def to_representation(self, instance):
         res = super(ProvinceSerializer, self).to_representation(instance)
