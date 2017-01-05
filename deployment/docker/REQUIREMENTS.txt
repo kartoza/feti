@@ -4,7 +4,7 @@ pytz
 django-braces
 django-extra-views
 django-model-utils
-django-pipeline==1.4.5
+django-pipeline==1.6.10
 nodeenv
 raven
 django-user-map
