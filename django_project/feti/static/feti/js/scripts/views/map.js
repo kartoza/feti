@@ -121,8 +121,8 @@ define([
             this.map.addControl(drawControl);
 
             // Draw events
-            this.map.on('draw:drawstop', this.drawStop, this);
-            this.map.on('draw:created', this.drawCreated, this);
+            this.map.on(L.Draw.Event.CREATED, this.drawCreated, this);
+            this.map.on(L.Draw.Event.DRAWSTOP, this.drawStop, this);
 
             // Add marker for userlocation
             if (Common.UserLocation != 'None') {
@@ -410,7 +410,7 @@ define([
             this.layerAdministrativeView.activate();
 
             // Add tooltip
-            this._tooltip = new L.Tooltip(this.map);
+            this._tooltip = new L.Draw.Tooltip(this.map);
             this._tooltip.updateContent({
 				text: 'Click the map to show boundary'
 			});
