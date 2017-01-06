@@ -72,7 +72,7 @@ define([
                 'favorites': L.featureGroup()
             }
         },
-        updateMapSize: function() {
+        updateMapSize: function () {
             this.map._onResize();
         },
         backHome: function () {
@@ -149,8 +149,7 @@ define([
                     onClick: function (btn, map) {
                         btn.state(previousState);
                         _this._enableOtherControlButtons();
-                        switch (previousState)
-                        {
+                        switch (previousState) {
                             case 'locationButton':
                                 _this.disableLocationFilter();
                                 break;
@@ -246,11 +245,11 @@ define([
             this.clearButton.disable();
 
             this.locationFilterBar = L.easyBar([
-                    this.locationButton,
-                    this.polygonButton,
-                    this.circleButton,
-                    this.clearButton
-                ]);
+                this.locationButton,
+                this.polygonButton,
+                this.circleButton,
+                this.clearButton
+            ]);
 
             this.locationFilterBar.options.position = 'topleft';
             this.locationFilterBar.options.id = 'filter-bar-container';
@@ -344,14 +343,14 @@ define([
             $('#share-url-button').show();
         },
         _disableOtherControlButtons: function (currentControl) {
-            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
-                if(this.locationFilterBar._buttons[i] != currentControl) {
+            for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
+                if (this.locationFilterBar._buttons[i] != currentControl) {
                     this.locationFilterBar._buttons[i].disable();
                 }
             }
         },
         _enableOtherControlButtons: function () {
-            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
+            for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
                 this.locationFilterBar._buttons[i].enable();
             }
         },
@@ -359,7 +358,7 @@ define([
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
         },
-        _onSearchBarCategoryClicked: function(newMode, oldMode) {
+        _onSearchBarCategoryClicked: function (newMode, oldMode) {
             this.fullScreenMap();
             this._changeSearchLayer(oldMode, newMode);
         },
@@ -373,10 +372,10 @@ define([
 
             if (type === 'polygon') {
                 this.polygonLayer = layer;
-                this.map.fire('finishedDrawing', { 'layerType' : 'polygon'});
+                this.map.fire('finishedDrawing', {'layerType': 'polygon'});
             } else if (type === 'circle') {
                 this.circleLayer = layer;
-                this.map.fire('finishedDrawing', { 'layerType' : 'circle'});
+                this.map.fire('finishedDrawing', {'layerType': 'circle'});
             }
             this._enableOtherControlButtons();
         },
@@ -406,23 +405,23 @@ define([
             this.circleDrawer.disable();
         },
         enableLocationFilter: function () {
-            $('.leaflet-container').css('cursor','pointer');
+            $('.leaflet-container').css('cursor', 'pointer');
             this.layerAdministrativeView.activate();
 
             // Add tooltip
             this._tooltip = new L.Draw.Tooltip(this.map);
             this._tooltip.updateContent({
-				text: 'Click the map to show boundary'
-			});
+                text: 'Click the map to show boundary'
+            });
             this.map.on('mousemove', this.onMouseMove, this);
         },
         disableLocationFilter: function () {
-            $('.leaflet-container').css('cursor','');
+            $('.leaflet-container').css('cursor', '');
             this.layerAdministrativeView.deactivate();
 
             // Remove tooltip
             $('.leaflet-draw-tooltip').hide();
-			this._tooltip = null;
+            this._tooltip = null;
             this.map.off('mousemove', this.onMouseMove, this)
         },
         clearAllDrawnLayer: function () {
@@ -454,9 +453,9 @@ define([
             }
         },
         clearLayerMode: function (mode) {
-            if(this.map.hasLayer(this.modesLayer[mode])) {
+            if (this.map.hasLayer(this.modesLayer[mode])) {
                 var layers = this.modesLayer[mode].getLayers();
-                for(var i = 0; i < layers.length; i++){
+                for (var i = 0; i < layers.length; i++) {
                     this.modesLayer[mode].removeLayer(layers[i]);
                 }
                 this.map.removeLayer(this.modesLayer[mode]);
@@ -469,10 +468,10 @@ define([
             this.modesLayer[mode].addLayer(layer);
             this.repositionMap(mode);
 
-            if(this.map.hasLayer(this.modesLayer[opposite])) {
+            if (this.map.hasLayer(this.modesLayer[opposite])) {
                 this.map.removeLayer(this.modesLayer[opposite]);
             }
-            if(!this.map.hasLayer(this.modesLayer[mode])) {
+            if (!this.map.hasLayer(this.modesLayer[mode])) {
                 this.map.addLayer(this.modesLayer[mode]);
             }
         },
@@ -483,15 +482,13 @@ define([
             this.map.addLayer(layer);
         },
         _changeSearchLayer: function (fromMode, toMode) {
-            if(this.map.hasLayer(this.modesLayer[fromMode])) {
+            if (this.map.hasLayer(this.modesLayer[fromMode])) {
                 this.map.removeLayer(this.modesLayer[fromMode]);
             }
-            if(toMode=='occupation') {
-                this.showMapCover();
+            if (toMode == 'occupation') {
                 return;
             }
-            this.hideMapCover();
-            if(!this.map.hasLayer(this.modesLayer[toMode])) {
+            if (!this.map.hasLayer(this.modesLayer[toMode])) {
                 this.map.addLayer(this.modesLayer[toMode]);
             }
         },
@@ -502,8 +499,13 @@ define([
             alert('maximising');
         },
         clickMap: function (e) {
+            var last_route = Common.Router.get_latest_route();
             if (!this.isFullScreen) {
-                Common.Router.navigate('map/' + Common.CurrentSearchMode, true);
+                if (last_route) {
+                    Common.Router.navigate(Common.Router.get_latest_route(), true);
+                } else {
+                    Common.Router.navigate('map/' + Common.CurrentSearchMode, true);
+                }
             }
         },
         pan: function (latLng) {
@@ -627,7 +629,7 @@ define([
         },
         openResultContainer: function (div) {
             var that = this;
-            if(!this.sideBarView.is_open()) {
+            if (!this.sideBarView.is_open()) {
                 div.removeClass('fa-caret-left');
                 div.addClass('fa-caret-right');
                 this.sideBarView.open();
@@ -641,11 +643,13 @@ define([
                     that.updateMapSize();
                 });
             }
+            this.sideBarView.showMapCover();
+            this.sideBarView.updateOccupationDetail();
         },
         closeResultContainer: function (div) {
             var $mapContainer = $('#feti-map');
 
-            if(this.sideBarView.is_open()) {
+            if (this.sideBarView.is_open()) {
                 div.removeClass('fa-caret-right');
                 div.addClass('fa-caret-left');
                 this.sideBarView.close();
@@ -679,19 +683,10 @@ define([
             var draggable = new L.Draggable(this.circleLayer);
             draggable.enable();
         },
-        showMapCover: function () {
-            if (!this.$cover.is(":visible")) {
-                this.$cover.fadeIn(200);
-            }
-        },
-        hideMapCover: function () {
-            if (this.$cover.is(":visible")) {
-                this.$cover.fadeOut(200);
-            }
-        },
         showResultContainer: function (mode) {
             $('#result-container-wrapper').find('.result-container').hide();
-            $('#result-container-'+mode).show();
+            $('#result-container-' + mode).show();
+            this.sideBarView.hideMapCover();
         }
     });
 
