@@ -20,17 +20,19 @@ INSTALLED_APPS += (
 )
 
 SITE_ID = 1
-
+PIPELINE = dict()
 # These get enabled in prod.py
-PIPELINE_ENABLED = False
-PIPELINE_CSS_COMPRESSOR = None
-PIPELINE_JS_COMPRESSOR = None
+PIPELINE['PIPELINE_ENABLED'] = False
 
-# enable cached storage - requires uglify.js (node.js)
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
 MIDDLEWARE_CLASSES += (
     'django.middleware.gzip.GZipMiddleware',
-    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',

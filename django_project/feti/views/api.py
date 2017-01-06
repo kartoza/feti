@@ -91,6 +91,9 @@ class SearchCampus(APIView):
         else:
             campuses = self.filter_model(query)
 
+        if not campuses:
+            return Response('')
+
         if self.request.user.is_authenticated():
             campus_courses_favorite = list(CampusCoursesFavorite.objects.filter(
                 user=self.request.user,
@@ -107,10 +110,21 @@ class SearchCampus(APIView):
         :param sqs: Search Query Set
         :return: filtered sqs
         """
-        return sqs.polygon(
-            'campus_location',
-            polygon
-        )
+        # Check if multipolygon
+        if polygon.geom_type == 'MultiPolygon':
+            for p in polygon:
+                sqs = sqs.polygon(
+                            'campus_location',
+                            p
+                        )
+                if len(sqs) > 0:
+                    return sqs
+            return None
+        else:
+            return sqs.polygon(
+                'campus_location',
+                polygon
+            )
 
     def filter_radius(self, sqs, point, radius):
         """

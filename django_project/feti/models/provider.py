@@ -1,4 +1,5 @@
 # coding=utf-8
+from django.conf import settings
 from django.contrib.gis.db import models
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
@@ -17,6 +18,10 @@ class Provider(models.Model):
         "Primary institution",
         max_length=255, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
+    icon = models.ImageField(
+        upload_to='%s/icons/' % settings.MEDIA_ROOT,
+        blank=True,
+        null=True)
     status = models.BooleanField(
         "Public primary institution",
         default=PROVIDER_STATUS_PUBLIC)

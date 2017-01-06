@@ -16,8 +16,11 @@ class CampusSerializer(serializers.ModelSerializer):
         res = super(CampusSerializer, self).to_representation(instance)
         course_context = {}
         title = None
+        icon = None
         if instance.provider:
             title = instance.provider.__unicode__()
+            if instance.provider.icon:
+                icon = instance.provider.icon.path[9:]
 
         res['saved'] = False
         if self.context.get("campus_saved"):
@@ -57,6 +60,7 @@ class CampusSerializer(serializers.ModelSerializer):
 
         res['long_description'] = instance.long_description
         res['title'] = title
+        res['icon'] = icon
         if instance.address:
             res['address'] = instance.address.__unicode__()
         if instance.location:
