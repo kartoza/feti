@@ -10,6 +10,8 @@ class Command(BaseCommand):
     included_country = ["South Africa"]
 
     def handle(self, *args, **options):
+        Country.objects.all().delete()
+        Province.objects.all().delete()
         data_source = DataSource('map_administrative/data/ne_10m_admin_0_countries.shp')
         layer = data_source[0]
         for feature in layer:
@@ -40,6 +42,7 @@ class Command(BaseCommand):
                         geometry = geometry.geojson
                     country.polygon_geometry = geometry
                 country.save()
+                break
 
         print("Processing provinces")
 
