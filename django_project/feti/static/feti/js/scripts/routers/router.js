@@ -4,7 +4,7 @@ define([
     '/static/feti/js/scripts/views/login.js',
     'common'
 ], function (MapView, LoginView, Common) {
-
+    var history = [];
     var AppRouter = Backbone.Router.extend({
         routes: {
             "": "landing_page",
@@ -44,6 +44,11 @@ define([
             }
             this.pageHistory.push(Backbone.history.getFragment());
         },
+        get_latest_route: function () {
+            if (this.pageHistory.length >= 2) {
+                return this.pageHistory[this.pageHistory.length - 2]
+            }
+        },
         is_previous_route_match: function (regex) {
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
         },
@@ -53,15 +58,15 @@ define([
             } else {
                 this.mapView.fullScreenMap();
             }
+            Common.CurrentSearchMode = mode;
             if (mode) {
-                if(mode == 'favorites' && !Common.IsLoggedIn) {
+                if (mode == 'favorites' && !Common.IsLoggedIn) {
                     this.navigate('', true);
                 } else {
                     this.mapView.changeCategory(mode);
                 }
             } else {
                 this.mapView.changeCategory(Common.CurrentSearchMode);
-                mode = Common.CurrentSearchMode;
             }
 
             var selected_occupation = null;
