@@ -367,3 +367,16 @@ footer {
 #feti-map {
     z-index: 5;
 }
+
+.ui-tooltip {
+	padding: 5px;
+	position: absolute;
+	z-index: 9999;
+	max-width: 300px;
+	-webkit-box-shadow: none !important;
+	box-shadow: none !important;
+    font-size: 9pt !important;
+    background-color: #2572b9;
+    color: white;
+    border: none !important;
+}

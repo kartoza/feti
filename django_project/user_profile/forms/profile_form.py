@@ -10,6 +10,7 @@ from crispy_forms.layout import (
 from user_profile.models.profile import Profile
 from core.widgets.custom_osm_widget import CustomOSMWidget
 
+
 class UserForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -38,7 +39,8 @@ class ProfileForm(forms.ModelForm):
     birth_date = forms.DateField(
         widget=forms.TextInput(
             attrs={'type': 'date'}
-        )
+        ),
+        required=False
     )
 
     location = forms.PointField(
