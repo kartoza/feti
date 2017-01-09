@@ -20,9 +20,9 @@ DATABASES = {
 # define template function (example for underscore)
 # PIPELINE_TEMPLATE_FUNC = '_.template'
 
-PIPELINE_YUI_BINARY = '/usr/bin/yui-compressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+PIPELINE['YUI_BINARY'] = '/usr/bin/yui-compressor'
+PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.yui.YUICompressor'
+PIPELINE['CSS_COMPRESSOR'] = 'pipeline.compressors.yui.YUICompressor'
 PIPELINE_YUI_JS_ARGUMENTS = '--nomunge'
 PIPELINE_DISABLE_WRAPPER = True
 

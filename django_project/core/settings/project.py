@@ -75,7 +75,6 @@ PIPELINE = {
     'JAVASCRIPT': {
         'contrib': {
             'source_filenames': (
-                'js/jquery-1.11.3.min.js',
                 'js/bootstrap.js',
                 'js/moment.min.js',
                 'feti/js/libs/Leaflet/0.7.7/leaflet.js',
@@ -84,7 +83,6 @@ PIPELINE = {
                 'feti/leaflet-extra-markers/leaflet.extra-markers.js',
                 'feti/js/libs/underscore-1.8.3.min.js',
                 'feti/js/libs/backbone-1.3.3.min.js',
-                'feti/js/libs/jquery-ui-1.12.0.min.js',
                 'feti/js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
                 'feti/js/libs/easy-button/easy-button.js',
             ),
