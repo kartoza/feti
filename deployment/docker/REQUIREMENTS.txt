@@ -13,8 +13,6 @@ django-forms-bootstrap
 djangorestframework==3.5.3
 markdown
 django-filter
-# Django haystack support
-git+https://github.com/dimasciput/django-haystack.git
 elasticsearch==5.0.1
 django-leaflet==0.16.0
 django-geojson==2.8.0
@@ -29,3 +27,5 @@ django-allauth
 django-betterforms
 celery<3.2
 more_itertools
+# Django haystack support
+git+https://github.com/dimasciput/django-haystack.git
