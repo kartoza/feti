@@ -27,7 +27,9 @@ class CampusSerializer(serializers.ModelSerializer):
             for item in self.context.get("campus_saved"):
                 if item.campus.id == res['id']:
                     res['saved'] = True
-                    course_context['course_saved'] = list(item.courses.all().values_list('id', flat=True))
+                    course_context['course_saved'] = list(
+                            item.courses.all().values_list('id', flat=True)
+                    )
 
         if self.context.get("courses"):
             course_context['query'] = self.context.get("query")
@@ -54,9 +56,10 @@ class CampusSerializer(serializers.ModelSerializer):
                 many=True,
                 context=course_context).data
             # Highlight campus
-            highlight = QueryHighlighter(self.context.get("query"))
-            if title:
-                title = highlight.highlight(title)
+            if 'query' in self.context:
+                highlight = QueryHighlighter(self.context.get("query"))
+                if title:
+                    title = highlight.highlight(title)
 
         res['long_description'] = instance.long_description
         res['title'] = title
