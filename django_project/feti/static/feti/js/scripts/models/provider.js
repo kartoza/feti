@@ -35,13 +35,13 @@ define([
 
                     popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
                         ' <a href="https://www.google.com/maps/dir/' + origin + '/' + location.lat + ',' + location.lng + '" target="_blank">' +
-                        'Get direction</a>';
+                        'Get directions</a>';
                     this.getUserLocation(popup, marker, origin);
                     popup += '<div class="user-location">Calculating travel time... </div>';
                 } else {
                     popup += '<i class="fa fa-map-o" aria-hidden="true"></i>' +
                         ' <a href="https://maps.google.com?saddr=My+Location&daddr=' + location.lat + ',' + location.lng + '" target="_blank">' +
-                        'Get direction</a>';
+                        'Get directions</a>';
                 }
 
                 marker.bindPopup(popup);
