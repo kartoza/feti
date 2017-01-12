@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from .project import *  # noqa
 
+PIPELINE['PIPELINE_ENABLED'] = False
+
 # Use default Django test runner
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
