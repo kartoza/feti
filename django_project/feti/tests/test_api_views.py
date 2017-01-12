@@ -35,13 +35,13 @@ class TestApiView(TestCase):
 
     def test_get_campus_by_query(self):
         view = ApiCampus.as_view()
-        request = self.factory.get('/api/campus?q=campus')
+        request = self.factory.get('/api/campus?q=campus_test')
         response = view(request)
         self.assertEqual(self.campus.campus, response.data[0]['campus'])
 
     def test_get_course_by_query(self):
         view = ApiCourse.as_view()
-        request = self.factory.get('/api/course?q=scien')
+        request = self.factory.get('/api/course?q=science')
         response = view(request)
 
         self.assertTrue(len(response.data) > 0)
@@ -64,10 +64,10 @@ class TestApiAutocomplete(TestCase):
             self.mock = mock
         call_command('rebuild_index', '--noinput')
 
-    def test_get_autcomplete_campus(self):
+    def test_get_autocomplete_campus(self):
         view = ApiAutocomplete.as_view()
         model = 'provider'
-        request = self.factory.get('/api/autocomplete/%s?q=cam' % model)
+        request = self.factory.get('/api/autocomplete/%s?q=campus' % model)
         response = view(request, model)
 
         response_data = json.loads(response.content.decode('utf-8'))
