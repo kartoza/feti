@@ -68,3 +68,5 @@ except KeyError:
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+ACCOUNT_USERNAME_VALIDATORS = 'feti.validators.username_validator.UsernameValidator'
