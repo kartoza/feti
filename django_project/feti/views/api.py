@@ -72,7 +72,7 @@ class SearchCampus(APIView):
             query = ""
 
         if drawn_polygon:
-            campuses = self.filter_model(
+            return self.filter_model(
                 query=query,
                 options={
                     'type': 'polygon',
@@ -80,7 +80,7 @@ class SearchCampus(APIView):
                 }
             )
         elif drawn_circle:
-            campuses = self.filter_model(
+            return self.filter_model(
                 query=query,
                 options={
                     'type': 'circle',
@@ -90,19 +90,6 @@ class SearchCampus(APIView):
             )
         else:
             return self.filter_model(query)
-
-        if not campuses:
-            return Response('')
-
-        if self.request.user.is_authenticated():
-            campus_courses_favorite = list(CampusCoursesFavorite.objects.filter(
-                user=self.request.user,
-                campus__in=campuses))
-            if campus_courses_favorite:
-                self.additional_context['campus_saved'] = campus_courses_favorite
-
-        serializer = CampusSerializer(campuses, many=True, context=self.additional_context)
-        return Response(serializer.data)
 
     def filter_polygon(self, sqs, polygon):
         """
@@ -266,6 +253,10 @@ class ApiOccupation(APIView):
 class ApiSavedCampus(APIView):
 
     def get(self, request, format=None):
+
+        if not self.request.user.is_authenticated():
+            return HttpResponse('Unauthorized', status=401)
+
         # Get coordinates from request and create a polygon
         shape = request.GET.get('shape')
         drawn_polygon = None
