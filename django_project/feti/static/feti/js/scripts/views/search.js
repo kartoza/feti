@@ -202,6 +202,7 @@ define([
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';
+            Common.CurrentSearchMode = mode;
             if (!(mode in this._search_query) ||
                 this._search_need_update[mode] ||
                 this._search_filter[mode] != filter
@@ -210,12 +211,12 @@ define([
             }
         },
         _getFavorites: function (filter) {
-            var mode = 'favorites';
+            var mode = Common.CurrentSearchMode;
             favoritesCollection.search(filter);
             this._search_query[mode] = '';
             this._search_filter[mode] = filter ? filter : '';
             Common.Dispatcher.trigger('sidebar:show_loading', mode);
-            this._search_need_update['favorites'] = false;
+            this._search_need_update[mode] = false;
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
