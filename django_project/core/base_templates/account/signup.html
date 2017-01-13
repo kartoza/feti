@@ -23,4 +23,20 @@
     </div>
 
 
+
+    <script type="application/javascript">
+
+        $(document).ready(function () {
+
+            var $usernameDiv = $('#id_username').parent()
+            if($usernameDiv.prev().hasClass('errorlist')) {
+                var errorMessage = $usernameDiv.prev().children().html();
+
+                if(errorMessage == 'Enter a valid value.') {
+                    $usernameDiv.prev().children().html('Alphanumeric characters only (letters, digits and underscores)');
+                }
+            }
+        });
+
+    </script>
 {% endblock %}
