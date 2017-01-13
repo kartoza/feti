@@ -8,10 +8,13 @@ define([
     var CourseCollection = Category.extend({
         model: Provider,
         provider_url_template: _.template("/api/course?q=<%- q %>&<%- coord %>"),
-        initialize: function() {
+        initialize: function () {
             this.url_template = this.provider_url_template;
             this.view = CourseView;
             this.mode = 'course';
+        },
+        parse: function (response) {
+            return this.campusCourseParser(response, "course");
         }
     });
     return new CourseCollection();
