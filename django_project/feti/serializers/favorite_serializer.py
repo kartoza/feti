@@ -7,11 +7,13 @@ __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '02/11/16'
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
+class BaseFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampusCoursesFavorite
         fields = '__all__'
 
+
+class FavoriteSerializer(BaseFavoriteSerializer):
     def to_representation(self, instance):
         res = super(FavoriteSerializer, self).to_representation(instance)
         course_context = {}

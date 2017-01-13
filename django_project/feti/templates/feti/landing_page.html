@@ -7,6 +7,22 @@
 {% endblock title %}
 
 {% block js_head %}
+    <script>
+        String.prototype.replaceAll = function (search, replacement) {
+            var target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+    </script>
+    <script>
+        var favorite = "{{ favorite }}";
+        favorite = favorite.replaceAll("&quot;", "\"");
+        favorite = JSON.parse(favorite);
+        var new_favorite = {};
+        _.each(favorite, function (row) {
+            new_favorite[row["campus"]] = row["courses"];
+        });
+        console.log(new_favorite);
+    </script>
 {% endblock %}
 
 {% block css_head %}
@@ -108,22 +124,22 @@
     <div class="content-section-a partner-section">
         <div class="container">
             <div class="row intro-section">
-                    <div class="clearfix"></div>
-                    <h2 class="section-heading">OUR PARTNERS</h2>
+                <div class="clearfix"></div>
+                <h2 class="section-heading">OUR PARTNERS</h2>
                 <div class="col-sm-12">
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-3 partner">
                             <span class="helper"></span>
-                            <img src="{% static 'feti/images/partner1.jpg' %}" />
+                            <img src="{% static 'feti/images/partner1.jpg' %}"/>
                         </div>
                         <div class="col-sm-3 partner">
                             <span class="helper"></span>
-                            <img src="{% static 'feti/images/partner2.png' %}" />
+                            <img src="{% static 'feti/images/partner2.png' %}"/>
                         </div>
                         <div class="col-sm-3 partner">
                             <span class="helper"></span>
-                            <img src="{% static 'feti/images/partner3.png' %}" />
+                            <img src="{% static 'feti/images/partner3.png' %}"/>
                         </div>
                         <div class="col-sm-1"></div>
                     </div>
@@ -133,11 +149,11 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4 partner">
                             <span class="helper"></span>
-                            <img src="{% static 'feti/images/kartoza-logo.png' %}" />
+                            <img src="{% static 'feti/images/kartoza-logo.png' %}"/>
                         </div>
                         <div class="col-sm-4 partner">
                             <span class="helper"></span>
-                            <img src="{% static 'feti/images/ford_foundation.png' %}" />
+                            <img src="{% static 'feti/images/ford_foundation.png' %}"/>
                         </div>
                         <div class="col-sm-2"></div>
                     </div>
@@ -187,8 +203,7 @@
 
     <!-- Django context variables -->
     <script>
-
-        Array.prototype.clean = function(deleteValue) {
+        Array.prototype.clean = function (deleteValue) {
             for (var i = 0; i < this.length; i++) {
                 if (this[i] == deleteValue) {
                     this.splice(i, 1);
@@ -198,14 +213,14 @@
             return this;
         };
 
-        $.fn.responsiveTabs = function() {
+        $.fn.responsiveTabs = function () {
             this.addClass('responsive-tabs');
 
-            this.on('click', 'li.active > a, span.fa', function() {
+            this.on('click', 'li.active > a, span.fa', function () {
                 this.toggleClass('open');
             }.bind(this));
 
-            this.on('click', 'li:not(.active) > a', function() {
+            this.on('click', 'li:not(.active) > a', function () {
                 this.removeClass('open');
             }.bind(this));
         };
@@ -227,7 +242,7 @@
             // Set interval time for carousel
             // interval is in milliseconds. 1000 = 1 second - so 1000 * 5 = 5 seconds
             $('.carousel').carousel({
-              interval: 1000 * 5
+                interval: 1000 * 5
             });
         });
     </script>
