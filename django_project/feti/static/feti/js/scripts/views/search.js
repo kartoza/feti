@@ -202,11 +202,11 @@ define([
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';
-            Common.CurrentSearchMode = mode;
             if (!(mode in this._search_query) ||
                 this._search_need_update[mode] ||
                 this._search_filter[mode] != filter
             ) {
+                Common.CurrentSearchMode = mode;
                 this._getFavorites(filter);
             }
         },

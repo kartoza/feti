@@ -13,7 +13,6 @@ define([
             this.url_template = this.provider_url_template;
             this.view = FavoritesView;
             this.mode = 'favorites';
-            Common.CurrentSearchMode = this.mode;
         }
     });
 
