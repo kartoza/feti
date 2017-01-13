@@ -224,12 +224,18 @@ class ApiCourse(SearchCampus):
                         options['radius']
                 )
 
-        if sqs:
-            campuses = list(unique_everseen([x.object.campus for x in sqs]))
-            # Only shows this courses
-            self.additional_context['courses'] = list(unique_everseen([x.object.course_id for x in sqs]))
+        campus_data = []
 
-        return campuses
+        for result in sqs:
+            stored_fields = result.get_stored_fields()
+            if stored_fields['campus_location']:
+                campus_location = stored_fields['campus_location']
+                stored_fields['campus_location'] = "{0},{1}".format(
+                    campus_location.y, campus_location.x
+                )
+            campus_data.append(stored_fields)
+
+        return Response(campus_data)
 
 
 class ApiOccupation(APIView):
