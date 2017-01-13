@@ -146,7 +146,7 @@ define([
                 var checkedIndex = indexes[id];
                 var saved = false;
                 if (campus_is_favorite) {
-                    saved = row["course_id"] in Common.Favorites[id];
+                    saved = Common.Favorites[id].indexOf(row["course_id"]) >= 0;
                 }
                 var course = {
                     "id": row["course_id"],
