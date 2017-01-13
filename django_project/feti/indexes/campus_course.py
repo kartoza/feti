@@ -31,18 +31,12 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     campus_icon = indexes.CharField(
         model_attr='campus__provider__icon'
     )
-    course_long_description_auto = indexes.EdgeNgramField(
-        model_attr='course__long_description'
-    )
-
     course_course_description = indexes.EdgeNgramField(
         model_attr='course__course_description'
     )
-
     campus_popup = indexes.CharField(
         model_attr='campus___campus_popup'
     )
-
     course_nlrd = indexes.CharField(
         model_attr='course__national_learners_records_database',
         null=True
