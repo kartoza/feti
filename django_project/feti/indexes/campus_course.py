@@ -39,6 +39,10 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='course__course_description'
     )
 
+    campus_popup = indexes.CharField(
+        model_attr='campus___campus_popup'
+    )
+
     course_nlrd = indexes.CharField(
         model_attr='course__national_learners_records_database',
         null=True
