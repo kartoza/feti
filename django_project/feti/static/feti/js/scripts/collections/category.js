@@ -135,7 +135,11 @@ define([
                 /**
                  * Push course to campus course list
                  */
-                var courseTitle = "[" + row["course_nlrd"] + "]" + row["course_course_description"];
+                var courseNldr = "";
+                if (row["course_nlrd"]) {
+                    courseNldr = "[" + row["course_nlrd"] + "] ";
+                }
+                var courseTitle = courseNldr + row["course_course_description"];
                 if (model == "course") {
                     courseTitle = courseTitle.replace(
                         regex, function (str) {
