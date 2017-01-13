@@ -89,7 +89,7 @@ class SearchCampus(APIView):
                 }
             )
         else:
-            campuses = self.filter_model(query)
+            return self.filter_model(query)
 
         if not campuses:
             return Response('')
@@ -167,17 +167,29 @@ class ApiCampus(SearchCampus):
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
-                sqs = self.filter_polygon(sqs, options['shape'])
+                sqs = self.filter_polygon(
+                    sqs,
+                    options['shape']
+                )
             elif options['type'] == 'circle':
                 sqs = self.filter_radius(
-                        sqs,
-                        options['shape'],
-                        options['radius']
+                    sqs,
+                    options['shape'],
+                    options['radius']
                 )
 
-        if sqs:
-            campuses = list(unique_everseen([x.object.campus for x in sqs]))
-        return campuses
+        campus_data = []
+
+        for result in sqs:
+            stored_fields = result.get_stored_fields()
+            if stored_fields['campus_location']:
+                campus_location = stored_fields['campus_location']
+                stored_fields['campus_location'] = "{0},{1}".format(
+                    campus_location.y, campus_location.x
+                )
+            campus_data.append(stored_fields)
+
+        return Response(campus_data)
 
     def additional_filter(self, model, query):
         return model.filter(
