@@ -471,6 +471,11 @@ define([
         },
         addLayerToModeLayer: function (layer) {
             var mode = Common.CurrentSearchMode;
+
+            if (typeof mode == 'undefined') {
+                return
+            }
+
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
 
             this.modesLayer[mode].addLayer(layer);
