@@ -37,7 +37,7 @@ class TestApiView(TestCase):
         view = ApiCampus.as_view()
         request = self.factory.get('/api/campus?q=campus_test')
         response = view(request)
-        self.assertEqual(self.campus.campus, response.data[0]['campus'])
+        self.assertEqual(self.campus.campus, response.data[0]['campus_campus'])
 
     def test_get_course_by_query(self):
         view = ApiCourse.as_view()
@@ -45,7 +45,7 @@ class TestApiView(TestCase):
         response = view(request)
 
         self.assertTrue(len(response.data) > 0)
-        self.assertEqual(self.campus.campus, response.data[0]['campus'])
+        self.assertEqual(self.campus.campus, response.data[0]['campus_campus'])
 
 
 class TestApiAutocomplete(TestCase):
