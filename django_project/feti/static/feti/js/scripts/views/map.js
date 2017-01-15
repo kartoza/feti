@@ -354,7 +354,7 @@ define([
         _enableOtherControlButtons: function (excluded) {
             for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
                 var button_title = this.locationFilterBar._buttons[i]._states[0].title;
-                
+
                 if(this.locationFilterBar._buttons[i] != this.clearButton) {
                     this.locationFilterBar._buttons[i].enable();
                 }
