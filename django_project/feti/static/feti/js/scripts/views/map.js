@@ -81,7 +81,7 @@ define([
         render: function () {
             this.$el.html(this.template());
             $('#map-section').append(this.$el);
-            this.map = L.map(this.$('#feti-map')[0]).setView([-29, 20], 6);
+            this.map = L.map(this.$('#feti-map')[0]).setView([-32.35, 20], 7);
 
             var that = this;
             // init click
