@@ -11,7 +11,19 @@ from map_administrative.utilities.utilities import simplify_polygon_geometry_of_
 
 
 class Command(BaseCommand):
-    help = 'Simplify polygon'
+    help = '''Simplify administrative polygon.
+    This command will simplify polygon for administrative
+    with tolerance for the Douglas-Peucker algorithm is 0.001.
+
+    There is --administratives options, to filter which administrative
+    will be simplify.
+
+    Example : python manage.py simplify_polygon "Country,District"
+
+    WARNING:
+    THIS WILL SIMPLIFY POLYGON. IF YOU RUN THIS AGAIN, IT WILL SIMPLIFY AGAIN AND
+    COULD BE RESULT IN BAD POLYGON
+    '''
 
     def add_arguments(self, parser):
         # Named (optional) arguments
