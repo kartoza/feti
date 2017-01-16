@@ -16,11 +16,19 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
     campus_provider = indexes.NgramField(
         model_attr='provider'
     )
-    campus_location_isnull = indexes.BooleanField()
-    courses_isnull = indexes.BooleanField()
+    campus_location_is_null = indexes.BooleanField(
+        indexed=True
+    )
+    courses_is_null = indexes.BooleanField(
+        indexed=True
+    )
+    campus_is_null = indexes.BooleanField(
+        indexed=True
+    )
     campus_location = indexes.LocationField(
         model_attr='location',
-        null=True
+        null=True,
+        indexed=True
     )
     campus_address = indexes.CharField(
         model_attr='address__address_line',
@@ -36,11 +44,14 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
     courses = indexes.CharField()
     courses_id = indexes.CharField()
 
-    def prepare_campus_location_isnull(self, obj):
+    def prepare_campus_location_is_null(self, obj):
         return obj.location is None
 
-    def prepare_courses_isnull(self, obj):
-        return obj.courses is None
+    def prepare_courses_is_null(self, obj):
+        return obj.courses is None or not obj.courses
+
+    def prepare_campus_is_null(self, obj):
+        return not obj.campus
 
     def prepare_provider_primary_institution(self, obj):
         return obj.provider.primary_institution
