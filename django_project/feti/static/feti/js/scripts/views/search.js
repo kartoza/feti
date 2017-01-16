@@ -281,7 +281,6 @@ define([
                     filter = query;
 
                     filters = filter.split('&');
-
                     if (filters[0].split('=').pop() == 'polygon') { // if polygon
                         coordinates_json = JSON.parse(filters[1].split('=').pop());
                         coordinates = [];
@@ -293,6 +292,9 @@ define([
                         coords = JSON.parse(filters[1].split('=').pop());
                         radius = filters[2].split('=').pop();
                         this.parent.createCircle(coords, radius);
+                    } else if (filters[0].split('=')[0] == 'administrative') { // if administrative
+                        var administrative = filters[0].split('=')[1];
+                        this.parent.layerAdministrativeView.showPolygon(administrative);
                     }
                 }
                 this._openFavorites(query);
