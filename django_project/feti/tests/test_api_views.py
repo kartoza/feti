@@ -35,7 +35,7 @@ class TestApiView(TestCase):
 
     def test_get_campus_by_query(self):
         view = ApiCampus.as_view()
-        request = self.factory.get('/api/campus?q=campus_test')
+        request = self.factory.get('/api/campus?q=campus_tests')
         response = view(request)
         self.assertEqual(self.campus.campus, response.data[0]['campus_campus'])
 

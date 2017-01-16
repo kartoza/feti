@@ -149,7 +149,7 @@ class ApiCampus(SearchCampus):
         q = Clean(query)
         sqs = SearchQuerySet()
         sqs = sqs.filter(
-            SQ(campus=q) | SQ(campus_provider=q),
+            SQ(campus_campus=q) | SQ(campus_provider=q),
             campus_location_isnull='false',
             courses_isnull='false'
         )
