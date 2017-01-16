@@ -169,14 +169,15 @@ class ApiCampus(SearchCampus):
 
         campus_data = []
 
-        for result in sqs:
-            stored_fields = result.get_stored_fields()
-            if stored_fields['campus_location']:
-                campus_location = stored_fields['campus_location']
-                stored_fields['campus_location'] = "{0},{1}".format(
-                    campus_location.y, campus_location.x
-                )
-            campus_data.append(stored_fields)
+        if sqs:
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                campus_data.append(stored_fields)
 
         return campus_data
 
@@ -228,14 +229,15 @@ class ApiCourse(SearchCampus):
 
         campus_data = []
 
-        for result in sqs:
-            stored_fields = result.get_stored_fields()
-            if stored_fields['campus_location']:
-                campus_location = stored_fields['campus_location']
-                stored_fields['campus_location'] = "{0},{1}".format(
-                    campus_location.y, campus_location.x
-                )
-            campus_data.append(stored_fields)
+        if sqs:
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                campus_data.append(stored_fields)
 
         return campus_data
 
