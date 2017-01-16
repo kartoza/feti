@@ -4,7 +4,9 @@ import weasyprint
 import os
 import json
 import smtplib
+from more_itertools import unique_everseen
 from rest_framework.views import APIView
+from haystack.query import SQ, SearchQuerySet
 from django.views.generic import TemplateView, UpdateView
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
@@ -34,7 +36,24 @@ class SharingMixin(object):
         api = None
         # Get data
         if provider == 'provider':
-            api = ApiCampus()
+            sqs = SearchQuerySet()
+            sqs = sqs.filter(
+                SQ(campus=query) | SQ(campus_provider=query),
+                campus_location_isnull='false',
+                courses_isnull='false'
+            ).models(Campus)
+            campus_data = []
+
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                campus_data.append(stored_fields)
+
+            return campus_data
         elif provider == 'course':
             api = ApiCourse()
         if api:
@@ -84,8 +103,28 @@ class PDFDownload(TemplateView, SharingMixin):
         course_names = self.get_course_names()
 
         markers = ''
-        for idx, campus in enumerate(campuses):
-            markers += '%s,%s,bluelight%s|' % (campus.location.y, campus.location.x, str(idx))
+
+        if slug != 'provider':
+            pdf_data = list(
+                unique_everseen(
+                    [{
+                         'campus_provider': x['campus_provider'],
+                         'campus_address': x['campus_address'],
+                         'campus_website': x['campus_website'],
+                         'location': x['campus_location']
+                     }
+                     for x in campuses])
+            )
+
+            for idx, campus in enumerate(pdf_data):
+                location = campus['location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+            campuses = pdf_data
+
+        else:
+            for idx, campus in enumerate(campuses):
+                location = campus['campus_location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
 
         filename = '%s-%s.png' % (query, slug)
 
@@ -133,15 +172,35 @@ class EmailShare(UpdateView, SharingMixin):
         email_host = 'noreply@kartoza.com'
         campuses = self.get_campus(provider=provider, query=query)
 
-        subject, from_email, to = 'Feti Report', \
-                                  email_host, \
-                                  [email_address]
-
         htmly = get_template(self.template_name)
         filename = '%s-%s.png' % (query, provider)
         markers = ''
-        for idx, campus in enumerate(campuses):
-            markers += '%s,%s,bluelight%s|' % (campus.location.y, campus.location.x, str(idx))
+
+        if provider != 'provider':
+            email_data = list(
+                unique_everseen(
+                    [{
+                         'campus_provider': x['campus_provider'],
+                         'campus_address': x['campus_address'],
+                         'campus_website': x['campus_website'],
+                         'location': x['campus_location']
+                     }
+                     for x in campuses])
+            )
+
+            for idx, campus in enumerate(email_data):
+                location = campus['location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+            campuses = email_data
+
+        else:
+            for idx, campus in enumerate(campuses):
+                location = campus['campus_location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+
+        subject, from_email, to = 'Feti Report', \
+                                  email_host, \
+                                  [email_address]
 
         self.download_map(filename=filename, markers=markers)
 

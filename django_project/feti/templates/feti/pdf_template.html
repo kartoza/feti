@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head> <title>{{ title }}</title> </head>
@@ -24,8 +23,8 @@
 {% for campus in campuses %}
     <li>
         <div class="campus-wrapper">
-            <p><a href="{{ campus.provider.website }}">{{ campus.provider }}</a></p>
-            <p>{{ campus.address }}</p>
+            <p><a href="{{ campus.campus_website }}">{{ campus.campus_provider }}</a></p>
+            <p>{{ campus.campus_address }}</p>
         </div>
     </li>
 {% endfor %}

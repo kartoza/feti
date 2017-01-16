@@ -91,15 +91,7 @@ class SearchCampus(APIView):
         else:
             campuses = self.filter_model(query)
 
-        if self.request.user.is_authenticated():
-            campus_courses_favorite = list(CampusCoursesFavorite.objects.filter(
-                user=self.request.user,
-                campus__in=campuses))
-            if campus_courses_favorite:
-                self.additional_context['campus_saved'] = campus_courses_favorite
-
-        serializer = CampusSerializer(campuses, many=True, context=self.additional_context)
-        return Response(serializer.data)
+        return Response(campuses)
 
     def filter_polygon(self, sqs, polygon):
         """
@@ -107,10 +99,21 @@ class SearchCampus(APIView):
         :param sqs: Search Query Set
         :return: filtered sqs
         """
-        return sqs.polygon(
-            'campus_location',
-            polygon
-        )
+        # Check if multipolygon
+        if polygon.geom_type == 'MultiPolygon':
+            for p in polygon:
+                sqs = sqs.polygon(
+                            'campus_location',
+                            p
+                        )
+                if len(sqs) > 0:
+                    return sqs
+            return None
+        else:
+            return sqs.polygon(
+                'campus_location',
+                polygon
+            )
 
     def filter_radius(self, sqs, point, radius):
         """
@@ -153,17 +156,30 @@ class ApiCampus(SearchCampus):
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
-                sqs = self.filter_polygon(sqs, options['shape'])
+                sqs = self.filter_polygon(
+                    sqs,
+                    options['shape']
+                )
             elif options['type'] == 'circle':
                 sqs = self.filter_radius(
-                        sqs,
-                        options['shape'],
-                        options['radius']
+                    sqs,
+                    options['shape'],
+                    options['radius']
                 )
 
+        campus_data = []
+
         if sqs:
-            campuses = list(unique_everseen([x.object.campus for x in sqs]))
-        return campuses
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                campus_data.append(stored_fields)
+
+        return campus_data
 
     def additional_filter(self, model, query):
         return model.filter(
@@ -211,12 +227,19 @@ class ApiCourse(SearchCampus):
                         options['radius']
                 )
 
-        if sqs:
-            campuses = list(unique_everseen([x.object.campus for x in sqs]))
-            # Only shows this courses
-            self.additional_context['courses'] = list(unique_everseen([x.object.course_id for x in sqs]))
+        campus_data = []
 
-        return campuses
+        if sqs:
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                campus_data.append(stored_fields)
+
+        return campus_data
 
 
 class ApiOccupation(APIView):
@@ -240,6 +263,10 @@ class ApiOccupation(APIView):
 class ApiSavedCampus(APIView):
 
     def get(self, request, format=None):
+
+        if not self.request.user.is_authenticated():
+            return HttpResponse('Unauthorized', status=401)
+
         # Get coordinates from request and create a polygon
         shape = request.GET.get('shape')
         drawn_polygon = None

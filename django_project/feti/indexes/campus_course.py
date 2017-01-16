@@ -12,6 +12,14 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='campus__campus', indexed=True
     )
     campus_location_isnull = indexes.BooleanField()
+    campus_id = indexes.IntegerField(
+        model_attr='campus__id',
+        null=True
+    )
+    course_id = indexes.IntegerField(
+        model_attr='course__id',
+        null=True
+    )
     campus_location = indexes.LocationField(
         model_attr='campus__location',
         null=True
@@ -20,16 +28,27 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     campus_provider = indexes.NgramField(
         model_attr='campus__provider'
     )
-    course_long_description_auto = indexes.EdgeNgramField(
-        model_attr='course__long_description'
+    campus_icon = indexes.CharField(
+        model_attr='campus__provider__icon'
     )
-
     course_course_description = indexes.EdgeNgramField(
         model_attr='course__course_description'
     )
-
+    campus_popup = indexes.CharField(
+        model_attr='campus___campus_popup'
+    )
     course_nlrd = indexes.CharField(
         model_attr='course__national_learners_records_database',
+        null=True
+    )
+
+    campus_address = indexes.CharField(
+        model_attr='campus__address__address_line',
+        null=True
+    )
+
+    campus_website = indexes.CharField(
+        model_attr='campus__provider__website',
         null=True
     )
 

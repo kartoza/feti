@@ -52,7 +52,7 @@ define([
             this._search_filter = {};
             this._search_results = {};
             this._search_need_update = {
-                'provider' : false,
+                'provider': false,
                 'course': false,
                 'favorite': false
             };
@@ -67,7 +67,7 @@ define([
         render: function () {
             this.$el.empty();
             var attributes = {
-                'is_logged_in' : Common.IsLoggedIn
+                'is_logged_in': Common.IsLoggedIn
             };
             this.$el.html(this.template(attributes));
             $(this.container).append(this.$el);
@@ -111,16 +111,13 @@ define([
             var that = this;
             var new_url = ['map'];
             var mode = this.$el.find('.search-category').find('.search-option.active').data('mode');
-            if(Common.CurrentSearchMode != mode) {
-                $('#result-title').find('#result-title-'+Common.CurrentSearchMode).hide();
-                Common.CurrentSearchMode = mode;
-            }
+            Common.CurrentSearchMode = mode;
 
             var query = that.$search_bar_input.val();
-            if(!query && mode in this._search_query) {
+            if (!query && mode in this._search_query) {
                 query = this._search_query[mode];
             }
-            if(query=="" && mode!='favorites') {
+            if (query == "" && mode != 'favorites') {
                 this.parent.closeResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
@@ -136,7 +133,7 @@ define([
                 }
             }
 
-            if(mode == 'favorites') {
+            if (mode == 'favorites') {
                 // Remove empty strings from array if there is filter
                 new_url.clean("");
             }
@@ -150,7 +147,7 @@ define([
         },
         _categoryClicked: function (event) {
             event.preventDefault();
-            if(!$(event.target).parent().hasClass('active')) {
+            if (!$(event.target).parent().hasClass('active')) {
 
                 var mode = $(event.target).parent().data("mode");
 
@@ -167,13 +164,13 @@ define([
 
                 // Update url
                 this._updateSearchRoute();
-                
-                if(mode != 'favorites') {
+
+                if (mode != 'favorites') {
                     // Hide search bar if in favorite mode
                     $('.search-row').show();
                 }
 
-                if(mode != 'occupation') {
+                if (mode != 'occupation') {
                     if ($('#result-detail').is(":visible")) {
                         $('#result-detail').hide("slide", {direction: "right"}, 500);
                     }
@@ -197,28 +194,29 @@ define([
                     }
                 }
             }
-            if(mode == 'favorites') {
+            if (mode == 'favorites') {
                 this._getFavorites();
             }
         },
-        _openFavorites: function(filter) {
+        _openFavorites: function (filter) {
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';
-            if(!(mode in this._search_query) ||
+            if (!(mode in this._search_query) ||
                 this._search_need_update[mode] ||
                 this._search_filter[mode] != filter
             ) {
+                Common.CurrentSearchMode = mode;
                 this._getFavorites(filter);
             }
         },
         _getFavorites: function (filter) {
-            var mode = 'favorites';
+            var mode = Common.CurrentSearchMode;
             favoritesCollection.search(filter);
             this._search_query[mode] = '';
             this._search_filter[mode] = filter ? filter : '';
             Common.Dispatcher.trigger('sidebar:show_loading', mode);
-            this._search_need_update['favorites'] = false;
+            this._search_need_update[mode] = false;
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
@@ -230,31 +228,12 @@ define([
             Backbone.history.navigate(new_url.join("/"), false);
         },
         search: function (mode, query, filter) {
-            if(query && mode != 'favorites') {
+            if (query && mode != 'favorites') {
                 this.$search_bar_input.val(query);
-                if (!filter) {
-                    this.clearAllDraw();
-                } else {
-                    var filters = filter.split('&');
-
-                    if (filters[0].split('=').pop() == 'polygon') { // if polygon
-                        var coordinates_json = JSON.parse(filters[1].split('=').pop());
-                        var coordinates = [];
-                        _.each(coordinates_json, function (coordinate) {
-                            coordinates.push([coordinate.lat, coordinate.lng]);
-                        });
-                        this.parent.createPolygon(coordinates);
-                    } else if (filters[0].split('=').pop() == 'circle') { // if circle
-                        var coords = JSON.parse(filters[1].split('=').pop());
-                        var radius = filters[2].split('=').pop();
-                        this.parent.createCircle(coords, radius);
-                    }
-                }
-
                 // search
-                if(query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
+                if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
-                    if(query!="") {
+                    if (query != "") {
                         this.showResult(mode);
                     }
                 } else {
@@ -274,41 +253,44 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this._search_need_update[mode] = false;
-                    this.in_show_result = true;
                     Common.Dispatcher.trigger('sidebar:show_loading', mode);
-                    this.showResult();
+                    this.showResult(mode);
                 }
-            } else if(mode == 'favorites') {
-                if(query) {
+            } else if (mode == 'favorites') {
+                if (query) {
                     filter = query;
-
-                    var filters = filter.split('&');
-
-                    if (filters[0].split('=').pop() == 'polygon') { // if polygon
-                        var coordinates_json = JSON.parse(filters[1].split('=').pop());
-                        var coordinates = [];
-                        _.each(coordinates_json, function (coordinate) {
-                            coordinates.push([coordinate.lat, coordinate.lng]);
-                        });
-                        this.parent.createPolygon(coordinates);
-                    } else if (filters[0].split('=').pop() == 'circle') { // if circle
-                        var coords = JSON.parse(filters[1].split('=').pop());
-                        var radius = filters[2].split('=').pop();
-                        this.parent.createCircle(coords, radius);
-                    }
                 }
-
                 this._openFavorites(query);
+            }
+            // redraw filter
+            if (!filter) {
+                this.clearAllDraw();
+            } else {
+                var filters = filter.split('&');
+                if (filters[0].split('=').pop() == 'polygon') { // if polygon
+                    var coordinates_json = JSON.parse(filters[1].split('=').pop());
+                    var coordinates = [];
+                    _.each(coordinates_json, function (coordinate) {
+                        coordinates.push([coordinate.lat, coordinate.lng]);
+                    });
+                    this.parent.createPolygon(coordinates);
+                } else if (filters[0].split('=').pop() == 'circle') { // if circle
+                    var coords = JSON.parse(filters[1].split('=').pop());
+                    var radius = filters[2].split('=').pop();
+                    this.parent.createCircle(coords, radius);
+                }
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
-            if(mode) {
+            $('#result-title').find('[id*="result-title-"]').hide();
+            $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
+            if (mode) {
                 this._search_results[mode] = num;
                 this.$search_clear.show();
             }
 
-            if(num > 0) {
+            if (num > 0) {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
             } else {
@@ -320,7 +302,6 @@ define([
             }
         },
         showResult: function (mode) {
-            var that = this;
             if (this.map_in_fullscreen) {
                 var $toggle = $('#result-toogle');
                 this.parent.openResultContainer($toggle);
@@ -442,14 +423,14 @@ define([
                 Common.Dispatcher.trigger('map:exitFullScreen');
             }
         },
-        _addResponsiveTab: function(div) {
+        _addResponsiveTab: function (div) {
             div.addClass('responsive-tabs');
 
-            div.on('click', 'li.active > a, span.glyphicon', function() {
+            div.on('click', 'li.active > a, span.glyphicon', function () {
                 div.toggleClass('open');
             }.bind(div));
 
-            div.on('click', 'li:not(.active) > a', function() {
+            div.on('click', 'li:not(.active) > a', function () {
                 div.removeClass('open');
             }.bind(div));
         },

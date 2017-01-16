@@ -37,7 +37,7 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
                        ['query']['query_string']['query'].split('OR')) > 2:
                     search_kwargs["min_score"] = 0
                 else:
-                    search_kwargs["min_score"] = 2.5
+                    search_kwargs["min_score"] = 2
 
             search_kwargs['query']['filtered']['query']['query_string'][
                 'fuzziness'] = 'AUTO'
