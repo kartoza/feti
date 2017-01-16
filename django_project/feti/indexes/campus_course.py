@@ -42,6 +42,16 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         null=True
     )
 
+    campus_address = indexes.CharField(
+        model_attr='campus__address__address_line',
+        null=True
+    )
+
+    campus_website = indexes.CharField(
+        model_attr='campus__provider__website',
+        null=True
+    )
+
     def prepare_campus_location_isnull(self, obj):
         return obj.campus.location is None
 

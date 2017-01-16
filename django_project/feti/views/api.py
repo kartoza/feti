@@ -72,7 +72,7 @@ class SearchCampus(APIView):
             query = ""
 
         if drawn_polygon:
-            return self.filter_model(
+            campuses = self.filter_model(
                 query=query,
                 options={
                     'type': 'polygon',
@@ -80,7 +80,7 @@ class SearchCampus(APIView):
                 }
             )
         elif drawn_circle:
-            return self.filter_model(
+            campuses = self.filter_model(
                 query=query,
                 options={
                     'type': 'circle',
@@ -89,7 +89,9 @@ class SearchCampus(APIView):
                 }
             )
         else:
-            return self.filter_model(query)
+            campuses = self.filter_model(query)
+
+        return Response(campuses)
 
     def filter_polygon(self, sqs, polygon):
         """
@@ -147,7 +149,7 @@ class ApiCampus(SearchCampus):
         q = Clean(query)
         sqs = SearchQuerySet()
         sqs = sqs.filter(
-            SQ(campus_campus=q) | SQ(campus_provider=q),
+            SQ(campus=q) | SQ(campus_provider=q),
             campus_location_isnull='false',
             courses_isnull='false'
         )
@@ -176,7 +178,7 @@ class ApiCampus(SearchCampus):
                 )
             campus_data.append(stored_fields)
 
-        return Response(campus_data)
+        return campus_data
 
     def additional_filter(self, model, query):
         return model.filter(
@@ -235,7 +237,7 @@ class ApiCourse(SearchCampus):
                 )
             campus_data.append(stored_fields)
 
-        return Response(campus_data)
+        return campus_data
 
 
 class ApiOccupation(APIView):
