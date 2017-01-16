@@ -230,25 +230,6 @@ define([
         search: function (mode, query, filter) {
             if (query && mode != 'favorites') {
                 this.$search_bar_input.val(query);
-                if (!filter) {
-                    this.clearAllDraw();
-                } else {
-                    var filters = filter.split('&');
-
-                    if (filters[0].split('=').pop() == 'polygon') { // if polygon
-                        var coordinates_json = JSON.parse(filters[1].split('=').pop());
-                        var coordinates = [];
-                        _.each(coordinates_json, function (coordinate) {
-                            coordinates.push([coordinate.lat, coordinate.lng]);
-                        });
-                        this.parent.createPolygon(coordinates);
-                    } else if (filters[0].split('=').pop() == 'circle') { // if circle
-                        var coords = JSON.parse(filters[1].split('=').pop());
-                        var radius = filters[2].split('=').pop();
-                        this.parent.createCircle(coords, radius);
-                    }
-                }
-
                 // search
                 if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
@@ -272,32 +253,32 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this._search_need_update[mode] = false;
-                    this.in_show_result = true;
                     Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     this.showResult(mode);
                 }
             } else if (mode == 'favorites') {
                 if (query) {
                     filter = query;
-
-                    filters = filter.split('&');
-                    if (filters[0].split('=').pop() == 'polygon') { // if polygon
-                        coordinates_json = JSON.parse(filters[1].split('=').pop());
-                        coordinates = [];
-                        _.each(coordinates_json, function (coordinate) {
-                            coordinates.push([coordinate.lat, coordinate.lng]);
-                        });
-                        this.parent.createPolygon(coordinates);
-                    } else if (filters[0].split('=').pop() == 'circle') { // if circle
-                        coords = JSON.parse(filters[1].split('=').pop());
-                        radius = filters[2].split('=').pop();
-                        this.parent.createCircle(coords, radius);
-                    } else if (filters[0].split('=')[0] == 'administrative') { // if administrative
-                        var administrative = filters[0].split('=')[1];
-                        this.parent.layerAdministrativeView.showPolygon(administrative);
-                    }
                 }
                 this._openFavorites(query);
+            }
+            // redraw filter
+            if (!filter) {
+                this.clearAllDraw();
+            } else {
+                var filters = filter.split('&');
+                if (filters[0].split('=').pop() == 'polygon') { // if polygon
+                    var coordinates_json = JSON.parse(filters[1].split('=').pop());
+                    var coordinates = [];
+                    _.each(coordinates_json, function (coordinate) {
+                        coordinates.push([coordinate.lat, coordinate.lng]);
+                    });
+                    this.parent.createPolygon(coordinates);
+                } else if (filters[0].split('=').pop() == 'circle') { // if circle
+                    var coords = JSON.parse(filters[1].split('=').pop());
+                    var radius = filters[2].split('=').pop();
+                    this.parent.createCircle(coords, radius);
+                }
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {

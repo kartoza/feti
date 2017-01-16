@@ -150,8 +150,7 @@ define([
                         btn.state(previousState);
 
                         _this._enableOtherControlButtons('clear');
-                        switch (previousState)
-                        {
+                        switch (previousState) {
                             case 'locationButton':
                                 _this.disableLocationFilter();
                                 break;
@@ -352,14 +351,14 @@ define([
             }
         },
         _enableOtherControlButtons: function (excluded) {
-            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
+            for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
                 var button_title = this.locationFilterBar._buttons[i]._states[0].title;
 
-                if(this.locationFilterBar._buttons[i] != this.clearButton) {
+                if (this.locationFilterBar._buttons[i] != this.clearButton) {
                     this.locationFilterBar._buttons[i].enable();
                 }
 
-                if(typeof excluded != 'undefined' && excluded == button_title) {
+                if (typeof excluded != 'undefined' && excluded == button_title) {
                     this.locationFilterBar._buttons[i].disable();
                 }
             }
@@ -532,6 +531,9 @@ define([
         },
         search: function (mode, query, filter) {
             this.searchView.search(mode, query, filter);
+            if (mode == 'favorites') {
+                filter = query;
+            }
             if (filter && filter.indexOf('administrative') >= 0) {
                 filter = filter.split('=')[1];
                 this.layerAdministrativeView.showPolygon(filter);
