@@ -55,7 +55,7 @@ class GetAdministrative(APIView):
                         province = Province.objects.get(polygon_geometry__contains=point)
                         serializer = ProvinceSerializer(province)
                         return Response(serializer.data)
-                    except Country.DoesNotExist:
+                    except Province.DoesNotExist:
                         pass
                 elif layer == 'district':
                     try:
