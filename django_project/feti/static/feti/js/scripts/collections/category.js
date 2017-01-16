@@ -94,6 +94,9 @@ define([
             _.each(response, function (row) {
                 var id = row['campus_id'];
                 var campus_is_favorite = id in Common.Favorites;
+                if(typeof row['campus_popup'] == 'undefined') {
+                    return true;
+                }
                 if (!(id in indexes)) {
                     /**
                      * Create campus row if it is not presented
