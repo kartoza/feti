@@ -53,6 +53,9 @@ define([
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
         },
         show_map: function (mode, query, filter, pathway) {
+            this.parameters = {
+                mode: mode, query: query, filter: filter, pathway: pathway
+            };
             if (this.pageHistory.length == 0) {
                 this.mapView.fullScreenMap(0);
             } else {

@@ -13,6 +13,9 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='_long_description',
         null=True
     )
+    campus_id = indexes.IntegerField(
+        model_attr='id'
+    )
     campus_popup = indexes.CharField(
         model_attr='_campus_popup'
     )
@@ -64,7 +67,7 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         return obj.provider.primary_institution
 
     def prepare_courses(self, obj):
-        return ['%s ;; [%s] %s' % (l.id, l.national_learners_records_database, l.course_description)
+        return [('%s ;; [%s] %s' % (l.id, l.national_learners_records_database, l.course_description)).replace('\'', '&#39;')
                 for l in obj.courses.all() if l.national_learners_records_database is not None]
 
     class Meta:

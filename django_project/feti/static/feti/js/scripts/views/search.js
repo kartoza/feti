@@ -28,7 +28,6 @@ define([
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.$favorites_button = $("#favorites");
-            this.$clear_draw = $("#clear-draw");
             this.$search_clear = $("#search-clear");
 
             this.$search_clear.hide();
@@ -37,6 +36,7 @@ define([
             this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
+            Common.Dispatcher.on('search:start', this.onStartSearch, this);
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
@@ -114,12 +114,6 @@ define([
             Common.CurrentSearchMode = mode;
 
             var query = that.$search_bar_input.val();
-            if (!query && mode in this._search_query) {
-                query = this._search_query[mode];
-            }
-            if (query == "" && mode != 'favorites') {
-                this.parent.closeResultContainer($('#result-toogle'));
-            }
             new_url.push(mode);
             new_url.push(query);
 
@@ -227,21 +221,24 @@ define([
             }
             Backbone.history.navigate(new_url.join("/"), false);
         },
-        search: function (mode, query, filter) {
-            if (query && mode != 'favorites') {
+        search: function (mode, query, filter, changed) {
+            if (changed == undefined) {
+                changed = true;
+            }
+            if (mode != 'favorites') {
                 this.$search_bar_input.val(query);
                 // search
-                if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
+                if (changed && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
-                    if (query != "") {
-                        this.showResult(mode);
-                    }
+                    this.showResult(mode);
                 } else {
                     switch (mode) {
                         case 'provider':
+                            campusCollection.search_changed = changed;
                             campusCollection.search(query, filter);
                             break;
                         case 'course':
+                            courseCollection.search_changed = changed;
                             courseCollection.search(query, filter);
                             break;
                         case 'occupation':
@@ -257,9 +254,7 @@ define([
                     this.showResult(mode);
                 }
             } else if (mode == 'favorites') {
-                if (query) {
-                    filter = query;
-                }
+                filter = query;
                 this._openFavorites(query);
             }
             // redraw filter
@@ -280,6 +275,12 @@ define([
                     this.parent.createCircle(coords, radius);
                 }
             }
+        },
+        onStartSearch: function () {
+            var mode = Common.Router.parameters.mode;
+            var query = Common.Router.parameters.query;
+            var filter = Common.Router.parameters.filter;
+            this.search(mode, query, filter, false);
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
