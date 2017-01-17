@@ -35,7 +35,7 @@ class AllCampus(APIView):
 
         campus_data = []
 
-        if sqs:
+        if campuses:
             for result in campuses:
                 stored_fields = result.get_stored_fields()
                 if stored_fields['campus_location']:

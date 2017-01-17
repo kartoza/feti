@@ -13,6 +13,9 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='_long_description',
         null=True
     )
+    campus_popup = indexes.CharField(
+        model_attr='_campus_popup'
+    )
     campus_provider = indexes.NgramField(
         model_attr='provider'
     )
@@ -42,7 +45,6 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
 
     provider_primary_institution = indexes.EdgeNgramField()
     courses = indexes.CharField()
-    courses_id = indexes.CharField()
 
     def prepare_campus_location_is_null(self, obj):
         return obj.location is None
@@ -57,10 +59,8 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         return obj.provider.primary_institution
 
     def prepare_courses(self, obj):
-        return [l.course_description for l in obj.courses.all()]
-
-    def prepare_courses_id(self, obj):
-        return [l.id for l in obj.courses.all()]
+        return ['%s, [%s] %s' % (l.id, l.national_learners_records_database, l.course_description)
+                for l in obj.courses.all() if l.national_learners_records_database is not None]
 
     class Meta:
         app_label = 'feti'
