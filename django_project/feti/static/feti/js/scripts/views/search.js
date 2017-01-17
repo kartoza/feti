@@ -61,7 +61,9 @@ define([
 
             this.$search_form.submit(function (e) {
                 if (Common.CurrentSearchMode in that._search_query) {
-                    that._search_query[Common.CurrentSearchMode] = that.$search_bar_input.val();
+                    if (that.$search_bar_input.val() == "") {
+                        that._search_query[Common.CurrentSearchMode] = that.$search_bar_input.val();
+                    }
                 }
                 that._updateSearchRoute();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
@@ -143,7 +145,9 @@ define([
         _updateSearchRoute: function (filter) {
             // update route based on query and filter
             var new_url = this._getSearchRoute(filter);
-            Backbone.history.navigate(new_url.join("/"), true);
+            if (Common.Router.is_initiated) {
+                Backbone.history.navigate(new_url.join("/"), true);
+            }
         },
         _categoryClicked: function (event) {
             event.preventDefault();
@@ -296,6 +300,7 @@ define([
             this.search(mode, query, filter, false);
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
+            Common.Router.is_initiated = true;
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();

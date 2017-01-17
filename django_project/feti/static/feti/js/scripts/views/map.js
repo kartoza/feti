@@ -490,7 +490,9 @@ define([
             }
         },
         repositionMap: function (mode) {
-            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
+            if (Common.Router.is_initiated) {
+                this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
+            }
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -530,6 +532,7 @@ define([
             this.searchView.changeCategoryButton(mode);
         },
         search: function (mode, query, filter) {
+            console.log(query);
             this.searchView.search(mode, query, filter);
             if (mode == 'favorites') {
                 filter = query;

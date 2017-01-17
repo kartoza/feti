@@ -6,6 +6,13 @@ define([
 ], function (MapView, LoginView, Common) {
     var history = [];
     var AppRouter = Backbone.Router.extend({
+        parameters: {
+            mode: 'provider',
+            query: '',
+            filter: '',
+            pathway: ''
+        },
+        is_initiated: false,
         routes: {
             "": "landing_page",
             "login": "login_page",
@@ -35,6 +42,9 @@ define([
             }
             // Set 'where to study' clicked on landing page
             this.mapView.changeCategory(Common.CurrentSearchMode);
+            if (!this.is_initiated) {
+                this.mapView.search(this.parameters.mode, this.parameters.query, this.parameters.filter);
+            }
 
             this.pageHistory.push(Backbone.history.getFragment());
         },
