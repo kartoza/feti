@@ -4,6 +4,7 @@ define([
     return CategoryCollection = Backbone.Collection.extend({
         subviews: {},
         results: [],
+        allowed_all_request: ['provider', 'course'],
         $result_title: $('#result-title'),
         url_all_template: _.template('/api/get-all-campus/?page=<%- page %>'),
         view: {},
@@ -37,8 +38,10 @@ define([
                 this.currentPage = 0;
                 parameters.q = q;
             } else {
-                url_template = this.url_all_template;
-                parameters.page = this.currentPage + 1;
+                if ($.inArray(Common.CurrentSearchMode, this.allowed_all_request) !== -1) {
+                    url_template = this.url_all_template;
+                    parameters.page = this.currentPage + 1;
+                }
             }
 
             if (drawnLayers && drawnLayers.length > 0) {

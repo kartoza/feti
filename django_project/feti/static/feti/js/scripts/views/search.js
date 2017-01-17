@@ -60,6 +60,9 @@ define([
             var that = this;
 
             this.$search_form.submit(function (e) {
+                if (Common.CurrentSearchMode in that._search_query) {
+                    that._search_query[Common.CurrentSearchMode] = that.$search_bar_input.val();
+                }
                 that._updateSearchRoute();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
             });
@@ -114,6 +117,9 @@ define([
             Common.CurrentSearchMode = mode;
 
             var query = that.$search_bar_input.val();
+            if (!query && mode in this._search_query) {
+                query = this._search_query[mode];
+            }
             new_url.push(mode);
             new_url.push(query);
 
@@ -250,11 +256,18 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this._search_need_update[mode] = false;
-                    Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                    if (changed) {
+                        Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                    } else {
+                        $(".result-title").css("cursor", "progress");
+                        $(".result-row").css("cursor", "progress");
+                    }
                     this.showResult(mode);
                 }
             } else if (mode == 'favorites') {
-                filter = query;
+                if (query) {
+                    filter = query;
+                }
                 this._openFavorites(query);
             }
             // redraw filter
@@ -286,6 +299,8 @@ define([
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
+            $(".result-title").css("cursor", "pointer");
+            $(".result-row").css("cursor", "pointer");
             if (mode) {
                 this._search_results[mode] = num;
                 this.$search_clear.show();
