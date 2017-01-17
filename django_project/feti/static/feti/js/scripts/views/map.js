@@ -532,7 +532,6 @@ define([
             this.searchView.changeCategoryButton(mode);
         },
         search: function (mode, query, filter) {
-            console.log(query);
             this.searchView.search(mode, query, filter);
             if (mode == 'favorites') {
                 filter = query;

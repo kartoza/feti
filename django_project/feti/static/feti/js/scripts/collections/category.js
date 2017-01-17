@@ -94,6 +94,7 @@ define([
                             }
                         })
                     }
+                    Common.Router.is_initiated = true;
                 },
                 error: function () {
                     Common.FetchXHR = null;

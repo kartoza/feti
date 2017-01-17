@@ -300,7 +300,6 @@ define([
             this.search(mode, query, filter, false);
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
-            Common.Router.is_initiated = true;
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
