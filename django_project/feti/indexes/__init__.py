@@ -1,13 +1,13 @@
 # coding=utf-8
-from feti.indexes.provider import ProviderIndex  # noqa
-from feti.indexes.address import AddressIndex  # noqa
+# from feti.indexes.provider import ProviderIndex  # noqa
+# from feti.indexes.address import AddressIndex  # noqa
 from feti.indexes.campus import CampusIndex  # noqa
 from feti.indexes.course import CourseIndex  # noqa
 from feti.indexes.campus_course import CampusCourseIndex  # noqa
 from feti.indexes.occupation import OccupationIndex  # noqa
 # from feti.indexes.education_training_quality_assurance \
 #     import EducationTrainingQualityAssuranceIndex
-from feti.indexes.field_of_study import FieldOfStudyIndex  # noqa
+# from feti.indexes.field_of_study import FieldOfStudyIndex  # noqa
 # from feti.indexes.national_certificate_of_vocational \
 #     import NationalCertificateVocationalIndex
 # from feti.indexes.national_graduate_school_in_education \
