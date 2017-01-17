@@ -50,7 +50,12 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         return obj.location is None
 
     def prepare_courses_is_null(self, obj):
-        return obj.courses is None or not obj.courses
+        if obj.courses is None:
+            return True
+        else:
+            if len(obj.courses.filter(national_learners_records_database__isnull=False)) == 0:
+                return True
+        return False
 
     def prepare_campus_is_null(self, obj):
         return not obj.campus
