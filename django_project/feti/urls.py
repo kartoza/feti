@@ -8,7 +8,7 @@ from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
-from feti.views.landing_page import LandingPage
+from feti.views.landing_page import EmbedPage, LandingPage
 from feti.views.api import (
     ApiCampus,
     ApiCourse,
@@ -73,6 +73,10 @@ urlpatterns = patterns(
         r'^$',
         LandingPage.as_view(),
         name='landing_page'),
+    url(
+        r'^embed/',
+        EmbedPage.as_view(),
+        name='embed_page'),
     url(
         r'^search/',
         # include('haystack.urls')),
