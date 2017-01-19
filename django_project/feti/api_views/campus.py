@@ -3,6 +3,7 @@ from haystack.query import SearchQuerySet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from feti.models.campus import Campus
+from feti.serializers.campus_serializer import CampusSummarySerializer
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '16/01/17'
@@ -67,3 +68,22 @@ class AllCampus(APIView):
         }
 
         return Response(data)
+
+
+class CampusSummary(APIView):
+    """Get detail of campus"""
+
+    def get(self, request):
+        campus_id = request.GET.get('id')
+
+        if not campus_id:
+            return Response(None)
+
+        try:
+            campus = Campus.objects.get(id=campus_id)
+        except Campus.DoesNotExist:
+            return Response(None)
+
+        serializer = CampusSummarySerializer(campus)
+
+        return Response(serializer.data)
