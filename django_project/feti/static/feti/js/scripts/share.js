@@ -70,6 +70,7 @@ define([
             // get url
             var host = Backbone.history.location.host;
             $('input#clipboard').select();
+            $('#copy-status').html('');
 
             _generateURL(function (data) {
                 $('#clipboard-modal').modal('toggle');
@@ -99,7 +100,7 @@ define([
                 $temp.val(clipboard).select();
                 document.execCommand("copy");
                 $temp.remove();
-                alert('Url has been copied to clipboard.')
+                $('#copy-status').html('Copied to clipboard.');
             }
         })
     };
