@@ -18,13 +18,8 @@
     </script>
     <script>
         var is_embed = true;
-        var favorite = "{{ favorite }}";
-        favorite = favorite.replaceAll("&quot;", "\"");
-        favorite = JSON.parse(favorite);
+        var favorite = "";
         var new_favorite = {};
-        _.each(favorite, function (row) {
-            new_favorite[row["campus"]] = row["courses"];
-        });
     </script>
 {% endblock %}
 
@@ -57,11 +52,23 @@
 {% block js_inline %}
     <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
     <script type='template' id='map-template'>
+        <div id="feti-logo" onclick="openFeti()">
+             <img src="{% static 'feti/images/ipss-logo-bordered.png' %}"/>
+        </div>
         <div id="feti-map" style="margin-left:0px; margin-right: 0px;"></div>
     </script>
 
     <!-- Django context variables -->
     <script>
+
+        function openFeti() {
+            var fullUrl = $(location).attr('href');
+
+            // remove embed
+            fullUrl = fullUrl.replace('/embed', '');
+            window.open(fullUrl, '_blank');
+        }
+
         Array.prototype.clean = function (deleteValue) {
             for (var i = 0; i < this.length; i++) {
                 if (this[i] == deleteValue) {
@@ -84,9 +91,10 @@
             }.bind(this));
         };
 
-        var user_location = "{{ user.profile.location }}";
-        var is_logged_in = "{{ user.is_authenticated }}" == "True";
+        var user_location = "";
+        var is_logged_in = "false";
         var is_login_error = false;
+
     </script>
 
     <script type="text/javascript" src="/static/feti/js/libs/require.min.js"></script>
