@@ -37,6 +37,11 @@ define([
             this.mapView.changeCategory(Common.CurrentSearchMode);
 
             this.pageHistory.push(Backbone.history.getFragment());
+
+            // force to #map/provider/
+            if (typeof is_embed !== "undefined") {
+                this.navigate('map/provider/', true);
+            }
         },
         login_page: function () {
             if (!Common.IsLoggedIn) {

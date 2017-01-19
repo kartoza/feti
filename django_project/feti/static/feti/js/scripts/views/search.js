@@ -1,5 +1,5 @@
 define([
-    'text!static/feti/js/scripts/templates/searchbar.html',
+    'text!/static/feti/js/scripts/templates/searchbar.html',
     'common',
     '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
@@ -302,9 +302,11 @@ define([
             }
         },
         showResult: function (mode) {
-            if (this.map_in_fullscreen) {
-                var $toggle = $('#result-toogle');
-                this.parent.openResultContainer($toggle);
+            if (!Common.EmbedVersion) {
+                if (this.map_in_fullscreen) {
+                    var $toggle = $('#result-toogle');
+                    this.parent.openResultContainer($toggle);
+                }
             }
         },
         toogleResult: function (event) {

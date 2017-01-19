@@ -1,5 +1,5 @@
 define([
-    'text!static/feti/js/scripts/templates/sidebar.html',
+    'text!/static/feti/js/scripts/templates/sidebar.html',
     'common'
 ], function (sidebarTemplate, Common) {
     var SideBarView = Backbone.View.extend({

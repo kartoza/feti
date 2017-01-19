@@ -9,6 +9,7 @@ define([], function () {
         Router: {},
         CurrentSearchMode: 'provider',
         FetchXHR: null,
-        Favorites: new_favorite
+        Favorites: new_favorite,
+        EmbedVersion: typeof is_embed !== "undefined"
     };
 });

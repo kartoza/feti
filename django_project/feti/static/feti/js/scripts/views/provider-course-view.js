@@ -1,7 +1,7 @@
 define([
     'common',
     '/static/feti/js/scripts/models/course.js',
-    'text!static/feti/js/scripts/templates/course-view.html'
+    'text!/static/feti/js/scripts/templates/course-view.html'
 ], function (Common, Course, courseTemplate) {
     var CourseView = Backbone.View.extend({
         tagName: 'div',

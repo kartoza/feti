@@ -1,8 +1,8 @@
 define([
     'common',
     '/static/feti/js/scripts/models/occupation.js',
-    'text!static/feti/js/scripts/templates/result-detail.html',
-    'text!static/feti/js/scripts/templates/step-detail.html'
+    'text!/static/feti/js/scripts/templates/result-detail.html',
+    'text!/static/feti/js/scripts/templates/step-detail.html'
 ], function (Common, Occupation, Detail, StepDetail) {
 
     var OccupationView = Backbone.View.extend({

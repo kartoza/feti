@@ -35,6 +35,9 @@ define([
             this.isFullScreen = false;
 
             this.animationSpeed = 400;
+            if (Common.EmbedVersion) {
+                this.animationSpeed = 0;
+            }
 
             this.mapContainerWidth = 0;
             this.mapContainerHeight = 0;
@@ -254,7 +257,10 @@ define([
 
             this.locationFilterBar.options.position = 'topleft';
             this.locationFilterBar.options.id = 'filter-bar-container';
-            this.locationFilterBar.addTo(this.map);
+
+            if (!Common.EmbedVersion) {
+                this.locationFilterBar.addTo(this.map);
+            }
 
             // Share bar
 
@@ -327,7 +333,9 @@ define([
             this.shareBar.options.position = 'topright';
             this.shareBar.options.id = 'share-bar-container';
 
-            this.shareBar.addTo(this.map);
+            if (!Common.EmbedVersion) {
+                this.shareBar.addTo(this.map);
+            }
 
             this.hideShareBar();
         },
@@ -655,10 +663,12 @@ define([
                 var d = {};
                 d.width = $('#shadow-map').width() - $('#result-wrapper').width();
                 d.height = '100%';
-                $mapContainer.animate(d, 500, function () {
-                    $mapContainer.css('padding-right', '500px');
-                    that.updateMapSize();
-                });
+                if (!Common.EmbedVersion) {
+                    $mapContainer.animate(d, 500, function () {
+                        $mapContainer.css('padding-right', '500px');
+                        that.updateMapSize();
+                    });
+                }
             }
             this.sideBarView.showMapCover();
             this.sideBarView.updateOccupationDetail();

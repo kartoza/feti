@@ -3,7 +3,7 @@ define([
     '/static/feti/js/scripts/models/provider.js',
     '/static/feti/js/scripts/views/provider-course-view.js',
     '/static/feti/js/scripts/models/course.js',
-    'text!static/feti/js/scripts/templates/provider-detail.html'
+    'text!/static/feti/js/scripts/templates/provider-detail.html'
 ], function (Common, Provider, ProviderCourseView, Course, providerTemplate) {
     var FavoritesView = Backbone.View.extend({
         tagName: 'div',
