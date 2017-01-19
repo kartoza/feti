@@ -69,3 +69,13 @@
     padding-left: 7px;
     margin-right: 10px;
 }
+
+.leaflet-popup-content-wrapper .leaflet-popup-content
+{
+    font-size: 10px;
+    width: 150px !important;
+}
+
+.leaflet-popup-content-wrapper h3 {
+    font-size: 13px;
+}
