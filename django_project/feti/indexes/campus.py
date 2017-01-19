@@ -48,6 +48,7 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
 
     provider_primary_institution = indexes.EdgeNgramField()
     courses = indexes.CharField()
+    courses_id = indexes.CharField()
 
     def prepare_campus_location_is_null(self, obj):
         return obj.location is None
@@ -69,6 +70,9 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_courses(self, obj):
         return [('%s ;; [%s] %s' % (l.id, l.national_learners_records_database, l.course_description)).replace('\'', '&#39;')
                 for l in obj.courses.all() if l.national_learners_records_database is not None]
+
+    def prepare_courses_id(self, obj):
+        return [l.id for l in obj.courses.all()]
 
     class Meta:
         app_label = 'feti'

@@ -14,8 +14,7 @@ class AllCampus(APIView):
     def get(self, request):
         sqs = SearchQuerySet().filter(
             courses_is_null='false',
-            campus_location_is_null='false',
-            campus_is_null='false'
+            campus_location_is_null='false'
         ).models(Campus)
 
         page = request.GET.get('page')
@@ -28,10 +27,12 @@ class AllCampus(APIView):
             campuses = paginator.page(page)
         except PageNotAnInteger:
             # If page is not an integer, deliver first page.
-            campuses = paginator.page(1)
+            page = 1
+            campuses = paginator.page(page)
         except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
-            campuses = paginator.page(paginator.num_pages)
+            page = paginator.num_pages
+            campuses = paginator.page(page)
 
         campus_data = []
 
@@ -43,6 +44,20 @@ class AllCampus(APIView):
                     stored_fields['campus_location'] = "{0},{1}".format(
                         campus_location.y, campus_location.x
                     )
+
+                # Delete elements we don't need
+                del stored_fields['campus_popup']
+                del stored_fields['text']
+                del stored_fields['courses']
+                del stored_fields['campus_website']
+                del stored_fields['campus_auto']
+                del stored_fields['long_description']
+                del stored_fields['courses_is_null']
+                del stored_fields['campus_is_null']
+                del stored_fields['campus_location_is_null']
+                del stored_fields['provider_primary_institution']
+                del stored_fields['campus_address']
+
                 campus_data.append(stored_fields)
 
         data = {
