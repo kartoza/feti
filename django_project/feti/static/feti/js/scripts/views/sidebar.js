@@ -88,6 +88,17 @@ define([
             this.clearContainerDiv(mode);
             this.$result_title.find('#result-title-' + mode).remove();
             $('#result-container-' + mode).append(this.$loading_div.show());
+
+            // for embed version
+            if (Common.EmbedVersion) {
+                $("#embed-loading-wrapper").show();
+                $("#embed-loading-wrapper").append(this.$loading_div.show());
+                var $embedLoadingWrapper = $("#embed-loading-wrapper");
+                if ($embedLoadingWrapper.find(".result-loading").width() > $embedLoadingWrapper.width()) {
+                    $embedLoadingWrapper.find(".result-loading").width($embedLoadingWrapper.width());
+                    $embedLoadingWrapper.find("img").width($embedLoadingWrapper.width());
+                }
+            }
         },
         clearSidebar: function (mode) {
             $('#result-container-' + mode).empty();
@@ -103,6 +114,11 @@ define([
             }
             if ($('#result-container-' + mode + ' .result-loading').length > 0) {
                 $('#result-container-' + mode + ' .result-loading').remove();
+            }
+            // for embed version
+            if (Common.EmbedVersion) {
+                $("#embed-loading-wrapper").hide();
+                $("#embed-loading-wrapper .result-loading").remove();
             }
         },
         updateResultTitle: function (number_result, mode, query) {
