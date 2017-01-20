@@ -75,6 +75,12 @@
     padding-top: 0px !important;
 }
 
+.result-row {
+    margin-left: 0px !important;
+    font-size: 10px !important;
+    padding: 5px !important;
+}
+
 .result-title {
     margin-left: 4px !important;
     margin-right: 4px !important;
