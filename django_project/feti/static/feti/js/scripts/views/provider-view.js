@@ -71,8 +71,11 @@ define([
 
             return false;
         },
-        gotoMap: function () {
+        gotoMap: function (event) {
             $('#toogle-button').click();
+            this.clicked()
+            event.stopPropagation();
+            return false;
         },
         render: function () {
             this.$el.empty();
