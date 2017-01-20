@@ -283,7 +283,10 @@ define([
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
+
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
+            Common.Dispatcher.trigger('map:repositionMap', mode);
+
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
             if (mode) {

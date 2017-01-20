@@ -68,6 +68,7 @@ define([
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
             Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
+            Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
 
             this.modesLayer = {
                 'provider': L.featureGroup(),
@@ -488,7 +489,6 @@ define([
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
 
             this.modesLayer[mode].addLayer(layer);
-            this.repositionMap(mode);
 
             if (this.map.hasLayer(this.modesLayer[opposite])) {
                 this.map.removeLayer(this.modesLayer[opposite]);
@@ -498,7 +498,8 @@ define([
             }
         },
         repositionMap: function (mode) {
-            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
+            if(this.modesLayer[mode].getLayers().length > 0)
+                this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -511,6 +512,7 @@ define([
                 return;
             }
             if (!this.map.hasLayer(this.modesLayer[toMode])) {
+                this.repositionMap(toMode);
                 this.map.addLayer(this.modesLayer[toMode]);
             }
         },
