@@ -20,6 +20,7 @@ from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
 from feti.serializers.favorite_serializer import FavoriteSerializer
 from user_profile.models import CampusCoursesFavorite
+from feti.models.campus import Campus
 
 from map_administrative.views import get_boundary
 
@@ -145,14 +146,13 @@ class ApiCampus(SearchCampus):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query, options=None):
-        campuses = None
         q = Clean(query)
         sqs = SearchQuerySet()
         sqs = sqs.filter(
-            SQ(campus_campus=q) | SQ(campus_provider=q),
-            campus_location_isnull='false',
-            courses_isnull='false'
-        )
+            long_description=q,
+            campus_location_is_null='false',
+            courses_is_null='false'
+        ).models(Campus)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
@@ -177,6 +177,18 @@ class ApiCampus(SearchCampus):
                     stored_fields['campus_location'] = "{0},{1}".format(
                         campus_location.y, campus_location.x
                     )
+
+                del stored_fields['courses_is_null']
+                del stored_fields['campus_is_null']
+                del stored_fields['campus_location_is_null']
+                del stored_fields['courses_id']
+                del stored_fields['provider_primary_institution']
+                del stored_fields['campus_auto']
+                del stored_fields['long_description']
+                del stored_fields['text']
+                del stored_fields['campus_address']
+                del stored_fields['campus_website']
+
                 campus_data.append(stored_fields)
 
         return campus_data
@@ -197,7 +209,6 @@ class ApiCourse(SearchCampus):
 
     def filter_model(self, query, options=None):
         sqs = None
-        campuses = None
 
         if '=' in query:
             queries = query.split('=')
