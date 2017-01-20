@@ -123,8 +123,7 @@
     right: 0px;
     top: 0px;
     padding: 5px;
-    opacity: 0.8;
-
+    z-index: 120;
 }
 
 #toogle-button:hover {
@@ -141,10 +140,13 @@
     height: 100%;
     overflow: hidden;
     border: 1px solid #4679BD;
+    background-color: #f8f8ff;
     color: #4679BD;
     cursor: pointer;
     position: relative;
     font-size: 10px;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
 .round-button-circle .fa {
@@ -156,4 +158,8 @@
 
 .round-button-circle:hover {
     background: rgba(29, 104, 179, 0.3);
+}
+
+#result {
+    z-index: 110;
 }
