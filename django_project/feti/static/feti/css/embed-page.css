@@ -96,6 +96,17 @@
     display: none !important;
 }
 
+.gotomap {
+    padding-top: 5px;
+    color: green;
+    display: block !important;
+    font-size: 24px !important;
+}
+
+.gotomap:hover {
+    color: darkgreen;
+}
+
 .leaflet-bar {
     display: none !important;
 }
@@ -135,7 +146,7 @@
 
 .result-title .details {
     font-size: 10px !important;
-    margin-left: 0px;
+    margin-left: 50px;
 }
 
 .result-title img {

@@ -14,13 +14,14 @@ define([
         model: Provider,
         events: {
             'click': 'clicked',
-            'click .favorites': 'addToFavorites'
+            'click .favorites': 'addToFavorites',
+            'click .gotomap': 'gotoMap'
         },
         clicked: function () {
             this.model.clicked();
         },
         addToFavorites: function (e) {
-            if(!Common.IsLoggedIn) {
+            if (!Common.IsLoggedIn) {
                 alert('You need to log in first');
                 return false;
             }
@@ -33,32 +34,32 @@ define([
                 course_id.push(course.id);
             });
 
-            if($(e.target).hasClass('fa-star-o')) {
+            if ($(e.target).hasClass('fa-star-o')) {
                 // Add to favorites
                 $.ajax({
-                    url:'profile/add-campus/',
-                    type:'POST',
+                    url: 'profile/add-campus/',
+                    type: 'POST',
                     data: JSON.stringify({
                         'campus': id,
                         'courses_id': course_id
                     }),
-                    success: function(response) {
-                        if(response=='added') {
+                    success: function (response) {
+                        if (response == 'added') {
                             alert('Campus added to favorites');
                             Common.Dispatcher.trigger('favorites:added', 'provider');
                             $(e.target).removeClass('fa-star-o');
                             $(e.target).addClass('fa-star filled');
 
-                            for(var i=0; i < course_id.length; i++) {
-                                $('#'+id+'-courses #favorite-course-'+course_id[i]).children().removeClass('fa-star-o');
-                                $('#'+id+'-courses #favorite-course-'+course_id[i]).children().addClass('fa-star filled');
+                            for (var i = 0; i < course_id.length; i++) {
+                                $('#' + id + '-courses #favorite-course-' + course_id[i]).children().removeClass('fa-star-o');
+                                $('#' + id + '-courses #favorite-course-' + course_id[i]).children().addClass('fa-star filled');
                             }
                         }
                     },
-                    error: function(response) {
+                    error: function (response) {
                         alert('Adding campus to favorites failed');
                     },
-                    complete: function() {
+                    complete: function () {
                     }
                 });
 
@@ -69,6 +70,9 @@ define([
             }
 
             return false;
+        },
+        gotoMap: function () {
+            $('#toogle-button').click();
         },
         render: function () {
             this.$el.empty();
