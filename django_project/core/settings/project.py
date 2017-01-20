@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from .contrib import *  # noqa
 
+# Exclude elastic result which have a _score less than the minimum specified in min_score
+ELASTIC_MIN_SCORE = 3.5
+
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.

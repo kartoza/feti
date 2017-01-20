@@ -11,6 +11,10 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     campus_campus = indexes.NgramField(
         model_attr='campus__campus', indexed=True
     )
+    campus_and_provider = indexes.NgramField(
+        model_attr='campus__long_description',
+        indexed=True
+    )
     campus_location_isnull = indexes.BooleanField()
     campus_id = indexes.IntegerField(
         model_attr='campus__id',
@@ -26,7 +30,8 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     )
     courses_isnull = indexes.BooleanField()
     campus_provider = indexes.NgramField(
-        model_attr='campus__provider'
+        model_attr='campus__provider',
+        indexed=True
     )
     campus_icon = indexes.CharField(
         model_attr='campus__provider__icon'

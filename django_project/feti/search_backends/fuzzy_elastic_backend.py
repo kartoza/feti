@@ -1,5 +1,6 @@
 # coding=utf-8
 from haystack.backends.elasticsearch_backend import ElasticsearchSearchBackend
+from core.settings.project import ELASTIC_MIN_SCORE
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '13/05/15'
@@ -34,10 +35,10 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             if 'min_score' not in search_kwargs:
                 if len(search_kwargs['query']['filtered']
-                       ['query']['query_string']['query'].split('OR')) > 2:
+                       ['query']['query_string']['query'].split('OR')) > ELASTIC_MIN_SCORE:
                     search_kwargs["min_score"] = 0
                 else:
-                    search_kwargs["min_score"] = 2
+                    search_kwargs["min_score"] = ELASTIC_MIN_SCORE
 
             search_kwargs['query']['filtered']['query']['query_string'][
                 'fuzziness'] = 'AUTO'
