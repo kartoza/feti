@@ -498,6 +498,7 @@ define([
             }
         },
         repositionMap: function (mode) {
+            if(!this.modesLayer[mode]) return;
             if(this.modesLayer[mode].getLayers().length > 0)
                 this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
         },
