@@ -53,7 +53,7 @@ define([
                 Common.FetchXHR.abort();
             }
 
-            that.current_q = q;
+            that.last_query = q;
             Common.FetchXHR = this.fetch({
                 success: function (collection, response) {
                     Common.FetchXHR = null;
@@ -76,6 +76,9 @@ define([
                 }
             });
         },
+        getRegex: function (character) {
+            return new RegExp(character, 'gi');
+        },
         campusCourseParser: function (response, model) {
             /**
              * This will parse response from server to readable website for campus-course.
@@ -83,87 +86,98 @@ define([
              * We parse it to be like old way
              */
             var that = this;
+            var currentIndex = 0;
             var indexes = {};
             var output = [];
-            var currentIndex = 0;
-            var regex = new RegExp(that.current_q, 'gi');
 
             /**
              * Parse each row
              */
             _.each(response, function (row) {
                 var id = row['campus_id'];
-                var campus_is_favorite = id in Common.Favorites;
-                if(typeof row['campus_popup'] == 'undefined') {
-                    return true;
-                }
                 if (!(id in indexes)) {
-                    /**
-                     * Create campus row if it is not presented
-                     */
-                    indexes[id] = currentIndex;
-                    currentIndex += 1;
-
-                    // parse campus location
-                    var latlng = {};
-                    if (row["campus_location"]) {
-                        var location = row["campus_location"].split(",");
-                        latlng = {
-                            "lat": parseFloat(location[0]),
-                            "lng": parseFloat(location[1])
-                        }
+                    var campusIsMarked = (model == "campus" && that.last_query != "");
+                    var campus = that.campusParser(row, campusIsMarked);
+                    if (campus) {
+                        // put campus is success
+                        indexes[id] = currentIndex;
+                        currentIndex += 1;
+                        output.push(campus);
                     }
-                    var campusTitle = row["campus_provider"];
-                    if (model == "campus") {
-                        campusTitle = campusTitle.replace(
-                            regex, function (str) {
-                                return '<mark>' + str + '</mark>'
-                            }
-                        );
-                    }
-                    var campus = {
-                        "id": row["campus_id"],
-                        "campus": row["campus_campus"],
-                        "location": latlng,
-                        "title": campusTitle,
-                        "icon": row["campus_icon"],
-                        "courses": [],
-                        "model": model,
-                        "_campus_popup": row["campus_popup"],
-                        "saved": campus_is_favorite
-                    };
-                    output.push(campus);
                 }
 
                 /**
                  * Push course to campus course list
                  */
-                var courseNldr = "";
-                if (row["course_nlrd"]) {
-                    courseNldr = "[" + row["course_nlrd"] + "] ";
+                var campusIndex = indexes[id];
+                if (campusIndex != undefined) {
+                    var courseIsMarked = (model == "course" && that.last_query != "");
+                    that.courseParser(row, courseIsMarked, output[campusIndex]["courses"]);
                 }
-                var courseTitle = courseNldr + row["course_course_description"];
-                if (model == "course") {
-                    courseTitle = courseTitle.replace(
-                        regex, function (str) {
+            });
+            return output;
+        },
+        campusParser: function (row, isMarked) {
+            /**
+             * Create campus row if it is not presented
+             */
+            // parse campus location
+            var id = row['campus_id'];
+            var campus_is_favorite = id in Common.Favorites;
+            var latlng = {};
+            if (row["campus_location"]) {
+                var location = row["campus_location"].split(",");
+                latlng = {
+                    "lat": parseFloat(location[0]),
+                    "lng": parseFloat(location[1])
+                };
+                var campusTitle = row["campus_provider"];
+                if (campusTitle && isMarked) {
+                    campusTitle = campusTitle.replace(
+                        this.getRegex(this.last_query), function (str) {
                             return '<mark>' + str + '</mark>'
                         }
                     );
                 }
-                var checkedIndex = indexes[id];
+                var campus = {
+                    "id": row["campus_id"],
+                    "campus": row["campus_campus"],
+                    "location": latlng,
+                    "title": campusTitle,
+                    "icon": row["campus_icon"],
+                    "courses": [],
+                    "model": 'campus',
+                    "_campus_popup": row["campus_popup"],
+                    "saved": campus_is_favorite
+                };
+                return campus;
+            }
+            return null;
+        },
+        courseParser: function (row, isMarked, campusOfCourse) {
+            /**
+             * Create course if it is presented
+             */
+            var id = row['campus_id'];
+            var campus_is_favorite = id in Common.Favorites;
+            var cleanCourses = row["courses"].replace(this.getRegex("'"), "\"");
+            cleanCourses = cleanCourses.replace(this.getRegex("'"), "\"");
+            cleanCourses = cleanCourses.replace(this.getRegex(/\\/g), "");
+            var courses = JSON.parse(cleanCourses);
+            _.each(courses, function (course) {
                 var saved = false;
+                var attributes = course.split(";;");
                 if (campus_is_favorite) {
                     saved = Common.Favorites[id].indexOf(row["course_id"]) >= 0;
                 }
-                var course = {
-                    "id": row["course_id"],
-                    "title": courseTitle,
-                    "model": model,
+                var courseOutput = {
+                    "id": attributes[0].trim(),
+                    "title": attributes[1].trim(),
+                    "model": "course",
                     "saved": saved
                 };
-                output[checkedIndex]["courses"].push(course);
+                campusOfCourse.push(courseOutput);
             });
-            return output;
-        },
+        }
     });
 });
