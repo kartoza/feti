@@ -34,6 +34,9 @@
         <div id="map-container">
             <div class="row" style="height: 100%; position: relative;">
                 <div id="map-section">
+                    <div id="feti-logo" onclick="openFeti()">
+                        <img src="{% static 'feti/images/ipss-logo-bordered.png' %}"/>
+                    </div>
                     <div id="map-search"></div>
                 </div>
             </div>
@@ -43,8 +46,6 @@
     <div class="embed-result">
         <div id="result" class="nopadding">
         </div>
-        {#        <div id="result-detail" class="col-md-8 nopadding" style="height: 100%">#}
-        {#        </div>#}
     </div>
 {% endblock %}
 
@@ -52,9 +53,6 @@
 {% block js_inline %}
     <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
     <script type='template' id='map-template'>
-        <div id="feti-logo" onclick="openFeti()">
-             <img src="{% static 'feti/images/ipss-logo-bordered.png' %}"/>
-        </div>
         <div id="feti-map" style="margin-left:0px; margin-right: 0px;"></div>
     </script>
 
@@ -94,6 +92,18 @@
         var user_location = "";
         var is_logged_in = "false";
         var is_login_error = false;
+
+        $(document).ready(function () {
+            {# set logo #}
+            var $mapSection = $("#map-section");
+            var $fetiLogo = $("#feti-logo");
+            if ($mapSection.width() < $fetiLogo.width()) {
+                var paddingLeft = parseInt($fetiLogo.css('padding-left').replace('px', ''));
+                var paddingRight = parseInt($fetiLogo.css('padding-right').replace('px', ''));
+                $fetiLogo.width($mapSection.width() - paddingLeft - paddingRight);
+                $fetiLogo.find('img').width($fetiLogo.width());
+            }
+        });
 
     </script>
 

@@ -93,12 +93,14 @@ define([
             });
         },
         renderPolygon: function (polygon) {
-            if (this.polygons[polygon.getLayers()[0].feature.properties.layer]) {
-                Common.Dispatcher.trigger('map:removeLayer', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
+            if (!Common.EmbedVersion) {
+                if (this.polygons[polygon.getLayers()[0].feature.properties.layer]) {
+                    Common.Dispatcher.trigger('map:removeLayer', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
+                }
+                this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
+                Common.Dispatcher.trigger('map:addLayer', polygon);
+                this.map.clearButton.enable();
             }
-            this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
-            Common.Dispatcher.trigger('map:addLayer', polygon);
-            this.map.clearButton.enable();
         },
         showPolygon: function (adm_list) {
             this.resetBasedLayer();
