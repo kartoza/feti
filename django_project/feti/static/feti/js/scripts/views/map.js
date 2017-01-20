@@ -655,8 +655,10 @@ define([
         openResultContainer: function (div) {
             var that = this;
             if (!this.sideBarView.is_open()) {
-                div.removeClass('fa-caret-left');
-                div.addClass('fa-caret-right');
+                if (!Common.EmbedVersion) {
+                    div.removeClass('fa-caret-left');
+                    div.addClass('fa-caret-right');
+                }
                 this.sideBarView.open();
                 // change map width
                 var $mapContainer = $('#feti-map');
@@ -677,8 +679,10 @@ define([
             var $mapContainer = $('#feti-map');
 
             if (this.sideBarView.is_open()) {
-                div.removeClass('fa-caret-right');
-                div.addClass('fa-caret-left');
+                if (!Common.EmbedVersion) {
+                    div.removeClass('fa-caret-right');
+                    div.addClass('fa-caret-left');
+                }
                 this.sideBarView.close();
                 var d = {};
                 d.width = '100%';

@@ -37,6 +37,7 @@ define([
             this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
+            Common.Dispatcher.on('toogle:result', this.toogleResult, this);
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
@@ -310,7 +311,7 @@ define([
             }
         },
         toogleResult: function (event) {
-            if ($(event.target).hasClass('fa-caret-left')) {
+            if ($(event.target).hasClass('fa-caret-left') || $(event.target).find('.fa-caret-left').length > 0) {
                 this.parent.openResultContainer($(event.target));
             } else {
                 this.parent.closeResultContainer($(event.target));
