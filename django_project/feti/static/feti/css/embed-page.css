@@ -3,6 +3,21 @@
     overflow: hidden;
 }
 
+#embed-loading-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 99;
+    background-color: #F0EFEF;
+    opacity: 0.7;
+}
+
+#embed-loading-wrapper img {
+    height: auto;
+}
+
 #feti-logo {
     position: absolute;
     z-index: 100;
@@ -42,6 +57,7 @@
     padding-top: 0px !important;
     top: 0 !important;
     width: 100%;
+    z-index: 110;
 }
 
 #result-title {
@@ -52,6 +68,19 @@
 
 #result-container-wrapper {
     padding-top: 35px !important;
+}
+
+#toogle-button {
+    position: absolute;
+    z-index: 100;
+    right: 0px;
+    top: 0px;
+    padding: 5px;
+    z-index: 120;
+}
+
+#toogle-button:hover {
+    opacity: 1;
 }
 
 .embed-result {
@@ -67,8 +96,21 @@
     display: none !important;
 }
 
+.leaflet-bar {
+    display: none !important;
+}
+
 .leaflet-control {
     margin-top: 0px !important;
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+    font-size: 10px;
+    width: 150px !important;
+}
+
+.leaflet-popup-content-wrapper h3 {
+    font-size: 13px;
 }
 
 .map-section {
@@ -104,32 +146,6 @@
     margin-right: 10px;
 }
 
-.leaflet-popup-content-wrapper .leaflet-popup-content {
-    font-size: 10px;
-    width: 150px !important;
-}
-
-.leaflet-popup-content-wrapper h3 {
-    font-size: 13px;
-}
-
-.leaflet-bar {
-    display: none !important;
-}
-
-#toogle-button {
-    position: absolute;
-    z-index: 100;
-    right: 0px;
-    top: 0px;
-    padding: 5px;
-    z-index: 120;
-}
-
-#toogle-button:hover {
-    opacity: 1;
-}
-
 .round-button {
     width: 30px;
     height: 30px;
@@ -158,8 +174,4 @@
 
 .round-button-circle:hover {
     background: rgba(29, 104, 179, 0.3);
-}
-
-#result {
-    z-index: 110;
 }
