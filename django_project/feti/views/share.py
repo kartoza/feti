@@ -39,8 +39,8 @@ class SharingMixin(object):
             sqs = SearchQuerySet()
             sqs = sqs.filter(
                 SQ(campus=query) | SQ(campus_provider=query),
-                campus_location_isnull='false',
-                courses_isnull='false'
+                campus_location_is_null='false',
+                courses_is_null='false'
             ).models(Campus)
             campus_data = []
 

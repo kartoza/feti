@@ -34,11 +34,7 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
 
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             if 'min_score' not in search_kwargs:
-                if len(search_kwargs['query']['filtered']
-                       ['query']['query_string']['query'].split('OR')) > ELASTIC_MIN_SCORE:
-                    search_kwargs["min_score"] = 0
-                else:
-                    search_kwargs["min_score"] = ELASTIC_MIN_SCORE
+                search_kwargs["min_score"] = ELASTIC_MIN_SCORE
 
             search_kwargs['query']['filtered']['query']['query_string'][
                 'fuzziness'] = 'AUTO'
