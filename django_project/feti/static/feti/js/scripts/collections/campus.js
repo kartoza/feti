@@ -79,14 +79,17 @@ define([
                 }
                 var campus = {
                     "id": row["campus_id"],
-                    "campus": row["campus_campus"],
+                    "campus": row["campus"],
+                    "provider": row["campus_provider"],
                     "location": latlng,
                     "title": campusTitle,
                     "icon": row["campus_icon"],
                     "courses": [],
                     "model": 'campus',
-                    "_campus_popup": row["campus_popup"],
-                    "saved": campus_is_favorite
+                    "address": row["campus_address"],
+                    "website": row["campus_website"],
+                    "saved": campus_is_favorite,
+                    "campus_phone": row["campus_phone"],
                 };
                 return campus;
             }
