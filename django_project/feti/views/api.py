@@ -186,8 +186,7 @@ class ApiCampus(SearchCampus):
                 del stored_fields['campus_auto']
                 del stored_fields['long_description']
                 del stored_fields['text']
-                del stored_fields['campus_address']
-                del stored_fields['campus_website']
+                del stored_fields['campus_popup']
 
                 campus_data.append(stored_fields)
 
