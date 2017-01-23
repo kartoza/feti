@@ -25,3 +25,11 @@ class LandingPage(TemplateView):
             serializer = BaseFavoriteSerializer(campus_course_fav, many=True)
             context['favorite'] = json.dumps(serializer.data)
         return context
+
+
+class EmbedPage(LandingPage):
+    template_name = 'feti/embed_page.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(EmbedPage, self).get_context_data(**kwargs)
+        return context

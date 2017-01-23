@@ -35,6 +35,9 @@ define([
             this.isFullScreen = false;
 
             this.animationSpeed = 400;
+            if (Common.EmbedVersion) {
+                this.animationSpeed = 0;
+            }
 
             this.mapContainerWidth = 0;
             this.mapContainerHeight = 0;
@@ -65,6 +68,7 @@ define([
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
             Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
+            Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
 
             this.modesLayer = {
                 'provider': L.featureGroup(),
@@ -81,7 +85,7 @@ define([
         render: function () {
             this.$el.html(this.template());
             $('#map-section').append(this.$el);
-            this.map = L.map(this.$('#feti-map')[0]).setView([-29, 20], 6);
+            this.map = L.map(this.$('#feti-map')[0]).setView([-32.35, 20], 7);
 
             var that = this;
             // init click
@@ -254,7 +258,10 @@ define([
 
             this.locationFilterBar.options.position = 'topleft';
             this.locationFilterBar.options.id = 'filter-bar-container';
-            this.locationFilterBar.addTo(this.map);
+
+            if (!Common.EmbedVersion) {
+                this.locationFilterBar.addTo(this.map);
+            }
 
             // Share bar
 
@@ -327,7 +334,9 @@ define([
             this.shareBar.options.position = 'topright';
             this.shareBar.options.id = 'share-bar-container';
 
-            this.shareBar.addTo(this.map);
+            if (!Common.EmbedVersion) {
+                this.shareBar.addTo(this.map);
+            }
 
             this.hideShareBar();
         },
@@ -338,10 +347,18 @@ define([
             $('#share-url-button').hide();
         },
         showShareBar: function () {
+            var mode = Common.CurrentSearchMode;
+
+            // No need to share link and twitter in favorites
+            if(mode != 'favorites') {
+                $('#share-twitter-button').show();
+                $('#share-url-button').show();
+            } else {
+                $('#share-twitter-button').hide();
+                $('#share-url-button').hide();
+            }
             $('#share-pdf-button').show();
             $('#share-email-button').show();
-            $('#share-twitter-button').show();
-            $('#share-url-button').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
@@ -390,6 +407,7 @@ define([
         },
         drawStop: function (e) {
             Common.Dispatcher.trigger('search:updateRouter');
+            this.isDrawing = false;
         },
         enablePolygonDrawer: function () {
             this.isDrawing = true;
@@ -480,7 +498,6 @@ define([
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
 
             this.modesLayer[mode].addLayer(layer);
-            this.repositionMap(mode);
 
             if (this.map.hasLayer(this.modesLayer[opposite])) {
                 this.map.removeLayer(this.modesLayer[opposite]);
@@ -490,7 +507,10 @@ define([
             }
         },
         repositionMap: function (mode) {
-            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
+            if (!this.modesLayer[mode]) {
+                return;
+            }
+            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -500,10 +520,17 @@ define([
                 this.map.removeLayer(this.modesLayer[fromMode]);
             }
             if (toMode == 'occupation') {
+                this.hideShareBar();
                 return;
             }
             if (!this.map.hasLayer(this.modesLayer[toMode])) {
                 this.map.addLayer(this.modesLayer[toMode]);
+                if(this.modesLayer[toMode].getLayers().length > 0) {
+                    this.repositionMap(toMode);
+                    this.showShareBar();
+                } else {
+                    this.hideShareBar();
+                }
             }
         },
         removeLayer: function (layer) {
@@ -647,18 +674,22 @@ define([
         openResultContainer: function (div) {
             var that = this;
             if (!this.sideBarView.is_open()) {
-                div.removeClass('fa-caret-left');
-                div.addClass('fa-caret-right');
+                if (!Common.EmbedVersion) {
+                    div.removeClass('fa-caret-left');
+                    div.addClass('fa-caret-right');
+                }
                 this.sideBarView.open();
                 // change map width
                 var $mapContainer = $('#feti-map');
                 var d = {};
                 d.width = $('#shadow-map').width() - $('#result-wrapper').width();
                 d.height = '100%';
-                $mapContainer.animate(d, 500, function () {
-                    $mapContainer.css('padding-right', '500px');
-                    that.updateMapSize();
-                });
+                if (!Common.EmbedVersion) {
+                    $mapContainer.animate(d, 500, function () {
+                        $mapContainer.css('padding-right', '500px');
+                        that.updateMapSize();
+                    });
+                }
             }
             this.sideBarView.showMapCover();
             this.sideBarView.updateOccupationDetail();
@@ -667,8 +698,10 @@ define([
             var $mapContainer = $('#feti-map');
 
             if (this.sideBarView.is_open()) {
-                div.removeClass('fa-caret-right');
-                div.addClass('fa-caret-left');
+                if (!Common.EmbedVersion) {
+                    div.removeClass('fa-caret-right');
+                    div.addClass('fa-caret-left');
+                }
                 this.sideBarView.close();
                 var d = {};
                 d.width = '100%';

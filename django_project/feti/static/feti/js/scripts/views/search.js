@@ -1,5 +1,5 @@
 define([
-    'text!static/feti/js/scripts/templates/searchbar.html',
+    'text!/static/feti/js/scripts/templates/searchbar.html',
     'common',
     '/static/feti/js/scripts/collections/occupation.js',
     '/static/feti/js/scripts/collections/campus.js',
@@ -37,6 +37,7 @@ define([
             this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
+            Common.Dispatcher.on('toogle:result', this.toogleResult, this);
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
@@ -282,7 +283,10 @@ define([
             }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
+
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
+            Common.Dispatcher.trigger('map:repositionMap', mode);
+
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
             if (mode) {
@@ -290,7 +294,7 @@ define([
                 this.$search_clear.show();
             }
 
-            if (num > 0) {
+            if (num > 0 && mode != 'occupation') {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
             } else {
@@ -302,13 +306,15 @@ define([
             }
         },
         showResult: function (mode) {
-            if (this.map_in_fullscreen) {
-                var $toggle = $('#result-toogle');
-                this.parent.openResultContainer($toggle);
+            if (!Common.EmbedVersion) {
+                if (this.map_in_fullscreen) {
+                    var $toggle = $('#result-toogle');
+                    this.parent.openResultContainer($toggle);
+                }
             }
         },
         toogleResult: function (event) {
-            if ($(event.target).hasClass('fa-caret-left')) {
+            if ($(event.target).hasClass('fa-caret-left') || $(event.target).find('.fa-caret-left').length > 0) {
                 this.parent.openResultContainer($(event.target));
             } else {
                 this.parent.closeResultContainer($(event.target));

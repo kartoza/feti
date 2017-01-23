@@ -11,8 +11,11 @@ define([
             var currentRoute = Backbone.history.getFragment().split('/');
             if(currentRoute.length > 2) {
                 window.location = url + currentRoute[1] + '/' + currentRoute[2];
+            } else if(currentRoute.indexOf('favorites') > 0) {
+                window.location = url + currentRoute[1] + '/all';
             }
-        };
+        }
+        ;
 
         this.shareEmail = function() {
             var currentRoute = Backbone.history.getFragment().split('/');

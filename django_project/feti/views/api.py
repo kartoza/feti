@@ -12,7 +12,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from haystack.query import SQ, SearchQuerySet
-from haystack.inputs import Clean
+from haystack.inputs import Clean, Exact
 from haystack.utils.geo import Point, D
 
 from feti.models.campus_course_entry import CampusCourseEntry
@@ -20,6 +20,7 @@ from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
 from feti.serializers.favorite_serializer import FavoriteSerializer
 from user_profile.models import CampusCoursesFavorite
+from feti.models.campus import Campus
 
 from map_administrative.views import get_boundary
 
@@ -145,14 +146,13 @@ class ApiCampus(SearchCampus):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query, options=None):
-        campuses = None
         q = Clean(query)
         sqs = SearchQuerySet()
         sqs = sqs.filter(
-            SQ(campus_campus=q) | SQ(campus_provider=q),
-            campus_location_isnull='false',
-            courses_isnull='false'
-        )
+            long_description=q,
+            campus_location_is_null='false',
+            courses_is_null='false'
+        ).models(Campus)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
@@ -177,6 +177,17 @@ class ApiCampus(SearchCampus):
                     stored_fields['campus_location'] = "{0},{1}".format(
                         campus_location.y, campus_location.x
                     )
+
+                del stored_fields['courses_is_null']
+                del stored_fields['campus_is_null']
+                del stored_fields['campus_location_is_null']
+                del stored_fields['courses_id']
+                del stored_fields['provider_primary_institution']
+                del stored_fields['campus_auto']
+                del stored_fields['long_description']
+                del stored_fields['text']
+                del stored_fields['campus_popup']
+
                 campus_data.append(stored_fields)
 
         return campus_data
@@ -195,27 +206,52 @@ class ApiCourse(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
 
+    def filter_by_saqa_ids(self, saqa_ids, options=None):
+        # Filter by exact value of saqa id
+
+        results = []
+
+        if not saqa_ids:
+            return results
+
+        for saqa_id in saqa_ids:
+            sqs = SearchQuerySet().filter(
+                course_nlrd=Exact(saqa_id)
+            ).models(CampusCourseEntry)
+            if options and 'shape' in options:
+                if options['type'] == 'polygon':
+                    sqs = self.filter_polygon(sqs, options['shape'])
+                elif options['type'] == 'circle':
+                    sqs = self.filter_radius(
+                            sqs,
+                            options['shape'],
+                            options['radius']
+                    )
+
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                    results.append(stored_fields)
+
+        return results
+
     def filter_model(self, query, options=None):
-        sqs = None
-        campuses = None
 
         if '=' in query:
             queries = query.split('=')
             # search by saqa id
             if 'saqa_id' in queries[0] and len(queries) > 1:
                 saqa_ids = queries[1].split(',')
-                try:
-                    sqs = SearchQuerySet().filter(
-                        course_nlrd__in=saqa_ids
-                    ).models(CampusCourseEntry)
-                except MultipleObjectsReturned as e:
-                    print(e)
+                return self.filter_by_saqa_ids(saqa_ids, options)
 
-        if not sqs:
-            sqs = SearchQuerySet().filter(
-                course_course_description=query,
-                campus_location_isnull='false',
-            ).models(CampusCourseEntry)
+        sqs = SearchQuerySet().filter(
+            course_course_description=query,
+            campus_location_isnull='false',
+        ).models(CampusCourseEntry)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
@@ -262,19 +298,21 @@ class ApiOccupation(APIView):
 
 class ApiSavedCampus(APIView):
 
-    def get(self, request, format=None):
-
-        if not self.request.user.is_authenticated():
-            return HttpResponse('Unauthorized', status=401)
-
-        # Get coordinates from request and create a polygon
-        shape = request.GET.get('shape')
+    def filter_model(self, user, options=None, query=None):
         drawn_polygon = None
         drawn_circle = None
+        shape = None
+        administrative = None
         radius = 0
 
-        if shape == 'polygon':
-            coord_string = request.GET.get('coordinates')
+        if options:
+            if 'shape' in options:
+                shape = options['shape']
+            if 'administrative' in options:
+                administrative = get_boundary(options['administrative'])
+
+        if shape and shape == 'polygon':
+            coord_string = options['coordinates']
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 poly = []
@@ -282,30 +320,55 @@ class ApiSavedCampus(APIView):
                     poly.append((c['lng'], c['lat']))
                 poly.append(poly[0])
                 drawn_polygon = Polygon(poly)
-        elif shape == 'circle':
-            coord_string = request.GET.get('coordinate')
-            radius = request.GET.get('radius')
+        elif shape and shape == 'circle':
+            coord_string = options['coordinates']
+            radius = options['radius']
+
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
 
-        boundary = get_boundary(request.GET.get('administrative'))
-        if boundary:
-            drawn_polygon = boundary.polygon_geometry
+        if administrative:
+            boundary = get_boundary(administrative)
+            if boundary:
+                drawn_polygon = boundary.polygon_geometry
 
         campus_course_fav = CampusCoursesFavorite.objects.filter(
-            user=self.request.user)
+                user=user)
 
         if drawn_polygon:
             campus_course_fav = campus_course_fav.filter(
                     campus__location__within=drawn_polygon
-                )
+            )
         elif drawn_circle:
             campus_course_fav = campus_course_fav.filter(
                     campus__location__distance_lt=(drawn_circle, Distance(m=radius))
-                )
+            )
 
-        serializer = FavoriteSerializer(campus_course_fav, many=True)
+        return campus_course_fav
+
+    def get(self, request, format=None):
+        if not self.request.user.is_authenticated():
+            return HttpResponse('Unauthorized', status=401)
+
+        # Get coordinates from request and create a polygon
+        shape = request.GET.get('shape')
+        options = dict()
+
+        if shape:
+            options['shape'] = shape
+        if shape == 'polygon':
+            options['coordinates'] = request.GET.get('coordinates')
+        elif shape == 'circle':
+            options['coordinates'] = request.GET.get('coordinate')
+            options['radius'] = request.GET.get('radius')
+        administrative = request.GET.get('administrative')
+        if administrative:
+            options['administrative'] = administrative
+
+        favorites = self.filter_model(user=self.request.user, options=options)
+
+        serializer = FavoriteSerializer(favorites, many=True)
         return Response(serializer.data)
 
 
