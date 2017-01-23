@@ -298,19 +298,21 @@ class ApiOccupation(APIView):
 
 class ApiSavedCampus(APIView):
 
-    def get(self, request, format=None):
-
-        if not self.request.user.is_authenticated():
-            return HttpResponse('Unauthorized', status=401)
-
-        # Get coordinates from request and create a polygon
-        shape = request.GET.get('shape')
+    def filter_model(self, user, options=None, query=None):
         drawn_polygon = None
         drawn_circle = None
+        shape = None
+        administrative = None
         radius = 0
 
-        if shape == 'polygon':
-            coord_string = request.GET.get('coordinates')
+        if options:
+            if 'shape' in options:
+                shape = options['shape']
+            if 'administrative' in options:
+                administrative = get_boundary(options['administrative'])
+
+        if shape and shape == 'polygon':
+            coord_string = options['coordinates']
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 poly = []
@@ -318,30 +320,55 @@ class ApiSavedCampus(APIView):
                     poly.append((c['lng'], c['lat']))
                 poly.append(poly[0])
                 drawn_polygon = Polygon(poly)
-        elif shape == 'circle':
-            coord_string = request.GET.get('coordinate')
-            radius = request.GET.get('radius')
+        elif shape and shape == 'circle':
+            coord_string = options['coordinates']
+            radius = options['radius']
+
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
 
-        boundary = get_boundary(request.GET.get('administrative'))
-        if boundary:
-            drawn_polygon = boundary.polygon_geometry
+        if administrative:
+            boundary = get_boundary(administrative)
+            if boundary:
+                drawn_polygon = boundary.polygon_geometry
 
         campus_course_fav = CampusCoursesFavorite.objects.filter(
-            user=self.request.user)
+                user=user)
 
         if drawn_polygon:
             campus_course_fav = campus_course_fav.filter(
                     campus__location__within=drawn_polygon
-                )
+            )
         elif drawn_circle:
             campus_course_fav = campus_course_fav.filter(
                     campus__location__distance_lt=(drawn_circle, Distance(m=radius))
-                )
+            )
 
-        serializer = FavoriteSerializer(campus_course_fav, many=True)
+        return campus_course_fav
+
+    def get(self, request, format=None):
+        if not self.request.user.is_authenticated():
+            return HttpResponse('Unauthorized', status=401)
+
+        # Get coordinates from request and create a polygon
+        shape = request.GET.get('shape')
+        options = dict()
+
+        if shape:
+            options['shape'] = shape
+        if shape == 'polygon':
+            options['coordinates'] = request.GET.get('coordinates')
+        elif shape == 'circle':
+            options['coordinates'] = request.GET.get('coordinate')
+            options['radius'] = request.GET.get('radius')
+        administrative = request.GET.get('administrative')
+        if administrative:
+            options['administrative'] = administrative
+
+        favorites = self.filter_model(user=self.request.user, options=options)
+
+        serializer = FavoriteSerializer(favorites, many=True)
         return Response(serializer.data)
 
 

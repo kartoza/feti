@@ -21,7 +21,8 @@ from feti.models.campus import Campus
 from feti.models.url import URL
 from feti.views.api import (
     ApiCourse,
-    ApiCampus
+    ApiCampus,
+    ApiSavedCampus
 )
 
 
@@ -32,7 +33,7 @@ class SharingMixin(object):
     def get_course_names(self):
         return self.courses_name
 
-    def get_campus(self, provider, query):
+    def get_campus(self, provider, query, user=None):
         api = None
         # Get data
         if provider == 'provider':
@@ -56,20 +57,33 @@ class SharingMixin(object):
             return campus_data
         elif provider == 'course':
             api = ApiCourse()
+        elif provider == 'favorites':
+            api = ApiSavedCampus()
+            return api.filter_model(user=user)
         if api:
             campuses = api.filter_model(query)
             self.courses_name = api.courses_name
             return campuses
         return None
 
-    def download_map(self, filename, markers):
+    def download_map(self, filename, markers, provider=None):
         osm_static_url = 'http://staticmap.openstreetmap.de/staticmap.php?center=-30.5,24&' \
                          'zoom=6&size=865x512&maptype=mapnik'
+        check_existence = True
+
         if markers:
             osm_static_url += '&markers='+markers
+
+        if provider:
+            if provider == 'favorites':
+                check_existence = False
+
         path = os.path.join(settings.MEDIA_ROOT, filename)
 
         # Check if file already exists
+        if not check_existence:
+            os.remove(path)
+
         if not default_storage.exists(path):
             try:
                 urllib.request.urlretrieve(osm_static_url, path)
@@ -99,12 +113,12 @@ class PDFDownload(TemplateView, SharingMixin):
 
         slug = self.kwargs.get('provider', None)
         query = self.kwargs.get('query', None)
-        campuses = self.get_campus(provider=slug, query=query)
+        campuses = self.get_campus(provider=slug, query=query, user=self.request.user)
         course_names = self.get_course_names()
 
         markers = ''
 
-        if slug != 'provider':
+        if slug == 'course':
             pdf_data = list(
                 unique_everseen(
                     [{
@@ -115,20 +129,27 @@ class PDFDownload(TemplateView, SharingMixin):
                      }
                      for x in campuses])
             )
-
             for idx, campus in enumerate(pdf_data):
                 location = campus['location'].split(',')
                 markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
             campuses = pdf_data
-
-        else:
+        elif slug == 'provider':
             for idx, campus in enumerate(campuses):
                 location = campus['campus_location'].split(',')
                 markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+        elif slug == 'favorites':
+            query = self.request.user
+            campuses = list(campuses)
+            for idx, campus in enumerate(campuses):
+                location = campus.campus.location.coords
+                campus.campus_website = campus.campus.provider.website
+                campus.campus_provider = campus.campus.provider
+                campus.campus_address = campus.campus.address.address_line
+                markers += '%s,%s,bluelight%s|' % (location[1], location[0], str(idx))
 
         filename = '%s-%s.png' % (query, slug)
 
-        self.download_map(filename=filename, markers=markers)
+        self.download_map(filename=filename, markers=markers, provider=slug)
 
         template = get_template("feti/pdf_template.html")
 

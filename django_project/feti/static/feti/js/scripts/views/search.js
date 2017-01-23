@@ -294,7 +294,7 @@ define([
                 this.$search_clear.show();
             }
 
-            if (num > 0) {
+            if (num > 0 && mode != 'occupation') {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
             } else {
