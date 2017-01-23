@@ -12,7 +12,6 @@ define([
             if(currentRoute.length > 2) {
                 window.location = url + currentRoute[1] + '/' + currentRoute[2];
             } else if(currentRoute.indexOf('favorites') > 0) {
-                console.log(url+currentRoute[1]+'all');
                 window.location = url + currentRoute[1] + '/all';
             }
         }
