@@ -12,7 +12,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from haystack.query import SQ, SearchQuerySet
-from haystack.inputs import Clean
+from haystack.inputs import Clean, Exact
 from haystack.utils.geo import Point, D
 
 from feti.models.campus_course_entry import CampusCourseEntry
@@ -206,26 +206,52 @@ class ApiCourse(SearchCampus):
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
 
+    def filter_by_saqa_ids(self, saqa_ids, options=None):
+        # Filter by exact value of saqa id
+
+        results = []
+
+        if not saqa_ids:
+            return results
+
+        for saqa_id in saqa_ids:
+            sqs = SearchQuerySet().filter(
+                course_nlrd=Exact(saqa_id)
+            ).models(CampusCourseEntry)
+            if options and 'shape' in options:
+                if options['type'] == 'polygon':
+                    sqs = self.filter_polygon(sqs, options['shape'])
+                elif options['type'] == 'circle':
+                    sqs = self.filter_radius(
+                            sqs,
+                            options['shape'],
+                            options['radius']
+                    )
+
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                    results.append(stored_fields)
+
+        return results
+
     def filter_model(self, query, options=None):
-        sqs = None
 
         if '=' in query:
             queries = query.split('=')
             # search by saqa id
             if 'saqa_id' in queries[0] and len(queries) > 1:
                 saqa_ids = queries[1].split(',')
-                try:
-                    sqs = SearchQuerySet().filter(
-                        course_nlrd__in=saqa_ids
-                    ).models(CampusCourseEntry)
-                except MultipleObjectsReturned as e:
-                    print(e)
+                return self.filter_by_saqa_ids(saqa_ids, options)
 
-        if not sqs:
-            sqs = SearchQuerySet().filter(
-                course_course_description=query,
-                campus_location_isnull='false',
-            ).models(CampusCourseEntry)
+        sqs = SearchQuerySet().filter(
+            course_course_description=query,
+            campus_location_isnull='false',
+        ).models(CampusCourseEntry)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
