@@ -45,6 +45,10 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='provider__website',
         null=True
     )
+    campus_phone = indexes.CharField(
+        model_attr='address__phone',
+        null=True,
+    )
     campus_auto = indexes.EdgeNgramField(model_attr='campus')
 
     provider_primary_institution = indexes.EdgeNgramField()
