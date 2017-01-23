@@ -347,10 +347,18 @@ define([
             $('#share-url-button').hide();
         },
         showShareBar: function () {
+            var mode = Common.CurrentSearchMode;
+
+            // No need to share link and twitter in favorites
+            if(mode != 'favorites') {
+                $('#share-twitter-button').show();
+                $('#share-url-button').show();
+            } else {
+                $('#share-twitter-button').hide();
+                $('#share-url-button').hide();
+            }
             $('#share-pdf-button').show();
             $('#share-email-button').show();
-            $('#share-twitter-button').show();
-            $('#share-url-button').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
@@ -502,9 +510,7 @@ define([
             if (!this.modesLayer[mode]) {
                 return;
             }
-            if (this.modesLayer[mode].getLayers().length > 0) {
-                this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
-            }
+            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -514,11 +520,17 @@ define([
                 this.map.removeLayer(this.modesLayer[fromMode]);
             }
             if (toMode == 'occupation') {
+                this.hideShareBar();
                 return;
             }
             if (!this.map.hasLayer(this.modesLayer[toMode])) {
-                this.repositionMap(toMode);
                 this.map.addLayer(this.modesLayer[toMode]);
+                if(this.modesLayer[toMode].getLayers().length > 0) {
+                    this.repositionMap(toMode);
+                    this.showShareBar();
+                } else {
+                    this.hideShareBar();
+                }
             }
         },
         removeLayer: function (layer) {
