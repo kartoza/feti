@@ -81,7 +81,7 @@ class SharingMixin(object):
         path = os.path.join(settings.MEDIA_ROOT, filename)
 
         # Check if file already exists
-        if not check_existence:
+        if not check_existence and default_storage.exists(path):
             os.remove(path)
 
         if not default_storage.exists(path):
