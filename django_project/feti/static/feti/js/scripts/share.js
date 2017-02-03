@@ -11,8 +11,11 @@ define([
             var currentRoute = Backbone.history.getFragment().split('/');
             if(currentRoute.length > 2) {
                 window.location = url + currentRoute[1] + '/' + currentRoute[2];
+            } else if(currentRoute.indexOf('favorites') > 0) {
+                window.location = url + currentRoute[1] + '/all';
             }
-        };
+        }
+        ;
 
         this.shareEmail = function() {
             var currentRoute = Backbone.history.getFragment().split('/');
@@ -69,9 +72,12 @@ define([
         this.shareURL = function () {
             // get url
             var host = Backbone.history.location.host;
+            $('input#clipboard').select();
+            $('#copy-status').html('');
 
             _generateURL(function (data) {
-                window.prompt("Copy to clipboard: Ctrl+C, Enter", host+'/url/'+data);
+                $('#clipboard-modal').modal('toggle');
+                $('#clipboard').val(host+'/url/'+data);
             });
         };
 
@@ -86,7 +92,20 @@ define([
                 }),
                 success: callback
             });
-        }
+        };
+
+        $('#copy-clipboard').click(function () {
+            var clipboard = $('#clipboard').val();
+
+            if(clipboard) {
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val(clipboard).select();
+                document.execCommand("copy");
+                $temp.remove();
+                $('#copy-status').html('Copied to clipboard.');
+            }
+        })
     };
 
     return Share;

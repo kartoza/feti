@@ -35,6 +35,9 @@ define([
             this.isFullScreen = false;
 
             this.animationSpeed = 400;
+            if (Common.EmbedVersion) {
+                this.animationSpeed = 0;
+            }
 
             this.mapContainerWidth = 0;
             this.mapContainerHeight = 0;
@@ -65,6 +68,7 @@ define([
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
             Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
+            Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
 
             this.modesLayer = {
                 'provider': L.featureGroup(),
@@ -72,7 +76,7 @@ define([
                 'favorites': L.featureGroup()
             }
         },
-        updateMapSize: function() {
+        updateMapSize: function () {
             this.map._onResize();
         },
         backHome: function () {
@@ -81,7 +85,7 @@ define([
         render: function () {
             this.$el.html(this.template());
             $('#map-section').append(this.$el);
-            this.map = L.map(this.$('#feti-map')[0]).setView([-29, 20], 6);
+            this.map = L.map(this.$('#feti-map')[0]).setView([-32.35, 20], 7);
 
             var that = this;
             // init click
@@ -121,8 +125,8 @@ define([
             this.map.addControl(drawControl);
 
             // Draw events
-            this.map.on('draw:drawstop', this.drawStop, this);
-            this.map.on('draw:created', this.drawCreated, this);
+            this.map.on(L.Draw.Event.CREATED, this.drawCreated, this);
+            this.map.on(L.Draw.Event.DRAWSTOP, this.drawStop, this);
 
             // Add marker for userlocation
             if (Common.UserLocation != 'None') {
@@ -148,9 +152,9 @@ define([
                     title: 'cancel',
                     onClick: function (btn, map) {
                         btn.state(previousState);
-                        _this._enableOtherControlButtons();
-                        switch (previousState)
-                        {
+
+                        _this._enableOtherControlButtons('clear');
+                        switch (previousState) {
                             case 'locationButton':
                                 _this.disableLocationFilter();
                                 break;
@@ -172,7 +176,7 @@ define([
                     {
                         stateName: 'locationButton',
                         icon: 'fa-globe',
-                        title: 'location',
+                        title: 'Filter map by location',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
                             _this.searchView.clearAllDraw();
@@ -189,7 +193,7 @@ define([
                     {
                         stateName: 'polygonButton',
                         icon: 'fa-square-o',
-                        title: 'polygon',
+                        title: 'Filter map by polygon',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
                             _this.searchView.clearAllDraw();
@@ -211,7 +215,7 @@ define([
                     {
                         stateName: 'circleButton',
                         icon: 'fa-circle-o',
-                        title: 'circle',
+                        title: 'Filter map by circle',
                         onClick: function (btn, map) {
                             btn.state('deactivate');
                             _this.searchView.clearAllDraw();
@@ -233,7 +237,7 @@ define([
                     {
                         stateName: 'clearButton',
                         icon: 'fa-trash-o',
-                        title: 'clear',
+                        title: 'Clear filter',
                         onClick: function (btn, map) {
                             btn.disable();
                             _this.clearAllDrawnLayer();
@@ -246,15 +250,18 @@ define([
             this.clearButton.disable();
 
             this.locationFilterBar = L.easyBar([
-                    this.locationButton,
-                    this.polygonButton,
-                    this.circleButton,
-                    this.clearButton
-                ]);
+                this.locationButton,
+                this.polygonButton,
+                this.circleButton,
+                this.clearButton
+            ]);
 
             this.locationFilterBar.options.position = 'topleft';
             this.locationFilterBar.options.id = 'filter-bar-container';
-            this.locationFilterBar.addTo(this.map);
+
+            if (!Common.EmbedVersion) {
+                this.locationFilterBar.addTo(this.map);
+            }
 
             // Share bar
 
@@ -327,7 +334,9 @@ define([
             this.shareBar.options.position = 'topright';
             this.shareBar.options.id = 'share-bar-container';
 
-            this.shareBar.addTo(this.map);
+            if (!Common.EmbedVersion) {
+                this.shareBar.addTo(this.map);
+            }
 
             this.hideShareBar();
         },
@@ -338,28 +347,44 @@ define([
             $('#share-url-button').hide();
         },
         showShareBar: function () {
+            var mode = Common.CurrentSearchMode;
+
+            // No need to share link and twitter in favorites
+            if(mode != 'favorites') {
+                $('#share-twitter-button').show();
+                $('#share-url-button').show();
+            } else {
+                $('#share-twitter-button').hide();
+                $('#share-url-button').hide();
+            }
             $('#share-pdf-button').show();
             $('#share-email-button').show();
-            $('#share-twitter-button').show();
-            $('#share-url-button').show();
         },
         _disableOtherControlButtons: function (currentControl) {
-            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
-                if(this.locationFilterBar._buttons[i] != currentControl) {
+            for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
+                if (this.locationFilterBar._buttons[i] != currentControl) {
                     this.locationFilterBar._buttons[i].disable();
                 }
             }
         },
-        _enableOtherControlButtons: function () {
-            for(var i=0; i < this.locationFilterBar._buttons.length; i++) {
-                this.locationFilterBar._buttons[i].enable();
+        _enableOtherControlButtons: function (excluded) {
+            for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
+                var button_title = this.locationFilterBar._buttons[i]._states[0].title;
+
+                if (this.locationFilterBar._buttons[i] != this.clearButton) {
+                    this.locationFilterBar._buttons[i].enable();
+                }
+
+                if (typeof excluded != 'undefined' && excluded == button_title) {
+                    this.locationFilterBar._buttons[i].disable();
+                }
             }
         },
         onMouseMove: function (e) {
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
         },
-        _onSearchBarCategoryClicked: function(newMode, oldMode) {
+        _onSearchBarCategoryClicked: function (newMode, oldMode) {
             this.fullScreenMap();
             this._changeSearchLayer(oldMode, newMode);
         },
@@ -373,15 +398,16 @@ define([
 
             if (type === 'polygon') {
                 this.polygonLayer = layer;
-                this.map.fire('finishedDrawing', { 'layerType' : 'polygon'});
+                this.map.fire('finishedDrawing', {'layerType': 'polygon'});
             } else if (type === 'circle') {
                 this.circleLayer = layer;
-                this.map.fire('finishedDrawing', { 'layerType' : 'circle'});
+                this.map.fire('finishedDrawing', {'layerType': 'circle'});
             }
             this._enableOtherControlButtons();
         },
         drawStop: function (e) {
             Common.Dispatcher.trigger('search:updateRouter');
+            this.isDrawing = false;
         },
         enablePolygonDrawer: function () {
             this.isDrawing = true;
@@ -406,23 +432,23 @@ define([
             this.circleDrawer.disable();
         },
         enableLocationFilter: function () {
-            $('.leaflet-container').css('cursor','pointer');
+            $('.leaflet-container').css('cursor', 'pointer');
             this.layerAdministrativeView.activate();
 
             // Add tooltip
-            this._tooltip = new L.Tooltip(this.map);
+            this._tooltip = new L.Draw.Tooltip(this.map);
             this._tooltip.updateContent({
-				text: 'Click the map to show boundary'
-			});
+                text: 'Click the map to show boundary'
+            });
             this.map.on('mousemove', this.onMouseMove, this);
         },
         disableLocationFilter: function () {
-            $('.leaflet-container').css('cursor','');
+            $('.leaflet-container').css('cursor', '');
             this.layerAdministrativeView.deactivate();
 
             // Remove tooltip
             $('.leaflet-draw-tooltip').hide();
-			this._tooltip = null;
+            this._tooltip = null;
             this.map.off('mousemove', this.onMouseMove, this)
         },
         clearAllDrawnLayer: function () {
@@ -454,9 +480,9 @@ define([
             }
         },
         clearLayerMode: function (mode) {
-            if(this.map.hasLayer(this.modesLayer[mode])) {
+            if (this.map.hasLayer(this.modesLayer[mode])) {
                 var layers = this.modesLayer[mode].getLayers();
-                for(var i = 0; i < layers.length; i++){
+                for (var i = 0; i < layers.length; i++) {
                     this.modesLayer[mode].removeLayer(layers[i]);
                 }
                 this.map.removeLayer(this.modesLayer[mode]);
@@ -464,35 +490,47 @@ define([
         },
         addLayerToModeLayer: function (layer) {
             var mode = Common.CurrentSearchMode;
+
+            if (typeof mode == 'undefined') {
+                return
+            }
+
             var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
 
             this.modesLayer[mode].addLayer(layer);
-            this.repositionMap(mode);
 
-            if(this.map.hasLayer(this.modesLayer[opposite])) {
+            if (this.map.hasLayer(this.modesLayer[opposite])) {
                 this.map.removeLayer(this.modesLayer[opposite]);
             }
-            if(!this.map.hasLayer(this.modesLayer[mode])) {
+            if (!this.map.hasLayer(this.modesLayer[mode])) {
                 this.map.addLayer(this.modesLayer[mode]);
             }
         },
         repositionMap: function (mode) {
-            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [50, 50]});
+            if (!this.modesLayer[mode]) {
+                return;
+            }
+            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
         },
         _changeSearchLayer: function (fromMode, toMode) {
-            if(this.map.hasLayer(this.modesLayer[fromMode])) {
+            if (this.map.hasLayer(this.modesLayer[fromMode])) {
                 this.map.removeLayer(this.modesLayer[fromMode]);
             }
-            if(toMode=='occupation') {
-                this.showMapCover();
+            if (toMode == 'occupation') {
+                this.hideShareBar();
                 return;
             }
-            this.hideMapCover();
-            if(!this.map.hasLayer(this.modesLayer[toMode])) {
+            if (!this.map.hasLayer(this.modesLayer[toMode])) {
                 this.map.addLayer(this.modesLayer[toMode]);
+                if(this.modesLayer[toMode].getLayers().length > 0) {
+                    this.repositionMap(toMode);
+                    this.showShareBar();
+                } else {
+                    this.hideShareBar();
+                }
             }
         },
         removeLayer: function (layer) {
@@ -502,8 +540,13 @@ define([
             alert('maximising');
         },
         clickMap: function (e) {
+            var last_route = Common.Router.get_latest_route();
             if (!this.isFullScreen) {
-                Common.Router.navigate('map/' + Common.CurrentSearchMode, true);
+                if (last_route) {
+                    Common.Router.navigate(Common.Router.get_latest_route(), true);
+                } else {
+                    Common.Router.navigate('map/' + Common.CurrentSearchMode, true);
+                }
             }
         },
         pan: function (latLng) {
@@ -515,6 +558,9 @@ define([
         },
         search: function (mode, query, filter) {
             this.searchView.search(mode, query, filter);
+            if (mode == 'favorites') {
+                filter = query;
+            }
             if (filter && filter.indexOf('administrative') >= 0) {
                 filter = filter.split('=')[1];
                 this.layerAdministrativeView.showPolygon(filter);
@@ -627,27 +673,35 @@ define([
         },
         openResultContainer: function (div) {
             var that = this;
-            if(!this.sideBarView.is_open()) {
-                div.removeClass('fa-caret-left');
-                div.addClass('fa-caret-right');
+            if (!this.sideBarView.is_open()) {
+                if (!Common.EmbedVersion) {
+                    div.removeClass('fa-caret-left');
+                    div.addClass('fa-caret-right');
+                }
                 this.sideBarView.open();
                 // change map width
                 var $mapContainer = $('#feti-map');
                 var d = {};
                 d.width = $('#shadow-map').width() - $('#result-wrapper').width();
                 d.height = '100%';
-                $mapContainer.animate(d, 500, function () {
-                    $mapContainer.css('padding-right', '500px');
-                    that.updateMapSize();
-                });
+                if (!Common.EmbedVersion) {
+                    $mapContainer.animate(d, 500, function () {
+                        $mapContainer.css('padding-right', '500px');
+                        that.updateMapSize();
+                    });
+                }
             }
+            this.sideBarView.showMapCover();
+            this.sideBarView.updateOccupationDetail();
         },
         closeResultContainer: function (div) {
             var $mapContainer = $('#feti-map');
 
-            if(this.sideBarView.is_open()) {
-                div.removeClass('fa-caret-right');
-                div.addClass('fa-caret-left');
+            if (this.sideBarView.is_open()) {
+                if (!Common.EmbedVersion) {
+                    div.removeClass('fa-caret-right');
+                    div.addClass('fa-caret-left');
+                }
                 this.sideBarView.close();
                 var d = {};
                 d.width = '100%';
@@ -679,19 +733,10 @@ define([
             var draggable = new L.Draggable(this.circleLayer);
             draggable.enable();
         },
-        showMapCover: function () {
-            if (!this.$cover.is(":visible")) {
-                this.$cover.fadeIn(200);
-            }
-        },
-        hideMapCover: function () {
-            if (this.$cover.is(":visible")) {
-                this.$cover.fadeOut(200);
-            }
-        },
         showResultContainer: function (mode) {
             $('#result-container-wrapper').find('.result-container').hide();
-            $('#result-container-'+mode).show();
+            $('#result-container-' + mode).show();
+            this.sideBarView.hideMapCover();
         }
     });
 

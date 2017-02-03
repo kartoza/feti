@@ -1,13 +1,16 @@
 from rest_framework.response import Response
 
-from .models import Province, Country
+from .models import Province, Country, District, Municipality
 from .serializers.country_serializer import CountrySerializer
 from .serializers.province_serializer import ProvinceSerializer
+from .serializers.district_serializer import DistrictSerializer
+from .serializers.municipality_serializer import MunicipalitySerializer
 from rest_framework.views import APIView
 
 ALLOWED_COUNTRIES = ["South Africa"]
 
 
+# disabled country administrative
 def get_boundary(administrative):
     boundary = None
     if (administrative):
@@ -16,10 +19,11 @@ def get_boundary(administrative):
         try:
             for administrative in administratives:
                 if index == 0:
-                    if administrative in ALLOWED_COUNTRIES:
-                        boundary = Country.objects.get(name=administrative)
+                    boundary = Province.objects.get(name=administrative)
                 elif index == 1:
-                    boundary = Province.objects.get(name=administrative, country=boundary)
+                    boundary = District.objects.get(name=administrative, province=boundary)
+                elif index == 2:
+                    boundary = Municipality.objects.get(name=administrative, district=boundary)
                 index += 1
         except Country.DoesNotExist:
             pass
@@ -51,7 +55,21 @@ class GetAdministrative(APIView):
                         province = Province.objects.get(polygon_geometry__contains=point)
                         serializer = ProvinceSerializer(province)
                         return Response(serializer.data)
-                    except Country.DoesNotExist:
+                    except Province.DoesNotExist:
+                        pass
+                elif layer == 'district':
+                    try:
+                        district = District.objects.get(polygon_geometry__contains=point)
+                        serializer = DistrictSerializer(district)
+                        return Response(serializer.data)
+                    except District.DoesNotExist:
+                        pass
+                elif layer == 'municipality':
+                    try:
+                        municipality = Municipality.objects.get(polygon_geometry__contains=point)
+                        serializer = MunicipalitySerializer(municipality)
+                        return Response(serializer.data)
+                    except Municipality.DoesNotExist:
                         pass
             else:
                 boundary = get_boundary(request.GET.get('administrative'))

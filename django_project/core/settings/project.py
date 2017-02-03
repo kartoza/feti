@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from .contrib import *  # noqa
 
+# Exclude elastic result which have a _score less than the minimum specified in min_score
+ELASTIC_MIN_SCORE = 3.5
+
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -26,83 +29,81 @@ INSTALLED_APPS += (
     'map_administrative',
 )
 
-PIPELINE_JS = {
-    'contrib': {
-        'source_filenames': (
-            'js/jquery-1.11.3.min.js',
-            'js/bootstrap.js',
-            'js/moment.min.js',
-            'feti/js/libs/Leaflet/1.0.2/leaflet.js',
-            'feti/js/libs/ripples.min.js',
-            'feti/js/libs/validate.js',
-            'feti/leaflet-extra-markers/leaflet.extra-markers.js',
-            'feti/js/libs/underscore-1.8.3.min.js',
-            'feti/js/libs/backbone-1.3.3.min.js',
-            'feti/js/libs/jquery-ui-1.12.0.min.js',
-            'feti/js/libs/leaflet.draw-0.3.2/leaflet.draw.js',
-            'feti/js/libs/easy-button/easy-button.js',
-        ),
-        'output_filename': 'js/contrib.js',
-    },
-    'appjs': {
-        'source_filenames': (
-            'feti/js/libs/leaflet.control.share.js',
-            'js/csrf-ajax.js',
-            'feti/js/libs/require.min.js',
-        ),
-        'output_filename': 'js/appjs.js'
-    },
-    'grappelli_override': {
-        'source_filenames': (
-            'feti/js/libs/grappelli_override.js',
-        ),
-        'output_filename': 'js/grappelli_override.min.js'
-    }
-}
-
-PIPELINE_CSS = {
-    'contrib': {
-        'source_filenames': (
-            'css/bootstrap.min.css',
-            'feti/css/Leaflet-1.0.2/leaflet.css',
-            'css/bootstrap-datetimepicker.min.css',
-            'feti/leaflet-extra-markers/leaflet.extra-markers.css',
-            'feti/font-awesome/css/font-awesome.css',
-            'feti/js/libs/leaflet.draw-0.3.2/leaflet.draw.css',
-            'feti/js/libs/easy-button/easy-button.css',
-        ),
-        'output_filename': 'css/contrib.css',
-        'extra_context': {
-            'media': 'screen, projection',
+PIPELINE = {
+    'STYLESHEETS': {
+        'contrib': {
+            'source_filenames': (
+                'css/bootstrap.min.css',
+                'feti/css/leaflet.css',
+                'css/bootstrap-datetimepicker.min.css',
+                'feti/leaflet-extra-markers/leaflet.extra-markers.css',
+                'feti/font-awesome/css/font-awesome.css',
+                'feti/js/libs/leaflet.draw-0.4.9/leaflet.draw.css',
+                'feti/js/libs/easy-button/easy-button.css',
+            ),
+            'output_filename': 'css/contrib.css',
+            'extra_context': {
+                'media': 'screen, projection',
+            },
         },
-    },
-    'feti-base': {
-        'source_filenames': (
-            'feti/css/feti-base.css',
-        ),
-        'output_filename': 'css/feti-base.css',
-        'extra_context': {
-            'media': 'screen, projection',
+        'feti-base': {
+            'source_filenames': (
+                'feti/css/feti-base.css',
+            ),
+            'output_filename': 'css/feti-base.css',
+            'extra_context': {
+                'media': 'screen, projection',
+            },
         },
-    },
-    'landing_page': {
-        'source_filenames': (
-            'feti/css/landing-page.css',
-            'feti/css/responsive-tab.css',
-        ),
-        'output_filename': 'css/landing-page.css',
-        'extra_context': {
-            'media': 'screen, projection',
+        'landing_page': {
+            'source_filenames': (
+                'feti/css/landing-page.css',
+                'feti/css/responsive-tab.css',
+            ),
+            'output_filename': 'css/landing-page.css',
+            'extra_context': {
+                'media': 'screen, projection',
+            },
         },
+        'custom_page': {
+            'source_filenames': (
+                'feti/css/feti-custom-page.css',
+            ),
+            'output_filename': 'css/custom-page.css',
+            'extra_context': {
+                'media': 'screen, projection',
+            },
+        }
     },
-    'custom_page': {
-        'source_filenames': (
-            'feti/css/feti-custom-page.css',
-        ),
-        'output_filename': 'css/custom-page.css',
-        'extra_context': {
-            'media': 'screen, projection',
+    'JAVASCRIPT': {
+        'contrib': {
+            'source_filenames': (
+                'js/bootstrap.js',
+                'js/moment.min.js',
+                'feti/js/libs/Leaflet/0.7.7/leaflet.js',
+                'feti/js/libs/ripples.min.js',
+                'feti/js/libs/validate.js',
+                'feti/leaflet-extra-markers/leaflet.extra-markers.js',
+                'feti/js/libs/underscore-1.8.3.min.js',
+                'feti/js/libs/backbone-1.3.3.min.js',
+                'feti/js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
+                'feti/js/libs/easy-button/easy-button.js',
+            ),
+            'output_filename': 'js/contrib.js',
         },
+        'appjs': {
+            'source_filenames': (
+                'feti/js/libs/leaflet.control.share.js',
+                'js/csrf-ajax.js',
+            ),
+            'output_filename': 'js/appjs.js'
+        },
+        'grappelli_override': {
+            'source_filenames': (
+                'feti/js/libs/grappelli_override.js',
+            ),
+            'output_filename': 'js/grappelli_override.min.js'
+        }
     }
 }
 

@@ -1,13 +1,12 @@
 define([
-    'text!static/feti/js/scripts/templates/sidebar.html',
+    'text!/static/feti/js/scripts/templates/sidebar.html',
     'common'
 ], function (sidebarTemplate, Common) {
     var SideBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#result',
         template: _.template(sidebarTemplate),
-        events: {
-        },
+        events: {},
         initialize: function (options) {
             this.render();
             this._parent = options.parent;
@@ -30,58 +29,113 @@ define([
                 this.$result_detail.hide("slide", {direction: "right"}, 300);
             }
         },
+        updateOccupationDetail: function () {
+            if (!Common.Router.selected_occupation) {
+                this.hideOccupationDetail()
+            }
+        },
         render: function () {
             $(this.container).append(this.template());
         },
         is_open: function () {
             return this._isOpen;
         },
-        open: function() {
+        open: function () {
             this._isOpen = true;
             $(this.container).show("slide", {direction: "right"}, 500);
+            this.showMapCover();
         },
         close: function () {
             this._isOpen = false;
-            $(this.container).hide("slide", {direction: "right"}, 500);
-            this.hideOccupationDetail();
+            this.exitOccupation();
+        },
+        exitOccupation: function () {
+            var that = this;
+            var $cover = $('#shadow-map');
+            if ($cover.is(":visible")) {
+                $cover.fadeOut(500);
+                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
+                    that.exitResult();
+                });
+            } else {
+                that.exitResult();
+            }
+        },
+        exitResult: function () {
+            if ($('#result').is(":visible")) {
+                $('#result-toogle').removeClass('fa-caret-right');
+                $('#result-toogle').addClass('fa-caret-left');
+                $('#result').hide("slide", {direction: "right"}, 500);
+            }
+        },
+        showMapCover: function () {
+            if (Common.CurrentSearchMode == 'occupation') {
+                var $cover = $('#shadow-map');
+                if (!$cover.is(":visible")) {
+                    $cover.fadeIn(200);
+                }
+            }
+        },
+        hideMapCover: function () {
+            if (Common.CurrentSearchMode != 'occupation') {
+                var $cover = $('#shadow-map');
+                if ($cover.is(":visible")) {
+                    $cover.fadeOut(200);
+                }
+            }
         },
         addLoadingView: function (mode) {
             this.clearContainerDiv(mode);
-            this.$result_title.find('#result-title-'+mode).remove();
-            $('#result-container-'+mode).append(this.$loading_div.show());
+            this.$result_title.find('#result-title-' + mode).remove();
+            $('#result-container-' + mode).append(this.$loading_div.show());
+
+            // for embed version
+            if (Common.EmbedVersion) {
+                $("#embed-loading-wrapper").show();
+                $("#embed-loading-wrapper").append(this.$loading_div.show());
+                var $embedLoadingWrapper = $("#embed-loading-wrapper");
+                if ($embedLoadingWrapper.find(".result-loading").width() > $embedLoadingWrapper.width()) {
+                    $embedLoadingWrapper.find(".result-loading").width($embedLoadingWrapper.width());
+                    $embedLoadingWrapper.find("img").width($embedLoadingWrapper.width());
+                }
+            }
         },
         clearSidebar: function (mode) {
-            $('#result-container-'+mode).empty();
-            this.$result_title.find('#result-title-'+mode).remove();
+            $('#result-container-' + mode).empty();
+            this.$result_title.find('#result-title-' + mode).remove();
         },
         showEmptyResult: function (mode) {
             var $_empty_result_div = this.$empty_result_div.clone();
-            $('#result-container-'+mode).append($_empty_result_div.show());
+            $('#result-container-' + mode).append($_empty_result_div.show());
         },
         clearContainerDiv: function (mode) {
-            if($('#result-container-'+mode+' .result-empty').length > 0) {
-                $('#result-container-'+mode+' .result-empty').remove();
+            if ($('#result-container-' + mode + ' .result-empty').length > 0) {
+                $('#result-container-' + mode + ' .result-empty').remove();
             }
-            if($('#result-container-'+mode+' .result-loading').length > 0) {
-                $('#result-container-'+mode+' .result-loading').remove();
+            if ($('#result-container-' + mode + ' .result-loading').length > 0) {
+                $('#result-container-' + mode + ' .result-loading').remove();
+            }
+            // for embed version
+            if (Common.EmbedVersion) {
+                $("#embed-loading-wrapper").hide();
+                $("#embed-loading-wrapper .result-loading").remove();
             }
         },
-        updateResultTitle: function(number_result, mode, query) {
-            this.hideOccupationDetail();
+        updateResultTitle: function (number_result, mode, query) {
             this.clearContainerDiv(mode);
-            if(number_result == 0) {
+            if (number_result == 0) {
                 this.showEmptyResult(mode);
             }
-            this.$result_title.find('#result-title-'+mode).remove();
+            this.$result_title.find('#result-title-' + mode).remove();
 
             var $result_title_number = $("<span>", {class: "result-title-number"});
             $result_title_number.html(number_result);
 
             var $result_title_mode = $("<span>", {class: "result-title-mode"});
-            if(mode == 'occupation') {
-                $result_title_mode.html(parseInt(number_result) > 1 ? '  occupations': ' occupation');
+            if (mode == 'occupation') {
+                $result_title_mode.html(parseInt(number_result) > 1 ? '  occupations' : ' occupation');
             } else {
-                $result_title_mode.html(parseInt(number_result) > 1 ? '  campuses': ' campus');
+                $result_title_mode.html(parseInt(number_result) > 1 ? '  campuses' : ' campus');
             }
 
             var $result_title_campus = $("<div>", {id: "result-title-" + mode});
@@ -116,9 +170,9 @@ define([
 
             this.$result_title.append($result_title_campus);
         },
-        showResultTitle: function(newMode, oldMode) {
-            $('#result-title-'+oldMode).hide();
-            $('#result-title-'+newMode).show();
+        showResultTitle: function (newMode, oldMode) {
+            $('#result-title-' + oldMode).hide();
+            $('#result-title-' + newMode).show();
         }
     });
 

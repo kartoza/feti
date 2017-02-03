@@ -25,7 +25,7 @@ define([
                 coord: ''
             };
 
-            if(q && q.length > 0) {
+            if (q && q.length > 0) {
                 parameters.q = q;
             }
 
@@ -33,26 +33,27 @@ define([
                 parameters.coord = drawnLayers;
             }
 
-            if(Common.CurrentSearchMode == 'favorites') {
-                if(q && q.length > 0)
+            if (Common.CurrentSearchMode == 'favorites') {
+                if (q && q.length > 0)
                     parameters.coord = q;
             }
 
             this.url = this.url_template(parameters);
             this.url = this.url.replace(/&quot;/g, '"');
 
-            if(parameters.q == "" && parameters.coord == "") {
+            if (parameters.q == "" && parameters.coord == "") {
                 // check if last string is question mark
-                if(this.url.slice('-1') == '?') {
+                if (this.url.slice('-1') == '?') {
                     this.url = this.url.replace('?', '/')
                 }
             }
 
             this.reset();
-            if(Common.FetchXHR != null) {
+            if (Common.FetchXHR != null) {
                 Common.FetchXHR.abort();
             }
 
+            that.last_query = q;
             Common.FetchXHR = this.fetch({
                 success: function (collection, response) {
                     Common.FetchXHR = null;
@@ -74,6 +75,9 @@ define([
                     Common.Dispatcher.trigger('search:finish');
                 }
             });
+        },
+        getRegex: function (character) {
+            return new RegExp(character, 'gi');
         }
     });
 });

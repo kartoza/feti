@@ -111,7 +111,7 @@ h6 {
 
 #content {
     margin-top: 0px !important;
-    min-height:100%;
+    min-height: 100%;
 }
 
 .left-inner-addon {
@@ -181,6 +181,18 @@ footer {
 p.copyright, p.login-link, p.login-link a {
     margin: 15px 0 0;
     color: white;
+}
+
+p.copyright img {
+    margin-top: -9px;
+}
+
+p.copyright a {
+    color: white;
+    text-decoration: none;
+}
+p.copyright a:hover {
+    color: #428bca;
 }
 
 p.login-link :hover {
@@ -258,6 +270,7 @@ footer {
     height: 60px;
     background: white !important;
 }
+
 .share-item p {
     height: 60px;
     line-height: 60px;
@@ -286,56 +299,56 @@ footer {
 
 /* Add this attribute to the element that needs a tooltip */
 [data-tooltip] {
-  position: relative;
-  z-index: 2;
-  cursor: pointer;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
 }
 
 /* Hide the tooltip content by default */
 [data-tooltip]:before,
 [data-tooltip]:after {
-  visibility: hidden;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
-  opacity: 0;
-  pointer-events: none;
+    visibility: hidden;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Position tooltip above the element */
 [data-tooltip]:before {
-  position: absolute;
-  bottom: 150%;
-  left: 50%;
-  margin-bottom: 5px;
-  margin-left: -80px;
-  padding: 7px;
-  width: 160px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  background-color: #000;
-  background-color: hsla(0, 0%, 20%, 0.9);
-  color: #fff;
-  content: attr(data-tooltip);
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.2;
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    margin-bottom: 5px;
+    margin-left: -80px;
+    padding: 7px;
+    width: 160px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background-color: #000;
+    background-color: hsla(0, 0%, 20%, 0.9);
+    color: #fff;
+    content: attr(data-tooltip);
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.2;
 }
 
 /* Triangle hack to make tooltip look like a speech bubble */
 [data-tooltip]:after {
-  position: absolute;
-  bottom: 150%;
-  left: 50%;
-  margin-left: -5px;
-  width: 0;
-  border-top: 5px solid #000;
-  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
-  content: " ";
-  font-size: 0;
-  line-height: 0;
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -5px;
+    width: 0;
+    border-top: 5px solid #000;
+    border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    content: " ";
+    font-size: 0;
+    line-height: 0;
 }
 
 /* Show tooltip content on hover */
@@ -353,4 +366,17 @@ footer {
 
 #feti-map {
     z-index: 5;
+}
+
+.ui-tooltip {
+	padding: 5px;
+	position: absolute;
+	z-index: 9999;
+	max-width: 300px;
+	-webkit-box-shadow: none !important;
+	box-shadow: none !important;
+    font-size: 9pt !important;
+    background-color: #2572b9;
+    color: white;
+    border: none !important;
 }

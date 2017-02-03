@@ -38,9 +38,6 @@ ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
 RUN pip install uwsgi
 
-# Problems with current version on pip
-RUN pip install git+https://github.com/django-haystack/django-haystack
-
 # Download cerbort
 RUN wget https://dl.eff.org/certbot-auto
 RUN chmod a+x certbot-auto

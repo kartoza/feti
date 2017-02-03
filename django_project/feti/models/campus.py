@@ -179,6 +179,10 @@ class Campus(models.Model):
         }
         self._campus_popup = template.render(Context(variable))
 
+        # id srid is not 4326
+        if self.geom.srid != 4326:
+            self.geom.transform(4326)
+
         super(Campus, self).save(*args, **kwargs)
 
         # save the key in address

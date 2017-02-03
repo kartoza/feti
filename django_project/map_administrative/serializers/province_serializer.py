@@ -8,12 +8,12 @@ __author__ = 'irwan'
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
-        fields = '__all__'
+        exclude = ('country',)
 
     def to_representation(self, instance):
         res = super(ProvinceSerializer, self).to_representation(instance)
         res['id'] = instance.id
         res['layer'] = 'province'
-        res['title'] = instance.parent() + "," + instance.name
+        res['title'] = instance.name
         res['color'] = '#f44a52'
         return res

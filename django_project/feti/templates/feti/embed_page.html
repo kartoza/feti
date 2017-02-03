@@ -1,0 +1,122 @@
+{% extends 'feti_base.html' %}
+{% load staticfiles %}
+{% load pipeline %}
+
+{% block title %}
+    FORD 2
+{% endblock title %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block js_head %}
+    <script>
+        String.prototype.replaceAll = function (search, replacement) {
+            var target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+    </script>
+    <script>
+        var is_embed = true;
+        var favorite = "";
+        var new_favorite = {};
+    </script>
+{% endblock %}
+
+{% block css_head %}
+    {% stylesheet 'landing_page' %}
+    <link rel="stylesheet" type="text/css" href="{% static 'feti/css/embed-page.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <div class="map-section">
+        <div id="map-container">
+            <div class="row" style="height: 100%; position: relative;">
+                <div id="map-section">
+                    <div id="feti-logo" onclick="openFeti()">
+                        <img src="{% static 'feti/images/ipss-logo-bordered.png' %}"/>
+                    </div>
+                    <div id="toogle-button" class="round-button" title="Show side panel">
+                        <div class="round-button-circle"><i class="fa fa-caret-left" aria-hidden="true"></i></div>
+                    </div>
+                    <div id="map-search"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+    </div>
+    <div class="embed-result">
+        <div id="result" class="nopadding">
+        </div>
+    </div>
+    <div id="embed-loading-wrapper">
+    </div>
+{% endblock %}
+
+
+{% block js_inline %}
+    <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
+    <script type='template' id='map-template'>
+        <div id="feti-map" style="margin-left:0px; margin-right: 0px;"></div>
+    </script>
+
+    <!-- Django context variables -->
+    <script>
+
+        function openFeti() {
+            var fullUrl = $(location).attr('href');
+
+            // remove embed
+            fullUrl = fullUrl.replace('/embed', '');
+            window.open(fullUrl, '_blank');
+        }
+
+        Array.prototype.clean = function (deleteValue) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == deleteValue) {
+                    this.splice(i, 1);
+                    i--;
+                }
+            }
+            return this;
+        };
+
+        $.fn.responsiveTabs = function () {
+            this.addClass('responsive-tabs');
+
+            this.on('click', 'li.active > a, span.fa', function () {
+                this.toggleClass('open');
+            }.bind(this));
+
+            this.on('click', 'li:not(.active) > a', function () {
+                this.removeClass('open');
+            }.bind(this));
+        };
+
+        var user_location = "";
+        var is_logged_in = "false";
+        var is_login_error = false;
+
+        $(document).ready(function () {
+            {# set logo #}
+            var $mapSection = $('#map-section');
+            var $toogleButton = $('#toogle-button');
+            var logoContentWidth = $mapSection.width() - $toogleButton.width();
+            var $fetiLogo = $('#feti-logo');
+
+            if (logoContentWidth < $fetiLogo.width()) {
+                var paddingLeft = parseInt($fetiLogo.css('padding-left').replace('px', ''));
+                var paddingRight = parseInt($fetiLogo.css('padding-right').replace('px', ''));
+                $fetiLogo.width(logoContentWidth - paddingLeft - paddingRight - 5);
+                $fetiLogo.find('img').width($fetiLogo.width());
+            }
+            $(document).tooltip();
+        });
+
+    </script>
+
+    <script type="text/javascript" src="/static/feti/js/libs/require.min.js"></script>
+    <script type="text/javascript" src="/static/feti/js/scripts/main.js"></script>
+
+{% endblock %}

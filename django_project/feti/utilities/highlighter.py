@@ -7,7 +7,7 @@ class QueryHighlighter(Highlighter):
     Highlight query results
     """
     def render_html(self, highlight_locations=None, start_offset=None, end_offset=None):
-        highlighted_chunk = self.text_block[start_offset:end_offset]
+        highlighted_chunk = self.text_block
         queries = list(self.query_words)
 
         highlighted_chunk = re.sub(

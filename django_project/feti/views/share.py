@@ -4,7 +4,9 @@ import weasyprint
 import os
 import json
 import smtplib
+from more_itertools import unique_everseen
 from rest_framework.views import APIView
+from haystack.query import SQ, SearchQuerySet
 from django.views.generic import TemplateView, UpdateView
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
@@ -19,7 +21,8 @@ from feti.models.campus import Campus
 from feti.models.url import URL
 from feti.views.api import (
     ApiCourse,
-    ApiCampus
+    ApiCampus,
+    ApiSavedCampus
 )
 
 
@@ -30,27 +33,57 @@ class SharingMixin(object):
     def get_course_names(self):
         return self.courses_name
 
-    def get_campus(self, provider, query):
+    def get_campus(self, provider, query, user=None):
         api = None
         # Get data
         if provider == 'provider':
-            api = ApiCampus()
+            sqs = SearchQuerySet()
+            sqs = sqs.filter(
+                SQ(campus=query) | SQ(campus_provider=query),
+                campus_location_is_null='false',
+                courses_is_null='false'
+            ).models(Campus)
+            campus_data = []
+
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                campus_data.append(stored_fields)
+
+            return campus_data
         elif provider == 'course':
             api = ApiCourse()
+        elif provider == 'favorites':
+            api = ApiSavedCampus()
+            return api.filter_model(user=user)
         if api:
             campuses = api.filter_model(query)
             self.courses_name = api.courses_name
             return campuses
         return None
 
-    def download_map(self, filename, markers):
+    def download_map(self, filename, markers, provider=None):
         osm_static_url = 'http://staticmap.openstreetmap.de/staticmap.php?center=-30.5,24&' \
                          'zoom=6&size=865x512&maptype=mapnik'
+        check_existence = True
+
         if markers:
             osm_static_url += '&markers='+markers
+
+        if provider:
+            if provider == 'favorites':
+                check_existence = False
+
         path = os.path.join(settings.MEDIA_ROOT, filename)
 
         # Check if file already exists
+        if not check_existence and default_storage.exists(path):
+            os.remove(path)
+
         if not default_storage.exists(path):
             try:
                 urllib.request.urlretrieve(osm_static_url, path)
@@ -80,16 +113,43 @@ class PDFDownload(TemplateView, SharingMixin):
 
         slug = self.kwargs.get('provider', None)
         query = self.kwargs.get('query', None)
-        campuses = self.get_campus(provider=slug, query=query)
+        campuses = self.get_campus(provider=slug, query=query, user=self.request.user)
         course_names = self.get_course_names()
 
         markers = ''
-        for idx, campus in enumerate(campuses):
-            markers += '%s,%s,bluelight%s|' % (campus.location.y, campus.location.x, str(idx))
+
+        if slug == 'course':
+            pdf_data = list(
+                unique_everseen(
+                    [{
+                         'campus_provider': x['campus_provider'],
+                         'campus_address': x['campus_address'],
+                         'campus_website': x['campus_website'],
+                         'location': x['campus_location']
+                     }
+                     for x in campuses])
+            )
+            for idx, campus in enumerate(pdf_data):
+                location = campus['location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+            campuses = pdf_data
+        elif slug == 'provider':
+            for idx, campus in enumerate(campuses):
+                location = campus['campus_location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+        elif slug == 'favorites':
+            query = self.request.user
+            campuses = list(campuses)
+            for idx, campus in enumerate(campuses):
+                location = campus.campus.location.coords
+                campus.campus_website = campus.campus.provider.website
+                campus.campus_provider = campus.campus.provider
+                campus.campus_address = campus.campus.address.address_line
+                markers += '%s,%s,bluelight%s|' % (location[1], location[0], str(idx))
 
         filename = '%s-%s.png' % (query, slug)
 
-        self.download_map(filename=filename, markers=markers)
+        self.download_map(filename=filename, markers=markers, provider=slug)
 
         template = get_template("feti/pdf_template.html")
 
@@ -133,15 +193,35 @@ class EmailShare(UpdateView, SharingMixin):
         email_host = 'noreply@kartoza.com'
         campuses = self.get_campus(provider=provider, query=query)
 
-        subject, from_email, to = 'Feti Report', \
-                                  email_host, \
-                                  [email_address]
-
         htmly = get_template(self.template_name)
         filename = '%s-%s.png' % (query, provider)
         markers = ''
-        for idx, campus in enumerate(campuses):
-            markers += '%s,%s,bluelight%s|' % (campus.location.y, campus.location.x, str(idx))
+
+        if provider != 'provider':
+            email_data = list(
+                unique_everseen(
+                    [{
+                         'campus_provider': x['campus_provider'],
+                         'campus_address': x['campus_address'],
+                         'campus_website': x['campus_website'],
+                         'location': x['campus_location']
+                     }
+                     for x in campuses])
+            )
+
+            for idx, campus in enumerate(email_data):
+                location = campus['location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+            campuses = email_data
+
+        else:
+            for idx, campus in enumerate(campuses):
+                location = campus['campus_location'].split(',')
+                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+
+        subject, from_email, to = 'Feti Report', \
+                                  email_host, \
+                                  [email_address]
 
         self.download_map(filename=filename, markers=markers)
 

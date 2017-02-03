@@ -1,15 +1,18 @@
-
 <!DOCTYPE html>
 <html>
 <head> <title>{{ title }}</title> </head>
 <body>
-<h2>You're searching for {{ query }} in
-{% if provider == 'provider' %}
-    all campuses.
+{% if provider == 'favorites' %}
+    <h2>Your favorites</h2>
 {% else %}
-    all courses.
+    <h2>You're searching for {{ query }} in
+    {% if provider == 'provider' %}
+        all campuses.
+    {% else %}
+        all courses.
+    {% endif %}
+    </h2>
 {% endif %}
-</h2>
 
 {% if type == 'pdf' %}
     <h2>Map :</h2>
@@ -24,8 +27,8 @@
 {% for campus in campuses %}
     <li>
         <div class="campus-wrapper">
-            <p><a href="{{ campus.provider.website }}">{{ campus.provider }}</a></p>
-            <p>{{ campus.address }}</p>
+            <p><a href="{{ campus.campus_website }}">{{ campus.campus_provider }}</a></p>
+            <p>{{ campus.campus_address }}</p>
         </div>
     </li>
 {% endfor %}

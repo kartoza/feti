@@ -3,7 +3,7 @@ define([
 ], function (Common) {
     var LayerAdministrative = Backbone.View.extend({
         MAX_SIZE: 100,
-        layer: ['country', 'province'],
+        layer: ['province', 'district', 'municiple'],
         polygons: {},
         cache: {},
         initialize: function (options) {
@@ -42,10 +42,11 @@ define([
         },
         getAdministrativeByLatlng: function (latlng, layer) {
             var that = this;
-            if(this.active) {
+            if (this.active) {
                 if (layer == null) {
                     layer = this.layer[0];
                 }
+                $("path").css("cursor", "progress");
                 $.ajax({
                     url: '/api/administrative',
                     data: {
@@ -54,7 +55,7 @@ define([
                         layer: layer
                     },
                     success: function (data) {
-                        console.log(data);
+                        $("path").css("cursor", "pointer");
                         var polygon = that._createPolygon(data);
                         that.resetBasedLayer(layer);
                         if (polygon) {
@@ -69,6 +70,7 @@ define([
                         that.showPolygon(that.current_adm);
                     },
                     error: function (request, error) {
+                        $("path").css("cursor", "pointer");
                     }
                 });
             }
@@ -91,12 +93,14 @@ define([
             });
         },
         renderPolygon: function (polygon) {
-            if (this.polygons[polygon.getLayers()[0].feature.properties.layer]) {
-                Common.Dispatcher.trigger('map:removeLayer', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
+            if (!Common.EmbedVersion) {
+                if (this.polygons[polygon.getLayers()[0].feature.properties.layer]) {
+                    Common.Dispatcher.trigger('map:removeLayer', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
+                }
+                this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
+                Common.Dispatcher.trigger('map:addLayer', polygon);
+                this.map.clearButton.enable();
             }
-            this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
-            Common.Dispatcher.trigger('map:addLayer', polygon);
-            this.map.clearButton.enable();
         },
         showPolygon: function (adm_list) {
             this.resetBasedLayer();
