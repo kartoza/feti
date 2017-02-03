@@ -182,7 +182,28 @@
                     </form>
                 </div>
             </div>
-
+        </div>
+    </div>
+    <div class="modal fade" id="clipboard-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Share link</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+{#                        <label for="clipboard">Copy to clipboard: Ctrl+C, Enter</label>#}
+                        <input type="text" class="form-control" id="clipboard">
+                        <br>
+                        <button id="copy-clipboard" class="btn btn-info"><i class="fa fa-clipboard" aria-hidden="true"></i>
+                            Copy to clipboard </button>
+                        <span id="copy-status" style="color: #3c763d; font-weight: lighter">
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
