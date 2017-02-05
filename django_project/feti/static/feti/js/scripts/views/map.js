@@ -385,7 +385,6 @@ define([
             this._tooltip.updatePosition(latlng);
         },
         _onSearchBarCategoryClicked: function (newMode, oldMode) {
-            this.fullScreenMap();
             this._changeSearchLayer(oldMode, newMode);
         },
         drawCreated: function (e) {
