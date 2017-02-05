@@ -370,6 +370,11 @@ define([
                 this.$('#back-home').show();
                 this.$('#result-toogle').show();
                 this.parent.closeResultContainer($('#result-toogle'));
+                var mode = Common.CurrentSearchMode;
+                if(mode in this._search_results) {
+                    if(this._search_results[mode] > 0)
+                        this.parent.openResultContainer($('#result-toogle'));
+                }
             } else { // Exit fullscreen
                 this.$('#back-home').hide();
                 this.$('#result-toogle').hide();
