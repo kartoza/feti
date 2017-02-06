@@ -1,9 +1,19 @@
 import datetime
 from django.contrib.gis.db import models
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.crypto import get_random_string
+from django.utils.translation import ugettext_lazy as _
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '20/09/16'
+
+
+def random_string():
+    while True:
+        try:
+            random_string = get_random_string()
+            URL.objects.get(random_string=random_string)
+        except URL.DoesNotExist:
+            return random_string
 
 
 class URL(models.Model):
@@ -15,7 +25,9 @@ class URL(models.Model):
         _("Random Words"),
         max_length=255,
         blank=False,
-        null=False)
+        null=False,
+        unique=True,
+        default=random_string)
     url = models.URLField(
         _("Url"),
         max_length=1000,
