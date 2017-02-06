@@ -403,6 +403,7 @@ define([
                 this.map.fire('finishedDrawing', {'layerType': 'circle'});
             }
             this._enableOtherControlButtons();
+            this.map.fitBounds(layer.getBounds(), {paddingTopLeft: [75, 75]});
         },
         drawStop: function (e) {
             Common.Dispatcher.trigger('search:updateRouter');
@@ -509,7 +510,8 @@ define([
             if (!this.modesLayer[mode]) {
                 return;
             }
-            this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
+            if(typeof this.modesLayer[mode].getBounds()._northEast != 'undefined')
+                this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
