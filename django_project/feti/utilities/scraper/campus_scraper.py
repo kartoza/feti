@@ -90,7 +90,7 @@ def get_provider_icon(url):
                     except KeyError:
                         pass
 
-    except ConnectionResetError:
+    except (ConnectionResetError, ValueError):
         pass
     return icon
 
