@@ -13,17 +13,22 @@
     <link rel="stylesheet" href="{% static "feti/css/feti-form.css" %}">
     <style type="text/css">
         #div_id_profile-birth_date {
-            margin-top: 450px;
+            margin-top: 550px;
+        }
+
+        #ui-datepicker-div {
+            z-index: 9999 !important;
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="container">
-        <form method="post" style="margin-bottom: 50px;">
+        <form method="post" style="margin-bottom: 50px;" enctype="multipart/form-data">
             <fieldset id="project-form">
                 {% crispy form.user %}
                 <div id="get-location" class="btn btn-warning" style="margin-bottom: 20px;">Get My Current Location</div>
+                {{ form.profile.picture|as_crispy_field }}
                 {{ form.profile.location }}
                 {{ form.profile.birth_date|as_crispy_field }}
                 {{ form.profile.bio|as_crispy_field }}
@@ -45,10 +50,10 @@
         var tempLng = 24.54757690429687;
         var zoom = 15;
 
-        $("#get-location").click(function(){
+        $("#get-location").click(function () {
             // Try HTML5 geolocation.
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
+                navigator.geolocation.getCurrentPosition(function (position) {
                     var center = new OpenLayers.LonLat([
                         position.coords.longitude,
                         position.coords.latitude
@@ -62,7 +67,7 @@
                     var pointFeature = new OpenLayers.Feature.Vector(point, null, null);
                     vector.addFeatures([pointFeature]);
 
-                }, function() {
+                }, function () {
                     handleLocationError(true);
                 });
             } else {
@@ -72,7 +77,7 @@
         });
 
         function handleLocationError(browserHasGeolocation) {
-            alert(browserHasGeolocation ? 'Error: The Geolocation service failed.': 'Error: Your browser doesn\'t support geolocation.');
+            alert(browserHasGeolocation ? 'Error: The Geolocation service failed.' : 'Error: Your browser doesn\'t support geolocation.');
         }
     </script>
 {% endblock %}
