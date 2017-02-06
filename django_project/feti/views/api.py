@@ -380,19 +380,13 @@ class ApiAutocomplete(APIView):
 
         # read course_strings cache
         if model == 'provider':
-            sqs1 = SearchQuerySet().filter(
-                campus_campus=q,
-                campus_location_isnull='false',
-                courses_isnull='false'
-            ).models(CampusCourseEntry)[:5]
-            sqs2 = SearchQuerySet().filter(
-                campus_provider=q,
-                campus_location_isnull='false',
-                courses_isnull='false'
-            ).models(CampusCourseEntry)[:5]
-            sqs = list(chain(sqs1, sqs2))
-            suggestions = list(set([result.object.campus.campus if q in result.object.campus.campus.lower()
-                           else result.object.campus.provider.primary_institution for result in sqs]))
+            sqs = SearchQuerySet().autocomplete(
+                long_description=q,
+                campus_location_is_null='false',
+                courses_is_null='false'
+            ).models(Campus)[:10]
+            suggestions = list(set([result.campus if q in result.object.campus.lower()
+                           else result.campus_provider for result in sqs]))
         elif model == 'course':
             sqs = SearchQuerySet().autocomplete(
                     course_course_description=q
