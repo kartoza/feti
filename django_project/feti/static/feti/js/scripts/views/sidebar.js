@@ -156,8 +156,8 @@ define([
                 radius_index = query.indexOf("&radius=") + "&radius=".length;
                 var radius = parseInt(query.substring(radius_index, query.length));
                 var coordinate = JSON.parse(coordinates);
-                if (radius % 1000 > 1) {
-                    radius = (radius % 1000) + " km"
+                if (radius / 1000 > 1) {
+                    radius = (radius / 1000) + " km"
                 } else {
                     radius = radius + " meters"
                 }
