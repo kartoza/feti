@@ -4,9 +4,7 @@
         <h1>Login</h1><br>
 
         <form class="form" name="LoginForm" action="/login-modal/" method="post">
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}"/>
-            {% endif %}
+            <input type="hidden" name="next" id="login-next"/>
             <input type="text" name="username" id="username" value="{{ username }}"
                    placeholder="Username">
             <input type="password" name="password" id="password"

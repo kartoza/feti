@@ -45,6 +45,8 @@ define([
         },
         login_page: function () {
             if (!Common.IsLoggedIn) {
+                var last_route = this.pageHistory[this.pageHistory.length - 1];
+                this.loginView.setLastRoute(last_route);
                 this.loginView.show();
             }
             this.pageHistory.push(Backbone.history.getFragment());

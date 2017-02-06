@@ -5,10 +5,14 @@ define([
         id: 'login-modal',
         className: 'modal fade',
         template: null,
+        last_route: '',
+        setLastRoute: function (last_route) {
+            if(last_route)
+                this.last_route = last_route;
+        },
         events: {
             'hidden.bs.modal': 'teardown'
         },
-
         initialize: function () {
             if ($('#login-modal-template').length > 0) {
                 this.template = _.template($('#login-modal-template').html());
@@ -18,6 +22,7 @@ define([
         },
 
         show: function () {
+            this.$el.find('#login-next').val('/#' + this.last_route);
             this.$el.modal('show');
         },
 
