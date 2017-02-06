@@ -197,6 +197,7 @@ class URLAdmin(admin.ModelAdmin):
     list_display = ('url', 'random_string', 'date')
     list_filter = ['url', 'random_string', 'date']
     search_fields = ['url', 'random_string', 'date']
+    readonly_fields = ('date', 'random_string')
 
 
 admin.site.site_header = 'Feti Administration'

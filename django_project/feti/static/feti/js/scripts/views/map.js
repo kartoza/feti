@@ -324,11 +324,26 @@ define([
                 ]
             });
 
+            this.shareEmbedCode = L.easyButton({
+                id: 'share-embed-code',
+                states: [
+                    {
+                        stateName: 'shareEmbedCode',
+                        icon: 'fa-code',
+                        title: 'Embed Code',
+                        onClick: function (btn, map) {
+                            Share.getEmbedCode();
+                        }
+                    }
+                ]
+            });
+
             this.shareBar = L.easyBar([
                 this.sharePDF,
                 this.shareEmail,
                 this.shareTwitter,
-                this.shareURL
+                this.shareURL,
+                this.shareEmbedCode
             ]);
 
             this.shareBar.options.position = 'topright';
@@ -350,7 +365,7 @@ define([
             var mode = Common.CurrentSearchMode;
 
             // No need to share link and twitter in favorites
-            if(mode != 'favorites') {
+            if (mode != 'favorites') {
                 $('#share-twitter-button').show();
                 $('#share-url-button').show();
             } else {
@@ -510,7 +525,7 @@ define([
             if (!this.modesLayer[mode]) {
                 return;
             }
-            if(typeof this.modesLayer[mode].getBounds()._northEast != 'undefined')
+            if (typeof this.modesLayer[mode].getBounds()._northEast != 'undefined')
                 this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
@@ -526,7 +541,7 @@ define([
             }
             if (!this.map.hasLayer(this.modesLayer[toMode])) {
                 this.map.addLayer(this.modesLayer[toMode]);
-                if(this.modesLayer[toMode].getLayers().length > 0) {
+                if (this.modesLayer[toMode].getLayers().length > 0) {
                     this.repositionMap(toMode);
                     this.showShareBar();
                 } else {

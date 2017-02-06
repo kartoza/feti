@@ -72,7 +72,7 @@ class SharingMixin(object):
         check_existence = True
 
         if markers:
-            osm_static_url += '&markers='+markers
+            osm_static_url += '&markers=' + markers
 
         if provider:
             if provider == 'favorites':
@@ -256,23 +256,6 @@ class EmailShare(UpdateView, SharingMixin):
 
 
 class ApiRandomString(UpdateView):
-
-    def generate_random_string(self, url):
-        """ Generate random string from url and store it to db"""
-        random = get_random_string()
-        while URL.objects.filter(random_string=random).exists():
-            random = get_random_string()
-
-        if URL.objects.filter(url=url).exists():
-            return URL.objects.filter(url=url).first().random_string
-
-        u = URL(
-            url=url,
-            random_string=random
-        )
-        u.save()
-        return random
-
     def post(self, request, *args, **kwargs):
         data = request.body
 
@@ -283,14 +266,16 @@ class ApiRandomString(UpdateView):
                 'Error json value'
             )
         url = unquote(retrieved_data['url'])
+        try:
+            url = URL.objects.get(url=url)
+        except URL.DoesNotExist:
+            url = URL(url=url)
+            url.save()
 
-        response = self.generate_random_string(url)
-
-        return HttpResponse(response)
+        return HttpResponse(url.random_string)
 
 
 class ApiGetURL(APIView):
-
     def get(self, request, random):
         if URL.objects.filter(random_string=random).exists():
             return redirect(URL.objects.filter(random_string=random).first().url)

@@ -1,26 +1,25 @@
 /**
  * Created by Dimas on 12/3/16.
  */
-define([
-], function () {
+define([], function () {
 
-    var Share = new function(){
+    var Share = new function () {
 
-        this.sharePDF = function() {
+        this.sharePDF = function () {
             var url = '/pdf_report/';
             var currentRoute = Backbone.history.getFragment().split('/');
-            if(currentRoute.length > 2) {
+            if (currentRoute.length > 2) {
                 window.location = url + currentRoute[1] + '/' + currentRoute[2];
-            } else if(currentRoute.indexOf('favorites') > 0) {
+            } else if (currentRoute.indexOf('favorites') > 0) {
                 window.location = url + currentRoute[1] + '/all';
             }
         }
         ;
 
-        this.shareEmail = function() {
+        this.shareEmail = function () {
             var currentRoute = Backbone.history.getFragment().split('/');
             // Open Modal
-            if(currentRoute.length > 1) {
+            if (currentRoute.length > 1) {
                 $('#email-modal').modal('toggle');
             }
 
@@ -37,19 +36,19 @@ define([
                 $('#email').prop('disabled', true);
 
                 $.ajax({
-                    url:'share_email/',
-                    type:'POST',
+                    url: 'share_email/',
+                    type: 'POST',
                     data: JSON.stringify(all_data),
-                    success: function(response) {
-                        if(response=='success') {
+                    success: function (response) {
+                        if (response == 'success') {
                             $('#email-modal').modal('toggle');
                             alert('Email sent!');
                         }
                     },
-                    error: function(response) {
+                    error: function (response) {
                         alert('Error sending email');
                     },
-                    complete: function() {
+                    complete: function () {
                         $('#email-submit').prop('disabled', false);
                         $('#email').prop('disabled', false);
                     }
@@ -62,8 +61,8 @@ define([
             var host = Backbone.history.location.host;
 
             _generateURL(function (data) {
-                var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A'+
-                    host+'/url/'+data;
+                var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A' +
+                    host + '/url/' + data;
                 // open twitter box
                 window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
             });
@@ -77,16 +76,38 @@ define([
 
             _generateURL(function (data) {
                 $('#clipboard-modal').modal('toggle');
-                $('#clipboard').val(host+'/url/'+data);
+                $('#clipboard').val(host + '/url/' + data);
             });
         };
 
-        var _generateURL = function (callback) {
-            var full_url = Backbone.history.location.href;
+        this.getEmbedCode = function () {
+            // get url
+            var host = Backbone.history.location.host;
+            var url = Backbone.history.location.href;
+            url = url.replace(host, host + '/embed')
+
+            $('input#clipboard').select();
+            $('#copy-status').html('');
+
+            _generateURL(function (data) {
+                $('#clipboard-modal').modal('toggle');
+                var url = host + '/url/' + data;
+                var iframe = '<iframe width="400" height="300" src="http://' + url + '">' + '</iframe>';
+                $('#clipboard').val(iframe);
+            }, url);
+        };
+
+        var _generateURL = function (callback, url) {
+            var full_url = '';
+            if (url) {
+                full_url = url;
+            } else {
+                full_url = Backbone.history.location.href;
+            }
 
             $.ajax({
-                url:'api/generate-random-string/',
-                type:'POST',
+                url: 'api/generate-random-string/',
+                type: 'POST',
                 data: JSON.stringify({
                     'url': full_url
                 }),
@@ -97,7 +118,7 @@ define([
         $('#copy-clipboard').click(function () {
             var clipboard = $('#clipboard').val();
 
-            if(clipboard) {
+            if (clipboard) {
                 var $temp = $("<input>");
                 $("body").append($temp);
                 $temp.val(clipboard).select();
