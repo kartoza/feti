@@ -45,7 +45,6 @@ define([
                     }),
                     success: function (response) {
                         if (response == 'added') {
-                            alert('Campus added to favorites');
                             Common.Dispatcher.trigger('favorites:added', 'provider');
                             $(e.target).removeClass('fa-star-o');
                             $(e.target).addClass('fa-star filled');
