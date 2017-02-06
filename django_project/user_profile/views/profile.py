@@ -2,10 +2,9 @@ import json
 from braces.views import LoginRequiredMixin
 from django.views.generic import TemplateView, UpdateView
 from django.contrib.auth.models import User
-from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse_lazy
 from feti.models.campus import Campus
-from feti.models.campus_course_entry import CampusCourseEntry
 from feti.models.course import Course
 from user_profile.forms.profile_form import UserEditMultiForm
 from user_profile.models import CampusCoursesFavorite

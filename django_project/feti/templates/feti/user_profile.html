@@ -15,8 +15,17 @@
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-4" style="padding-top: 20px">
-                    <div class="profile-photo">
-                    </div>
+                    {% if user.profile.picture %}
+                        <div class="profile-photo"
+                             style="border: none;
+                                     background: none">
+                            <img src="{{ user.profile.picture.url }}">
+                        </div>
+                    {% else %}
+                        <div class="profile-photo">
+                        </div>
+                    {% endif %}
+
                     <a href="/profile/update/{{ user.pk }}" class="btn btn-info" role="button">Update Profile</a>
                 </div>
                 <div class="col-md-6">
@@ -25,7 +34,7 @@
                         {% if user.username == '' %}
                             -
                         {% else %}
-                            {{ user.username  }}
+                            {{ user.username }}
                         {% endif %}
                     </h3>
                     <h5 class="user-profile-label">Full Name</h5>
@@ -33,7 +42,7 @@
                         {% if user.get_full_name == '' %}
                             -
                         {% else %}
-                            {{ user.get_full_name  }}
+                            {{ user.get_full_name }}
                         {% endif %}
                     </h3>
                     <h5 class="user-profile-label">Birth Date</h5>
@@ -41,7 +50,7 @@
                         {% if user.profile.birth_date == '' %}
                             -
                         {% else %}
-                            {{ user.profile.birth_date  }}
+                            {{ user.profile.birth_date }}
                         {% endif %}
                     </h3>
                     <h5 class="user-profile-label">Email</h5>
@@ -49,7 +58,7 @@
                         {% if user.email == '' %}
                             -
                         {% else %}
-                            {{ user.email  }}
+                            {{ user.email }}
                         {% endif %}
                     </h3>
                     <h5 class="user-profile-label">Location</h5>
@@ -70,9 +79,9 @@
 {% block js_inline %}
     <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             var location_raw = '{{ user.profile.location }}';
-            if(location_raw != 'None') {
+            if (location_raw != 'None') {
                 var regExp = /\(([^)]+)\)/;
                 var location = regExp.exec(location_raw)[1].split(' ');
 
@@ -89,7 +98,6 @@
                         iconColor: 'white'
                     })
                 }).bindPopup("<b>My location</b>").addTo(map);
-
                 map.panTo(marker._latlng);
             }
         });
