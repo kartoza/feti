@@ -108,11 +108,12 @@ define([
             _.each(courses, function (course) {
                 var saved = false;
                 var attributes = course.split(";;");
+                var course_id = attributes[0].trim();
                 if (campus_is_favorite) {
-                    saved = Common.Favorites[id].indexOf(row["course_id"]) >= 0;
+                    saved = Common.Favorites[id].indexOf(parseInt(course_id)) >= 0;
                 }
                 var courseOutput = {
-                    "id": attributes[0].trim(),
+                    "id": course_id,
                     "title": attributes[1].trim(),
                     "model": "course",
                     "saved": saved

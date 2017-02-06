@@ -42,7 +42,6 @@ define([
                 }),
                 success: function(response) {
                     if(response=='added') {
-                        alert('Course and campus added to favorites');
                         Common.Dispatcher.trigger('favorites:added', Common.CurrentSearchMode);
 
                         $(e.target).removeClass('fa-star-o');
