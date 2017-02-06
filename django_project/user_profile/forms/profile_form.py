@@ -12,7 +12,6 @@ from core.widgets.custom_osm_widget import CustomOSMWidget
 
 
 class UserForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         form_title = 'Profile'
@@ -35,7 +34,6 @@ class UserForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
-
     birth_date = forms.DateField(
         widget=forms.TextInput(
             attrs={'type': 'date'}
@@ -57,6 +55,7 @@ class ProfileForm(forms.ModelForm):
                 Field('bio', css_class='form-control'),
                 Field('location', css_class='form-control'),
                 Field('birth_date', css_class='form-control'),
+                Field('picture', css_class='form-control'),
             )
         )
         self.helper.layout = layout
@@ -66,7 +65,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('bio', 'location', 'birth_date')
+        fields = ('bio', 'location', 'birth_date', 'picture')
 
 
 class UserEditMultiForm(MultiModelForm):

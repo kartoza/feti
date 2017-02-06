@@ -1,3 +1,4 @@
+# coding=utf-8
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -9,6 +10,10 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     location = models.PointField(blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
+    picture = models.ImageField(
+        upload_to='profile/pictures/',
+        blank=True,
+        null=True)
 
     class Meta:
         app_label = 'feti'
