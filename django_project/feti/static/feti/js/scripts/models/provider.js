@@ -30,34 +30,34 @@ define([
 
                 var popup = '';
 
-                if('_campus_popup' in this.attributes) {
+                if ('_campus_popup' in this.attributes) {
                     popup = this.attributes._campus_popup;
                 } else {
 
                     var campus = '';
                     var phone = '';
 
-                    if(typeof this.attributes.campus != 'undefined') {
+                    if (typeof this.attributes.campus != 'undefined') {
                         campus = 'Campus : ' + this.attributes.campus;
                     }
 
-                    if(this.attributes.campus_phone && this.attributes.campus_phone != '[]') {
+                    if (this.attributes.campus_phone && this.attributes.campus_phone != '[]') {
                         phone = this.attributes.campus_phone;
                     } else {
                         phone = '-';
                     }
 
                     popup = '<div class="leaflet-header"><h3>' +
-                                this.attributes.provider +
-                            '</h3></div>' +
-                            '<div class="leaflet-place"><strong> '+
-                                campus  +
-                            '</strong></div>' +
-                            '<div class="leaflet-content">'+
-                                '<div><i class="fa fa-map-marker"></i> '+this.attributes.address+' </div>'+
-                                '<div><i class="fa fa-link"></i> <a href="'+this.attributes.website+'" target="_blank">'+this.attributes.website+'</a> </div>'+
-                                '<div><i class="fa fa-phone"></i> '+ phone +'</div>' +
-                            '</div>';
+                        this.attributes.provider +
+                        '</h3></div>' +
+                        '<div class="leaflet-place"><strong> ' +
+                        campus +
+                        '</strong></div>' +
+                        '<div class="leaflet-content">' +
+                        '<div><i class="fa fa-map-marker"></i> ' + this.attributes.address + ' </div>' +
+                        '<div><i class="fa fa-link"></i> <a href="' + this.attributes.website + '" target="_blank">' + this.attributes.website + '</a> </div>' +
+                        '<div><i class="fa fa-phone"></i> ' + phone + '</div>' +
+                        '</div>';
                 }
 
 

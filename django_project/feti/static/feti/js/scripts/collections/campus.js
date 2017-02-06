@@ -83,7 +83,6 @@ define([
                     "provider": row["campus_provider"],
                     "location": latlng,
                     "title": campusTitle,
-                    "icon": row["campus_icon_url"],
                     "courses": [],
                     "model": 'campus',
                     "address": row["campus_address"],
@@ -91,6 +90,10 @@ define([
                     "saved": campus_is_favorite,
                     "campus_phone": row["campus_phone"],
                 };
+                if (row["campus_icon_url"] != "") {
+                    campus["icon"] = row["campus_icon_url"];
+                }
+
                 return campus;
             }
             return null;
