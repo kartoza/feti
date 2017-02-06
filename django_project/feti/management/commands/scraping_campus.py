@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from feti.models.address import Address
 from feti.models.campus import Campus
 from feti.models.provider import Provider
-from feti.utilities.scraper.campus_scraper import scrap_all_campuses
+from feti.utilities.scraper.campus_scraper import scrap_campuses
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '15/09/16'
@@ -37,7 +37,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options['delete']:
+        delete = options['delete']
+        if delete and delete in self.true_words:
             Address.objects.all().delete()
             Campus.objects.all().delete()
             Provider.objects.all().delete()
@@ -50,4 +51,4 @@ class Command(BaseCommand):
         if options['to_page']:
             to_page = options['to_page']
 
-        scrap_all_campuses(start_page=from_page, max_page=to_page)
+        scrap_campuses(start_page=from_page, max_page=to_page)

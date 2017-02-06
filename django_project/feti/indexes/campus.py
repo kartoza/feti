@@ -1,5 +1,5 @@
-
 # coding=utf-8
+from django.conf import settings
 from feti.models.campus import Campus
 from haystack import indexes
 
@@ -35,6 +35,9 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
     campus_location = indexes.LocationField(
         model_attr='location',
         null=True,
+        indexed=True
+    )
+    campus_icon_url = indexes.CharField(
         indexed=True
     )
     campus_address = indexes.CharField(
@@ -78,6 +81,10 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_courses_id(self, obj):
         return [l.id for l in obj.courses.all()]
+
+    def prepare_campus_icon_url(self, obj):
+        url = obj.provider.icon.url if obj.provider.icon else ''
+        return url.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
 
     class Meta:
         app_label = 'feti'

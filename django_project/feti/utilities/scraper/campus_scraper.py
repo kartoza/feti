@@ -1,5 +1,6 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '09/01/17'
+import os
 import re
 import requests
 import tempfile
@@ -103,7 +104,7 @@ def download_provider_icon(provider):
     """
     website = provider.website
     if website and not provider.icon:
-        print("getting icon provider %d from %s" % (provider.id, website))
+        print("getting icon provider %s from %s" % (provider, website))
         icon_url = get_provider_icon(website)
         print('raw icon url found = %s' % icon_url)
         if icon_url:
@@ -284,7 +285,7 @@ def scrap_campus(campus_name, campus_url):
     return campus_obj
 
 
-def scrap_all_campuses(start_page=0, max_page=0):
+def scrap_campuses(start_page=0, max_page=0):
     """Scraping campus from off site source.
 
     :param start_page: start page to be scraped
@@ -321,7 +322,6 @@ def scrap_all_campuses(start_page=0, max_page=0):
                 div = item.find("div", {"class": "LinkResult"})
                 if div:
                     is_empty = False
-                    print(div)
                     scrap_campus(div.a.string, div.a.get('href'))
             if is_empty:
                 break
@@ -330,3 +330,19 @@ def scrap_all_campuses(start_page=0, max_page=0):
             break
         print("----------------------------------------------------------")
     print("----------------------------------------------------------")
+
+
+def scrap_icons(replace=False):
+    """Scraping icon of campus.
+
+    :param replace: replace curent icon or not
+    :type replace: bool
+    """
+    for provider in Provider.objects.all():
+        if replace:
+            if provider.icon:
+                if os.path.isfile(provider.icon.file.path):
+                    os.remove(provider.icon.file.path)
+
+        download_provider_icon(provider)
+        provider.save()

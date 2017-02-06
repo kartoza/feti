@@ -83,7 +83,7 @@ define([
                     "provider": row["campus_provider"],
                     "location": latlng,
                     "title": campusTitle,
-                    "icon": row["campus_icon"],
+                    "icon": row["campus_icon_url"],
                     "courses": [],
                     "model": 'campus',
                     "address": row["campus_address"],

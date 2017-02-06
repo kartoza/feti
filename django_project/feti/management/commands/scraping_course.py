@@ -11,6 +11,7 @@ __copyright__ = 'kartoza.com'
 class Command(BaseCommand):
     help = 'Scrapping the courses information'
     args = '<args>'
+    true_words = ['true', 't', '1', 'y', 'yes']
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -48,7 +49,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options['delete']:
+        delete = options['delete']
+        if delete and delete in self.true_words:
             Course.objects.all().delete()
 
         if options['id']:

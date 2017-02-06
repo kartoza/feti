@@ -112,8 +112,10 @@ def create_step(data, learning_pathway):
             detail=data['detail'])
     except StepDetail.DoesNotExist:
         step_detail = StepDetail()
+
     step_detail.title = data['title']
     step_detail.detail = data['detail']
+    step_detail.save()
 
     try:
         step = Step.objects.get(
