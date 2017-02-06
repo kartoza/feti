@@ -110,7 +110,7 @@ define([
 
             this.polygonDrawer = new L.Draw.Polygon(this.map);
 
-            this.circleDrawer = new L.Draw.Circle(this.map);
+            this.circleDrawer = new L.Draw.Circle(this.map, {metric: true, feet: false});
 
             // Initialise the draw control and pass it the FeatureGroup of editable layers
             var drawControl = new L.Control.Draw({
