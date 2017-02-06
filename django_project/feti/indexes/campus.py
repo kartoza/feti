@@ -83,8 +83,7 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         return [l.id for l in obj.courses.all()]
 
     def prepare_campus_icon_url(self, obj):
-        url = obj.provider.icon.url if obj.provider.icon else ''
-        return url.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
+        return obj.provider.icon.url if obj.provider.icon else ''
 
     class Meta:
         app_label = 'feti'

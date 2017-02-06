@@ -338,11 +338,9 @@ def scrap_icons(replace=False):
     :param replace: replace curent icon or not
     :type replace: bool
     """
-    for provider in Provider.objects.all():
+    for provider in Provider.objects.all().order_by('primary_institution'):
         if replace:
-            if provider.icon:
-                if os.path.isfile(provider.icon.file.path):
-                    os.remove(provider.icon.file.path)
+            provider.clear_icon()
 
         download_provider_icon(provider)
         provider.save()
