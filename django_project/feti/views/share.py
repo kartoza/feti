@@ -256,6 +256,15 @@ class EmailShare(UpdateView, SharingMixin):
 
 
 class ApiRandomString(UpdateView):
+    def generate_random_string(self, url):
+        """ Generate random string from url and store it to db"""
+        try:
+            url = URL.objects.get(url=url)
+        except URL.DoesNotExist:
+            url = URL(url=url)
+            url.save()
+        return url.random_string
+
     def post(self, request, *args, **kwargs):
         data = request.body
 
@@ -266,13 +275,9 @@ class ApiRandomString(UpdateView):
                 'Error json value'
             )
         url = unquote(retrieved_data['url'])
-        try:
-            url = URL.objects.get(url=url)
-        except URL.DoesNotExist:
-            url = URL(url=url)
-            url.save()
+        response = self.generate_random_string(url)
 
-        return HttpResponse(url.random_string)
+        return HttpResponse(response)
 
 
 class ApiGetURL(APIView):
