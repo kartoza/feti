@@ -51,6 +51,7 @@ def login_modal(request):
     """
     username = ''
     error = ''
+    redirect_url = ''
 
     if request.method == 'POST':
         redirect_url = request.POST.get('next')
@@ -64,12 +65,12 @@ def login_modal(request):
             return redirect(redirect_url)
         error = 'invalid username or password'
 
-    if not redirect_url:
-        if user.is_superuser or user.is_staff:
-            redirect_url = reverse('admin:index')
-        else:
-            # admin for provider
-            redirect_url = reverse('admin:index')
+        if not redirect_url:
+            if user.is_superuser or user.is_staff:
+                redirect_url = reverse('admin:index')
+            else:
+                # admin for provider
+                redirect_url = reverse('admin:index')
 
     return render_to_response(
         'feti/landing_page.html',
