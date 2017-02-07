@@ -1,5 +1,5 @@
 # coding=utf-8
-from django.conf import settings
+import os
 from django.contrib.gis.db import models
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
@@ -19,7 +19,7 @@ class Provider(models.Model):
         max_length=255, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     icon = models.ImageField(
-        upload_to='%s/icons/' % settings.MEDIA_ROOT,
+        upload_to='icons/',
         blank=True,
         null=True)
     status = models.BooleanField(
@@ -33,6 +33,12 @@ class Provider(models.Model):
 
     def __unicode__(self):
         return self.primary_institution.title() or 'N/A'
+
+    def clear_icon(self):
+        if os.path.isfile(self.icon.path):
+            os.remove(self.icon.path)
+        self.icon = None
+        self.save()
 
     class Meta:
         app_label = 'feti'

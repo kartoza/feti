@@ -61,8 +61,8 @@ define([
             var that = this;
 
             this.$search_form.submit(function (e) {
-                that._updateSearchRoute();
                 e.preventDefault(); // avoid to execute the actual submit of the form.
+                that._updateSearchRoute();
             });
         },
         render: function () {
