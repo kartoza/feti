@@ -522,11 +522,14 @@ define([
             }
         },
         repositionMap: function (mode) {
-            if (!this.modesLayer[mode]) {
-                return;
+            if (Common.Router.is_initiated) {
+                if (!this.modesLayer[mode]) {
+                    return;
+                }
+                if (typeof this.modesLayer[mode].getBounds()._northEast != 'undefined') {
+                    this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
+                }
             }
-            if (typeof this.modesLayer[mode].getBounds()._northEast != 'undefined')
-                this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -585,7 +588,7 @@ define([
             }
         },
         exitAllFullScreen: function () {
-            this.searchView.exitOccupation();
+            this.sideBarView.exitOccupation(true);
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -676,7 +679,6 @@ define([
                     _map._onResize();
                     that.isFullScreen = false;
                     that.searchView.mapResize(false, that.animationSpeed);
-                    that.searchView.exitOccupation(e);
                     $('#feti-map').css('width', '100%');
                 });
 

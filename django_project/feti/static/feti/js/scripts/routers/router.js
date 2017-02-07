@@ -4,8 +4,14 @@ define([
     '/static/feti/js/scripts/views/login.js',
     'common'
 ], function (MapView, LoginView, Common) {
-    var history = [];
     var AppRouter = Backbone.Router.extend({
+        parameters: {
+            mode: 'provider',
+            query: '',
+            filter: '',
+            pathway: ''
+        },
+        is_initiated: false,
         routes: {
             "": "landing_page",
             "login": "login_page",
@@ -35,6 +41,9 @@ define([
             }
             // Set 'where to study' clicked on landing page
             this.mapView.changeCategory(Common.CurrentSearchMode);
+            if (!this.is_initiated) {
+                this.mapView.search(this.parameters.mode, this.parameters.query, this.parameters.filter);
+            }
 
             this.pageHistory.push(Backbone.history.getFragment());
 
@@ -58,6 +67,12 @@ define([
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
         },
         show_map: function (mode, query, filter, pathway) {
+            if (!query) {
+                query = "";
+            }
+            this.parameters = {
+                mode: mode, query: query, filter: filter, pathway: pathway
+            };
             if (this.pageHistory.length == 0) {
                 this.mapView.fullScreenMap(0);
             } else {
@@ -88,11 +103,7 @@ define([
             if (this.selected_occupation && this.inOccupation) {
                 Common.Dispatcher.trigger('search:finish', true);
             } else {
-                if (query) {
-                    this.mapView.search(mode, query, filter);
-                } else {
-                    this.mapView.search(mode, '', '');
-                }
+                this.mapView.search(mode, query, filter);
                 this.inOccupation = false;
             }
 

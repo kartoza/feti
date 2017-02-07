@@ -49,24 +49,33 @@ define([
             this._isOpen = false;
             this.exitOccupation();
         },
-        exitOccupation: function () {
+        exitOccupation: function (exitMap) {
             var that = this;
             var $cover = $('#shadow-map');
             if ($cover.is(":visible")) {
                 $cover.fadeOut(500);
                 $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    that.exitResult();
+                    that.exitResult(exitMap);
                 });
             } else {
-                that.exitResult();
+                that.exitResult(exitMap);
             }
         },
-        exitResult: function () {
+        exitResult: function (exitMap) {
             if ($('#result').is(":visible")) {
                 $('#result-toogle').removeClass('fa-caret-right');
                 $('#result-toogle').addClass('fa-caret-left');
-                $('#result').hide("slide", {direction: "right"}, 500);
+                $('#result').hide("slide", {direction: "right"}, 500, function () {
+                    if (exitMap) {
+                        Common.Dispatcher.trigger('map:exitFullScreen');
+                    }
+                });
+            } else {
+                if (exitMap) {
+                    Common.Dispatcher.trigger('map:exitFullScreen');
+                }
             }
+            this._isOpen = false;
         },
         showMapCover: function () {
             if (Common.CurrentSearchMode == 'occupation') {

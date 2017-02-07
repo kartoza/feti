@@ -14,6 +14,7 @@
         };
     </script>
     <script>
+        var limit_per_page = "{{ limit_per_page }}";
         var favorite = "{{ favorite }}";
         favorite = favorite.replaceAll("&quot;", "\"");
         favorite = JSON.parse(favorite);
@@ -194,11 +195,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-{#                        <label for="clipboard">Copy to clipboard: Ctrl+C, Enter</label>#}
+                        {#                        <label for="clipboard">Copy to clipboard: Ctrl+C, Enter</label>#}
                         <input type="text" class="form-control" id="clipboard">
                         <br>
                         <button id="copy-clipboard" class="btn btn-info"><i class="fa fa-clipboard" aria-hidden="true"></i>
-                            Copy to clipboard </button>
+                            Copy to clipboard
+                        </button>
                         <span id="copy-status" style="color: #3c763d; font-weight: lighter">
                         </span>
                     </div>

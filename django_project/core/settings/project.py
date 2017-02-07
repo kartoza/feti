@@ -109,5 +109,6 @@ PIPELINE = {
 
 # Cache folder
 CACHE_DIR = ABS_PATH('cache')
+LIMIT_PER_PAGE = 50
 
 from .celery_setting import *  # noqa
