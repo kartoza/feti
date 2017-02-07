@@ -320,6 +320,13 @@ clean-scraping:
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course True
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation True
 
+scraping-icon-provider:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to scraping icon"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_icon_provider
+
 workerlogs:
 	@echo
 	@echo "------------------------------------------------------------------"
