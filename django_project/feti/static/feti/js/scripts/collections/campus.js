@@ -8,7 +8,7 @@ define([
 
     var CampusCollection = Category.extend({
         model: Provider,
-        provider_url_template: _.template("/api/campus?q=<%- q %>&<%- coord %>"),
+        provider_url_template: _.template("/api/campus?page=<%- page %>&q=<%- q %>&<%- coord %>"),
         initialize: function () {
             this.url_template = this.provider_url_template;
             this.view = ProviderView;

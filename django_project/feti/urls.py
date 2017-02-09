@@ -16,6 +16,8 @@ from feti.views.api import (
     ApiOccupation,
     ApiSavedCampus
 )
+from feti.api_views.campus import CampusSummary
+from feti.api_views.course import ApiCourseIds
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
 
@@ -59,6 +61,16 @@ api_urls = patterns(
         r'^api/generate-random-string/',
         ApiRandomString.as_view(),
         name="api-get-random-string"
+    ),
+    url(
+        r'^api/get-courses/',
+        ApiCourseIds.as_view(),
+        name='api-get-courses'
+    ),
+    url(
+        r'^api/detail-campus/',
+        CampusSummary.as_view(),
+        name='api-get-campus-detail'
     ),
     url(
         r'^url/(?P<random>[\w\d]+)',

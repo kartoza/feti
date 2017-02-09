@@ -8,8 +8,11 @@ define([], function () {
         Dispatcher: _.extend({}, Backbone.Events),
         Router: {},
         CurrentSearchMode: 'provider',
+        AllowPagingRequest: ['provider'],
         FetchXHR: null,
         Favorites: new_favorite,
-        EmbedVersion: typeof is_embed !== "undefined"
+        EmbedVersion: typeof is_embed !== "undefined",
+        EmptyString: '<empty>',
+        limit_per_page: limit_per_page || 99999
     };
 });

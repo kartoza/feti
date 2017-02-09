@@ -39,6 +39,7 @@ define([
             this.initAutocomplete();
             Common.Dispatcher.on('toogle:result', this.toogleResult, this);
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
+            Common.Dispatcher.on('search:loadMore', this.onStartSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
             Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
@@ -61,6 +62,13 @@ define([
             var that = this;
 
             this.$search_form.submit(function (e) {
+                if ($.inArray(Common.CurrentSearchMode, Common.AllowPagingRequest) !== -1) {
+                    if (Common.CurrentSearchMode in that._search_query) {
+                        if (that.$search_bar_input.val() == "") {
+                            that._search_query[Common.CurrentSearchMode] = that.$search_bar_input.val();
+                        }
+                    }
+                }
                 e.preventDefault(); // avoid to execute the actual submit of the form.
                 that._updateSearchRoute();
             });
@@ -115,11 +123,17 @@ define([
             Common.CurrentSearchMode = mode;
 
             var query = that.$search_bar_input.val();
-            if (!query && mode in this._search_query) {
-                query = this._search_query[mode];
-            }
-            if (query == "" && mode != 'favorites') {
-                this.parent.closeResultContainer($('#result-toogle'));
+            if ($.inArray(Common.CurrentSearchMode, Common.AllowPagingRequest) !== -1) {
+                if (!query && mode in this._search_query) {
+                    query = this._search_query[mode];
+                }
+                if (!query) {
+                    query = Common.EmptyString;
+                }
+            } else {
+                if (!query && mode in this._search_query) {
+                    query = this._search_query[mode];
+                }
             }
             new_url.push(mode);
             new_url.push(query);
@@ -144,7 +158,9 @@ define([
         _updateSearchRoute: function (filter) {
             // update route based on query and filter
             var new_url = this._getSearchRoute(filter);
-            Backbone.history.navigate(new_url.join("/"), true);
+            if (Common.Router.is_initiated) {
+                Backbone.history.navigate(new_url.join("/"), true);
+            }
         },
         _categoryClicked: function (event) {
             event.preventDefault();
@@ -228,24 +244,31 @@ define([
             }
             Backbone.history.navigate(new_url.join("/"), false);
         },
-        search: function (mode, query, filter) {
-            if (query && mode != 'favorites') {
-                this.$search_bar_input.val(query);
+        search: function (mode, query, filter, changed) {
+            if (changed == undefined) {
+                changed = true;
+            }
+            if (mode != 'favorites') {
+                if (query != Common.EmptyString) {
+                    this.$search_bar_input.val(query);
+                }
                 // search
-                if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
+                if (changed && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
-                    if (query != "") {
-                        this.showResult(mode);
-                    }
-                } else {
+                    this.showResult(mode);
+                }
+                else {
                     switch (mode) {
                         case 'provider':
+                            campusCollection.search_changed = changed;
                             campusCollection.search(query, filter);
                             break;
                         case 'course':
+                            courseCollection.search_changed = changed;
                             courseCollection.search(query, filter);
                             break;
                         case 'occupation':
+                            occupationCollection.search_changed = changed;
                             occupationCollection.search(query);
                             break;
                         default:
@@ -254,7 +277,12 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this._search_need_update[mode] = false;
-                    Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                    if (changed) {
+                        Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                    } else {
+                        $(".result-title").css("cursor", "progress");
+                        $(".result-row").css("cursor", "progress");
+                    }
                     this.showResult(mode);
                 }
             } else if (mode == 'favorites') {
@@ -282,6 +310,12 @@ define([
                 }
             }
         },
+        onStartSearch: function () {
+            var mode = Common.Router.parameters.mode;
+            var query = Common.Router.parameters.query;
+            var filter = Common.Router.parameters.filter;
+            this.search(mode, query, filter, false);
+        },
         onFinishedSearch: function (is_not_empty, mode, num) {
 
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
@@ -289,6 +323,8 @@ define([
 
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
+            $(".result-title").css("cursor", "pointer");
+            $(".result-row").css("cursor", "pointer");
             if (mode) {
                 this._search_results[mode] = num;
                 this.$search_clear.show();
@@ -311,6 +347,19 @@ define([
                     var $toggle = $('#result-toogle');
                     this.parent.openResultContainer($toggle);
                 }
+            }
+            switch (mode) {
+                case 'provider':
+                    campusCollection.enableLoadMore();
+                    break;
+                case 'course':
+                    courseCollection.enableLoadMore();
+                    break;
+                case 'occupation':
+                    occupationCollection.enableLoadMore();
+                    break;
+                default:
+                    return;
             }
         },
         toogleResult: function (event) {
@@ -369,10 +418,9 @@ define([
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
                 this.$('#result-toogle').show();
-                this.parent.closeResultContainer($('#result-toogle'));
                 var mode = Common.CurrentSearchMode;
-                if(mode in this._search_results) {
-                    if(this._search_results[mode] > 0)
+                if (mode in this._search_results) {
+                    if (this._search_results[mode] > 0)
                         this.parent.openResultContainer($('#result-toogle'));
                 }
             } else { // Exit fullscreen
@@ -409,29 +457,6 @@ define([
 
                 // now it is shown
                 this.search_bar_hidden = true;
-            }
-        },
-        exitOccupation: function () {
-            var that = this;
-            var $cover = $('#shadow-map');
-            if ($cover.is(":visible")) {
-                $cover.fadeOut(500);
-                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    that.exitResult();
-                });
-            } else {
-                that.exitResult();
-            }
-        },
-        exitResult: function () {
-            if ($('#result').is(":visible")) {
-                $('#result-toogle').removeClass('fa-caret-right');
-                $('#result-toogle').addClass('fa-caret-left');
-                $('#result').hide("slide", {direction: "right"}, 500, function () {
-                    Common.Dispatcher.trigger('map:exitFullScreen');
-                });
-            } else {
-                Common.Dispatcher.trigger('map:exitFullScreen');
             }
         },
         _addResponsiveTab: function (div) {
