@@ -24,6 +24,15 @@ from feti.api_views.subfield_of_study import (
 from feti.api_views.field_of_study import (
     FieldOfStudyAPIView
 )
+from feti.api_views.qualification_type import (
+    QualificationTypeAPIView
+)
+from feti.api_views.national_qualifications_framework import (
+    NationalQualificationsFrameworkAPIView
+)
+from feti.api_views.national_qualifications_subframework import (
+    NationalQualificationsSubFrameworkAPIView
+)
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
 
@@ -83,7 +92,21 @@ api_urls = patterns(
         FieldOfStudyAPIView.as_view(),
         name="api-get-field-of-study"
     ),
-
+    url(
+        r'^api/qualification_type',
+        QualificationTypeAPIView.as_view(),
+        name="api-get-qualification-type"
+    ),
+    url(
+        r'^api/national_qualifications_framework',
+        NationalQualificationsFrameworkAPIView.as_view(),
+        name="api-get-nqf"
+    ),
+    url(
+        r'^api/national_qualifications_subframework',
+        NationalQualificationsSubFrameworkAPIView.as_view(),
+        name="api-get-nqsf"
+    ),
 )
 
 urlpatterns = patterns(
