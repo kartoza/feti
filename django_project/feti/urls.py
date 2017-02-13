@@ -18,6 +18,9 @@ from feti.views.api import (
 from feti.api_views.campus import (
     ApiCampus
 )
+from feti.api_views.course import (
+    CourseAPIView
+)
 from feti.api_views.subfield_of_study import (
     SubFieldOfStudyAPIView
 )
@@ -50,8 +53,8 @@ api_urls = patterns(
         name='api-campus'),
     url(
         r'^api/course',
-        ApiCourse.as_view(),
-        name='api-campus'),
+        CourseAPIView.as_view(),
+        name='api-course'),
     url(
         r'^api/occupation',
         ApiOccupation.as_view(),

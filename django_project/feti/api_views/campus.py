@@ -29,7 +29,7 @@ class ApiCampus(CampusSearch, APIView):
             if 'qt' in options:
                 sqs = self.filter_qualification_type(sqs, options['qt'])
             if 'mc' in options:
-                sqs = self.filter_minimum_credits(sqs, options['sos'])
+                sqs = self.filter_minimum_credits(sqs, options['mc'])
             if 'nqf' in options:
                 sqs = self.filter_nqf(sqs, options['nqf'])
             if 'nqsf' in options:

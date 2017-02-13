@@ -100,6 +100,13 @@ class CampusSearch(object):
         ).models(Campus)
         return sqs
 
+    def filter_by_course(self, query):
+        sqs = SearchQuerySet().filter(
+            course_course_description=query,
+            campus_location_isnull='false',
+        ).models(CampusCourseEntry)
+        return sqs
+
     def filter_indexed_campus_course(self, query):
         sqs = SearchQuerySet().filter(
             campus_and_provider=query,
