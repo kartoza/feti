@@ -18,6 +18,9 @@ from feti.views.api import (
 from feti.api_views.campus import (
     ApiCampus
 )
+from feti.api_views.subfield_of_study import (
+    SubFieldOfStudyAPIView
+)
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
 
@@ -66,7 +69,13 @@ api_urls = patterns(
         r'^url/(?P<random>[\w\d]+)',
         ApiGetURL.as_view(),
         name="api-get-url"
-    )
+    ),
+    url(
+        r'^api/subfield_of_study',
+        SubFieldOfStudyAPIView.as_view(),
+        name="api-get-subfield-of-study"
+    ),
+
 )
 
 urlpatterns = patterns(
