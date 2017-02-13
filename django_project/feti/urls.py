@@ -10,11 +10,13 @@ from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import EmbedPage, LandingPage
 from feti.views.api import (
-    ApiCampus,
     ApiCourse,
     ApiAutocomplete,
     ApiOccupation,
     ApiSavedCampus
+)
+from feti.api_views.campus import (
+    ApiCampus
 )
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime

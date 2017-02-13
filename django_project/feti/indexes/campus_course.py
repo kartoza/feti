@@ -24,6 +24,8 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='course__id',
         null=True
     )
+    field_of_study_id = indexes.IntegerField(null=True)
+
     campus_location = indexes.LocationField(
         model_attr='campus__location',
         null=True
@@ -56,6 +58,15 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='campus__provider__website',
         null=True
     )
+
+    def prepare_field_of_study_id(self, obj):
+        try:
+            if isinstance(obj.course.field_of_study.id, int):
+                return obj.course.field_of_study.id
+            else:
+                return None
+        except AttributeError:
+            return None
 
     def prepare_campus_location_isnull(self, obj):
         return obj.campus.location is None
