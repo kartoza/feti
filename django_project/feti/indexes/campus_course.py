@@ -24,7 +24,16 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='course__id',
         null=True
     )
+
     field_of_study_id = indexes.IntegerField(null=True)
+    subfield_of_study_id = indexes.IntegerField(null=True)
+    qualification_type_id = indexes.IntegerField(null=True)
+    minimum_credits = indexes.IntegerField(
+        model_attr='course__minimum_credits',
+        null=True
+    )
+    national_qualifications_framework_id = indexes.IntegerField(null=True)
+    national_qualifications_subframework_id = indexes.IntegerField(null=True)
 
     campus_location = indexes.LocationField(
         model_attr='campus__location',
@@ -40,9 +49,6 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     )
     course_course_description = indexes.EdgeNgramField(
         model_attr='course__course_description'
-    )
-    campus_popup = indexes.CharField(
-        model_attr='campus___campus_popup'
     )
     course_nlrd = indexes.CharField(
         model_attr='course__national_learners_records_database',
@@ -63,6 +69,42 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         try:
             if isinstance(obj.course.field_of_study.id, int):
                 return obj.course.field_of_study.id
+            else:
+                return None
+        except AttributeError:
+            return None
+
+    def prepare_subfield_of_study_id(self, obj):
+        try:
+            if isinstance(obj.course.subfield_of_study.id, int):
+                return obj.course.subfield_of_study.id
+            else:
+                return None
+        except AttributeError:
+            return None
+
+    def prepare_qualification_type_id(self, obj):
+        try:
+            if isinstance(obj.course.qualification_type.id, int):
+                return obj.course.qualification_type.id
+            else:
+                return None
+        except AttributeError:
+            return None
+
+    def prepare_national_qualifications_framework_id(self, obj):
+        try:
+            if isinstance(obj.course.national_qualifications_framework.id, int):
+                return obj.course.national_qualifications_framework.id
+            else:
+                return None
+        except AttributeError:
+            return None
+
+    def prepare_national_qualifications_subframework_id(self, obj):
+        try:
+            if isinstance(obj.course.national_qualifications_subframework.id, int):
+                return obj.course.national_qualifications_subframework.id
             else:
                 return None
         except AttributeError:

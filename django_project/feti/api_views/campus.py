@@ -18,9 +18,23 @@ class ApiCampus(CampusSearch, APIView):
         query, options = self.process_request(request)
         search_in_campus_model = True
 
-        if options and 'fos' in options:
+        if options and 'advance_search' in options:
             search_in_campus_model = False
-            sqs = self.filter_campus_with_fos(query, options['fos'])
+
+            sqs = self.filter_indexed_campus_course(query)
+
+            if 'fos' in options:
+                sqs = self.filter_fos(sqs, options['fos'])
+            if 'sos' in options:
+                sqs = self.filter_sos(sqs, options['sos'])
+            if 'qt' in options:
+                sqs = self.filter_qualification_type(sqs, options['qt'])
+            if 'mc' in options:
+                sqs = self.filter_minimum_credits(sqs, options['sos'])
+            if 'nqf' in options:
+                sqs = self.filter_nqf(sqs, options['nqf'])
+            if 'nqsf' in options:
+                sqs = self.filter_nqsf(sqs, options['nqsf'])
         else:
             sqs = self.filter_indexed_campus(query)
 

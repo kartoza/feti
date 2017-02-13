@@ -53,9 +53,6 @@ class CampusSearch(object):
         if boundary:
             drawn_polygon = boundary.polygon_geometry
 
-        # Advance search
-        field_of_study = request.GET.get('fos')
-
         if not query:
             query = ""
 
@@ -71,37 +68,110 @@ class CampusSearch(object):
                 'radius': radius
             }
 
-        if field_of_study:
-            options['fos'] = field_of_study
+        # Advance search
+        if request.GET.get('fos'):
+            options['fos'] = request.GET.get('fos')
+        if request.GET.get('sos'):
+            options['sos'] = request.GET.get('sos')
+        if request.GET.get('qt'):
+            options['qt'] = request.GET.get('qt')
+        if request.GET.get('mc'):
+            options['mc'] = request.GET.get('mc')
+        if request.GET.get('nqf'):
+            options['nqf'] = request.GET.get('nqf')
+        if request.GET.get('nqsf'):
+            options['nqsf'] = request.GET.get('nqsf')
+
+        if 'fos' or 'sos' or 'qt' or 'mc' or 'nqf' or 'nqsf' in options:
+            options['advance_search'] = True
 
         return query, options
 
     def filter_indexed_campus(self, query):
         """
-        Filter search query set by query
+        Filter using campus index model.
         :param sqs: Search Query Set
         :return: filtered sqs
         """
         sqs = SearchQuerySet().filter(
-                long_description=query,
-                campus_location_is_null='false',
-                courses_is_null='false'
+            long_description=query,
+            campus_location_is_null='false',
+            courses_is_null='false'
         ).models(Campus)
         return sqs
 
-    def filter_campus_with_fos(self, query, fos=None):
-        if fos:
-            sqs = SearchQuerySet().filter(
-                campus_and_provider=query,
-                campus_location_isnull='false',
-                field_of_study_id=Exact(fos)
-            ).models(CampusCourseEntry)
-        else:
-            sqs = SearchQuerySet().filter(
-                campus_and_provider=query,
-                campus_location_isnull='false'
-            ).models(CampusCourseEntry)
+    def filter_indexed_campus_course(self, query):
+        sqs = SearchQuerySet().filter(
+            campus_and_provider=query,
+            campus_location_isnull='false'
+        ).models(CampusCourseEntry)
         return sqs
+
+    def filter_fos(self, sqs, fos):
+        """
+
+        :param sqs: Search Query Set
+        :param fos: Field of study
+        :return:
+        """
+        return sqs.filter(
+            field_of_study_id=Exact(fos)
+        ).models(CampusCourseEntry)
+
+    def filter_sos(self, sqs, sos):
+        """
+
+        :param sqs: Search Query Set
+        :param sos: Subfield of study
+        :return:
+        """
+        return sqs.filter(
+            subfield_of_study_id=Exact(sos)
+        ).models(CampusCourseEntry)
+
+    def filter_qualification_type(self, sqs, qt):
+        """
+
+        :param sqs:
+        :param qt: qualitifaction type
+        :return:
+        """
+        return sqs.filter(
+            qualification_type_id=Exact(qt)
+        ).models(CampusCourseEntry)
+
+    def filter_minimum_credits(self, sqs, mc):
+        """
+
+        :param sqs:
+        :param mc: minimum credits
+        :return:
+        """
+        return sqs.filter(
+            minimum_credits=Exact(mc)
+        ).models(CampusCourseEntry)
+
+    def filter_nqf(self, sqs, nqf):
+        """
+
+        :param sqs:
+        :param nqf: National Qualifications Framework
+        :return:
+        """
+        return sqs.filter(
+            national_qualifications_framework_id=Exact(nqf)
+        ).models(CampusCourseEntry)
+
+    def filter_nqsf(self, sqs, nqsf):
+        """
+
+        :param sqs:
+        :param nqsf: National Qualifications Subframework
+        :return:
+        """
+        return sqs.filter(
+            national_qualifications_subframework_id=Exact(nqsf)
+        ).models(CampusCourseEntry)
 
     def filter_polygon(self, sqs, polygon):
         """
