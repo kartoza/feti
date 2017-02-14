@@ -44,6 +44,8 @@ define([
 
             // Leaflet draw
             this.drawnItems = new L.FeatureGroup();
+            this.listDrawnItems = {};
+
             // Polygon draw handler
             this.polygonDrawer = null;
             this.polygonLayer = null;
@@ -67,8 +69,11 @@ define([
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
-            Common.Dispatcher.on('sidebar:categoryClicked', this._onSearchBarCategoryClicked, this);
+            Common.Dispatcher.on('sidebar:categoryClicked', this.onSearchBarCategoryClicked, this);
             Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
+
+            Common.Dispatcher.on('map:addLayerToFilterLayers', this.addLayerToFilterLayers, this);
+            Common.Dispatcher.on('map:removeLayerFromFilterLayers', this.removeLayerFromFilterLayers, this);
 
             this.modesLayer = {
                 'provider': L.featureGroup(),
@@ -106,7 +111,7 @@ define([
             this.$('#feti-map').parent().css('height', '100%');
 
             // Add drawable layer to map
-            this.map.addLayer(this.drawnItems);
+            // this.map.addLayer(this.drawnItems);
 
             this.polygonDrawer = new L.Draw.Polygon(this.map);
 
@@ -241,7 +246,7 @@ define([
                         onClick: function (btn, map) {
                             btn.disable();
                             _this.clearAllDrawnLayer();
-                            Common.Dispatcher.trigger('search:updateRouter');
+                            // Common.Dispatcher.trigger('search:updateRouter');
                         }
                     }
                 ]
@@ -399,16 +404,20 @@ define([
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
         },
-        _onSearchBarCategoryClicked: function (newMode, oldMode) {
-            this._changeSearchLayer(oldMode, newMode);
+        onSearchBarCategoryClicked: function (newMode, oldMode) {
+            this.changeSearchLayer(oldMode, newMode);
         },
         drawCreated: function (e) {
             var type = e.layerType,
                 layer = e.layer;
 
             this.clearButton.enable();
-            this.drawnItems.addLayer(layer);
-            this.layerAdministrativeView.resetBasedLayer();
+
+            var currentMode = Common.CurrentSearchMode;
+
+            this.listDrawnItems[currentMode] = L.featureGroup();
+            this.listDrawnItems[currentMode].addLayer(layer);
+            this.map.addLayer(this.listDrawnItems[currentMode]);
 
             if (type === 'polygon') {
                 this.polygonLayer = layer;
@@ -467,32 +476,43 @@ define([
             this.map.off('mousemove', this.onMouseMove, this)
         },
         clearAllDrawnLayer: function () {
-            this.drawnItems.eachLayer(function (layer) {
-                this.drawnItems.removeLayer(layer);
-            }, this);
+            var mode = Common.CurrentSearchMode;
             this.layerAdministrativeView.resetBasedLayer();
+            if(typeof this.listDrawnItems[mode] == 'undefined') {
+                return;
+            }
+
+            this.map.removeLayer(this.listDrawnItems[mode]);
+
+            this.listDrawnItems[mode].eachLayer(function (layer) {
+                this.listDrawnItems[mode].removeLayer(layer);
+            }, this);
         },
-        getCoordinatesQuery: function () {
-            var drawnLayers = this.drawnItems.getLayers();
-            if (drawnLayers.length > 0) {
-                var _layer = drawnLayers[0];
-                var query = '';
-                // check if layer is polygon or circle
-                if (_layer instanceof L.Polygon) {
-                    var coordinates = _layer.getLatLngs();
-                    var coordinates_string = JSON.stringify(coordinates);
-                    query = 'shape=polygon&coordinates=' + coordinates_string;
-                } else if (_layer instanceof L.Circle) {
-                    var circleCoordinate = _layer.getLatLng();
-                    var circleRadius = _layer.getRadius();
-                    query = 'shape=circle&coordinate=' + JSON.stringify(circleCoordinate) + '&radius=' + circleRadius;
-                }
-                return query;
-            } else {
-                if (this.layerAdministrativeView.current_adm) {
-                    return 'administrative=' + this.layerAdministrativeView.current_adm
+        getCoordinatesQuery: function (mode) {
+            if (typeof this.listDrawnItems[mode] !== 'undefined') {
+                this.clearButton.enable();
+                var drawnLayers = this.listDrawnItems[mode].getLayers();
+                if (drawnLayers.length > 0) {
+                    var _layer = drawnLayers[0];
+                    var query = '';
+                    // check if layer is polygon or circle
+                    if (_layer instanceof L.Polygon) {
+                        var coordinates = _layer.getLatLngs();
+                        var coordinates_string = JSON.stringify(coordinates);
+                        query = 'shape=polygon&coordinates=' + coordinates_string;
+                    } else if (_layer instanceof L.Circle) {
+                        var circleCoordinate = _layer.getLatLng();
+                        var circleRadius = _layer.getRadius();
+                        query = 'shape=circle&coordinate=' + JSON.stringify(circleCoordinate) + '&radius=' + circleRadius;
+                    }
+                    return query;
                 }
             }
+            else if(this.layerAdministrativeView.getCurrentAdminLayer()) {
+                this.clearButton.enable();
+                return 'administrative=' + this.layerAdministrativeView.getCurrentAdminLayer()
+            }
+            this.clearButton.enable();
         },
         clearLayerMode: function (mode) {
             if (this.map.hasLayer(this.modesLayer[mode])) {
@@ -521,6 +541,20 @@ define([
                 this.map.addLayer(this.modesLayer[mode]);
             }
         },
+        addLayerToFilterLayers: function(layer) {
+            var mode = Common.CurrentSearchMode;
+            if (typeof this.modesLayer[mode] == 'undefined') {
+                this.modesLayer[mode] = L.featureGroup();
+            }
+            this.modesLayer[mode].addLayer(layer);
+        },
+        removeLayerFromFilterLayers: function(layer) {
+            var mode = Common.CurrentSearchMode;
+            if (typeof this.modesLayer[mode] == 'undefined') {
+                return
+            }
+            this.modesLayer[mode].removeLayer(layer);
+        },
         repositionMap: function (mode) {
             if (!this.modesLayer[mode]) {
                 return;
@@ -531,10 +565,19 @@ define([
         addLayer: function (layer) {
             this.map.addLayer(layer);
         },
-        _changeSearchLayer: function (fromMode, toMode) {
+        changeSearchLayer: function (fromMode, toMode) {
+            // Triggered when search category changed
             if (this.map.hasLayer(this.modesLayer[fromMode])) {
                 this.map.removeLayer(this.modesLayer[fromMode]);
             }
+            if (this.map.hasLayer(this.listDrawnItems[fromMode])) {
+                this.map.removeLayer(this.listDrawnItems[fromMode]);
+            }
+            if (!this.map.hasLayer(this.listDrawnItems[toMode])) {
+                if(typeof this.listDrawnItems[toMode] != 'undefined')
+                    this.map.addLayer(this.listDrawnItems[toMode]);
+            }
+
             if (toMode == 'occupation') {
                 this.hideShareBar();
                 return;
@@ -569,7 +612,7 @@ define([
             this.map.panTo(latLng);
         },
         changeCategory: function (mode) {
-            this._changeSearchLayer(Common.CurrentSearchMode, mode);
+            this.changeSearchLayer(Common.CurrentSearchMode, mode);
             this.searchView.changeCategoryButton(mode);
         },
         search: function (mode, query, filter) {
@@ -731,18 +774,34 @@ define([
             }
         },
         createPolygon: function (coordinates) {
+            var mode = Common.CurrentSearchMode;
+
+            if (typeof this.listDrawnItems[mode] == 'undefined') {
+                this.listDrawnItems[mode] = L.featureGroup()
+            }
+
             this.clearAllDrawnLayer();
             this.polygonLayer = L.polygon(coordinates, this.layerOptions());
-            this.drawnItems.addLayer(this.polygonLayer);
-            this.addLayer(this.drawnItems);
+
+            this.listDrawnItems[mode].addLayer(this.polygonLayer);
+            this.addLayer(this.listDrawnItems[mode]);
+
             this.map.fitBounds(this.polygonLayer);
             this.clearButton.enable();
         },
         createCircle: function (coords, radius) {
+            var mode = Common.CurrentSearchMode;
+
+            if (typeof this.listDrawnItems[mode] == 'undefined') {
+                this.listDrawnItems[mode] = L.featureGroup()
+            }
+
             this.clearAllDrawnLayer();
             this.circleLayer = L.circle([coords['lat'], coords['lng']], radius, this.layerOptions());
-            this.drawnItems.addLayer(this.circleLayer);
-            this.addLayer(this.drawnItems);
+
+            this.listDrawnItems[mode].addLayer(this.circleLayer);
+            this.addLayer(this.listDrawnItems[mode]);
+
             this.map.fitBounds(this.circleLayer);
             this.clearButton.enable();
 
