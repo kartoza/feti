@@ -246,7 +246,7 @@ define([
                         onClick: function (btn, map) {
                             btn.disable();
                             _this.clearAllDrawnLayer();
-                            // Common.Dispatcher.trigger('search:updateRouter');
+                            Common.Dispatcher.trigger('search:updateRouter');
                         }
                     }
                 ]
@@ -489,6 +489,11 @@ define([
             }, this);
         },
         getCoordinatesQuery: function (mode) {
+            if(this.layerAdministrativeView.getCurrentAdminLayer()) {
+                this.clearButton.enable();
+                return 'administrative=' + this.layerAdministrativeView.getCurrentAdminLayer()
+            }
+
             if (typeof this.listDrawnItems[mode] !== 'undefined') {
                 this.clearButton.enable();
                 var drawnLayers = this.listDrawnItems[mode].getLayers();
@@ -508,11 +513,7 @@ define([
                     return query;
                 }
             }
-            else if(this.layerAdministrativeView.getCurrentAdminLayer()) {
-                this.clearButton.enable();
-                return 'administrative=' + this.layerAdministrativeView.getCurrentAdminLayer()
-            }
-            this.clearButton.enable();
+            this.clearButton.disable();
         },
         clearLayerMode: function (mode) {
             if (this.map.hasLayer(this.modesLayer[mode])) {
@@ -543,17 +544,18 @@ define([
         },
         addLayerToFilterLayers: function(layer) {
             var mode = Common.CurrentSearchMode;
-            if (typeof this.modesLayer[mode] == 'undefined') {
-                this.modesLayer[mode] = L.featureGroup();
+            if (typeof this.listDrawnItems[mode] == 'undefined') {
+                this.listDrawnItems[mode] = L.featureGroup();
             }
-            this.modesLayer[mode].addLayer(layer);
+            this.listDrawnItems[mode].addLayer(layer);
+            this.map.addLayer(this.listDrawnItems[mode]);
         },
         removeLayerFromFilterLayers: function(layer) {
             var mode = Common.CurrentSearchMode;
-            if (typeof this.modesLayer[mode] == 'undefined') {
+            if (typeof this.listDrawnItems[mode] == 'undefined') {
                 return
             }
-            this.modesLayer[mode].removeLayer(layer);
+            this.listDrawnItems[mode].removeLayer(layer);
         },
         repositionMap: function (mode) {
             if (!this.modesLayer[mode]) {
