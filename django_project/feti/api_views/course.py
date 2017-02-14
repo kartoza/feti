@@ -16,6 +16,13 @@ class CourseAPIView(CampusSearch, APIView):
     def get(self, request, format=None):
         query, options = self.process_request(request)
 
+        if '=' in query:
+            queries = query.split('=')
+            # search by saqa id
+            if 'saqa_id' in queries[0] and len(queries) > 1:
+                saqa_ids = queries[1].split(',')
+                return Response(self.filter_by_saqa_ids(saqa_ids, options))
+
         sqs = self.filter_by_course(query)
 
         if options and 'advance_search' in options:
@@ -58,3 +65,4 @@ class CourseAPIView(CampusSearch, APIView):
                 campus_data.append(stored_fields)
 
         return Response(campus_data)
+

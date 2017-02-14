@@ -180,6 +180,43 @@ class CampusSearch(object):
             national_qualifications_subframework_id=Exact(nqsf)
         ).models(CampusCourseEntry)
 
+    def filter_by_saqa_ids(self, saqa_ids, options=None):
+        """
+        Filter by saqa id
+        :param saqa_ids: List of saqa id
+        :param options: Additional query option
+        :return:
+        """
+        results = []
+
+        if not saqa_ids:
+            return results
+
+        for saqa_id in saqa_ids:
+            sqs = SearchQuerySet().filter(
+                course_nlrd=Exact(saqa_id)
+            ).models(CampusCourseEntry)
+            if options and 'shape' in options:
+                if options['type'] == 'polygon':
+                    sqs = self.filter_polygon(sqs, options['shape'])
+                elif options['type'] == 'circle':
+                    sqs = self.filter_radius(
+                            sqs,
+                            options['shape'],
+                            options['radius']
+                    )
+
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                    results.append(stored_fields)
+
+        return results
+
     def filter_polygon(self, sqs, polygon):
         """
         Filter search query set by polygon
