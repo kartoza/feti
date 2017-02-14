@@ -558,6 +558,14 @@ define([
             this.listDrawnItems[mode].removeLayer(layer);
         },
         repositionMap: function (mode) {
+            // Reposition map after category changed
+            if(this.listDrawnItems[mode]) {
+                if (typeof this.listDrawnItems[mode].getBounds()._northEast != 'undefined') {
+                    this.map.fitBounds(this.listDrawnItems[mode].getBounds(), {paddingTopLeft: [75, 75]});
+                    return;
+                }
+            }
+
             if (!this.modesLayer[mode]) {
                 return;
             }
@@ -576,8 +584,10 @@ define([
                 this.map.removeLayer(this.listDrawnItems[fromMode]);
             }
             if (!this.map.hasLayer(this.listDrawnItems[toMode])) {
-                if(typeof this.listDrawnItems[toMode] != 'undefined')
+                if(typeof this.listDrawnItems[toMode] != 'undefined') {
+                    this.repositionMap(toMode);
                     this.map.addLayer(this.listDrawnItems[toMode]);
+                }
             }
 
             if (toMode == 'occupation') {
