@@ -128,7 +128,7 @@ define([
                 new_url.push(filter);
             } else {
                 // Get coordinates query from map
-                var coordinates = this.parent.getCoordinatesQuery();
+                var coordinates = this.parent.getCoordinatesQuery(mode);
                 if (coordinates) {
                     new_url.push(coordinates);
                 }

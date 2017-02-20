@@ -6,6 +6,14 @@ define([
         layer: ['province', 'district', 'municiple'],
         polygons: {},
         cache: {},
+        currentAdminLayer: {},
+        getCurrentAdminLayer: function() {
+            var mode = Common.CurrentSearchMode;
+            if (typeof this.currentAdminLayer[mode] == 'undefined') {
+                return;
+            }
+            return this.currentAdminLayer[mode];
+        },
         initialize: function (options) {
             this.map = options.parent;
             this.active = false;
@@ -23,7 +31,7 @@ define([
                 layer = this.layer[i];
                 var polygon = this.polygons[layer];
                 if (polygon) {
-                    Common.Dispatcher.trigger('map:removeLayer', polygon);
+                    Common.Dispatcher.trigger('map:removeLayerFromFilterLayers', polygon);
                     this.polygons[layer] = null;
                 }
             }
@@ -32,13 +40,14 @@ define([
         setCurrentAdm: function () {
             // routing
             var adm = "";
+            var mode = Common.CurrentSearchMode;
             for (var i = 0; i <= this.layer.length - 1; i++) {
                 var polygon = this.polygons[this.layer[i]];
                 if (polygon) {
                     adm = polygon.getLayers()[0].feature.properties.title;
                 }
             }
-            this.current_adm = adm;
+            this.currentAdminLayer[mode] = adm;
         },
         getAdministrativeByLatlng: function (latlng, layer) {
             var that = this;
@@ -62,12 +71,12 @@ define([
                             that.polygons[data.layer] = polygon;
                         }
                         that.setCurrentAdm();
-                        if (that.current_adm == "") {
+                        if (that.getCurrentAdminLayer() == "") {
                             Common.Dispatcher.trigger('search:updateRouter', '');
                         } else {
-                            Common.Dispatcher.trigger('search:updateRouter', 'administrative=' + that.current_adm);
+                            Common.Dispatcher.trigger('search:updateRouter', 'administrative=' + that.getCurrentAdminLayer());
                         }
-                        that.showPolygon(that.current_adm);
+                        that.showPolygon(that.getCurrentAdminLayer());
                     },
                     error: function (request, error) {
                         $("path").css("cursor", "pointer");
@@ -95,10 +104,10 @@ define([
         renderPolygon: function (polygon) {
             if (!Common.EmbedVersion) {
                 if (this.polygons[polygon.getLayers()[0].feature.properties.layer]) {
-                    Common.Dispatcher.trigger('map:removeLayer', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
+                    Common.Dispatcher.trigger('map:removeLayerFromFilterLayers', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
                 }
                 this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
-                Common.Dispatcher.trigger('map:addLayer', polygon);
+                Common.Dispatcher.trigger('map:addLayerToFilterLayers', polygon);
                 this.map.clearButton.enable();
             }
         },
