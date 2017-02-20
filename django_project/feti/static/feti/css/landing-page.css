@@ -667,6 +667,23 @@
     color: #b3b3b3;
 }
 
+.filter-panel {
+    background-color: rgba(243, 243, 243, 0.9);
+    position: absolute;
+    display: none;
+    top: 123px;
+    height: 165px;
+    width: 100%;
+    z-index: 90;
+}
+
+.filter-panel .row {
+    padding-top: 15px;
+    color: dimgray;
+    font-weight: lighter;
+    font-size: 15px;
+}
+
 .leaflet-right {
     margin-top: 65px;
 }
@@ -683,4 +700,14 @@
 .right-details-title {
     width: 8.33333333%;
     float: left;
+}
+
+.filter-button {
+    padding-top: 20px;
+    font-size: 18px;
+    width: 80%;
+}
+
+.filter-button :hover {
+    cursor: pointer;
 }

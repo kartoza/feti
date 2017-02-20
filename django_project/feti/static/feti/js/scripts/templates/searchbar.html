@@ -26,7 +26,7 @@
             <div class="search-row">
                 <div class="col-md-2">
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-6">
                     <span id="search-box" class="right-inner-addon">
                         <label for="search-bar-input">
                             <i class="fa fa-search" aria-hidden="true"></i>
@@ -43,6 +43,16 @@
                         </a>
                     </span>
                 </div>
+                <div class="col-md-1">
+                    <div class="filter-button">
+                        <div class="btn-default btn-sm" id="show-filter-button">
+                            show filters  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </div>
+                        <div class="btn-default btn-sm" id="hide-filter-button" hidden>
+                            hide filters  <i class="fa fa-angle-up" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!--
@@ -51,5 +61,31 @@
             </span>
             -->
         <i id="result-toogle" class="result-toogle fa fa-caret-left" aria-hidden="true"></i>
+    </div>
+
+    <div class="filter-panel">
+        <div class="row">
+            <div class="col col-md-1 col-xs-1"></div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Field of study</p>
+                <select id="field-of-study-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Qualification type</p>
+                <select id="qualification-type-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-3 col-xs-3">
+                <p>NQF Level</p>
+                <select id="nqf-level-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-1 col-xs-1"></div>
+        </div>
+
     </div>
 </form>
