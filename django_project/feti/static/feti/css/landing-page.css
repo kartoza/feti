@@ -718,6 +718,10 @@
     cursor: pointer;
 }
 
+.filter-button .btn-sm {
+    width: 100px;
+}
+
 a#search-icon:hover {
     cursor: pointer;
     text-decoration: none;
