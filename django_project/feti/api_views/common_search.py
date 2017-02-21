@@ -155,7 +155,7 @@ class CampusSearch(object):
         :return:
         """
         return sqs.filter(
-            minimum_credits=Exact(mc)
+            minimum_credits__gte=mc
         ).models(CampusCourseEntry)
 
     def filter_nqf(self, sqs, nqf):
