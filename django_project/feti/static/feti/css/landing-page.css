@@ -711,3 +711,13 @@
 .filter-button :hover {
     cursor: pointer;
 }
+
+a#search-icon:hover {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a#search-icon {
+    padding-top: 10px;
+    margin-left: -40px;
+}

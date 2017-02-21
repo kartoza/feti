@@ -19,7 +19,8 @@ define([
             'click #search-clear': 'clearSearch',
             'click #show-filter-button': 'showFilterPanel',
             'click #hide-filter-button': 'hideFilterPanel',
-            'change #field-of-study-select': 'selectFOSFilter'
+            'change #field-of-study-select': 'selectFOSFilter',
+            'click #search-icon': 'searchIconClicked'
         },
         initialize: function (options) {
             this.render();
@@ -73,6 +74,10 @@ define([
             });
 
             this.getFilters();
+        },
+        searchIconClicked: function (e) {
+            this.isSearchFromInput = true;
+            this.updateSearchRoute();
         },
         render: function () {
             this.$el.empty();
@@ -510,7 +515,7 @@ define([
 
             // Hide side panel
             var resultToggle = $('#result-toogle');
-            this.parent.closeResultContainer($(e.target));
+            this.parent.closeResultContainer(resultToggle);
             resultToggle.removeClass('fa-caret-right');
             resultToggle.addClass('fa-caret-left');
 
@@ -536,7 +541,7 @@ define([
             // Show side panel
             var resultToggle = $('#result-toogle');
             if(typeof e != 'undefined') {
-                this.parent.openResultContainer($(e.target));
+                this.parent.openResultContainer(resultToggle);
                 resultToggle.removeClass('fa-caret-left');
                 resultToggle.addClass('fa-caret-right');
             }
