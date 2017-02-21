@@ -16,7 +16,15 @@ define([
             'click #choose-occupation': '_categoryClicked',
             'click #favorites': '_categoryClicked',
             'click #result-toogle': 'toogleResult',
-            'click #search-clear': 'clearSearch'
+            'click #search-clear': 'clearSearch',
+            'click #show-filter-button': 'showFilterPanel',
+            'click #hide-filter-button': 'hideFilterPanel',
+            'change #field-of-study-select': 'filterChanged',
+            'change #qualification-type-select': 'filterChanged',
+            'change #subfield-of-study-select': 'filterChanged',
+            'change #nqf-level-select': 'filterChanged',
+            'click #search-icon': 'searchIconClicked',
+            'click #search-with-filter': 'searchIconClicked'
         },
         initialize: function (options) {
             this.render();
@@ -42,7 +50,7 @@ define([
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
             Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
-            Common.Dispatcher.on('search:updateRouter', this._updateSearchRoute, this);
+            Common.Dispatcher.on('search:updateRouter', this.updateSearchRoute, this);
 
             this._drawer = {
                 polygon: this._initializeDrawPolygon,
@@ -60,10 +68,29 @@ define([
 
             var that = this;
 
+            // Flag to show search is initiated through search form
+            this.isSearchFromInput = false;
+
             this.$search_form.submit(function (e) {
                 e.preventDefault(); // avoid to execute the actual submit of the form.
-                that._updateSearchRoute();
+                that.isSearchFromInput = true;
+                that.updateSearchRoute();
             });
+            this.$search_bar_input.keyup(function(e){
+                if(e.keyCode == 13)
+                {
+                    if(that.$search_bar_input.val()) {
+                        that.isSearchFromInput = true;
+                        that.updateSearchRoute();
+                    }
+                }
+            });
+
+            this.loadFilters();
+        },
+        searchIconClicked: function (e) {
+            this.isSearchFromInput = true;
+            this.updateSearchRoute();
         },
         render: function () {
             this.$el.empty();
@@ -108,13 +135,22 @@ define([
             var width = this.$search_bar_input.css('width');
             $('.ui-autocomplete').css('width', width);
         },
-        _getSearchRoute: function (filter) {
+        getSearchRoute: function (filter) {
             var that = this;
             var new_url = ['map'];
             var mode = this.$el.find('.search-category').find('.search-option.active').data('mode');
             Common.CurrentSearchMode = mode;
+            var query = '';
 
-            var query = that.$search_bar_input.val();
+            if(this.isSearchFromInput) {
+                query = that.$search_bar_input.val();
+                if(mode != 'occupation' && mode != 'favorites')
+                    query += that.getAdvancedFilters();
+                this.isSearchFromInput = false;
+            } else {
+                query = that._search_query[mode];
+            }
+
             if (!query && mode in this._search_query) {
                 query = this._search_query[mode];
             }
@@ -141,9 +177,9 @@ define([
 
             return new_url;
         },
-        _updateSearchRoute: function (filter) {
+        updateSearchRoute: function (filter) {
             // update route based on query and filter
-            var new_url = this._getSearchRoute(filter);
+            var new_url = this.getSearchRoute(filter);
             Backbone.history.navigate(new_url.join("/"), true);
         },
         _categoryClicked: function (event) {
@@ -164,7 +200,7 @@ define([
                 this.$search_bar_input.val('');
 
                 // Update url
-                this._updateSearchRoute();
+                this.updateSearchRoute();
 
                 if (mode != 'favorites') {
                     // Hide search bar if in favorite mode
@@ -175,6 +211,12 @@ define([
                     if ($('#result-detail').is(":visible")) {
                         $('#result-detail').hide("slide", {direction: "right"}, 500);
                     }
+                }
+
+                if (mode == 'occupation' || mode == 'favorites') {
+                    $('.filter-button').hide();
+                } else {
+                    $('.filter-button').show();
                 }
             }
         },
@@ -221,16 +263,36 @@ define([
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
-            var new_url = this._getSearchRoute();
+            var new_url = this.getSearchRoute();
             new_url.push(id);
             if (pathway) {
                 new_url.push(pathway);
             }
             Backbone.history.navigate(new_url.join("/"), false);
         },
+        updateSearchBarInput: function (query) {
+            // Remove all filters from searchbar
+            // filters are fos, qt, nqf, sos, mc
+            query = query.replace(query.match(/&fos=\d+/g), '');
+            query = query.replace(query.match(/&qt=\d+/g), '');
+            query = query.replace(query.match(/&nqf=\d+/g), '');
+            query = query.replace(query.match(/&sos=\d+/g), '');
+            query = query.replace(query.match(/&mc=\d+/g), '');
+            this.$search_bar_input.val(query);
+        },
         search: function (mode, query, filter) {
             if (query && mode != 'favorites') {
-                this.$search_bar_input.val(query);
+
+                // Put query to search input
+                this.updateSearchBarInput(query);
+
+                // Update filters
+                this.parseFilters(query);
+
+                if(!this.$search_bar_input.val()) {
+                    return;
+                }
+
                 // search
                 if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
@@ -281,6 +343,12 @@ define([
                     this.parent.createCircle(coords, radius);
                 }
             }
+            if (mode == 'occupation' || mode == 'favorites') {
+                this.hideFilterPanel();
+                $('.filter-button').hide();
+            } else {
+                $('.filter-button').show();
+            }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
 
@@ -294,6 +362,7 @@ define([
                 this.$search_clear.show();
             }
 
+            this.hideFilterPanel();
             if (num > 0 && mode != 'occupation') {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
@@ -334,7 +403,7 @@ define([
         },
         clearAllDraw: function () {
             this.parent.clearAllDrawnLayer();
-            this._updateSearchRoute();
+            this.updateSearchRoute();
         },
         changeCategoryButton: function (mode) {
             // Shows relevant search result container
@@ -461,10 +530,197 @@ define([
             this.$search_clear.hide();
 
             // Update search
-            this._updateSearchRoute();
+            this.updateSearchRoute();
 
             // Update sidebar
             Common.Dispatcher.trigger('sidebar:clear_search', Common.CurrentSearchMode);
+        },
+        /*--------------------*/
+        /* Advanced filter    */
+        /*--------------------*/
+        isFilterPanelOpened : false,
+        fosFilter: 0,
+        qtFilter: 0,
+        filters: {
+            'field-of-study-select': null,
+            'qualification-type-select': null,
+            'nqf-level-select': null,
+            'subfield-of-study-select': null
+        },
+        minimumCreditsSlider: null,
+        showFilterPanel: function (e) {
+            $('#show-filter-button').hide();
+            $('#hide-filter-button').show();
+
+            // Hide side panel
+            var resultToggle = $('#result-toogle');
+            this.parent.closeResultContainer(resultToggle);
+            resultToggle.removeClass('fa-caret-right');
+            resultToggle.addClass('fa-caret-left');
+
+            var $filterPanel = $('.filter-panel');
+
+            if ($filterPanel.css('display') == 'none'){
+                $filterPanel.animate({
+                    height: "toggle"
+                }, 500)
+            }
+        },
+        filterChanged: function (e) {
+            var id =  $('#'+e.target.id+ ' option:selected').val();
+            if(id != '-') {
+                this.filters[e.target.id] = id;
+            } else {
+                this.filters[e.target.id] = null;
+            }
+        },
+        hideFilterPanel: function (e) {
+            $('#hide-filter-button').hide();
+            $('#show-filter-button').show();
+
+            // Show side panel
+            var resultToggle = $('#result-toogle');
+            if(typeof e != 'undefined' && typeof this._search_query[Common.CurrentSearchMode] != 'undefined') {
+                this.parent.openResultContainer(resultToggle);
+                resultToggle.removeClass('fa-caret-left');
+                resultToggle.addClass('fa-caret-right');
+            }
+
+            var $filterPanel = $('.filter-panel');
+
+            if ($filterPanel.css('display') != 'none'){
+                $filterPanel.animate({
+                    height: "toggle"
+                }, 500)
+            }
+        },
+        getAdvancedFilters: function () {
+            var filter = '';
+            if(this.filters['field-of-study-select']) {
+                filter += '&fos=' + this.filters['field-of-study-select'];
+            }
+            if(this.filters['qualification-type-select']) {
+                filter += '&qt=' + this.filters['qualification-type-select'];
+            }
+            if(this.filters['nqf-level-select']) {
+                filter += '&nqf=' + this.filters['nqf-level-select'];
+            }
+            if(this.filters['subfield-of-study-select']) {
+                filter += '&sos=' + this.filters['subfield-of-study-select'];
+            }
+            if(this.minimumCreditsSlider) {
+                var mcValue = this.minimumCreditsSlider.bootstrapSlider('getValue');
+                if(mcValue > 0) {
+                    filter += '&mc=' + mcValue;
+                }
+            }
+            return filter;
+        },
+        parseFilters: function (query) {
+            var fosId = query.match(/&fos=\d+/g);
+            var qtId = query.match(/&qt=\d+/g);
+            var nqfId = query.match(/&nqf=\d+/g);
+            var sosId = query.match(/&sos=\d+/g);
+            var mcValue = query.match(/&mc=\d+/g);
+
+            if(fosId) {
+                fosId = fosId[0].split('=')[1];
+                this.filters['field-of-study-select'] = fosId;
+            }
+            if(qtId) {
+                qtId = qtId[0].split('=')[1];
+                this.filters['qualification-type-select'] = qtId;
+            }
+            if(nqfId) {
+                nqfId = nqfId[0].split('=')[1];
+                this.filters['nqf-level-select'] = nqfId;
+            }
+            if(sosId) {
+                sosId = sosId[0].split('=')[1];
+                this.filters['subfield-of-study-select'] = sosId;
+            }
+            if(mcValue) {
+                mcValue = mcValue[0].split('=')[1];
+                this.minimumCreditsSlider.bootstrapSlider('setValue', mcValue);
+            }
+        },
+        loadFilters: function () {
+            var that = this;
+            this.minimumCreditsSlider = $('#minimum-credits').bootstrapSlider({
+	            formatter: function(value) {
+		            return value;
+	            }
+            });
+            // Get field of study
+            $.ajax({
+                url: 'api/field_of_study',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#field-of-study-select').append($('<option>', {
+                            value: item.id,
+                            text : item.field_of_study_description,
+                            selected: item.id == that.filters['field-of-study-select']
+                        }));
+                    });
+
+                    $('#field-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                }
+            });
+            $.ajax({
+                url: 'api/qualification_type',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#qualification-type-select').append($('<option>', {
+                            value: item.id,
+                            text : item.type,
+                            selected: item.id == that.filters['qualification-type-select']
+                        }));
+                    });
+                    $('#qualification-type-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                }
+            });
+            $.ajax({
+                url: 'api/national_qualifications_framework',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#nqf-level-select').append($('<option>', {
+                            value: item.id,
+                            text : item.description,
+                            selected: item.id == that.filters['nqf-level-select']
+                        }));
+                    });
+                    $('#nqf-level-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                }
+            });
+            $.ajax({
+                url: 'api/subfield_of_study',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#subfield-of-study-select').append($('<option>', {
+                            value: item.id,
+                            text : item.learning_subfield,
+                            selected: item.id == that.filters['subfield-of-study-select']
+                        }));
+                    });
+                    $('#subfield-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "50%"
+                    });
+                }
+            });
         }
     });
 

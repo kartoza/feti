@@ -104,9 +104,13 @@ define([
              */
             var id = row['campus_id'];
             var campus_is_favorite = id in Common.Favorites;
-            var cleanCourses = row["courses"].replace(this.getRegex("'"), "\"");
+            var cleanCourses = row["courses"];
+
+            cleanCourses = cleanCourses.replace(this.getRegex("\""), "{}");
             cleanCourses = cleanCourses.replace(this.getRegex("'"), "\"");
+            cleanCourses = cleanCourses.replace(this.getRegex("{}"), "'");
             cleanCourses = cleanCourses.replace(this.getRegex(/\\/g), "");
+
             var courses = JSON.parse(cleanCourses);
             _.each(courses, function (course) {
                 var saved = false;
