@@ -19,7 +19,8 @@ define([
             'click #search-clear': 'clearSearch',
             'click #show-filter-button': 'showFilterPanel',
             'click #hide-filter-button': 'hideFilterPanel',
-            'change #field-of-study-select': 'selectFOSFilter',
+            'change #field-of-study-select': 'filterChanged',
+            'change #qualification-type-select': 'filterChanged',
             'click #search-icon': 'searchIconClicked'
         },
         initialize: function (options) {
@@ -131,13 +132,7 @@ define([
 
             if(this.isSearchFromInput) {
                 query = that.$search_bar_input.val();
-                var saved_query = that._search_query[mode];
-                if(typeof saved_query != 'undefined') {
-                    if(saved_query.indexOf("&") > 0) {
-                        that._search_query[mode] = query;
-                        query = query + '&' + saved_query.substring(saved_query.indexOf("&") + 1);
-                    }
-                }
+                query += that.getAdvancedFilters();
                 this.isSearchFromInput = false;
             } else {
                 query = that._search_query[mode];
@@ -257,20 +252,23 @@ define([
             Backbone.history.navigate(new_url.join("/"), false);
         },
         updateSearchBarInput: function (query) {
+            // Remove all filters from searchbar
+            // filters are fos, qt, nqf, sos, mc
+            query = query.replace(query.match(/&fos=\d+/g), '');
+            query = query.replace(query.match(/&qt=\d+/g), '');
+            query = query.replace(query.match(/&nqf=\d+/g), '');
+            query = query.replace(query.match(/&sos=\d+/g), '');
+            query = query.replace(query.match(/&mc=\d+/g), '');
             this.$search_bar_input.val(query);
-            // var queries = query.split('&');
-            //
-            // if(queries.length > 1) {
-            //     this.$search_bar_input.val(queries[0]);
-            // } else {
-            //     this.$search_bar_input.val(query);
-            // }
         },
         search: function (mode, query, filter) {
             if (query && mode != 'favorites') {
 
                 // Put query to search input
                 this.updateSearchBarInput(query);
+
+                // Update filters
+                this.parseFilters(query);
 
                 // search
                 if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
@@ -512,6 +510,12 @@ define([
         /* Advanced filter    */
         /*--------------------*/
         isFilterPanelOpened : false,
+        fosFilter: 0,
+        qtFilter: 0,
+        filters: {
+            'field-of-study-select': null,
+            'qualification-type-select': null
+        },
         showFilterPanel: function (e) {
             $('#show-filter-button').hide();
             $('#hide-filter-button').show();
@@ -526,15 +530,12 @@ define([
                 height: "toggle"
             }, 500)
         },
-        selectFOSFilter: function (e) {
-            var fosId = $('#'+e.target.id+ ' option:selected').val();
-            var query = this._search_query[Common.CurrentSearchMode];
-            if(query.indexOf('&fos') > 0) {
-                var regex = /&fos=(\d+)/g;
-                var match = query.match(regex);
-                this._search_query[Common.CurrentSearchMode] = query.replace(match[0], '&fos=' + fosId);
+        filterChanged: function (e) {
+            var id =  $('#'+e.target.id+ ' option:selected').val();
+            if(id != '-') {
+                this.filters[e.target.id] = id;
             } else {
-                this._search_query[Common.CurrentSearchMode] += '&fos=' + fosId;
+                this.filters[e.target.id] = null;
             }
         },
         hideFilterPanel: function (e) {
@@ -557,17 +558,36 @@ define([
                 }, 500)
             }
         },
+        getAdvancedFilters: function () {
+            var filter = '';
+            if(this.filters['field-of-study-select']) {
+                filter += '&fos=' + this.filters['field-of-study-select'];
+            }
+            if(this.filters['qualification-type-select']) {
+                filter += '&qt=' + this.filters['qualification-type-select'];
+            }
+            return filter;
+        },
         parseFilters: function (query) {
+            var fosId = query.match(/&fos=\d+/g);
+            var qtId = query.match(/&qt=\d+/g);
 
+            if(fosId) {
+                fosId = fosId[0].split('=')[1];
+                this.filters['field-of-study-select'] = fosId;
+            }
+            if(qtId) {
+                qtId = qtId[0].split('=')[1];
+                this.filters['qualification-type-select'] = qtId;
+            }
         },
         loadFilters: function () {
-
+            var that = this;
             $('#minimum-credits').bootstrapSlider({
 	            formatter: function(value) {
 		            return value;
 	            }
             });
-
             // Get field of study
             $.ajax({
                 url: 'api/field_of_study',
@@ -576,12 +596,12 @@ define([
                     $.each(response, function (i, item) {
                         $('#field-of-study-select').append($('<option>', {
                             value: item.id,
-                            text : item.field_of_study_description
+                            text : item.field_of_study_description,
+                            selected: item.id == that.filters['field-of-study-select']
                         }));
                     });
                 }
             });
-
             $.ajax({
                 url: 'api/qualification_type',
                 type: 'GET',
@@ -589,12 +609,12 @@ define([
                     $.each(response, function (i, item) {
                         $('#qualification-type-select').append($('<option>', {
                             value: item.id,
-                            text : item.type
+                            text : item.type,
+                            selected: item.id == that.filters['qualification-type-select']
                         }));
                     });
                 }
             });
-
             $.ajax({
                 url: 'api/national_qualifications_framework',
                 type: 'GET',
@@ -607,7 +627,6 @@ define([
                     });
                 }
             });
-
             $.ajax({
                 url: 'api/subfield_of_study',
                 type: 'GET',
