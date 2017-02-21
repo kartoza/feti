@@ -21,7 +21,10 @@ define([
             'click #hide-filter-button': 'hideFilterPanel',
             'change #field-of-study-select': 'filterChanged',
             'change #qualification-type-select': 'filterChanged',
-            'click #search-icon': 'searchIconClicked'
+            'change #subfield-of-study-select': 'filterChanged',
+            'change #nqf-level-select': 'filterChanged',
+            'click #search-icon': 'searchIconClicked',
+            'click #search-with-filter': 'searchIconClicked'
         },
         initialize: function (options) {
             this.render();
@@ -132,7 +135,8 @@ define([
 
             if(this.isSearchFromInput) {
                 query = that.$search_bar_input.val();
-                query += that.getAdvancedFilters();
+                if(mode != 'occupation' && mode != 'favorites')
+                    query += that.getAdvancedFilters();
                 this.isSearchFromInput = false;
             } else {
                 query = that._search_query[mode];
@@ -198,6 +202,12 @@ define([
                     if ($('#result-detail').is(":visible")) {
                         $('#result-detail').hide("slide", {direction: "right"}, 500);
                     }
+                }
+
+                if (mode == 'occupation' || mode == 'favorites') {
+                    $('.filter-button').hide();
+                } else {
+                    $('.filter-button').show();
                 }
             }
         },
@@ -270,6 +280,10 @@ define([
                 // Update filters
                 this.parseFilters(query);
 
+                if(!this.$search_bar_input.val()) {
+                    return;
+                }
+
                 // search
                 if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
@@ -320,6 +334,12 @@ define([
                     this.parent.createCircle(coords, radius);
                 }
             }
+            if (mode == 'occupation' || mode == 'favorites') {
+                this.hideFilterPanel();
+                $('.filter-button').hide();
+            } else {
+                $('.filter-button').show();
+            }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
 
@@ -333,6 +353,7 @@ define([
                 this.$search_clear.show();
             }
 
+            this.hideFilterPanel();
             if (num > 0 && mode != 'occupation') {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
@@ -349,7 +370,6 @@ define([
                 if (this.map_in_fullscreen) {
                     var $toggle = $('#result-toogle');
                     this.parent.openResultContainer($toggle);
-                    this.hideFilterPanel();
                 }
             }
         },
@@ -514,8 +534,11 @@ define([
         qtFilter: 0,
         filters: {
             'field-of-study-select': null,
-            'qualification-type-select': null
+            'qualification-type-select': null,
+            'nqf-level-select': null,
+            'subfield-of-study-select': null
         },
+        minimumCreditsSlider: null,
         showFilterPanel: function (e) {
             $('#show-filter-button').hide();
             $('#hide-filter-button').show();
@@ -526,9 +549,13 @@ define([
             resultToggle.removeClass('fa-caret-right');
             resultToggle.addClass('fa-caret-left');
 
-            $('.filter-panel').animate({
-                height: "toggle"
-            }, 500)
+            var $filterPanel = $('.filter-panel');
+
+            if ($filterPanel.css('display') == 'none'){
+                $filterPanel.animate({
+                    height: "toggle"
+                }, 500)
+            }
         },
         filterChanged: function (e) {
             var id =  $('#'+e.target.id+ ' option:selected').val();
@@ -566,11 +593,26 @@ define([
             if(this.filters['qualification-type-select']) {
                 filter += '&qt=' + this.filters['qualification-type-select'];
             }
+            if(this.filters['nqf-level-select']) {
+                filter += '&nqf=' + this.filters['nqf-level-select'];
+            }
+            if(this.filters['subfield-of-study-select']) {
+                filter += '&sos=' + this.filters['subfield-of-study-select'];
+            }
+            if(this.minimumCreditsSlider) {
+                var mcValue = this.minimumCreditsSlider.bootstrapSlider('getValue');
+                if(mcValue > 0) {
+                    filter += '&mc=' + mcValue;
+                }
+            }
             return filter;
         },
         parseFilters: function (query) {
             var fosId = query.match(/&fos=\d+/g);
             var qtId = query.match(/&qt=\d+/g);
+            var nqfId = query.match(/&nqf=\d+/g);
+            var sosId = query.match(/&sos=\d+/g);
+            var mcValue = query.match(/&mc=\d+/g);
 
             if(fosId) {
                 fosId = fosId[0].split('=')[1];
@@ -580,10 +622,22 @@ define([
                 qtId = qtId[0].split('=')[1];
                 this.filters['qualification-type-select'] = qtId;
             }
+            if(nqfId) {
+                nqfId = nqfId[0].split('=')[1];
+                this.filters['nqf-level-select'] = nqfId;
+            }
+            if(sosId) {
+                sosId = sosId[0].split('=')[1];
+                this.filters['subfield-of-study-select'] = sosId;
+            }
+            if(mcValue) {
+                mcValue = mcValue[0].split('=')[1];
+                this.minimumCreditsSlider.bootstrapSlider('setValue', mcValue);
+            }
         },
         loadFilters: function () {
             var that = this;
-            $('#minimum-credits').bootstrapSlider({
+            this.minimumCreditsSlider = $('#minimum-credits').bootstrapSlider({
 	            formatter: function(value) {
 		            return value;
 	            }
@@ -622,7 +676,8 @@ define([
                     $.each(response, function (i, item) {
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
-                            text : item.description
+                            text : item.description,
+                            selected: item.id == that.filters['nqf-level-select']
                         }));
                     });
                 }
@@ -634,7 +689,8 @@ define([
                     $.each(response, function (i, item) {
                         $('#subfield-of-study-select').append($('<option>', {
                             value: item.id,
-                            text : item.learning_subfield
+                            text : item.learning_subfield,
+                            selected: item.id == that.filters['subfield-of-study-select']
                         }));
                     });
                 }

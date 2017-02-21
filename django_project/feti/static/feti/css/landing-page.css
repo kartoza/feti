@@ -736,3 +736,7 @@ a#search-icon {
     position: absolute;
     padding-top: 20px;
 }
+
+#search-with-filter.btn-default:hover {
+    cursor: pointer;
+}
