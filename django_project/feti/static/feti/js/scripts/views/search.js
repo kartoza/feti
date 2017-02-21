@@ -76,6 +76,15 @@ define([
                 that.isSearchFromInput = true;
                 that.updateSearchRoute();
             });
+            this.$search_bar_input.keyup(function(e){
+                if(e.keyCode == 13)
+                {
+                    if(that.$search_bar_input.val()) {
+                        that.isSearchFromInput = true;
+                        that.updateSearchRoute();
+                    }
+                }
+            });
 
             this.loadFilters();
         },
@@ -654,6 +663,11 @@ define([
                             selected: item.id == that.filters['field-of-study-select']
                         }));
                     });
+
+                    $('#field-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
                 }
             });
             $.ajax({
@@ -666,6 +680,10 @@ define([
                             text : item.type,
                             selected: item.id == that.filters['qualification-type-select']
                         }));
+                    });
+                    $('#qualification-type-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
                     });
                 }
             });
@@ -680,6 +698,10 @@ define([
                             selected: item.id == that.filters['nqf-level-select']
                         }));
                     });
+                    $('#nqf-level-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
                 }
             });
             $.ajax({
@@ -692,6 +714,10 @@ define([
                             text : item.learning_subfield,
                             selected: item.id == that.filters['subfield-of-study-select']
                         }));
+                    });
+                    $('#subfield-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "50%"
                     });
                 }
             });

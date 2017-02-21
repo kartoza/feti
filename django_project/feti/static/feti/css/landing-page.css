@@ -678,7 +678,7 @@
     position: absolute;
     display: none;
     top: 123px;
-    height: 190px;
+    height: 200px;
     width: 100%;
     z-index: 90;
 }
@@ -739,4 +739,14 @@ a#search-icon {
 
 #search-with-filter.btn-default:hover {
     cursor: pointer;
+    background-color: rgba(16, 81, 146, 0.88);
+}
+
+#search-with-filter.btn-default {
+    background-color: rgba(29, 104, 179, 0.9);
+    color: white;
+}
+
+.slider.slider-horizontal {
+    width: 400px !important;
 }
