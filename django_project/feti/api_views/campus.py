@@ -106,7 +106,7 @@ class ApiCampus(CampusSearch, APIView):
                         '%s ;; [%s] %s' % (
                             course['course_id'],
                             course['course_nlrd'],
-                            course['course_course_description']
+                            course['course_course_description'].replace('\'', '\"')
                         )
                     )
                 campus_object['courses'] = str(courses)

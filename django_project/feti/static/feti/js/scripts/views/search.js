@@ -73,7 +73,7 @@ define([
                 that.updateSearchRoute();
             });
 
-            this.getFilters();
+            this.loadFilters();
         },
         searchIconClicked: function (e) {
             this.isSearchFromInput = true;
@@ -132,9 +132,11 @@ define([
             if(this.isSearchFromInput) {
                 query = that.$search_bar_input.val();
                 var saved_query = that._search_query[mode];
-                if(saved_query.indexOf("&") > 0) {
-                    that._search_query[mode] = query;
-                    query = query + '&' + saved_query.substring(saved_query.indexOf("&") + 1);
+                if(typeof saved_query != 'undefined') {
+                    if(saved_query.indexOf("&") > 0) {
+                        that._search_query[mode] = query;
+                        query = query + '&' + saved_query.substring(saved_query.indexOf("&") + 1);
+                    }
                 }
                 this.isSearchFromInput = false;
             } else {
@@ -255,13 +257,14 @@ define([
             Backbone.history.navigate(new_url.join("/"), false);
         },
         updateSearchBarInput: function (query) {
-            var queries = query.split('&');
-
-            if(queries.length > 1) {
-                this.$search_bar_input.val(queries[0]);
-            } else {
-                this.$search_bar_input.val(query);
-            }
+            this.$search_bar_input.val(query);
+            // var queries = query.split('&');
+            //
+            // if(queries.length > 1) {
+            //     this.$search_bar_input.val(queries[0]);
+            // } else {
+            //     this.$search_bar_input.val(query);
+            // }
         },
         search: function (mode, query, filter) {
             if (query && mode != 'favorites') {
@@ -540,7 +543,7 @@ define([
 
             // Show side panel
             var resultToggle = $('#result-toogle');
-            if(typeof e != 'undefined') {
+            if(typeof e != 'undefined' && typeof this._search_query[Common.CurrentSearchMode] != 'undefined') {
                 this.parent.openResultContainer(resultToggle);
                 resultToggle.removeClass('fa-caret-left');
                 resultToggle.addClass('fa-caret-right');
@@ -554,7 +557,17 @@ define([
                 }, 500)
             }
         },
-        getFilters: function () {
+        parseFilters: function (query) {
+
+        },
+        loadFilters: function () {
+
+            $('#minimum-credits').bootstrapSlider({
+	            formatter: function(value) {
+		            return value;
+	            }
+            });
+
             // Get field of study
             $.ajax({
                 url: 'api/field_of_study',
@@ -590,6 +603,19 @@ define([
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
                             text : item.description
+                        }));
+                    });
+                }
+            });
+
+            $.ajax({
+                url: 'api/subfield_of_study',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#subfield-of-study-select').append($('<option>', {
+                            value: item.id,
+                            text : item.learning_subfield
                         }));
                     });
                 }

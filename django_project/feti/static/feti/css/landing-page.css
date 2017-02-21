@@ -667,12 +667,18 @@
     color: #b3b3b3;
 }
 
+#search-with-filter {
+    margin: auto;
+    width: 200px;
+    text-align: center;
+}
+
 .filter-panel {
     background-color: rgba(243, 243, 243, 0.9);
     position: absolute;
     display: none;
     top: 123px;
-    height: 165px;
+    height: 190px;
     width: 100%;
     z-index: 90;
 }
@@ -720,4 +726,13 @@ a#search-icon:hover {
 a#search-icon {
     padding-top: 10px;
     margin-left: -40px;
+}
+
+#minimum-credits .slider-selection {
+	background: #BABABA;
+}
+
+.mc-slider-edge-label {
+    position: absolute;
+    padding-top: 20px;
 }
