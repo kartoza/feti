@@ -24,7 +24,8 @@ define([
             'change #subfield-of-study-select': 'filterChanged',
             'change #nqf-level-select': 'filterChanged',
             'click #search-icon': 'searchIconClicked',
-            'click #search-with-filter': 'searchIconClicked'
+            'click #search-with-filter': 'searchIconClicked',
+            'click #clear-filter' : 'clearFilters'
         },
         initialize: function (options) {
             this.render();
@@ -38,8 +39,10 @@ define([
             this.$favorites_button = $("#favorites");
             this.$clear_draw = $("#clear-draw");
             this.$search_clear = $("#search-clear");
+            this.$filter_tag_label = $('#filter-tag');
 
             this.$search_clear.hide();
+            this.$filter_tag_label.hide();
 
             this.search_bar_hidden = true;
             this.$result_toggle.hide();
@@ -614,6 +617,11 @@ define([
                     filter += '&mc=' + mcValue;
                 }
             }
+            if(filter) {
+                this.$filter_tag_label.show();
+            } else {
+                this.$filter_tag_label.hide();
+            }
             return filter;
         },
         parseFilters: function (query) {
@@ -622,27 +630,64 @@ define([
             var nqfId = query.match(/&nqf=\d+/g);
             var sosId = query.match(/&sos=\d+/g);
             var mcValue = query.match(/&mc=\d+/g);
+            var filtered = false;
 
             if(fosId) {
                 fosId = fosId[0].split('=')[1];
+                filtered = true;
                 this.filters['field-of-study-select'] = fosId;
             }
             if(qtId) {
                 qtId = qtId[0].split('=')[1];
+                filtered = true;
                 this.filters['qualification-type-select'] = qtId;
             }
             if(nqfId) {
                 nqfId = nqfId[0].split('=')[1];
+                filtered = true;
                 this.filters['nqf-level-select'] = nqfId;
             }
             if(sosId) {
                 sosId = sosId[0].split('=')[1];
+                filtered = true;
                 this.filters['subfield-of-study-select'] = sosId;
             }
             if(mcValue) {
                 mcValue = mcValue[0].split('=')[1];
+                filtered = true;
                 this.minimumCreditsSlider.bootstrapSlider('setValue', mcValue);
             }
+
+            if(filtered) {
+                this.$filter_tag_label.show();
+            } else {
+                this.$filter_tag_label.hide();
+            }
+        },
+        clearFilters: function () {
+            $('#field-of-study-select').val('-');
+            $('#field-of-study-select').trigger("chosen:updated");
+
+            $('#qualification-type-select').val('-');
+            $('#qualification-type-select').trigger("chosen:updated");
+
+            $('#nqf-level-select').val('-');
+            $('#nqf-level-select').trigger("chosen:updated");
+
+            $('#subfield-of-study-select').val('-');
+            $('#subfield-of-study-select').trigger("chosen:updated");
+
+            this.minimumCreditsSlider.bootstrapSlider('setValue', 0);
+
+            this.filters = {
+                'field-of-study-select': null,
+                'qualification-type-select': null,
+                'nqf-level-select': null,
+                'subfield-of-study-select': null
+            }
+
+            this.isSearchFromInput = true;
+            this.updateSearchRoute();
         },
         loadFilters: function () {
             var that = this;

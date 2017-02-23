@@ -38,6 +38,7 @@
                               class="form-control input-lg"
                               placeholder="Search"
                               name="search_input"/>
+                        <span id="filter-tag">filtered</span>
                         <a id="search-clear" href="#" class="fa fa-times-circle" aria-hidden="true">
                             <span class="sr-only">Clear search</span>
                         </a>
@@ -114,9 +115,14 @@
             <div class="col col-md-1 col-xs-1"></div>
         </div>
         <div class="row">
-            <div class="col col-md-12 col-xs-12">
+            <div class="col col-md-6 col-xs-6">
                 <div class="btn-default btn-sm" id="search-with-filter">
                     Search
+                </div>
+            </div>
+            <div class="col col-md-6 col-xs-6">
+                <div class="btn-default btn-sm" id="clear-filter">
+                    Clear filters
                 </div>
             </div>
         </div>

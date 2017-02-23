@@ -667,12 +667,6 @@
     color: #b3b3b3;
 }
 
-#search-with-filter {
-    margin: auto;
-    width: 200px;
-    text-align: center;
-}
-
 .filter-panel {
     background-color: rgba(243, 243, 243, 0.9);
     position: absolute;
@@ -747,10 +741,40 @@ a#search-icon {
 }
 
 #search-with-filter.btn-default {
+    border-radius: 20px;
     background-color: rgba(29, 104, 179, 0.9);
     color: white;
 }
 
+
+#search-with-filter {
+    float: right;
+    width: 200px;
+    text-align: center;
+}
+
+#clear-filter.btn-default {
+    border-radius: 20px;
+    background-color: #FF6666;
+    color: white;
+    width: 200px;
+}
+
+#clear-filter.btn-default:hover {
+    cursor: pointer;
+    background-color: #FF3333;
+}
+
 .slider.slider-horizontal {
     width: 400px !important;
+}
+
+#filter-tag {
+    right: 40px;
+    top: 10px;
+    position: absolute;
+    border-radius: 12px;
+    font-size: 9pt;
+    padding: 5px;
+    background-color: rgba(29, 104, 179, 0.8);
 }
