@@ -706,6 +706,8 @@ define([
                         that.updateMapSize();
                     });
                 }
+                // close filter if open
+                this.searchView.hideFilterPanel();
             }
             this.sideBarView.showMapCover();
             this.sideBarView.updateOccupationDetail();
