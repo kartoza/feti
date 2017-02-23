@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from feti.api_views.common_search import CampusSearch
+from feti.api_views.common_search import CommonSearch
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '13/02/17'
@@ -9,7 +9,7 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
-class CourseAPIView(CampusSearch, APIView):
+class CourseAPIView(CommonSearch, APIView):
     """
     Api to filter course by query
     """
@@ -25,19 +25,7 @@ class CourseAPIView(CampusSearch, APIView):
 
         sqs = self.filter_by_course(query)
 
-        if options and 'advance_search' in options:
-            if 'fos' in options:
-                sqs = self.filter_fos(sqs, options['fos'])
-            if 'sos' in options:
-                sqs = self.filter_sos(sqs, options['sos'])
-            if 'qt' in options:
-                sqs = self.filter_qualification_type(sqs, options['qt'])
-            if 'mc' in options:
-                sqs = self.filter_minimum_credits(sqs, options['mc'])
-            if 'nqf' in options:
-                sqs = self.filter_nqf(sqs, options['nqf'])
-            if 'nqsf' in options:
-                sqs = self.filter_nqsf(sqs, options['nqsf'])
+        sqs = self.advanced_filter(sqs, options)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':

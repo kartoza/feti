@@ -15,7 +15,7 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
-class CampusSearch(object):
+class CommonSearch(object):
 
     def process_request(self, request):
         """Process get request from site.
@@ -101,6 +101,9 @@ class CampusSearch(object):
         return sqs
 
     def filter_by_course(self, query):
+        """Filter by course description
+        :param query: Course query
+        """
         sqs = SearchQuerySet().filter(
             course_course_description=query,
             campus_location_isnull='false',
@@ -108,6 +111,9 @@ class CampusSearch(object):
         return sqs
 
     def filter_indexed_campus_course(self, query):
+        """Filter by campus description
+        :param query: Campus query
+        """
         sqs = SearchQuerySet().filter(
             campus_and_provider=query,
             campus_location_isnull='false'
@@ -115,7 +121,7 @@ class CampusSearch(object):
         return sqs
 
     def filter_fos(self, sqs, fos):
-        """
+        """Filter by field of study id.
 
         :param sqs: Search Query Set
         :param fos: Field of study
@@ -126,7 +132,7 @@ class CampusSearch(object):
         ).models(CampusCourseEntry)
 
     def filter_sos(self, sqs, sos):
-        """
+        """Filter of subfield of study id.
 
         :param sqs: Search Query Set
         :param sos: Subfield of study
@@ -137,9 +143,9 @@ class CampusSearch(object):
         ).models(CampusCourseEntry)
 
     def filter_qualification_type(self, sqs, qt):
-        """
+        """Filter by qualification type id.
 
-        :param sqs:
+        :param sqs: Search Query Set
         :param qt: qualitifaction type
         :return:
         """
@@ -148,9 +154,9 @@ class CampusSearch(object):
         ).models(CampusCourseEntry)
 
     def filter_minimum_credits(self, sqs, mc):
-        """
+        """Filter by minimum credits
 
-        :param sqs:
+        :param sqs: Search Query Set
         :param mc: minimum credits
         :return:
         """
@@ -159,10 +165,10 @@ class CampusSearch(object):
         ).models(CampusCourseEntry)
 
     def filter_nqf(self, sqs, nqf):
-        """
+        """Filter by national qualification framework id
 
-        :param sqs:
-        :param nqf: National Qualifications Framework
+        :param sqs: Search Query Set
+        :param nqf: National Qualifications Framework id
         :return:
         """
         return sqs.filter(
@@ -170,15 +176,36 @@ class CampusSearch(object):
         ).models(CampusCourseEntry)
 
     def filter_nqsf(self, sqs, nqsf):
-        """
+        """Filter by National Qualifications Subframework id
 
-        :param sqs:
+        :param sqs: Search Query Set
         :param nqsf: National Qualifications Subframework
         :return:
         """
         return sqs.filter(
             national_qualifications_subframework_id=Exact(nqsf)
         ).models(CampusCourseEntry)
+
+    def advanced_filter(self, sqs, options):
+        """Advanced filter
+
+        :param options: Additional query option
+        :return:
+        """
+        if options and 'advance_search' in options:
+            if 'fos' in options:
+                sqs = self.filter_fos(sqs, options['fos'])
+            if 'sos' in options:
+                sqs = self.filter_sos(sqs, options['sos'])
+            if 'qt' in options:
+                sqs = self.filter_qualification_type(sqs, options['qt'])
+            if 'mc' in options:
+                sqs = self.filter_minimum_credits(sqs, options['mc'])
+            if 'nqf' in options:
+                sqs = self.filter_nqf(sqs, options['nqf'])
+            if 'nqsf' in options:
+                sqs = self.filter_nqsf(sqs, options['nqsf'])
+        return sqs
 
     def filter_by_saqa_ids(self, saqa_ids, options=None):
         """
@@ -205,6 +232,8 @@ class CampusSearch(object):
                             options['shape'],
                             options['radius']
                     )
+
+            sqs = self.advanced_filter(sqs, options)
 
             for result in sqs:
                 stored_fields = result.get_stored_fields()
