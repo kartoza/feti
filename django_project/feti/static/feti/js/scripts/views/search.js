@@ -293,7 +293,10 @@ define([
                 this.updateSearchBarInput(query);
 
                 // Update filters
-                this.parseFilters(query);
+                if(mode != 'occupation') {
+                    this.updateFilters(mode);
+                    this.parseFilters(query);
+                }
 
                 if(!this.$search_bar_input.val()) {
                     return;
