@@ -778,3 +778,10 @@ a#search-icon {
     padding: 5px;
     background-color: rgba(29, 104, 179, 0.8);
 }
+
+#hide-filter-button, #show-filter-button {
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 15px;
+    color: white;
+}
