@@ -68,6 +68,9 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='campus___campus_popup',
         null=True
     )
+    campus_public_institution = indexes.BooleanField(
+        model_attr='campus__provider__status',
+    )
 
     def prepare_field_of_study_id(self, obj):
         try:

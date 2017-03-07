@@ -81,8 +81,11 @@ class CommonSearch(object):
             options['nqf'] = request.GET.get('nqf')
         if request.GET.get('nqsf'):
             options['nqsf'] = request.GET.get('nqsf')
+        if request.GET.get('pi'):
+            options['pi'] = request.GET.get('pi')
 
-        if 'fos' or 'sos' or 'qt' or 'mc' or 'nqf' or 'nqsf' in options:
+        if 'fos' or 'sos' or 'qt' or 'mc' or \
+                'nqf' or 'nqsf' or 'pi' in options:
             options['advance_search'] = True
 
         return query, options
@@ -186,6 +189,17 @@ class CommonSearch(object):
             national_qualifications_subframework_id=Exact(nqsf)
         ).models(CampusCourseEntry)
 
+    def filter_public_institution(self, sqs, pi):
+        """Filter by public institution
+
+        :param sqs: Search Query Set
+        :param pi: Public institution ( true/false )
+        :return:
+        """
+        return sqs.filter(
+            campus_public_institution=pi
+        ).models(CampusCourseEntry)
+
     def advanced_filter(self, sqs, options):
         """Advanced filter
 
@@ -205,6 +219,8 @@ class CommonSearch(object):
                 sqs = self.filter_nqf(sqs, options['nqf'])
             if 'nqsf' in options:
                 sqs = self.filter_nqsf(sqs, options['nqsf'])
+            if 'pi' in options:
+                sqs = self.filter_public_institution(sqs, options['pi'])
         return sqs
 
     def filter_by_saqa_ids(self, saqa_ids, options=None):
