@@ -23,6 +23,8 @@ define([
             'change #qualification-type-select': 'filterChanged',
             'change #subfield-of-study-select': 'filterChanged',
             'change #nqf-level-select': 'filterChanged',
+            'change #public-institution-select': 'filterChanged',
+            'change #field-of-study-provider-select': 'filterChanged',
             'click #search-icon': 'searchIconClicked',
             'click #search-with-filter': 'searchIconClicked',
             'click #clear-filter' : 'clearFilters'
@@ -40,6 +42,10 @@ define([
             this.$clear_draw = $("#clear-draw");
             this.$search_clear = $("#search-clear");
             this.$filter_tag_label = $('#filter-tag');
+
+            this.$filter_panel_course = $('.filter-panel-course');
+            this.$filter_panel_campus = $('.filter-panel-campus');
+            this.$filter_panel_button = $('.filter-panel-button');
 
             this.$search_clear.hide();
             this.$filter_tag_label.hide();
@@ -284,9 +290,13 @@ define([
             query = query.replace(query.match(/&nqf=\d+/g), '');
             query = query.replace(query.match(/&sos=\d+/g), '');
             query = query.replace(query.match(/&mc=\d+/g), '');
+            query = query.replace(query.match(/&pi=\d+/g), '');
             this.$search_bar_input.val(query);
         },
         search: function (mode, query, filter) {
+
+            this.changeFilterPanel(Common.CurrentSearchMode);
+
             if (query && mode != 'favorites') {
 
                 // Put query to search input
@@ -294,8 +304,8 @@ define([
 
                 // Update filters
                 if(mode != 'occupation') {
-                    this.updateFilters(mode);
                     this.parseFilters(query);
+                    this.updateFilters(mode);
                 }
 
                 if(!this.$search_bar_input.val()) {
@@ -550,14 +560,23 @@ define([
         isFilterPanelOpened : false,
         fosFilter: 0,
         qtFilter: 0,
-        filters: {
-            'field-of-study-select': null,
-            'qualification-type-select': null,
-            'nqf-level-select': null,
-            'subfield-of-study-select': null,
-            'minimum-credits': 0
+        filtered: {
+            'course': false,
+            'provider': false
         },
-        filtersInMode: {},
+        filtersInMode: {
+            'course': {
+                'field-of-study-select': null,
+                'qualification-type-select': null,
+                'nqf-level-select': null,
+                'subfield-of-study-select': null,
+                'minimum-credits': 0
+            },
+            'provider': {
+                'public-institution-select': null,
+                'field-of-study-provider-select': null
+            }
+        },
         minimumCreditsSlider: null,
         showFilterPanel: function (e) {
             this.isFilterPanelOpened = true;
@@ -579,6 +598,7 @@ define([
             }
         },
         filterChanged: function (e) {
+            // Filter dropdown selected
             var id =  $('#'+e.target.id+ ' option:selected').val();
             var mode = Common.CurrentSearchMode;
             if(id != '-') {
@@ -612,124 +632,162 @@ define([
 
         },
         getAdvancedFilters: function () {
+            // Return selected advanced filter for selected mode
             var filter = '';
             var mode = Common.CurrentSearchMode;
-            if(this.filtersInMode[mode]['field-of-study-select']) {
-                filter += '&fos=' + this.filtersInMode[mode]['field-of-study-select'];
-            }
-            if(this.filtersInMode[mode]['qualification-type-select']) {
-                filter += '&qt=' + this.filtersInMode[mode]['qualification-type-select'];
-            }
-            if(this.filtersInMode[mode]['nqf-level-select']) {
-                filter += '&nqf=' + this.filtersInMode[mode]['nqf-level-select'];
-            }
-            if(this.filtersInMode[mode]['subfield-of-study-select']) {
-                filter += '&sos=' + this.filtersInMode[mode]['subfield-of-study-select'];
-            }
-            if(this.minimumCreditsSlider) {
-                var mcValue = this.minimumCreditsSlider.bootstrapSlider('getValue');
-                if(mcValue > 0) {
-                    filter += '&mc=' + mcValue;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+            if(mode == courseMode) {
+                if(this.filtersInMode[courseMode]['field-of-study-select']) {
+                    filter += '&fos=' + this.filtersInMode[courseMode]['field-of-study-select'];
                 }
-            }
-            if(filter) {
-                this.$filter_tag_label.show();
-            } else {
-                this.$filter_tag_label.hide();
+                if(this.filtersInMode[courseMode]['qualification-type-select']) {
+                    filter += '&qt=' + this.filtersInMode[courseMode]['qualification-type-select'];
+                }
+                if(this.filtersInMode[courseMode]['nqf-level-select']) {
+                    filter += '&nqf=' + this.filtersInMode[courseMode]['nqf-level-select'];
+                }
+                if(this.filtersInMode[courseMode]['subfield-of-study-select']) {
+                    filter += '&sos=' + this.filtersInMode[courseMode]['subfield-of-study-select'];
+                }
+                if(this.minimumCreditsSlider) {
+                    var mcValue = this.minimumCreditsSlider.bootstrapSlider('getValue');
+                    if(mcValue > 0) {
+                        filter += '&mc=' + mcValue;
+                    }
+                }
+                this.filtered[courseMode] = filter != '';
+            } else if(mode == providerMode) {
+                if(this.filtersInMode[providerMode]['public-institution-select']) {
+                    filter += '&pi=' + this.filtersInMode[providerMode]['public-institution-select'];
+                }
+                if(this.filtersInMode[providerMode]['field-of-study-provider-select']) {
+                    filter += '&fos=' + this.filtersInMode[providerMode]['field-of-study-provider-select'];
+                }
+                this.filtered[providerMode] = filter != '';
             }
             return filter;
         },
         parseFilters: function (query) {
+            // Parse advance filter from URL
             var mode = Common.CurrentSearchMode;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+
             var fosId = query.match(/&fos=\d+/g);
             var qtId = query.match(/&qt=\d+/g);
             var nqfId = query.match(/&nqf=\d+/g);
             var sosId = query.match(/&sos=\d+/g);
             var mcValue = query.match(/&mc=\d+/g);
-            var filtered = false;
+            var piValue = query.match(/&pi=\d+/g);
 
             if(fosId) {
                 fosId = fosId[0].split('=')[1];
-                filtered = true;
-                this.filtersInMode[mode]['field-of-study-select'] = fosId;
+                this.filtered[mode] = true;
+                if(mode == courseMode)
+                    this.filtersInMode[mode]['field-of-study-select'] = fosId;
+                else if(mode == providerMode)
+                    this.filtersInMode[mode]['field-of-study-provider-select'] = fosId;
             }
             if(qtId) {
                 qtId = qtId[0].split('=')[1];
-                filtered = true;
-                this.filtersInMode[mode]['qualification-type-select'] = qtId;
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['qualification-type-select'] = qtId;
             }
             if(nqfId) {
                 nqfId = nqfId[0].split('=')[1];
-                filtered = true;
-                this.filtersInMode[mode]['nqf-level-select'] = nqfId;
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['nqf-level-select'] = nqfId;
             }
             if(sosId) {
                 sosId = sosId[0].split('=')[1];
-                filtered = true;
-                this.filtersInMode[mode]['subfield-of-study-select'] = sosId;
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['subfield-of-study-select'] = sosId;
+            }
+            if(piValue) {
+                piValue = piValue[0].split('=')[1];
+                this.filtered[providerMode] = true;
+                this.filtersInMode[providerMode]['public-institution-select'] = piValue;
             }
             if(mcValue) {
                 mcValue = mcValue[0].split('=')[1];
-                filtered = true;
-                this.filtersInMode[mode]['minimum-credits'] = mcValue;
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['minimum-credits'] = mcValue;
                 this.minimumCreditsSlider.bootstrapSlider('setValue', mcValue);
-            }
-
-            if(filtered) {
-                this.$filter_tag_label.show();
-            } else {
-                this.$filter_tag_label.hide();
             }
         },
         updateFilters: function (mode) {
-            var filtered = false;
+            // Update selected filters
 
-            if(this.filtersInMode[mode]['field-of-study-select']==null) {
+            var courseMode = 'course';
+            var providerMode = 'provider';
+
+            if(this.filtersInMode[courseMode]['field-of-study-select']==null) {
                 $('#field-of-study-select').val('-');
             } else {
-                filtered = true;
-                $('#field-of-study-select').val(this.filtersInMode[mode]['field-of-study-select']);
+                this.filtered[courseMode] = true;
+                $('#field-of-study-select').val(this.filtersInMode[courseMode]['field-of-study-select']);
             }
 
-            if(this.filtersInMode[mode]['qualification-type-select']==null) {
+            if(this.filtersInMode[courseMode]['qualification-type-select']==null) {
                 $('#qualification-type-select').val('-');
             } else {
-                filtered = true;
-                $('#qualification-type-select').val(this.filtersInMode[mode]['qualification-type-select']);
+                this.filtered[courseMode] = true;
+                $('#qualification-type-select').val(this.filtersInMode[courseMode]['qualification-type-select']);
             }
 
-            if(this.filtersInMode[mode]['nqf-level-select']==null) {
+            if(this.filtersInMode[courseMode]['nqf-level-select']==null) {
                 $('#nqf-level-select').val('-');
             } else {
-                filtered = true;
-                $('#nqf-level-select').val(this.filtersInMode[mode]['nqf-level-select']);
+                this.filtered[courseMode] = true;
+                $('#nqf-level-select').val(this.filtersInMode[courseMode]['nqf-level-select']);
             }
 
-            if(this.filtersInMode[mode]['subfield-of-study-select']==null) {
+            if(this.filtersInMode[courseMode]['subfield-of-study-select']==null) {
                 $('#subfield-of-study-select').val('-');
             } else {
-                filtered = true;
-                $('#subfield-of-study-select').val(this.filtersInMode[mode]['subfield-of-study-select']);
+                this.filtered[courseMode] = true;
+                $('#subfield-of-study-select').val(this.filtersInMode[courseMode]['subfield-of-study-select']);
             }
 
-            if(this.filtersInMode[mode]['minimum-credits']>0) {
-                filtered = true;
+            if(this.filtersInMode[courseMode]['minimum-credits']>0) {
+                this.filtered[courseMode] = true;
             }
-            this.minimumCreditsSlider.bootstrapSlider('setValue', this.filtersInMode[mode]['minimum-credits']);
+            this.minimumCreditsSlider.bootstrapSlider('setValue', this.filtersInMode[courseMode]['minimum-credits']);
+
+            if(this.filtersInMode[providerMode]['public-institution-select']==null) {
+                $('#public-institution-select').val('-');
+            } else {
+                this.filtered[providerMode] = true;
+                $('#public-institution-select').val(this.filtersInMode[providerMode]['public-institution-select']);
+            }
+
+            if(this.filtersInMode[providerMode]['field-of-study-provider-select']==null) {
+                $('#field-of-study-provider-select').val('-');
+            } else {
+                this.filtered[providerMode] = true;
+                $('#field-of-study-provider-select').val(this.filtersInMode[providerMode]['field-of-study-provider-select']);
+            }
 
             $('#field-of-study-select').trigger("chosen:updated");
             $('#qualification-type-select').trigger("chosen:updated");
             $('#nqf-level-select').trigger("chosen:updated");
             $('#subfield-of-study-select').trigger("chosen:updated");
+            $('#public-institution-select').trigger("chosen:updated");
+            $('#field-of-study-provider-select').trigger("chosen:updated");
 
-            if(filtered) {
+            if(this.filtered[mode]) {
                 this.$filter_tag_label.show();
             } else {
                 this.$filter_tag_label.hide();
             }
+
         },
         clearFilters: function () {
             var mode = Common.CurrentSearchMode;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+            this.filtered[mode] = false;
 
             $('#field-of-study-select').val('-');
             $('#field-of-study-select').trigger("chosen:updated");
@@ -743,25 +801,67 @@ define([
             $('#subfield-of-study-select').val('-');
             $('#subfield-of-study-select').trigger("chosen:updated");
 
+            $('#field-of-study-provider-select').val('-');
+            $('#field-of-study-provider-select').trigger("chosen:updated");
+
+            $('#public-institution-select').val('-');
+            $('#public-institution-select').trigger("chosen:updated");
+
             this.minimumCreditsSlider.bootstrapSlider('setValue', 0);
 
-            this.filtersInMode[mode] = Object.assign({}, this.filters);
+            if(mode==courseMode){
+                this.filtersInMode[mode] = {
+                    'field-of-study-select': null,
+                    'qualification-type-select': null,
+                    'nqf-level-select': null,
+                    'subfield-of-study-select': null,
+                    'minimum-credits': 0
+                }
+            } else if(mode==providerMode) {
+                this.filtersInMode[mode] = {
+                    'public-institution-select': null,
+                    'field-of-study-provider-select': null
+                }
+            }
 
             this.isSearchFromInput = true;
             this.updateSearchRoute();
         },
+        changeFilterPanel: function (mode) {
+            this.$filter_panel_button.show();
+
+            if(mode == 'course') {
+                this.$filter_panel_campus.hide();
+                this.$filter_panel_course.show();
+            } else if(mode == 'provider') {
+                this.$filter_panel_campus.show();
+                this.$filter_panel_course.hide();
+            } else {
+                this.$filter_panel_campus.hide();
+                this.$filter_panel_course.hide();
+                this.$filter_panel_button.hide();
+            }
+
+            if(this.filtered[mode]) {
+                this.$filter_tag_label.show();
+            } else {
+                this.$filter_tag_label.hide();
+            }
+        },
         loadFilters: function () {
             var that = this;
-            var mode = Common.CurrentSearchMode;
-            this.filtersInMode = {
-                'provider': Object.assign({}, that.filters),
-                'course': Object.assign({}, that.filters)
-            };
+            var courseMode = 'course';
+            var providerMode = 'provider';
             this.minimumCreditsSlider = $('#minimum-credits').bootstrapSlider({
 	            formatter: function(value) {
-                    that.filtersInMode[Common.CurrentSearchMode]['minimum-credits'] = value;
+                    that.filtersInMode[courseMode]['minimum-credits'] = value;
 		            return value;
 	            }
+            });
+
+            $('#public-institution-select').chosen({
+                no_results_text: "Oops, nothing found!",
+                width: "80%"
             });
 
             // Get field of study
@@ -773,11 +873,20 @@ define([
                         $('#field-of-study-select').append($('<option>', {
                             value: item.id,
                             text : item.field_of_study_description,
-                            selected: item.id == that.filtersInMode[mode]['field-of-study-select']
+                            selected: item.id == that.filtersInMode[courseMode]['field-of-study-select']
+                        }));
+                        $('#field-of-study-provider-select').append($('<option>', {
+                            value: item.id,
+                            text : item.field_of_study_description,
+                            selected: item.id == that.filtersInMode[providerMode]['field-of-study-provider-select']
                         }));
                     });
 
                     $('#field-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                    $('#field-of-study-provider-select').chosen({
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
@@ -791,7 +900,7 @@ define([
                         $('#qualification-type-select').append($('<option>', {
                             value: item.id,
                             text : item.type,
-                            selected: item.id == that.filtersInMode[mode]['qualification-type-select']
+                            selected: item.id == that.filtersInMode[courseMode]['qualification-type-select']
                         }));
                     });
                     $('#qualification-type-select').chosen({
@@ -808,7 +917,7 @@ define([
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
                             text : item.description,
-                            selected: item.id == that.filtersInMode[mode]['nqf-level-select']
+                            selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
                         }));
                     });
                     $('#nqf-level-select').chosen({
@@ -825,7 +934,7 @@ define([
                         $('#subfield-of-study-select').append($('<option>', {
                             value: item.id,
                             text : item.learning_subfield,
-                            selected: item.id == that.filtersInMode[mode]['subfield-of-study-select']
+                            selected: item.id == that.filtersInMode[courseMode]['subfield-of-study-select']
                         }));
                     });
                     $('#subfield-of-study-select').chosen({

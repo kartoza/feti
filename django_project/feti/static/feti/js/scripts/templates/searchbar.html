@@ -65,7 +65,25 @@
     </div>
 
     <div class="filter-panel">
-        <div class="row">
+        <div class="row filter-panel-campus">
+            <div class="col col-md-3 col-xs-3"></div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Public / Private</p>
+                <select id="public-institution-select">
+                  <option>-</option>
+                  <option value="0">Public Institution</option>
+                  <option value="1">Private Institution</option>
+                </select>
+            </div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Field of study</p>
+                <select id="field-of-study-provider-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-6 col-xs-6"></div>
+        </div>
+        <div class="row filter-panel-course">
             <div class="col col-md-1 col-xs-1"></div>
             <div class="col col-md-3 col-xs-3">
                 <p>Field of study</p>
@@ -87,7 +105,7 @@
             </div>
             <div class="col col-md-1 col-xs-1"></div>
         </div>
-        <div class="row">
+        <div class="row filter-panel-course">
             <div class="col col-md-1 col-xs-1"></div>
             <div class="col col-md-5 col-xs-5">
                 <p>Subfield of study</p>
@@ -114,7 +132,7 @@
             </div>
             <div class="col col-md-1 col-xs-1"></div>
         </div>
-        <div class="row">
+        <div class="row filter-panel-button">
             <div class="col col-md-6 col-xs-6">
                 <div class="btn-default btn-sm" id="search-with-filter">
                     <i class="fa fa-search" aria-hidden="true"></i> Search

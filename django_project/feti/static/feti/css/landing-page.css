@@ -785,3 +785,7 @@ a#search-icon {
     border-radius: 15px;
     color: white;
 }
+
+.filter-panel-campus {
+    padding-bottom: 40px;
+}
