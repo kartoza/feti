@@ -65,12 +65,14 @@ define([
                         "campus": row["campus_campus"],
                         "location": latlng,
                         "title": campusTitle,
-                        "icon": row["campus_icon"],
                         "courses": [],
                         "model": model,
                         "_campus_popup": row["campus_popup"],
                         "saved": campus_is_favorite
                     };
+                    if (row["campus_icon"] != "") {
+                        campus["icon"] = 'media/' + row["campus_icon"];
+                    }
                     output.push(campus);
                 }
 

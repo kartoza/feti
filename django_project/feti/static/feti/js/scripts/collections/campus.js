@@ -91,7 +91,7 @@ define([
                     "campus_phone": row["campus_phone"],
                 };
                 if (row["campus_icon_url"] != "") {
-                    campus["icon"] = row["campus_icon_url"];
+                    campus["icon"] = 'media/' + row["campus_icon_url"];
                 }
 
                 return campus;
