@@ -40,8 +40,6 @@ elasticsearch:
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
-  ports:
-    - "9200:9200"
 
 db:
   # Note you cannot scale if you use conteiner_name
