@@ -81,7 +81,7 @@ migrate:
 	-@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py migrate auth
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py migrate
 
-collectstatic:
+collectstatic: gruntserver
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Collecting static in production mode"
@@ -386,6 +386,14 @@ import-map-administrative:
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py import_countries
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py import_district
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py import_municipalities
+
+gruntserver:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Run grunt"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py gruntserver
+
 
 # --------------- help --------------------------------
 

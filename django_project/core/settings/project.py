@@ -38,8 +38,8 @@ PIPELINE = {
                 'css/bootstrap-datetimepicker.min.css',
                 'feti/leaflet-extra-markers/leaflet.extra-markers.css',
                 'feti/font-awesome/css/font-awesome.css',
-                'feti/js/libs/leaflet.draw-0.4.9/leaflet.draw.css',
-                'feti/js/libs/easy-button/easy-button.css',
+                'js/libs/leaflet.draw-0.4.9/leaflet.draw.css',
+                'js/libs/easy-button/easy-button.css',
             ),
             'output_filename': 'css/contrib.css',
             'extra_context': {
@@ -80,27 +80,27 @@ PIPELINE = {
             'source_filenames': (
                 'js/bootstrap.js',
                 'js/moment.min.js',
-                'feti/js/libs/Leaflet/0.7.7/leaflet.js',
-                'feti/js/libs/ripples.min.js',
-                'feti/js/libs/validate.js',
-                'feti/leaflet-extra-markers/leaflet.extra-markers.js',
-                'feti/js/libs/underscore-1.8.3.min.js',
-                'feti/js/libs/backbone-1.3.3.min.js',
-                'feti/js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
-                'feti/js/libs/easy-button/easy-button.js',
+                'js/libs/Leaflet/0.7.7/leaflet.js',
+                'js/libs/ripples.min.js',
+                'js/libs/validate.js',
+                'leaflet-extra-markers/leaflet.extra-markers.js',
+                'js/libs/underscore-1.8.3.min.js',
+                'js/libs/backbone-1.3.3.min.js',
+                'js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
+                'js/libs/easy-button/easy-button.js',
             ),
             'output_filename': 'js/contrib.js',
         },
         'appjs': {
             'source_filenames': (
-                'feti/js/libs/leaflet.control.share.js',
+                'js/libs/leaflet.control.share.js',
                 'js/csrf-ajax.js',
             ),
             'output_filename': 'js/appjs.js'
         },
         'grappelli_override': {
             'source_filenames': (
-                'feti/js/libs/grappelli_override.js',
+                'js/libs/grappelli_override.js',
             ),
             'output_filename': 'js/grappelli_override.min.js'
         }
@@ -111,3 +111,12 @@ PIPELINE = {
 CACHE_DIR = ABS_PATH('cache')
 
 from .celery_setting import *  # noqa
+
+REQUIRE_JS_PATH = '/static/js/libs/require.min.js'
+
+GRUNT_MODULES = {
+    'landing_page': {
+        'main': '/static/js/main',
+        'optimized': 'js/optimized.js',
+    }
+}
