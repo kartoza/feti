@@ -1,0 +1,10 @@
+<div class="row" style="padding-bottom: 0">
+    <div class="col-md-11">
+        <%= title %>
+    </div>
+    <div class="col-md-1">
+        <span id='favorite-course-<%- id %>' class="favorites pull-right">
+            <i class="<%if(saved){print('fa fa-star filled');} else {print('fa fa-star-o')}%>" aria-hidden="true"></i>
+        </span>
+    </div>
+</div>

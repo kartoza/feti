@@ -37,7 +37,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ABS_PATH('static')
+STATIC_ROOT = '/home/web/static'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -49,6 +49,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     ABS_PATH('core', 'base_static'),
+    ABS_PATH('feti', 'static'),
 )
 
 # import SECRET_KEY into current namespace

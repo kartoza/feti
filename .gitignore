@@ -102,6 +102,7 @@ reports
 # static folders
 django_project/feti/static/*
 !django_project/feti/static/feti/
+!django_project/feti/static/js/
 
 # Apt cacher
 deployment/docker-prod/71-apt-cacher-ng

@@ -1,0 +1,55 @@
+<form id="search-form" name="search_form" action="map" method="POST">
+
+    <div class="search-category">
+            <div class="col col-md-5 col-xs-6">
+                <p class="pull-right">
+                    What are you looking for?
+                </p>
+            </div>
+            <div class="col col-md-7 col-xs-6">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" id="where-to-study" class="search-option active" data-mode="provider">
+                        <a href="#map/provider">Where to study </a></li>
+                    <li role="presentation" id="what-to-study" class="search-option" data-mode="course">
+                        <a href="#map/course">What to study</a></li>
+                    <li role="presentation" id="choose-occupation" class="search-option" data-mode="occupation">
+                        <a href="#map/occupation">Choose occupation</a></li>
+                    <% if(is_logged_in) { %>
+                    <li role="presentation" id="favorites" class="search-option" data-mode="favorites">
+                        <a href="#map/favorites/all">Favourites</a></li>
+                    <% } %>
+                </ul>
+            </div>
+    </div>
+
+    <div class="search-bar">
+            <div class="search-row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-7">
+                    <span id="search-box" class="right-inner-addon">
+                        <label for="search-bar-input">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="sr-only">Search icons</span>
+                        </label>
+                       <input id="search-bar-input"
+                              autocomplete="off"
+                              type="search"
+                              class="form-control input-lg"
+                              placeholder="Search"
+                              name="search_input"/>
+                        <a id="search-clear" href="#" class="fa fa-times-circle" aria-hidden="true">
+                            <span class="sr-only">Clear search</span>
+                        </a>
+                    </span>
+                </div>
+            </div>
+
+            <!--
+            <span class="m-button map-option disabled" id="travel-line">
+                Travel line
+            </span>
+            -->
+        <i id="result-toogle" class="result-toogle fa fa-caret-left" aria-hidden="true"></i>
+    </div>
+</form>
