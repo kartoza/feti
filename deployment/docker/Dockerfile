@@ -49,6 +49,18 @@ RUN chmod a+x certbot-auto
 #RUN cp -R django-haystack-2.4.0/haystack /usr/local/lib/python2.7/site-packages/
 #RUN rm -rf django-haystack-2.4.0 v2.4.0.zip
 
+
+# Install Node js
+RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get -y --force-yes install nodejs
+
+# Install grunt
+RUN npm install -g grunt-cli
+COPY package.json /home/web/django_project/package.json
+RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-concat grunt-contrib-uglify
+RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
+
 ADD uwsgi.conf /uwsgi.conf
 
 # Open port 8080 as we will be running our uwsgi socket on that
