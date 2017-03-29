@@ -40,6 +40,8 @@ PIPELINE = {
                 'feti/font-awesome/css/font-awesome.css',
                 'js/libs/leaflet.draw-0.4.9/leaflet.draw.css',
                 'js/libs/easy-button/easy-button.css',
+                'feti/css/bootstrap-slider-9.7.2/bootstrap-slider.min.css',
+                'feti/css/chosen.min.css',
             ),
             'output_filename': 'css/contrib.css',
             'extra_context': {
@@ -88,6 +90,8 @@ PIPELINE = {
                 'js/libs/backbone-1.3.3.min.js',
                 'js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
                 'js/libs/easy-button/easy-button.js',
+                'js/libs/bootstrap-slider-9.7.2/bootstrap-slider.js',
+                'js/libs/chosen.jquery.min.js',
             ),
             'output_filename': 'js/contrib.js',
         },

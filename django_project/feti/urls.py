@@ -10,11 +10,31 @@ from feti.views.campus import UpdateCampusView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import EmbedPage, LandingPage
 from feti.views.api import (
-    ApiCampus,
     ApiCourse,
     ApiAutocomplete,
     ApiOccupation,
     ApiSavedCampus
+)
+from feti.api_views.campus import (
+    ApiCampus
+)
+from feti.api_views.course import (
+    CourseAPIView
+)
+from feti.api_views.subfield_of_study import (
+    SubFieldOfStudyAPIView
+)
+from feti.api_views.field_of_study import (
+    FieldOfStudyAPIView
+)
+from feti.api_views.qualification_type import (
+    QualificationTypeAPIView
+)
+from feti.api_views.national_qualifications_framework import (
+    NationalQualificationsFrameworkAPIView
+)
+from feti.api_views.national_qualifications_subframework import (
+    NationalQualificationsSubFrameworkAPIView
 )
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
@@ -33,8 +53,8 @@ api_urls = patterns(
         name='api-campus'),
     url(
         r'^api/course',
-        ApiCourse.as_view(),
-        name='api-campus'),
+        CourseAPIView.as_view(),
+        name='api-course'),
     url(
         r'^api/occupation',
         ApiOccupation.as_view(),
@@ -64,7 +84,32 @@ api_urls = patterns(
         r'^url/(?P<random>[\w\d]+)',
         ApiGetURL.as_view(),
         name="api-get-url"
-    )
+    ),
+    url(
+        r'^api/subfield_of_study',
+        SubFieldOfStudyAPIView.as_view(),
+        name="api-get-subfield-of-study"
+    ),
+    url(
+        r'^api/field_of_study',
+        FieldOfStudyAPIView.as_view(),
+        name="api-get-field-of-study"
+    ),
+    url(
+        r'^api/qualification_type',
+        QualificationTypeAPIView.as_view(),
+        name="api-get-qualification-type"
+    ),
+    url(
+        r'^api/national_qualifications_framework',
+        NationalQualificationsFrameworkAPIView.as_view(),
+        name="api-get-nqf"
+    ),
+    url(
+        r'^api/national_qualifications_subframework',
+        NationalQualificationsSubFrameworkAPIView.as_view(),
+        name="api-get-nqsf"
+    ),
 )
 
 urlpatterns = patterns(

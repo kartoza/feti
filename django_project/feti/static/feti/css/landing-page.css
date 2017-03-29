@@ -667,6 +667,23 @@
     color: #b3b3b3;
 }
 
+.filter-panel {
+    background-color: rgba(243, 243, 243, 0.9);
+    position: absolute;
+    display: none;
+    top: 123px;
+    height: 200px;
+    width: 100%;
+    z-index: 90;
+}
+
+.filter-panel .row {
+    padding-top: 15px;
+    color: dimgray;
+    font-weight: lighter;
+    font-size: 15px;
+}
+
 .leaflet-right {
     margin-top: 65px;
 }
@@ -683,4 +700,92 @@
 .right-details-title {
     width: 8.33333333%;
     float: left;
+}
+
+.filter-button {
+    padding-top: 20px;
+    font-size: 18px;
+    width: 80%;
+}
+
+.filter-button :hover {
+    cursor: pointer;
+}
+
+.filter-button .btn-sm {
+    width: 100px;
+}
+
+a#search-icon:hover {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a#search-icon {
+    padding-top: 10px;
+    margin-left: -40px;
+}
+
+#minimum-credits .slider-selection {
+	background: #BABABA;
+}
+
+.mc-slider-edge-label {
+    position: absolute;
+    padding-top: 20px;
+}
+
+#search-with-filter.btn-default:hover {
+    cursor: pointer;
+    background-color: rgba(16, 81, 146, 0.88);
+}
+
+#search-with-filter.btn-default {
+    border-radius: 20px;
+    background-color: rgba(29, 104, 179, 0.9);
+    color: white;
+}
+
+
+#search-with-filter {
+    float: right;
+    width: 200px;
+    text-align: center;
+}
+
+#clear-filter.btn-default {
+    border-radius: 20px;
+    background-color: #FF6666;
+    color: white;
+    width: 200px;
+}
+
+#clear-filter.btn-default:hover {
+    cursor: pointer;
+    background-color: #FF3333;
+}
+
+.slider.slider-horizontal {
+    width: 400px !important;
+}
+
+#filter-tag {
+    right: 40px;
+    top: 10px;
+    position: absolute;
+    border-radius: 12px;
+    font-size: 9pt;
+    padding: 5px;
+    background-color: rgba(29, 104, 179, 0.8);
+}
+
+#hide-filter-button, #show-filter-button {
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 15px;
+    color: white;
+}
+
+.filter-panel-campus {
+    padding-bottom: 40px;
 }

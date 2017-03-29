@@ -72,7 +72,8 @@ define([
                 },
                 error: function () {
                     Common.FetchXHR = null;
-                    Common.Dispatcher.trigger('search:finish');
+                    Common.Dispatcher.trigger('search:finish', false, that.mode, 0);
+                    Common.Dispatcher.trigger('sidebar:update_title', 0, that.mode, parameters['coord']);
                 }
             });
         },
