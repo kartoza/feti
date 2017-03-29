@@ -26,10 +26,10 @@
             <div class="search-row">
                 <div class="col-md-2">
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-6">
                     <span id="search-box" class="right-inner-addon">
                         <label for="search-bar-input">
-                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <a id="search-icon" class="fa fa-search" aria-hidden="true" style="display: block;"></a>
                             <span class="sr-only">Search icons</span>
                         </label>
                        <input id="search-bar-input"
@@ -38,10 +38,21 @@
                               class="form-control input-lg"
                               placeholder="Search"
                               name="search_input"/>
+                        <span id="filter-tag">filtered</span>
                         <a id="search-clear" href="#" class="fa fa-times-circle" aria-hidden="true">
                             <span class="sr-only">Clear search</span>
                         </a>
                     </span>
+                </div>
+                <div class="col-md-2">
+                    <div class="filter-button">
+                        <div class="btn-default btn-sm" id="show-filter-button">
+                            show filters  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </div>
+                        <div class="btn-default btn-sm" id="hide-filter-button" hidden>
+                            hide filters  <i class="fa fa-angle-up" aria-hidden="true"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -51,5 +62,87 @@
             </span>
             -->
         <i id="result-toogle" class="result-toogle fa fa-caret-left" aria-hidden="true"></i>
+    </div>
+
+    <div class="filter-panel">
+        <div class="row filter-panel-campus">
+            <div class="col col-md-3 col-xs-3"></div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Public / Private</p>
+                <select id="public-institution-select">
+                  <option>-</option>
+                  <option value="0">Public Institution</option>
+                  <option value="1">Private Institution</option>
+                </select>
+            </div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Field of study</p>
+                <select id="field-of-study-provider-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-6 col-xs-6"></div>
+        </div>
+        <div class="row filter-panel-course">
+            <div class="col col-md-1 col-xs-1"></div>
+            <div class="col col-md-3 col-xs-3">
+                <p>Field of study</p>
+                <select id="field-of-study-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-4 col-xs-4">
+                <p>Qualification type</p>
+                <select id="qualification-type-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-3 col-xs-3">
+                <p>NQF Level</p>
+                <select id="nqf-level-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-1 col-xs-1"></div>
+        </div>
+        <div class="row filter-panel-course">
+            <div class="col col-md-1 col-xs-1"></div>
+            <div class="col col-md-5 col-xs-5">
+                <p>Subfield of study</p>
+                <select id="subfield-of-study-select">
+                  <option>-</option>
+                </select>
+            </div>
+            <div class="col col-md-5 col-xs-5">
+                <p>Minimum credits</p>
+                <span class="mc-slider-edge-label">
+                    0
+                </span>
+                <div data-slider-id='minimum-credits'
+                       data-slider-min="0"
+                       data-slider-max="300"
+                       data-slider-step="1"
+                       data-slider-value="0"
+                       title="Minimum credits"
+                       id="minimum-credits"
+                ></div>
+                <span class="mc-slider-edge-label">
+                    300
+                </span>
+            </div>
+            <div class="col col-md-1 col-xs-1"></div>
+        </div>
+        <div class="row filter-panel-button">
+            <div class="col col-md-6 col-xs-6">
+                <div class="btn-default btn-sm" id="search-with-filter">
+                    <i class="fa fa-search" aria-hidden="true"></i> Search
+                </div>
+            </div>
+            <div class="col col-md-6 col-xs-6">
+                <div class="btn-default btn-sm" id="clear-filter">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i> Clear filters
+                </div>
+            </div>
+        </div>
     </div>
 </form>

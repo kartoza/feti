@@ -16,7 +16,18 @@ define([
             'click #choose-occupation': '_categoryClicked',
             'click #favorites': '_categoryClicked',
             'click #result-toogle': 'toogleResult',
-            'click #search-clear': 'clearSearch'
+            'click #search-clear': 'clearSearch',
+            'click #show-filter-button': 'showFilterPanel',
+            'click #hide-filter-button': 'hideFilterPanel',
+            'change #field-of-study-select': 'filterChanged',
+            'change #qualification-type-select': 'filterChanged',
+            'change #subfield-of-study-select': 'filterChanged',
+            'change #nqf-level-select': 'filterChanged',
+            'change #public-institution-select': 'filterChanged',
+            'change #field-of-study-provider-select': 'filterChanged',
+            'click #search-icon': 'searchIconClicked',
+            'click #search-with-filter': 'searchIconClicked',
+            'click #clear-filter' : 'clearFilters'
         },
         initialize: function (options) {
             this.render();
@@ -30,8 +41,14 @@ define([
             this.$favorites_button = $("#favorites");
             this.$clear_draw = $("#clear-draw");
             this.$search_clear = $("#search-clear");
+            this.$filter_tag_label = $('#filter-tag');
+
+            this.$filter_panel_course = $('.filter-panel-course');
+            this.$filter_panel_campus = $('.filter-panel-campus');
+            this.$filter_panel_button = $('.filter-panel-button');
 
             this.$search_clear.hide();
+            this.$filter_tag_label.hide();
 
             this.search_bar_hidden = true;
             this.$result_toggle.hide();
@@ -42,7 +59,7 @@ define([
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
             Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
-            Common.Dispatcher.on('search:updateRouter', this._updateSearchRoute, this);
+            Common.Dispatcher.on('search:updateRouter', this.updateSearchRoute, this);
 
             this._drawer = {
                 polygon: this._initializeDrawPolygon,
@@ -60,10 +77,29 @@ define([
 
             var that = this;
 
+            // Flag to show search is initiated through search form
+            this.isSearchFromInput = false;
+
             this.$search_form.submit(function (e) {
                 e.preventDefault(); // avoid to execute the actual submit of the form.
-                that._updateSearchRoute();
+                that.isSearchFromInput = true;
+                that.updateSearchRoute();
             });
+            this.$search_bar_input.keyup(function(e){
+                if(e.keyCode == 13)
+                {
+                    if(that.$search_bar_input.val()) {
+                        that.isSearchFromInput = true;
+                        that.updateSearchRoute();
+                    }
+                }
+            });
+
+            this.loadFilters();
+        },
+        searchIconClicked: function (e) {
+            this.isSearchFromInput = true;
+            this.updateSearchRoute();
         },
         render: function () {
             this.$el.empty();
@@ -108,13 +144,22 @@ define([
             var width = this.$search_bar_input.css('width');
             $('.ui-autocomplete').css('width', width);
         },
-        _getSearchRoute: function (filter) {
+        getSearchRoute: function (filter) {
             var that = this;
             var new_url = ['map'];
             var mode = this.$el.find('.search-category').find('.search-option.active').data('mode');
             Common.CurrentSearchMode = mode;
+            var query = '';
 
-            var query = that.$search_bar_input.val();
+            if(this.isSearchFromInput) {
+                query = that.$search_bar_input.val();
+                if(mode != 'occupation' && mode != 'favorites')
+                    query += that.getAdvancedFilters();
+                this.isSearchFromInput = false;
+            } else {
+                query = that._search_query[mode];
+            }
+
             if (!query && mode in this._search_query) {
                 query = this._search_query[mode];
             }
@@ -141,9 +186,9 @@ define([
 
             return new_url;
         },
-        _updateSearchRoute: function (filter) {
+        updateSearchRoute: function (filter) {
             // update route based on query and filter
-            var new_url = this._getSearchRoute(filter);
+            var new_url = this.getSearchRoute(filter);
             Backbone.history.navigate(new_url.join("/"), true);
         },
         _categoryClicked: function (event) {
@@ -164,7 +209,7 @@ define([
                 this.$search_bar_input.val('');
 
                 // Update url
-                this._updateSearchRoute();
+                this.updateSearchRoute();
 
                 if (mode != 'favorites') {
                     // Hide search bar if in favorite mode
@@ -175,6 +220,15 @@ define([
                     if ($('#result-detail').is(":visible")) {
                         $('#result-detail').hide("slide", {direction: "right"}, 500);
                     }
+                }
+
+                if (mode == 'occupation' || mode == 'favorites') {
+                    this.$filter_tag_label.hide();
+                    $('.filter-button').hide();
+                } else {
+                    // Update filters
+                    this.updateFilters(mode);
+                    $('.filter-button').show();
                 }
             }
         },
@@ -221,16 +275,43 @@ define([
         },
         occupationClicked: function (id, pathway) {
             Common.Router.inOccupation = true;
-            var new_url = this._getSearchRoute();
+            var new_url = this.getSearchRoute();
             new_url.push(id);
             if (pathway) {
                 new_url.push(pathway);
             }
             Backbone.history.navigate(new_url.join("/"), false);
         },
+        updateSearchBarInput: function (query) {
+            // Remove all filters from searchbar
+            // filters are fos, qt, nqf, sos, mc
+            query = query.replace(query.match(/&fos=\d+/g), '');
+            query = query.replace(query.match(/&qt=\d+/g), '');
+            query = query.replace(query.match(/&nqf=\d+/g), '');
+            query = query.replace(query.match(/&sos=\d+/g), '');
+            query = query.replace(query.match(/&mc=\d+/g), '');
+            query = query.replace(query.match(/&pi=\d+/g), '');
+            this.$search_bar_input.val(query);
+        },
         search: function (mode, query, filter) {
+
+            this.changeFilterPanel(Common.CurrentSearchMode);
+
             if (query && mode != 'favorites') {
-                this.$search_bar_input.val(query);
+
+                // Put query to search input
+                this.updateSearchBarInput(query);
+
+                // Update filters
+                if(mode != 'occupation') {
+                    this.parseFilters(query);
+                    this.updateFilters(mode);
+                }
+
+                if(!this.$search_bar_input.val()) {
+                    return;
+                }
+
                 // search
                 if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
@@ -281,6 +362,12 @@ define([
                     this.parent.createCircle(coords, radius);
                 }
             }
+            if (mode == 'occupation' || mode == 'favorites') {
+                this.hideFilterPanel();
+                $('.filter-button').hide();
+            } else {
+                $('.filter-button').show();
+            }
         },
         onFinishedSearch: function (is_not_empty, mode, num) {
 
@@ -294,6 +381,7 @@ define([
                 this.$search_clear.show();
             }
 
+            this.hideFilterPanel();
             if (num > 0 && mode != 'occupation') {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
@@ -334,7 +422,7 @@ define([
         },
         clearAllDraw: function () {
             this.parent.clearAllDrawnLayer();
-            this._updateSearchRoute();
+            this.updateSearchRoute();
         },
         changeCategoryButton: function (mode) {
             // Shows relevant search result container
@@ -461,10 +549,400 @@ define([
             this.$search_clear.hide();
 
             // Update search
-            this._updateSearchRoute();
+            this.updateSearchRoute();
 
             // Update sidebar
             Common.Dispatcher.trigger('sidebar:clear_search', Common.CurrentSearchMode);
+        },
+        /*--------------------*/
+        /* Advanced filter    */
+        /*--------------------*/
+        isFilterPanelOpened : false,
+        fosFilter: 0,
+        qtFilter: 0,
+        filtered: {
+            'course': false,
+            'provider': false
+        },
+        filtersInMode: {
+            'course': {
+                'field-of-study-select': null,
+                'qualification-type-select': null,
+                'nqf-level-select': null,
+                'subfield-of-study-select': null,
+                'minimum-credits': 0
+            },
+            'provider': {
+                'public-institution-select': null,
+                'field-of-study-provider-select': null
+            }
+        },
+        minimumCreditsSlider: null,
+        showFilterPanel: function (e) {
+            this.isFilterPanelOpened = true;
+            $('#show-filter-button').hide();
+            $('#hide-filter-button').show();
+
+            // Hide side panel
+            var resultToggle = $('#result-toogle');
+            this.parent.closeResultContainer(resultToggle);
+            resultToggle.removeClass('fa-caret-right');
+            resultToggle.addClass('fa-caret-left');
+
+            var $filterPanel = $('.filter-panel');
+
+            if ($filterPanel.css('display') == 'none'){
+                $filterPanel.animate({
+                    height: "toggle"
+                }, 500)
+            }
+        },
+        filterChanged: function (e) {
+            // Filter dropdown selected
+            var id =  $('#'+e.target.id+ ' option:selected').val();
+            var mode = Common.CurrentSearchMode;
+            if(id != '-') {
+                this.filtersInMode[mode][e.target.id] = id;
+            } else {
+                this.filtersInMode[mode][e.target.id] = null;
+            }
+        },
+        hideFilterPanel: function (e) {
+            $('#hide-filter-button').hide();
+            $('#show-filter-button').show();
+
+            // Show side panel
+            var resultToggle = $('#result-toogle');
+            if(typeof e != 'undefined' && typeof this._search_query[Common.CurrentSearchMode] != 'undefined') {
+                this.parent.openResultContainer(resultToggle);
+                resultToggle.removeClass('fa-caret-left');
+                resultToggle.addClass('fa-caret-right');
+            }
+
+            var $filterPanel = $('.filter-panel');
+
+            if(this.isFilterPanelOpened) {
+                if ($filterPanel.css('display') != 'none'){
+                    $filterPanel.animate({
+                        height: "toggle"
+                    }, 500)
+                }
+                this.isFilterPanelOpened = false;
+            }
+
+        },
+        getAdvancedFilters: function () {
+            // Return selected advanced filter for selected mode
+            var filter = '';
+            var mode = Common.CurrentSearchMode;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+            if(mode == courseMode) {
+                if(this.filtersInMode[courseMode]['field-of-study-select']) {
+                    filter += '&fos=' + this.filtersInMode[courseMode]['field-of-study-select'];
+                }
+                if(this.filtersInMode[courseMode]['qualification-type-select']) {
+                    filter += '&qt=' + this.filtersInMode[courseMode]['qualification-type-select'];
+                }
+                if(this.filtersInMode[courseMode]['nqf-level-select']) {
+                    filter += '&nqf=' + this.filtersInMode[courseMode]['nqf-level-select'];
+                }
+                if(this.filtersInMode[courseMode]['subfield-of-study-select']) {
+                    filter += '&sos=' + this.filtersInMode[courseMode]['subfield-of-study-select'];
+                }
+                if(this.minimumCreditsSlider) {
+                    var mcValue = this.minimumCreditsSlider.bootstrapSlider('getValue');
+                    if(mcValue > 0) {
+                        filter += '&mc=' + mcValue;
+                    }
+                }
+                this.filtered[courseMode] = filter != '';
+            } else if(mode == providerMode) {
+                if(this.filtersInMode[providerMode]['public-institution-select']) {
+                    filter += '&pi=' + this.filtersInMode[providerMode]['public-institution-select'];
+                }
+                if(this.filtersInMode[providerMode]['field-of-study-provider-select']) {
+                    filter += '&fos=' + this.filtersInMode[providerMode]['field-of-study-provider-select'];
+                }
+                this.filtered[providerMode] = filter != '';
+            }
+            return filter;
+        },
+        parseFilters: function (query) {
+            // Parse advance filter from URL
+            var mode = Common.CurrentSearchMode;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+
+            var fosId = query.match(/&fos=\d+/g);
+            var qtId = query.match(/&qt=\d+/g);
+            var nqfId = query.match(/&nqf=\d+/g);
+            var sosId = query.match(/&sos=\d+/g);
+            var mcValue = query.match(/&mc=\d+/g);
+            var piValue = query.match(/&pi=\d+/g);
+
+            if(fosId) {
+                fosId = fosId[0].split('=')[1];
+                this.filtered[mode] = true;
+                if(mode == courseMode)
+                    this.filtersInMode[mode]['field-of-study-select'] = fosId;
+                else if(mode == providerMode)
+                    this.filtersInMode[mode]['field-of-study-provider-select'] = fosId;
+            }
+            if(qtId) {
+                qtId = qtId[0].split('=')[1];
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['qualification-type-select'] = qtId;
+            }
+            if(nqfId) {
+                nqfId = nqfId[0].split('=')[1];
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['nqf-level-select'] = nqfId;
+            }
+            if(sosId) {
+                sosId = sosId[0].split('=')[1];
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['subfield-of-study-select'] = sosId;
+            }
+            if(piValue) {
+                piValue = piValue[0].split('=')[1];
+                this.filtered[providerMode] = true;
+                this.filtersInMode[providerMode]['public-institution-select'] = piValue;
+            }
+            if(mcValue) {
+                mcValue = mcValue[0].split('=')[1];
+                this.filtered[courseMode] = true;
+                this.filtersInMode[courseMode]['minimum-credits'] = mcValue;
+                this.minimumCreditsSlider.bootstrapSlider('setValue', mcValue);
+            }
+        },
+        updateFilters: function (mode) {
+            // Update selected filters
+
+            var courseMode = 'course';
+            var providerMode = 'provider';
+
+            if(this.filtersInMode[courseMode]['field-of-study-select']==null) {
+                $('#field-of-study-select').val('-');
+            } else {
+                this.filtered[courseMode] = true;
+                $('#field-of-study-select').val(this.filtersInMode[courseMode]['field-of-study-select']);
+            }
+
+            if(this.filtersInMode[courseMode]['qualification-type-select']==null) {
+                $('#qualification-type-select').val('-');
+            } else {
+                this.filtered[courseMode] = true;
+                $('#qualification-type-select').val(this.filtersInMode[courseMode]['qualification-type-select']);
+            }
+
+            if(this.filtersInMode[courseMode]['nqf-level-select']==null) {
+                $('#nqf-level-select').val('-');
+            } else {
+                this.filtered[courseMode] = true;
+                $('#nqf-level-select').val(this.filtersInMode[courseMode]['nqf-level-select']);
+            }
+
+            if(this.filtersInMode[courseMode]['subfield-of-study-select']==null) {
+                $('#subfield-of-study-select').val('-');
+            } else {
+                this.filtered[courseMode] = true;
+                $('#subfield-of-study-select').val(this.filtersInMode[courseMode]['subfield-of-study-select']);
+            }
+
+            if(this.filtersInMode[courseMode]['minimum-credits']>0) {
+                this.filtered[courseMode] = true;
+            }
+            this.minimumCreditsSlider.bootstrapSlider('setValue', this.filtersInMode[courseMode]['minimum-credits']);
+
+            if(this.filtersInMode[providerMode]['public-institution-select']==null) {
+                $('#public-institution-select').val('-');
+            } else {
+                this.filtered[providerMode] = true;
+                $('#public-institution-select').val(this.filtersInMode[providerMode]['public-institution-select']);
+            }
+
+            if(this.filtersInMode[providerMode]['field-of-study-provider-select']==null) {
+                $('#field-of-study-provider-select').val('-');
+            } else {
+                this.filtered[providerMode] = true;
+                $('#field-of-study-provider-select').val(this.filtersInMode[providerMode]['field-of-study-provider-select']);
+            }
+
+            $('#field-of-study-select').trigger("chosen:updated");
+            $('#qualification-type-select').trigger("chosen:updated");
+            $('#nqf-level-select').trigger("chosen:updated");
+            $('#subfield-of-study-select').trigger("chosen:updated");
+            $('#public-institution-select').trigger("chosen:updated");
+            $('#field-of-study-provider-select').trigger("chosen:updated");
+
+            if(this.filtered[mode]) {
+                this.$filter_tag_label.show();
+            } else {
+                this.$filter_tag_label.hide();
+            }
+
+        },
+        clearFilters: function () {
+            var mode = Common.CurrentSearchMode;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+            this.filtered[mode] = false;
+
+            $('#field-of-study-select').val('-');
+            $('#field-of-study-select').trigger("chosen:updated");
+
+            $('#qualification-type-select').val('-');
+            $('#qualification-type-select').trigger("chosen:updated");
+
+            $('#nqf-level-select').val('-');
+            $('#nqf-level-select').trigger("chosen:updated");
+
+            $('#subfield-of-study-select').val('-');
+            $('#subfield-of-study-select').trigger("chosen:updated");
+
+            $('#field-of-study-provider-select').val('-');
+            $('#field-of-study-provider-select').trigger("chosen:updated");
+
+            $('#public-institution-select').val('-');
+            $('#public-institution-select').trigger("chosen:updated");
+
+            this.minimumCreditsSlider.bootstrapSlider('setValue', 0);
+
+            if(mode==courseMode){
+                this.filtersInMode[mode] = {
+                    'field-of-study-select': null,
+                    'qualification-type-select': null,
+                    'nqf-level-select': null,
+                    'subfield-of-study-select': null,
+                    'minimum-credits': 0
+                }
+            } else if(mode==providerMode) {
+                this.filtersInMode[mode] = {
+                    'public-institution-select': null,
+                    'field-of-study-provider-select': null
+                }
+            }
+
+            this.isSearchFromInput = true;
+            this.updateSearchRoute();
+        },
+        changeFilterPanel: function (mode) {
+            this.$filter_panel_button.show();
+
+            if(mode == 'course') {
+                this.$filter_panel_campus.hide();
+                this.$filter_panel_course.show();
+            } else if(mode == 'provider') {
+                this.$filter_panel_campus.show();
+                this.$filter_panel_course.hide();
+            } else {
+                this.$filter_panel_campus.hide();
+                this.$filter_panel_course.hide();
+                this.$filter_panel_button.hide();
+            }
+
+            if(this.filtered[mode]) {
+                this.$filter_tag_label.show();
+            } else {
+                this.$filter_tag_label.hide();
+            }
+        },
+        loadFilters: function () {
+            var that = this;
+            var courseMode = 'course';
+            var providerMode = 'provider';
+            this.minimumCreditsSlider = $('#minimum-credits').bootstrapSlider({
+	            formatter: function(value) {
+                    that.filtersInMode[courseMode]['minimum-credits'] = value;
+		            return value;
+	            }
+            });
+
+            $('#public-institution-select').chosen({
+                no_results_text: "Oops, nothing found!",
+                width: "80%"
+            });
+
+            // Get field of study
+            $.ajax({
+                url: 'api/field_of_study',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#field-of-study-select').append($('<option>', {
+                            value: item.id,
+                            text : item.field_of_study_description,
+                            selected: item.id == that.filtersInMode[courseMode]['field-of-study-select']
+                        }));
+                        $('#field-of-study-provider-select').append($('<option>', {
+                            value: item.id,
+                            text : item.field_of_study_description,
+                            selected: item.id == that.filtersInMode[providerMode]['field-of-study-provider-select']
+                        }));
+                    });
+
+                    $('#field-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                    $('#field-of-study-provider-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                }
+            });
+            $.ajax({
+                url: 'api/qualification_type',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#qualification-type-select').append($('<option>', {
+                            value: item.id,
+                            text : item.type,
+                            selected: item.id == that.filtersInMode[courseMode]['qualification-type-select']
+                        }));
+                    });
+                    $('#qualification-type-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                }
+            });
+            $.ajax({
+                url: 'api/national_qualifications_framework',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#nqf-level-select').append($('<option>', {
+                            value: item.id,
+                            text : item.description,
+                            selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
+                        }));
+                    });
+                    $('#nqf-level-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "80%"
+                    });
+                }
+            });
+            $.ajax({
+                url: 'api/subfield_of_study',
+                type: 'GET',
+                success: function (response) {
+                    $.each(response, function (i, item) {
+                        $('#subfield-of-study-select').append($('<option>', {
+                            value: item.id,
+                            text : item.learning_subfield,
+                            selected: item.id == that.filtersInMode[courseMode]['subfield-of-study-select']
+                        }));
+                    });
+                    $('#subfield-of-study-select').chosen({
+                        no_results_text: "Oops, nothing found!",
+                        width: "50%"
+                    });
+                }
+            });
         }
     });
 
