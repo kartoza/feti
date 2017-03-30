@@ -77,7 +77,26 @@ define([
                         'Get directions</a>';
                 }
 
+                var that = this;
+
+                // Events on marker and popup
                 marker.bindPopup(popup);
+                marker.off('click');
+                marker.on('click', function (e) {
+                    e.originalEvent.preventDefault();
+                    that.set('marker_clicked', true);
+                });
+                marker.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                marker.on('mouseout', function (e) {
+                    if(!that.get('marker_clicked')) {
+                        this.closePopup();
+                    }
+                });
+                marker.on('popupclose', function (e) {
+                    that.set('marker_clicked', false);
+                });
                 this.set('marker', marker);
             }
             this.set('layer', L.featureGroup([this.get('marker')]));
