@@ -24,7 +24,6 @@ class ApiCampus(CommonSearch, APIView):
 
         if not query:
             sqs = self.filter_indexed_campus(query)
-            campus_count = sqs.count()
         elif options and 'advance_search' in options:
             search_in_campus_model = False
 
@@ -45,6 +44,8 @@ class ApiCampus(CommonSearch, APIView):
                     options['shape'],
                     options['radius']
                 )
+        if not query:
+            campus_count = sqs.count()
 
         if 'page' in options:
             paginator = Paginator(sqs, self.page_limit)

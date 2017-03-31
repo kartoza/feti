@@ -26,6 +26,9 @@ define([
         },
         search: function (q, drawnLayers) {
             var that = this;
+            if (that.search_changed) {
+                that.current_page = 1;
+            }
             var parameters = {
                 q: '',
                 coord: '',
@@ -62,7 +65,7 @@ define([
             if (Common.FetchXHR != null) {
                 Common.FetchXHR.abort();
             }
-
+            console.log(this.url);
             that.last_query = q;
             Common.FetchXHR = this.fetch({
                 success: function (collection, response) {

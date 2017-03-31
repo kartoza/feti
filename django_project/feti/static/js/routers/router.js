@@ -23,6 +23,8 @@ define([
             "map/:mode/:query": "show_map",
             "map/:mode/:query/:filter": "show_map",
             "map/:mode/:query/:filter/:pathway": "show_map",
+            "map/:mode//:filter": "show_map_empty_query",
+            "map/:mode//:filter/:pathway": "show_map_empty_query",
         },
         initialize: function () {
             this.loginView = new LoginView();
@@ -68,6 +70,9 @@ define([
         },
         is_previous_route_match: function (regex) {
             return this.pageHistory.length > 0 && this.pageHistory[this.pageHistory.length - 1].match(regex)
+        },
+        show_map_empty_query: function (mode, filter, pathway) {
+            this.show_map(mode, null, filter, pathway);
         },
         show_map: function (mode, query, filter, pathway) {
             if (!query) {
