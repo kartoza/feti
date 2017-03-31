@@ -1,6 +1,7 @@
 {% extends 'feti_base.html' %}
 {% load staticfiles %}
 {% load pipeline %}
+{% load grunt %}
 
 {% block title %}
     FORD 2
@@ -116,7 +117,6 @@
 
     </script>
 
-    <script type="text/javascript" src="/static/feti/js/libs/require.min.js"></script>
-    <script type="text/javascript" src="/static/feti/js/scripts/main.js"></script>
+    {% grunt_module "landing_page" %}
 
 {% endblock %}
