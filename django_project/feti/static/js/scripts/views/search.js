@@ -27,7 +27,7 @@ define([
             'change #field-of-study-provider-select': 'filterChanged',
             'click #search-icon': 'searchIconClicked',
             'click #search-with-filter': 'searchIconClicked',
-            'click #clear-filter' : 'clearFilters'
+            'click #clear-filter': 'clearFilters'
         },
         initialize: function (options) {
             this.render();
@@ -85,10 +85,10 @@ define([
                 that.isSearchFromInput = true;
                 that.updateSearchRoute();
             });
-            this.$search_bar_input.keyup(function(e){
-                if(e.keyCode == 13)
-                {
-                    if(that.$search_bar_input.val()) {
+            this.$search_bar_input.keyup(function (e) {
+                if (e.keyCode == 13) {
+                    var is_allow_paging_request = $.inArray(Common.CurrentSearchMode, Common.AllowPagingRequest) !== -1;
+                    if (that.$search_bar_input.val() || is_allow_paging_request) {
                         that.isSearchFromInput = true;
                         that.updateSearchRoute();
                     }
@@ -151,19 +151,20 @@ define([
             Common.CurrentSearchMode = mode;
             var query = '';
 
-            if(this.isSearchFromInput) {
+            if (this.isSearchFromInput) {
                 query = that.$search_bar_input.val();
-                if(mode != 'occupation' && mode != 'favorites')
+                if (mode != 'occupation' && mode != 'favorites')
                     query += that.getAdvancedFilters();
                 this.isSearchFromInput = false;
             } else {
                 query = that._search_query[mode];
             }
 
-            if (!query && mode in this._search_query) {
+            var is_allow_paging_request = $.inArray(Common.CurrentSearchMode, Common.AllowPagingRequest) !== -1;
+            if (!query && mode in this._search_query && !is_allow_paging_request) {
                 query = this._search_query[mode];
             }
-            if (query == "" && mode != 'favorites') {
+            if (!is_allow_paging_request && query == "" && mode != 'favorites') {
                 this.parent.closeResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
@@ -189,7 +190,9 @@ define([
         updateSearchRoute: function (filter) {
             // update route based on query and filter
             var new_url = this.getSearchRoute(filter);
-            Backbone.history.navigate(new_url.join("/"), true);
+            if (Common.Router.is_initiated) {
+                Backbone.history.navigate(new_url.join("/"), true);
+            }
         },
         _categoryClicked: function (event) {
             event.preventDefault();
@@ -293,40 +296,32 @@ define([
             query = query.replace(query.match(/&pi=\d+/g), '');
             this.$search_bar_input.val(query);
         },
-        search: function (mode, query, filter) {
-
+        search: function (mode, query, filter, changed) {
             this.changeFilterPanel(Common.CurrentSearchMode);
-
-            if (query && mode != 'favorites') {
-
-                // Put query to search input
-                this.updateSearchBarInput(query);
-
-                // Update filters
-                if(mode != 'occupation') {
-                    this.parseFilters(query);
-                    this.updateFilters(mode);
+            if (changed == undefined) {
+                changed = true;
+            }
+            if (mode != 'favorites') {
+                if (query != Common.EmptyString) {
+                    this.$search_bar_input.val(query);
                 }
-
-                if(!this.$search_bar_input.val()) {
-                    return;
-                }
-
                 // search
-                if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
+                if (changed && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
-                    if (query != "") {
-                        this.showResult(mode);
-                    }
-                } else {
+                    this.showResult(mode);
+                }
+                else {
                     switch (mode) {
                         case 'provider':
+                            campusCollection.search_changed = changed;
                             campusCollection.search(query, filter);
                             break;
                         case 'course':
+                            courseCollection.search_changed = changed;
                             courseCollection.search(query, filter);
                             break;
                         case 'occupation':
+                            occupationCollection.search_changed = changed;
                             occupationCollection.search(query);
                             break;
                         default:
@@ -335,7 +330,12 @@ define([
                     this._search_query[mode] = query;
                     this._search_filter[mode] = filter;
                     this._search_need_update[mode] = false;
-                    Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                    if (changed) {
+                        Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                    } else {
+                        $(".result-title").css("cursor", "progress");
+                        $(".result-row").css("cursor", "progress");
+                    }
                     this.showResult(mode);
                 }
             } else if (mode == 'favorites') {
@@ -369,6 +369,12 @@ define([
                 $('.filter-button').show();
             }
         },
+        onStartSearch: function () {
+            var mode = Common.Router.parameters.mode;
+            var query = Common.Router.parameters.query;
+            var filter = Common.Router.parameters.filter;
+            this.search(mode, query, filter, false);
+        },
         onFinishedSearch: function (is_not_empty, mode, num) {
 
             Common.Dispatcher.trigger('sidebar:hide_loading', mode);
@@ -376,6 +382,9 @@ define([
 
             $('#result-title').find('[id*="result-title-"]').hide();
             $('#result-title').find('#result-title-' + Common.CurrentSearchMode).show();
+            $(".result-title").css("cursor", "pointer");
+            $(".result-row").css("cursor", "pointer");
+
             if (mode) {
                 this._search_results[mode] = num;
                 this.$search_clear.show();
@@ -399,6 +408,19 @@ define([
                     var $toggle = $('#result-toogle');
                     this.parent.openResultContainer($toggle);
                 }
+            }
+            switch (mode) {
+                case 'provider':
+                    campusCollection.enableLoadMore();
+                    break;
+                case 'course':
+                    courseCollection.enableLoadMore();
+                    break;
+                case 'occupation':
+                    occupationCollection.enableLoadMore();
+                    break;
+                default:
+                    return;
             }
         },
         toogleResult: function (event) {
@@ -459,8 +481,8 @@ define([
                 this.$('#result-toogle').show();
                 this.parent.closeResultContainer($('#result-toogle'));
                 var mode = Common.CurrentSearchMode;
-                if(mode in this._search_results) {
-                    if(this._search_results[mode] > 0)
+                if (mode in this._search_results) {
+                    if (this._search_results[mode] > 0)
                         this.parent.openResultContainer($('#result-toogle'));
                 }
             } else { // Exit fullscreen
@@ -499,29 +521,6 @@ define([
                 this.search_bar_hidden = true;
             }
         },
-        exitOccupation: function () {
-            var that = this;
-            var $cover = $('#shadow-map');
-            if ($cover.is(":visible")) {
-                $cover.fadeOut(500);
-                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    that.exitResult();
-                });
-            } else {
-                that.exitResult();
-            }
-        },
-        exitResult: function () {
-            if ($('#result').is(":visible")) {
-                $('#result-toogle').removeClass('fa-caret-right');
-                $('#result-toogle').addClass('fa-caret-left');
-                $('#result').hide("slide", {direction: "right"}, 500, function () {
-                    Common.Dispatcher.trigger('map:exitFullScreen');
-                });
-            } else {
-                Common.Dispatcher.trigger('map:exitFullScreen');
-            }
-        },
         _addResponsiveTab: function (div) {
             div.addClass('responsive-tabs');
 
@@ -557,7 +556,7 @@ define([
         /*--------------------*/
         /* Advanced filter    */
         /*--------------------*/
-        isFilterPanelOpened : false,
+        isFilterPanelOpened: false,
         fosFilter: 0,
         qtFilter: 0,
         filtered: {
@@ -591,7 +590,7 @@ define([
 
             var $filterPanel = $('.filter-panel');
 
-            if ($filterPanel.css('display') == 'none'){
+            if ($filterPanel.css('display') == 'none') {
                 $filterPanel.animate({
                     height: "toggle"
                 }, 500)
@@ -599,9 +598,9 @@ define([
         },
         filterChanged: function (e) {
             // Filter dropdown selected
-            var id =  $('#'+e.target.id+ ' option:selected').val();
+            var id = $('#' + e.target.id + ' option:selected').val();
             var mode = Common.CurrentSearchMode;
-            if(id != '-') {
+            if (id != '-') {
                 this.filtersInMode[mode][e.target.id] = id;
             } else {
                 this.filtersInMode[mode][e.target.id] = null;
@@ -613,7 +612,7 @@ define([
 
             // Show side panel
             var resultToggle = $('#result-toogle');
-            if(typeof e != 'undefined' && typeof this._search_query[Common.CurrentSearchMode] != 'undefined') {
+            if (typeof e != 'undefined' && typeof this._search_query[Common.CurrentSearchMode] != 'undefined') {
                 this.parent.openResultContainer(resultToggle);
                 resultToggle.removeClass('fa-caret-left');
                 resultToggle.addClass('fa-caret-right');
@@ -621,8 +620,8 @@ define([
 
             var $filterPanel = $('.filter-panel');
 
-            if(this.isFilterPanelOpened) {
-                if ($filterPanel.css('display') != 'none'){
+            if (this.isFilterPanelOpened) {
+                if ($filterPanel.css('display') != 'none') {
                     $filterPanel.animate({
                         height: "toggle"
                     }, 500)
@@ -637,31 +636,31 @@ define([
             var mode = Common.CurrentSearchMode;
             var courseMode = 'course';
             var providerMode = 'provider';
-            if(mode == courseMode) {
-                if(this.filtersInMode[courseMode]['field-of-study-select']) {
+            if (mode == courseMode) {
+                if (this.filtersInMode[courseMode]['field-of-study-select']) {
                     filter += '&fos=' + this.filtersInMode[courseMode]['field-of-study-select'];
                 }
-                if(this.filtersInMode[courseMode]['qualification-type-select']) {
+                if (this.filtersInMode[courseMode]['qualification-type-select']) {
                     filter += '&qt=' + this.filtersInMode[courseMode]['qualification-type-select'];
                 }
-                if(this.filtersInMode[courseMode]['nqf-level-select']) {
+                if (this.filtersInMode[courseMode]['nqf-level-select']) {
                     filter += '&nqf=' + this.filtersInMode[courseMode]['nqf-level-select'];
                 }
-                if(this.filtersInMode[courseMode]['subfield-of-study-select']) {
+                if (this.filtersInMode[courseMode]['subfield-of-study-select']) {
                     filter += '&sos=' + this.filtersInMode[courseMode]['subfield-of-study-select'];
                 }
-                if(this.minimumCreditsSlider) {
+                if (this.minimumCreditsSlider) {
                     var mcValue = this.minimumCreditsSlider.bootstrapSlider('getValue');
-                    if(mcValue > 0) {
+                    if (mcValue > 0) {
                         filter += '&mc=' + mcValue;
                     }
                 }
                 this.filtered[courseMode] = filter != '';
-            } else if(mode == providerMode) {
-                if(this.filtersInMode[providerMode]['public-institution-select']) {
+            } else if (mode == providerMode) {
+                if (this.filtersInMode[providerMode]['public-institution-select']) {
                     filter += '&pi=' + this.filtersInMode[providerMode]['public-institution-select'];
                 }
-                if(this.filtersInMode[providerMode]['field-of-study-provider-select']) {
+                if (this.filtersInMode[providerMode]['field-of-study-provider-select']) {
                     filter += '&fos=' + this.filtersInMode[providerMode]['field-of-study-provider-select'];
                 }
                 this.filtered[providerMode] = filter != '';
@@ -681,35 +680,35 @@ define([
             var mcValue = query.match(/&mc=\d+/g);
             var piValue = query.match(/&pi=\d+/g);
 
-            if(fosId) {
+            if (fosId) {
                 fosId = fosId[0].split('=')[1];
                 this.filtered[mode] = true;
-                if(mode == courseMode)
+                if (mode == courseMode)
                     this.filtersInMode[mode]['field-of-study-select'] = fosId;
-                else if(mode == providerMode)
+                else if (mode == providerMode)
                     this.filtersInMode[mode]['field-of-study-provider-select'] = fosId;
             }
-            if(qtId) {
+            if (qtId) {
                 qtId = qtId[0].split('=')[1];
                 this.filtered[courseMode] = true;
                 this.filtersInMode[courseMode]['qualification-type-select'] = qtId;
             }
-            if(nqfId) {
+            if (nqfId) {
                 nqfId = nqfId[0].split('=')[1];
                 this.filtered[courseMode] = true;
                 this.filtersInMode[courseMode]['nqf-level-select'] = nqfId;
             }
-            if(sosId) {
+            if (sosId) {
                 sosId = sosId[0].split('=')[1];
                 this.filtered[courseMode] = true;
                 this.filtersInMode[courseMode]['subfield-of-study-select'] = sosId;
             }
-            if(piValue) {
+            if (piValue) {
                 piValue = piValue[0].split('=')[1];
                 this.filtered[providerMode] = true;
                 this.filtersInMode[providerMode]['public-institution-select'] = piValue;
             }
-            if(mcValue) {
+            if (mcValue) {
                 mcValue = mcValue[0].split('=')[1];
                 this.filtered[courseMode] = true;
                 this.filtersInMode[courseMode]['minimum-credits'] = mcValue;
@@ -722,47 +721,47 @@ define([
             var courseMode = 'course';
             var providerMode = 'provider';
 
-            if(this.filtersInMode[courseMode]['field-of-study-select']==null) {
+            if (this.filtersInMode[courseMode]['field-of-study-select'] == null) {
                 $('#field-of-study-select').val('-');
             } else {
                 this.filtered[courseMode] = true;
                 $('#field-of-study-select').val(this.filtersInMode[courseMode]['field-of-study-select']);
             }
 
-            if(this.filtersInMode[courseMode]['qualification-type-select']==null) {
+            if (this.filtersInMode[courseMode]['qualification-type-select'] == null) {
                 $('#qualification-type-select').val('-');
             } else {
                 this.filtered[courseMode] = true;
                 $('#qualification-type-select').val(this.filtersInMode[courseMode]['qualification-type-select']);
             }
 
-            if(this.filtersInMode[courseMode]['nqf-level-select']==null) {
+            if (this.filtersInMode[courseMode]['nqf-level-select'] == null) {
                 $('#nqf-level-select').val('-');
             } else {
                 this.filtered[courseMode] = true;
                 $('#nqf-level-select').val(this.filtersInMode[courseMode]['nqf-level-select']);
             }
 
-            if(this.filtersInMode[courseMode]['subfield-of-study-select']==null) {
+            if (this.filtersInMode[courseMode]['subfield-of-study-select'] == null) {
                 $('#subfield-of-study-select').val('-');
             } else {
                 this.filtered[courseMode] = true;
                 $('#subfield-of-study-select').val(this.filtersInMode[courseMode]['subfield-of-study-select']);
             }
 
-            if(this.filtersInMode[courseMode]['minimum-credits']>0) {
+            if (this.filtersInMode[courseMode]['minimum-credits'] > 0) {
                 this.filtered[courseMode] = true;
             }
             this.minimumCreditsSlider.bootstrapSlider('setValue', this.filtersInMode[courseMode]['minimum-credits']);
 
-            if(this.filtersInMode[providerMode]['public-institution-select']==null) {
+            if (this.filtersInMode[providerMode]['public-institution-select'] == null) {
                 $('#public-institution-select').val('-');
             } else {
                 this.filtered[providerMode] = true;
                 $('#public-institution-select').val(this.filtersInMode[providerMode]['public-institution-select']);
             }
 
-            if(this.filtersInMode[providerMode]['field-of-study-provider-select']==null) {
+            if (this.filtersInMode[providerMode]['field-of-study-provider-select'] == null) {
                 $('#field-of-study-provider-select').val('-');
             } else {
                 this.filtered[providerMode] = true;
@@ -776,7 +775,7 @@ define([
             $('#public-institution-select').trigger("chosen:updated");
             $('#field-of-study-provider-select').trigger("chosen:updated");
 
-            if(this.filtered[mode]) {
+            if (this.filtered[mode]) {
                 this.$filter_tag_label.show();
             } else {
                 this.$filter_tag_label.hide();
@@ -809,7 +808,7 @@ define([
 
             this.minimumCreditsSlider.bootstrapSlider('setValue', 0);
 
-            if(mode==courseMode){
+            if (mode == courseMode) {
                 this.filtersInMode[mode] = {
                     'field-of-study-select': null,
                     'qualification-type-select': null,
@@ -817,7 +816,7 @@ define([
                     'subfield-of-study-select': null,
                     'minimum-credits': 0
                 }
-            } else if(mode==providerMode) {
+            } else if (mode == providerMode) {
                 this.filtersInMode[mode] = {
                     'public-institution-select': null,
                     'field-of-study-provider-select': null
@@ -830,10 +829,10 @@ define([
         changeFilterPanel: function (mode) {
             this.$filter_panel_button.show();
 
-            if(mode == 'course') {
+            if (mode == 'course') {
                 this.$filter_panel_campus.hide();
                 this.$filter_panel_course.show();
-            } else if(mode == 'provider') {
+            } else if (mode == 'provider') {
                 this.$filter_panel_campus.show();
                 this.$filter_panel_course.hide();
             } else {
@@ -842,7 +841,7 @@ define([
                 this.$filter_panel_button.hide();
             }
 
-            if(this.filtered[mode]) {
+            if (this.filtered[mode]) {
                 this.$filter_tag_label.show();
             } else {
                 this.$filter_tag_label.hide();
@@ -853,10 +852,10 @@ define([
             var courseMode = 'course';
             var providerMode = 'provider';
             this.minimumCreditsSlider = $('#minimum-credits').bootstrapSlider({
-	            formatter: function(value) {
+                formatter: function (value) {
                     that.filtersInMode[courseMode]['minimum-credits'] = value;
-		            return value;
-	            }
+                    return value;
+                }
             });
 
             $('#public-institution-select').chosen({
@@ -872,12 +871,12 @@ define([
                     $.each(response, function (i, item) {
                         $('#field-of-study-select').append($('<option>', {
                             value: item.id,
-                            text : item.field_of_study_description,
+                            text: item.field_of_study_description,
                             selected: item.id == that.filtersInMode[courseMode]['field-of-study-select']
                         }));
                         $('#field-of-study-provider-select').append($('<option>', {
                             value: item.id,
-                            text : item.field_of_study_description,
+                            text: item.field_of_study_description,
                             selected: item.id == that.filtersInMode[providerMode]['field-of-study-provider-select']
                         }));
                     });
@@ -899,7 +898,7 @@ define([
                     $.each(response, function (i, item) {
                         $('#qualification-type-select').append($('<option>', {
                             value: item.id,
-                            text : item.type,
+                            text: item.type,
                             selected: item.id == that.filtersInMode[courseMode]['qualification-type-select']
                         }));
                     });
@@ -916,7 +915,7 @@ define([
                     $.each(response, function (i, item) {
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
-                            text : item.description,
+                            text: item.description,
                             selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
                         }));
                     });
@@ -933,7 +932,7 @@ define([
                     $.each(response, function (i, item) {
                         $('#subfield-of-study-select').append($('<option>', {
                             value: item.id,
-                            text : item.learning_subfield,
+                            text: item.learning_subfield,
                             selected: item.id == that.filtersInMode[courseMode]['subfield-of-study-select']
                         }));
                     });

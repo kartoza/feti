@@ -4,6 +4,7 @@ from haystack.utils.geo import Point, D
 from haystack.query import SearchQuerySet
 from haystack.inputs import Clean, Exact
 from django.contrib.gis.geos import Polygon
+from django.conf import settings
 
 from map_administrative.views import get_boundary
 from feti.models.campus import Campus
@@ -16,6 +17,7 @@ __copyright__ = 'kartoza.com'
 
 
 class CommonSearch(object):
+    page_limit = settings.LIMIT_PER_PAGE
 
     def process_request(self, request):
         """Process get request from site.
@@ -88,6 +90,8 @@ class CommonSearch(object):
                 'nqf' or 'nqsf' or 'pi' in options:
             options['advance_search'] = True
 
+        page = request.GET.get('page', None)
+        options['page'] = page
         return query, options
 
     def filter_indexed_campus(self, query):
@@ -117,10 +121,16 @@ class CommonSearch(object):
         """Filter by campus description
         :param query: Campus query
         """
-        sqs = SearchQuerySet().filter(
-            campus_and_provider=query,
-            campus_location_isnull='false'
-        ).models(CampusCourseEntry)
+        if query:
+            sqs = SearchQuerySet().filter(
+                campus_and_provider=query,
+                campus_location_isnull='false'
+            ).models(CampusCourseEntry)
+        else:
+            # sqs = SearchQuerySet().filter(
+            #     campus_location_isnull='false'
+            # ).models(CampusCourseEntry)
+            sqs = SearchQuerySet().models(CampusCourseEntry)
         return sqs
 
     def filter_fos(self, sqs, fos):
@@ -244,9 +254,9 @@ class CommonSearch(object):
                     sqs = self.filter_polygon(sqs, options['shape'])
                 elif options['type'] == 'circle':
                     sqs = self.filter_radius(
-                            sqs,
-                            options['shape'],
-                            options['radius']
+                        sqs,
+                        options['shape'],
+                        options['radius']
                     )
 
             sqs = self.advanced_filter(sqs, options)
@@ -272,8 +282,8 @@ class CommonSearch(object):
         if polygon.geom_type == 'MultiPolygon':
             for p in polygon:
                 sqs = sqs.polygon(
-                        'campus_location',
-                        p)
+                    'campus_location',
+                    p)
                 if len(sqs) > 0:
                     return sqs
             return None

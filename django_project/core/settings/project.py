@@ -124,3 +124,5 @@ GRUNT_MODULES = {
         'optimized': 'js/optimized.js',
     }
 }
+
+LIMIT_PER_PAGE = 50

@@ -1,7 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from feti.api_views.common_search import CommonSearch
+from feti.models.campus import Campus
+from feti.serializers.campus_serializer import CampusSummarySerializer
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '13/02/17'
@@ -13,6 +16,7 @@ class ApiCampus(CommonSearch, APIView):
     """
     Api to filter campus by query
     """
+
     def get(self, request, format=None):
         query, options = self.process_request(request)
         search_in_campus_model = True
@@ -23,7 +27,10 @@ class ApiCampus(CommonSearch, APIView):
             sqs = self.filter_indexed_campus_course(query)
             sqs = self.advanced_filter(sqs, options)
         else:
-            sqs = self.filter_indexed_campus(query)
+            if 'page' in options:
+                sqs = self.filter_indexed_campus_course(query)
+            else:
+                sqs = self.filter_indexed_campus(query)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
@@ -37,6 +44,17 @@ class ApiCampus(CommonSearch, APIView):
                     options['shape'],
                     options['radius']
                 )
+
+        if 'page' in options:
+            paginator = Paginator(sqs, self.page_limit)
+            try:
+                sqs = paginator.page(options['page'])
+            except PageNotAnInteger:
+                page = 1
+                sqs = paginator.page(page)
+            except EmptyPage:
+                page = paginator.num_pages
+                sqs = paginator.page(page)
 
         campus_data = []
         campuses = {}
@@ -68,7 +86,7 @@ class ApiCampus(CommonSearch, APIView):
                 if stored_fields['campus_location']:
                     campus_location = stored_fields['campus_location']
                     stored_fields['campus_location'] = "{0},{1}".format(
-                            campus_location.y, campus_location.x
+                        campus_location.y, campus_location.x
                     )
 
                 if stored_fields['campus_id'] not in campuses:
@@ -101,3 +119,22 @@ class ApiCampus(CommonSearch, APIView):
                 campus_data.append(campus_object)
 
         return Response(campus_data)
+
+
+class CampusSummary(APIView):
+    """Get detail of campus"""
+
+    def get(self, request):
+        campus_id = request.GET.get('id')
+
+        if not campus_id:
+            return Response(None)
+
+        try:
+            campus = Campus.objects.get(id=campus_id)
+        except Campus.DoesNotExist:
+            return Response(None)
+
+        serializer = CampusSummarySerializer(campus)
+
+        return Response(serializer.data)
