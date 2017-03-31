@@ -56,6 +56,7 @@ define([
             this.initAutocomplete();
             Common.Dispatcher.on('toogle:result', this.toogleResult, this);
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
+            Common.Dispatcher.on('search:loadMore', this.onStartSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
             Common.Dispatcher.on('favorites:added', this._favoriteAdded, this);
             Common.Dispatcher.on('favorites:deleted', this._favoriteDeleted, this);
@@ -408,19 +409,6 @@ define([
                     var $toggle = $('#result-toogle');
                     this.parent.openResultContainer($toggle);
                 }
-            }
-            switch (mode) {
-                case 'provider':
-                    campusCollection.enableLoadMore();
-                    break;
-                case 'course':
-                    courseCollection.enableLoadMore();
-                    break;
-                case 'occupation':
-                    occupationCollection.enableLoadMore();
-                    break;
-                default:
-                    return;
             }
         },
         toogleResult: function (event) {

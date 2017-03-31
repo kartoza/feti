@@ -100,11 +100,17 @@ class CommonSearch(object):
         :param sqs: Search Query Set
         :return: filtered sqs
         """
-        sqs = SearchQuerySet().filter(
-            long_description=query,
-            campus_location_is_null='false',
-            courses_is_null='false'
-        ).models(Campus)
+        if query:
+            sqs = SearchQuerySet().filter(
+                long_description=query,
+                campus_location_is_null='false',
+                courses_is_null='false'
+            ).models(Campus)
+        else:
+            sqs = SearchQuerySet().filter(
+                campus_location_is_null='false',
+                courses_is_null='false'
+            ).models(Campus)
         return sqs
 
     def filter_by_course(self, query):

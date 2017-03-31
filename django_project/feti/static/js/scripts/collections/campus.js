@@ -93,6 +93,9 @@ define([
                 if (row["campus_icon_url"] != "") {
                     campus["icon"] = 'media/' + row["campus_icon_url"];
                 }
+                if (row["max"]) {
+                    campus["max"] = row["max"];
+                }
 
                 return campus;
             }

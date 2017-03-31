@@ -78,7 +78,13 @@ define([
                         });
                         Common.Dispatcher.trigger('search:finish', true, that.mode, that.results.length);
                     }
-                    Common.Dispatcher.trigger('sidebar:update_title', that.results.length, that.mode, parameters['coord']);
+                    var campus_count = that.results.length;
+                    if (campus_count > 0) {
+                        if (that.results[0].model.get('max')) {
+                            campus_count = that.results.length + ' / ' + that.results[0].model.get('max');
+                        }
+                    }
+                    Common.Dispatcher.trigger('sidebar:update_title', campus_count, that.mode, parameters['coord']);
 
                     that.load_more_enabled = false;
                     if ($.inArray(Common.CurrentSearchMode, Common.AllowPagingRequest) !== -1) {
@@ -86,7 +92,7 @@ define([
                             that.load_more_enabled = true;
                         }
                     }
-                    that.enableLoadMore()
+                    that.enableLoadMore();
                     Common.Router.is_initiated = true;
                 },
                 error: function () {
@@ -98,16 +104,11 @@ define([
         },
         enableLoadMore: function () {
             var that = this;
-            //bind onscroll event
-            var $container = $(".result-container");
-            $container.unbind('scroll');
-            // just for specific mode
             if (that.load_more_enabled) {
-                $container.bind("scroll", function () {
-                    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-                        Common.Dispatcher.trigger('search:loadMore');
-                    }
-                });
+                setTimeout(function () {
+                    that.current_page += 1;
+                    Common.Dispatcher.trigger('search:loadMore');
+                }, 1000);
             }
         },
         getRegex: function (character) {

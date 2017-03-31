@@ -20,17 +20,18 @@ class ApiCampus(CommonSearch, APIView):
     def get(self, request, format=None):
         query, options = self.process_request(request)
         search_in_campus_model = True
+        campus_count = None
 
-        if options and 'advance_search' in options:
+        if not query:
+            sqs = self.filter_indexed_campus(query)
+            campus_count = sqs.count()
+        elif options and 'advance_search' in options:
             search_in_campus_model = False
 
             sqs = self.filter_indexed_campus_course(query)
             sqs = self.advanced_filter(sqs, options)
         else:
-            if 'page' in options:
-                sqs = self.filter_indexed_campus_course(query)
-            else:
-                sqs = self.filter_indexed_campus(query)
+            sqs = self.filter_indexed_campus(query)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
@@ -70,6 +71,8 @@ class ApiCampus(CommonSearch, APIView):
                     stored_fields['campus_location'] = "{0},{1}".format(
                         campus_location.y, campus_location.x
                     )
+                if campus_count:
+                    stored_fields['max'] = campus_count
 
                 del stored_fields['courses_is_null']
                 del stored_fields['campus_is_null']
