@@ -59,12 +59,13 @@ define([], function () {
         this.shareToTwitter = function () {
             // get url
             var host = Backbone.history.location.host;
+            var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
 
             _generateURL(function (data) {
                 var twitter_intent = 'https://twitter.com/intent/tweet?text=Check this out!%0A' +
                     host + '/url/' + data;
                 // open twitter box
-                window.open(twitter_intent, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+                windowReference.location = twitter_intent;
             });
         };
 
