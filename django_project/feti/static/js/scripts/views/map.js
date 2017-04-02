@@ -69,7 +69,6 @@ define([
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
-            Common.Dispatcher.on('sidebar:categoryClicked', this.onSearchBarCategoryClicked, this);
             Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
 
             Common.Dispatcher.on('map:addLayerToFilterLayers', this.addLayerToFilterLayers, this);
@@ -86,6 +85,10 @@ define([
         },
         backHome: function () {
             Common.Router.navigate('', true);
+        },
+        zoomToDefault: function () {
+            // zoom map to default
+            this.map.setView([-32.35, 20], 7);
         },
         render: function () {
             this.$el.html(this.template());
@@ -409,9 +412,6 @@ define([
         onMouseMove: function (e) {
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
-        },
-        onSearchBarCategoryClicked: function (newMode, oldMode) {
-            this.changeSearchLayer(oldMode, newMode);
         },
         drawCreated: function (e) {
             var type = e.layerType,
