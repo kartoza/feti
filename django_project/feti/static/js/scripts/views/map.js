@@ -145,6 +145,12 @@ define([
                         iconColor: 'white'
                     })
                 }).bindPopup("<b>My location</b>").addTo(this.map);
+                marker.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                marker.on('mouseout', function (e) {
+                    this.closePopup();
+                });
             }
 
             // Add control button
