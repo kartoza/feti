@@ -568,10 +568,7 @@ define([
         repositionMap: function (mode) {
             // Reposition map after category changed
             if(this.listDrawnItems[mode]) {
-                if (typeof this.listDrawnItems[mode].getBounds()._northEast !== 'undefined') {
-                    this.map.fitBounds(this.listDrawnItems[mode].getBounds(), {paddingTopLeft: [75, 75]});
-                    return;
-                }
+                return;
             }
 
             if (!this.modesLayer[mode]) {
