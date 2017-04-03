@@ -368,15 +368,8 @@ define([
         },
         showShareBar: function () {
             var mode = Common.CurrentSearchMode;
-
-            // No need to share link and twitter in favorites
-            if (mode != 'favorites') {
-                $('#share-twitter-button').show();
-                $('#share-url-button').show();
-            } else {
-                $('#share-twitter-button').hide();
-                $('#share-url-button').hide();
-            }
+            $('#share-twitter-button').show();
+            $('#share-url-button').show();
             $('#share-pdf-button').show();
             $('#share-email-button').show();
         },
