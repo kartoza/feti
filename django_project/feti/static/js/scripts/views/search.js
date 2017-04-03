@@ -439,7 +439,7 @@ define([
                 highlight = 'Search for courses';
             } else if (mode == "occupation") {
                 $button = this.$occupation_button;
-                highlight = 'Search for occuption';
+                highlight = 'Search for occupation';
             } else if (mode == "favorites") {
                 $button = this.$favorites_button;
                 highlight = '';

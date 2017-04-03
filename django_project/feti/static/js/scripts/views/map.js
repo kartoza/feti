@@ -365,13 +365,22 @@ define([
             $('#share-email-button').hide();
             $('#share-twitter-button').hide();
             $('#share-url-button').hide();
+            $('#share-embed-code').hide();
         },
         showShareBar: function () {
             var mode = Common.CurrentSearchMode;
-            $('#share-twitter-button').show();
-            $('#share-url-button').show();
+
+            // No need to share link and twitter in favorites
+            if (mode != 'favorites') {
+                $('#share-twitter-button').show();
+                $('#share-url-button').show();
+            } else {
+                $('#share-twitter-button').hide();
+                $('#share-url-button').hide();
+            }
             $('#share-pdf-button').show();
             $('#share-email-button').show();
+            $('#share-embed-code').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
