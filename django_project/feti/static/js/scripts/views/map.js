@@ -374,6 +374,7 @@ define([
             $('#share-email-button').hide();
             $('#share-twitter-button').hide();
             $('#share-url-button').hide();
+            $('#share-embed-code').hide();
         },
         showShareBar: function () {
             var mode = Common.CurrentSearchMode;
@@ -388,6 +389,7 @@ define([
             }
             $('#share-pdf-button').show();
             $('#share-email-button').show();
+            $('#share-embed-code').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
