@@ -493,6 +493,8 @@ define([
             this.listDrawnItems[mode].eachLayer(function (layer) {
                 this.listDrawnItems[mode].removeLayer(layer);
             }, this);
+
+            this.zoomToDefault();
         },
         getCoordinatesQuery: function (mode) {
             if(this.layerAdministrativeView.getCurrentAdminLayer()) {
@@ -550,7 +552,7 @@ define([
         },
         addLayerToFilterLayers: function(layer) {
             var mode = Common.CurrentSearchMode;
-            if (typeof this.listDrawnItems[mode] == 'undefined') {
+            if (typeof this.listDrawnItems[mode] === 'undefined') {
                 this.listDrawnItems[mode] = L.featureGroup();
             }
             this.listDrawnItems[mode].addLayer(layer);
@@ -566,16 +568,13 @@ define([
         repositionMap: function (mode) {
             // Reposition map after category changed
             if(this.listDrawnItems[mode]) {
-                if (typeof this.listDrawnItems[mode].getBounds()._northEast != 'undefined') {
-                    this.map.fitBounds(this.listDrawnItems[mode].getBounds(), {paddingTopLeft: [75, 75]});
-                    return;
-                }
+                return;
             }
 
             if (!this.modesLayer[mode]) {
                 return;
             }
-            if (typeof this.modesLayer[mode].getBounds()._northEast != 'undefined')
+            if (typeof this.modesLayer[mode].getBounds()._northEast !== 'undefined')
                 this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {

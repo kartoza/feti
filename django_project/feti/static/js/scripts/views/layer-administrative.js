@@ -106,9 +106,11 @@ define([
                 if (this.polygons[polygon.getLayers()[0].feature.properties.layer]) {
                     Common.Dispatcher.trigger('map:removeLayerFromFilterLayers', this.polygons[polygon.getLayers()[0].feature.properties.layer]);
                 }
-                this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
-                Common.Dispatcher.trigger('map:addLayerToFilterLayers', polygon);
-                this.map.clearButton.enable();
+                if(polygon) {
+                    this.polygons[polygon.getLayers()[0].feature.properties.layer] = polygon;
+                    Common.Dispatcher.trigger('map:addLayerToFilterLayers', polygon);
+                    this.map.clearButton.enable();
+                }
             }
         },
         showPolygon: function (adm_list) {
@@ -117,20 +119,55 @@ define([
             var now_adm = [];
             var cache = this.cache;
             var that = this;
+            var last_polygon = null;
             _.each(adms, function (adm) {
                 now_adm.push(adm);
                 var string_adm = now_adm.join();
                 var polygon = cache[string_adm];
                 if (polygon) {
+                    last_polygon = polygon;
                     that.renderPolygon(polygon);
                 } else {
                     that.getAdministrativeByString(string_adm);
                 }
             });
+
+            if(last_polygon) {
+                this.map.map.fitBounds(last_polygon);
+            }
+
             this.setCurrentAdm();
         },
         _createPolygon: function (data) {
             var that = this;
+            var province = {
+                stroke: true,
+                color: '#f06eaa',
+                weight: 4,
+                opacity: 0.5,
+                fill: true,
+                fillColor: null,
+                fillOpacity: 0.1
+            };
+
+            var district = {
+                stroke: true,
+                color: '#1D69B3',
+                weight: 4,
+                opacity: 0.5,
+                fill: true,
+                fillColor: null,
+                fillOpacity: 0.2
+            };
+
+            var style = null;
+
+            if(data.layer === 'province') {
+                style = province;
+            } else if(data.layer === 'district') {
+                style = district;
+            }
+
             if (data.polygon_geometry) {
                 var mp = {
                     "type": "Feature",
@@ -142,7 +179,7 @@ define([
                         "name": "MultiPolygon",
                         "title": data.title,
                         "layer": data.layer,
-                        "style": that.map.layerOptions(),
+                        "style": style,
                         "parent": ""
                     }
                 };
