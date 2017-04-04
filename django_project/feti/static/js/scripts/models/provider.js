@@ -19,9 +19,16 @@ define([
         renderMarker: function () {
             if (!this.get('layer')) {
                 var location = this.attributes.location;
+                var public_institution = this.attributes.public_institution;
+                var markercolor;
+                if(public_institution==false){
+                    markercolor='blue leaflet-clickable';
+                }else{
+                    markercolor='red leaflet-clickable';
+                }
                 var marker = new L.marker([location.lat, location.lng], {
                     icon: L.ExtraMarkers.icon({
-                        markerColor: 'blue leaflet-clickable',
+                        markerColor: markercolor,
                         icon: 'true',
                         extraClasses: 'fa fa-graduation-cap',
                         iconColor: 'white'

@@ -70,6 +70,7 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     )
     campus_public_institution = indexes.BooleanField(
         model_attr='campus__provider__status',
+        null=True
     )
 
     def prepare_field_of_study_id(self, obj):

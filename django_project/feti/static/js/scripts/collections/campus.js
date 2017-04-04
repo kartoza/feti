@@ -89,6 +89,7 @@ define([
                     "website": row["campus_website"],
                     "saved": campus_is_favorite,
                     "campus_phone": row["campus_phone"],
+                    "public_institution": row["campus_public_institution"]
                 };
                 if (row["campus_icon_url"] != "") {
                     campus["icon"] = 'media/' + row["campus_icon_url"];
