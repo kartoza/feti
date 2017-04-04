@@ -176,19 +176,12 @@ define([
                 }
             };
 
-            var icon = L.ExtraMarkers.icon({
-                        markerColor: 'blue leaflet-clickable',
-                        icon: 'true',
-                        extraClasses: 'fa fa-graduation-cap',
-                        iconColor: 'white'
-                });
-
             var legend = L.control({position: 'bottomleft'});
             legend.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'legend');
                 div.innerHTML += '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br>';
                 div.innerHTML += '<img src="/static/feti/images/marker_private.png">' + 'Private Institution';
-            return div
+                return div
             }
             legend.addTo(this.map)
 

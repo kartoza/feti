@@ -62,7 +62,6 @@ class ApiCampus(CommonSearch, APIView):
                 del stored_fields['long_description']
                 del stored_fields['text']
                 del stored_fields['campus_popup']
-                del stored_fields['campus_public_institution']
 
                 campus_data.append(stored_fields)
             else:
