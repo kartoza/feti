@@ -21,10 +21,10 @@ define([
                 var location = this.attributes.location;
                 var public_institution = this.attributes.public_institution;
                 var markercolor;
-                if(public_institution==false){
-                    markercolor='blue leaflet-clickable';
-                }else{
+                if(public_institution==true){
                     markercolor='red leaflet-clickable';
+                }else{
+                    markercolor='blue leaflet-clickable';
                 }
                 var marker = new L.marker([location.lat, location.lng], {
                     icon: L.ExtraMarkers.icon({

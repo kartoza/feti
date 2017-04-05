@@ -68,7 +68,8 @@ define([
                         "courses": [],
                         "model": model,
                         "_campus_popup": row["campus_popup"],
-                        "saved": campus_is_favorite
+                        "saved": campus_is_favorite,
+                        "public_institution": row["campus_public_institution"]
                     };
                     if (row["campus_icon"] != "") {
                         campus["icon"] = 'media/' + row["campus_icon"];
