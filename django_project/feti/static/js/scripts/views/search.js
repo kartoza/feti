@@ -400,7 +400,10 @@ define([
             }
         },
         toogleResult: function (event) {
-            if ($(event.target).hasClass('fa-caret-left') || $(event.target).find('.fa-caret-left').length > 0) {
+            if ($(event.target).hasClass('fa-caret-left') ||
+                $(event.target.parentElement).hasClass('fa-caret-left') ||
+                $(event.target).find('.fa-caret-left').length > 0) {
+
                 this.parent.openResultContainer($(event.target));
             } else {
                 this.parent.closeResultContainer($(event.target));

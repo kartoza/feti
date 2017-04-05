@@ -24,10 +24,12 @@ require([
                 if ($faButton.hasClass('fa-caret-left')) {
                     $faButton.removeClass('fa-caret-left');
                     $faButton.addClass('fa-caret-right');
+                    $faButton.html("<span> Show Map</span>");
                     $toogleButton.attr('title', 'Hide side panel');
                 } else {
                     $faButton.removeClass('fa-caret-right');
                     $faButton.addClass('fa-caret-left');
+                    $faButton.html("<span> List Result</span>");
                     $toogleButton.attr('title', 'Show side panel');
                 }
                 $toogleButton.tooltip();
