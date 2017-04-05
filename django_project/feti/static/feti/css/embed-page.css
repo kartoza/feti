@@ -158,7 +158,7 @@
 }
 
 .round-button {
-    width: 30px;
+    width: 120px;
     height: 30px;
 }
 
@@ -185,4 +185,16 @@
 
 .round-button-circle:hover {
     background: rgba(29, 104, 179, 0.3);
+}
+
+#toogle-button > div > i > span {
+    font-family:"Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.fa-caret-left:before{
+    content:"" !important;
+}
+
+.fa-caret-right:before{
+    content:"" !important;
 }
