@@ -189,10 +189,12 @@ define([
         updateSearchRoute: function (filter) {
             // update route based on query and filter
             var new_url = this.getSearchRoute(filter);
+            Common.Dispatcher.trigger('sidebar:update_filter_data',this.filtersInMode);
             Backbone.history.navigate(new_url.join("/"), true);
         },
         _categoryClicked: function (event) {
             event.preventDefault();
+            this.clearFilters();
             if (!$(event.target).parent().hasClass('active')) {
 
                 var mode = $(event.target).parent().data("mode");
@@ -774,11 +776,6 @@ define([
             $('#public-institution-select').trigger("chosen:updated");
             $('#field-of-study-provider-select').trigger("chosen:updated");
 
-            if(this.filtered[mode]) {
-                this.$filter_tag_label.show();
-            } else {
-                this.$filter_tag_label.hide();
-            }
 
         },
         clearFilters: function () {
@@ -840,11 +837,6 @@ define([
                 this.$filter_panel_button.hide();
             }
 
-            if(this.filtered[mode]) {
-                this.$filter_tag_label.show();
-            } else {
-                this.$filter_tag_label.hide();
-            }
         },
         loadFilters: function () {
             var that = this;

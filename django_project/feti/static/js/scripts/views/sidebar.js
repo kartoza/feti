@@ -14,9 +14,11 @@ define([
             this.$empty_result_div = $('.result-empty');
             this.$loading_div = $('.result-loading');
             this.$result_title = $('#result-title');
+            this.$result_filter_data = $('#result-filter-data');
             this.$result_detail = $('#result-detail');
             Common.Dispatcher.on('sidebar:categoryClicked', this.showResultTitle, this);
             Common.Dispatcher.on('sidebar:update_title', this.updateResultTitle, this);
+            Common.Dispatcher.on('sidebar:update_filter_data', this.updateFilterData, this);
             Common.Dispatcher.on('sidebar:show_loading', this.addLoadingView, this);
             Common.Dispatcher.on('sidebar:hide_loading', this.clearContainerDiv, this);
             Common.Dispatcher.on('sidebar:clear_search', this.clearSidebar, this);
@@ -120,6 +122,64 @@ define([
                 $("#embed-loading-wrapper").hide();
                 $("#embed-loading-wrapper .result-loading").remove();
             }
+        },
+        updateFilterData: function(data){
+            /**
+             * Data Sent
+             * course
+                    :
+                    Object
+                    field-of-study-select:null
+                    minimum-credits:0
+                    nqf-level-select:null
+                    qualification-type-select:null
+                    subfield-of-study-select:null
+                    __proto__:Object
+
+                    provider:
+                    Object
+                    field-of-study-provider-select:"2"
+                    public-institution-select:"1"
+             */
+
+            var $labels = "";
+            var $spanLabel = "<span class='badge badge-warning'>";
+            if(data.course["field-of-study-select"] != null){
+                val = $("select#field-of-study-select option:selected").text();
+                $labels += $spanLabel + "Field Of Study : " + val + "</span>";
+            }
+
+            if(data.course["minimum-credits"] != 0){
+                val = data.course["minimum-credits"];
+                $labels += $spanLabel + "Minimum Credits : " + val + "</span>";
+            }
+
+            if(data.course["nqf-level-select"] != null){
+                val = $("select#nqf-level-select option:selected").text();
+                $labels += $spanLabel + "NQF Level : " + val + "</span>";
+            }
+
+            if(data.course["qualification-type-select"] != null){
+                val = $("select#qualification-type-select option:selected").text();
+                $labels += $spanLabel + "Qualification Type : " + val + "</span>";
+            }
+
+            if(data.course["subfield-of-study-select"] != null){
+                val = $("select#subfield-of-study-select option:selected").text();
+                $labels += $spanLabel + "Subfield of Study : " + val + "</span>";
+            }
+
+            if(data.provider["field-of-study-provider-select"] != null){
+                val = $("select#field-of-study-provider-select option:selected").text();
+                $labels += $spanLabel + "Field of Study Provider : "+ val + "</span>";
+            }
+
+            if(data.provider["public-institution-select"] != null){
+                val = $("select#public-institution-select option:selected").text();
+                $labels += $spanLabel + "Institution : " + val + "</span>";
+            }
+
+            this.$result_filter_data.html($labels);
         },
         updateResultTitle: function (number_result, mode, query) {
             this.clearContainerDiv(mode);

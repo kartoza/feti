@@ -453,18 +453,29 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    padding-top: 45px;
 }
 
 #result-title {
-    position: absolute;
     background: white !important;
     color: rgba(29, 104, 179, 1);
     font-size: 18px;
-    padding: 15px 20px 10px 20px;
+    padding: 15px 20px 0px 20px;
     font-weight: 500;
-    height: 45px;
     width: 100%;
+}
+
+#result-filter-data {
+    background: white !important;
+    color: rgba(29, 104, 179, 1);
+    font-size: 18px;
+    padding: 0px 20px 10px 20px;
+    font-weight: 500;
+    width: 100%;
+}
+
+#result-filter-data > span.badge-warning{
+    background: #FFBC52;
+    margin-right: 5px;
 }
 
 #result-title-number {
