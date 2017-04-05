@@ -69,7 +69,6 @@ define([
             Common.Dispatcher.on('map:toFullScreen', this.fullScreenMap, this);
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
-            Common.Dispatcher.on('sidebar:categoryClicked', this.onSearchBarCategoryClicked, this);
             Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
 
             Common.Dispatcher.on('map:addLayerToFilterLayers', this.addLayerToFilterLayers, this);
@@ -86,6 +85,10 @@ define([
         },
         backHome: function () {
             Common.Router.navigate('', true);
+        },
+        zoomToDefault: function () {
+            // zoom map to default
+            this.map.setView([-32.35, 20], 7);
         },
         render: function () {
             this.$el.html(this.template());
@@ -145,6 +148,12 @@ define([
                         iconColor: 'white'
                     })
                 }).bindPopup("<b>My location</b>").addTo(this.map);
+                marker.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                marker.on('mouseout', function (e) {
+                    this.closePopup();
+                });
             }
 
             // Add control button
@@ -365,6 +374,7 @@ define([
             $('#share-email-button').hide();
             $('#share-twitter-button').hide();
             $('#share-url-button').hide();
+            $('#share-embed-code').hide();
         },
         showShareBar: function () {
             var mode = Common.CurrentSearchMode;
@@ -379,6 +389,7 @@ define([
             }
             $('#share-pdf-button').show();
             $('#share-email-button').show();
+            $('#share-embed-code').show();
         },
         _disableOtherControlButtons: function (currentControl) {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
@@ -403,9 +414,6 @@ define([
         onMouseMove: function (e) {
             var latlng = e.latlng;
             this._tooltip.updatePosition(latlng);
-        },
-        onSearchBarCategoryClicked: function (newMode, oldMode) {
-            this.changeSearchLayer(oldMode, newMode);
         },
         drawCreated: function (e) {
             var type = e.layerType,
@@ -487,6 +495,8 @@ define([
             this.listDrawnItems[mode].eachLayer(function (layer) {
                 this.listDrawnItems[mode].removeLayer(layer);
             }, this);
+
+            this.zoomToDefault();
         },
         getCoordinatesQuery: function (mode) {
             if (this.layerAdministrativeView.getCurrentAdminLayer()) {
@@ -544,7 +554,7 @@ define([
         },
         addLayerToFilterLayers: function (layer) {
             var mode = Common.CurrentSearchMode;
-            if (typeof this.listDrawnItems[mode] == 'undefined') {
+            if (typeof this.listDrawnItems[mode] === 'undefined') {
                 this.listDrawnItems[mode] = L.featureGroup();
             }
             this.listDrawnItems[mode].addLayer(layer);
@@ -559,11 +569,8 @@ define([
         },
         repositionMap: function (mode) {
             // Reposition map after category changed
-            if (this.listDrawnItems[mode]) {
-                if (typeof this.listDrawnItems[mode].getBounds()._northEast != 'undefined') {
-                    this.map.fitBounds(this.listDrawnItems[mode].getBounds(), {paddingTopLeft: [75, 75]});
-                    return;
-                }
+            if(this.listDrawnItems[mode]) {
+                return;
             }
 
             if (Common.Router.is_initiated) {

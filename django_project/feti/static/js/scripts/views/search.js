@@ -207,13 +207,9 @@ define([
                 // Trigger category click event
                 Common.Dispatcher.trigger('sidebar:categoryClicked', mode, Common.CurrentSearchMode);
 
-                // Update current search mode
+                this.clearSearch(event);
+
                 Common.CurrentSearchMode = mode;
-
-                this.$search_bar_input.val('');
-
-                // Update url
-                this.updateSearchRoute();
 
                 if (mode != 'favorites') {
                     // Hide search bar if in favorite mode
@@ -449,7 +445,7 @@ define([
                 highlight = 'Search for courses';
             } else if (mode == "occupation") {
                 $button = this.$occupation_button;
-                highlight = 'Search for occuption';
+                highlight = 'Search for occupation';
             } else if (mode == "favorites") {
                 $button = this.$favorites_button;
                 highlight = '';
@@ -540,6 +536,8 @@ define([
 
             // Update sidebar
             Common.Dispatcher.trigger('sidebar:clear_search', Common.CurrentSearchMode);
+
+            this.parent.zoomToDefault();
         },
         /*--------------------*/
         /* Advanced filter    */
