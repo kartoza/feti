@@ -20,9 +20,7 @@ define([
             this.model.clicked();
         },
         deleteFavorite: function (e) {
-            var result = confirm("Delete this campus?");
-
-            if (result && $(e.target).hasClass('fa-star filled')) {
+            if ($(e.target).hasClass('fa-star filled')) {
                 // get id
                 var id = this.model.attributes.id;
                 var course_id = [];
