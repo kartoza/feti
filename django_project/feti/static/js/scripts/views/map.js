@@ -185,6 +185,15 @@ define([
                 }
             };
 
+            var legend = L.control({position: 'bottomleft'});
+            legend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'legend');
+                div.innerHTML += '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br>';
+                div.innerHTML += '<img src="/static/feti/images/marker_private.png">' + 'Private Institution';
+                return div
+            }
+            legend.addTo(this.map)
+
             this.locationButton = L.easyButton({
                 states: [
                     {

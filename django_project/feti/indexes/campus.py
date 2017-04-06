@@ -53,6 +53,10 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
         null=True,
     )
     campus_auto = indexes.EdgeNgramField(model_attr='campus')
+    campus_public_institution = indexes.BooleanField(
+        model_attr='provider__status',
+        indexed=True,
+    )
 
     provider_primary_institution = indexes.EdgeNgramField()
     courses = indexes.CharField()
@@ -84,6 +88,9 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_campus_icon_url(self, obj):
         return obj.provider.icon.url if obj.provider.icon else ''
+
+    def prepare_campus_public_institution(self, obj):
+        return obj.provider.status
 
     class Meta:
         app_label = 'feti'
