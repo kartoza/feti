@@ -111,23 +111,28 @@ define([
         },
         initAutocomplete: function () {
             var that = this;
+            var enter_clicked = false;
+
             this.$search_bar_input.autocomplete({
                 source: function (request, response) {
-                    that.$search_bar_input.css("cursor", "wait");
-                    var url = "/api/autocomplete/" + Common.CurrentSearchMode;
-                    $.ajax({
-                        url: url,
-                        data: {
-                            q: request.term
-                        },
-                        success: function (data) {
-                            that.$search_bar_input.css("cursor", "");
-                            response(data);
-                        },
-                        error: function (request, error) {
-                            that.$search_bar_input.css("cursor", "");
-                        }
-                    });
+                    if(!enter_clicked) {
+                        that.$search_bar_input.css("cursor", "wait");
+                        var url = "/api/autocomplete/" + Common.CurrentSearchMode;
+                        $.ajax({
+                            url: url,
+                            data: {
+                                q: request.term
+                            },
+                            success: function (data) {
+                                that.$search_bar_input.css("cursor", "");
+                                response(data);
+                            },
+                            error: function (request, error) {
+                                that.$search_bar_input.css("cursor", "");
+                            }
+                        });
+                    }
+                    enter_clicked = false;
                 },
                 minLength: 3,
                 select: function (event, ui) {
@@ -139,6 +144,10 @@ define([
                 },
                 close: function () {
                     //$(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            }).keyup(function (e) {
+                if(e.which === 13) {
+                    enter_clicked=true;
                 }
             });
             var width = this.$search_bar_input.css('width');
