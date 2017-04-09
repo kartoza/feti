@@ -11,7 +11,7 @@ define([
                 data = options;
             }
             if (!data.icon) {
-                data.icon = '/static/feti/images/default-logo.png';
+                data.icon = '/static/feti/images/default-provider-logo-sm.png';
             }
             data.counts = data.courses.length;
             return data;
