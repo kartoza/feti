@@ -804,3 +804,12 @@ a#search-icon {
 .filter-panel-campus {
     padding-bottom: 40px;
 }
+
+.marker-legend {
+    padding: 5px;
+}
+
+.legend img {
+    margin-right: 10px !important;
+    width: 16px;
+}
