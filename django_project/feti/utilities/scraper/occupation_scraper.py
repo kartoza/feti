@@ -5,7 +5,7 @@ from feti.models.campus import Campus
 from feti.models.learning_pathway import LearningPathway, Step, StepDetail
 from feti.utils import beautify, get_soup, cleaning
 from feti.utilities.scraper.campus_scraper import scrap_campus
-from feti.utilities.scraper.course_scraper import get_course_detail_from_saqa
+from feti.utilities.scraper.course_scraper import get_course_detail_from_saqa, get_course_detail_saqa
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '09/01/17'
@@ -79,7 +79,7 @@ def process_course_and_provider(html, step_detail):
                         )
                     except Course.DoesNotExist:
                         # Create a course by saqa id
-                        course = get_course_detail_from_saqa(saqa_id, False)
+                        course = get_course_detail_saqa(saqa_id)
 
                     if not course:
                         continue
