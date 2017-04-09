@@ -17,7 +17,7 @@ class NationalQualificationsFrameworkAPIView(APIView):
     Api to list all national qualifications framework.
     """
     def get(self, request):
-        national_qualifications_framework = NationalQualificationsFramework.objects.all()
+        national_qualifications_framework = NationalQualificationsFramework.objects.order_by('level')
 
         serializer = NationalQualificationsFrameworkSerializer(
                 national_qualifications_framework,

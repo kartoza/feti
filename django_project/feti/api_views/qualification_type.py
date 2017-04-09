@@ -15,7 +15,7 @@ class QualificationTypeAPIView(APIView):
     Api to list all qualification type.
     """
     def get(self, request):
-        qualification_type = QualificationType.objects.all()
+        qualification_type = QualificationType.objects.order_by('type')
 
         serializer = QualificationTypeSerializer(qualification_type, many=True)
         return Response(serializer.data)

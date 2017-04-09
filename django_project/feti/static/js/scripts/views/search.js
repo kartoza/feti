@@ -203,13 +203,14 @@ define([
         },
         _categoryClicked: function (event) {
             event.preventDefault();
-            this.clearFilters();
             if (!$(event.target).parent().hasClass('active')) {
 
                 var mode = $(event.target).parent().data("mode");
 
                 // Change active button
                 this.changeCategoryButton(mode);
+
+                this.clearFilters(event, true);
 
                 // Trigger category click event
                 Common.Dispatcher.trigger('sidebar:categoryClicked', mode, Common.CurrentSearchMode);
@@ -790,7 +791,7 @@ define([
 
 
         },
-        clearFilters: function () {
+        clearFilters: function (event, dontUpdateRoute) {
             var mode = Common.CurrentSearchMode;
             var courseMode = 'course';
             var providerMode = 'provider';
@@ -832,7 +833,9 @@ define([
             }
 
             this.isSearchFromInput = true;
-            this.updateSearchRoute();
+            if(typeof dontUpdateRoute === 'undefined') {
+                this.updateSearchRoute();
+            }
         },
         changeFilterPanel: function (mode) {
             this.$filter_panel_button.show();
@@ -918,7 +921,7 @@ define([
                     $.each(response, function (i, item) {
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
-                            text : item.description,
+                            text : item.text,
                             selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
                         }));
                     });

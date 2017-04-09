@@ -15,7 +15,7 @@ class FieldOfStudyAPIView(APIView):
     Api to list all field of study.
     """
     def get(self, request):
-        field_of_study = FieldOfStudy.objects.all()
+        field_of_study = FieldOfStudy.objects.order_by('field_of_study_description')
 
         serializer = FieldOfStudySerializer(field_of_study, many=True)
         return Response(serializer.data)
