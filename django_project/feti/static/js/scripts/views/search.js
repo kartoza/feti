@@ -918,7 +918,7 @@ define([
                     $.each(response, function (i, item) {
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
-                            text : item.description,
+                            text : item.text,
                             selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
                         }));
                     });
