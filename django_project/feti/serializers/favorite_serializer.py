@@ -24,6 +24,7 @@ class FavoriteSerializer(BaseFavoriteSerializer):
         res['_campus_popup'] = campus.campus_popup
         res['campus'] = campus.campus
         res['id'] = campus.id
+        res['public_institution'] = campus.provider.status
         if campus.address:
             res['address'] = campus.address.__unicode__()
         if campus.provider:

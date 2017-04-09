@@ -222,6 +222,7 @@ define([
                 if (mode != 'favorites') {
                     // Hide search bar if in favorite mode
                     $('.search-row').show();
+                    Common.Dispatcher.trigger('map:hideShareBar');
                 }
 
                 if (mode != 'occupation') {
@@ -232,7 +233,6 @@ define([
 
                 if (mode == 'occupation' || mode == 'favorites') {
                     this.$filter_tag_label.hide();
-                    $('.filter-button').hide();
                 } else {
                     // Update filters
                     this.updateFilters(mode);
@@ -262,16 +262,13 @@ define([
             }
         },
         _openFavorites: function (filter) {
+            console.log('open favorites');
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';
-            if (!(mode in this._search_query) ||
-                this._search_need_update[mode] ||
-                this._search_filter[mode] != filter
-            ) {
-                Common.CurrentSearchMode = mode;
-                this._getFavorites(filter);
-            }
+            Common.CurrentSearchMode = mode;
+            this._getFavorites(filter);
+            this.parent.repositionMap(mode);
         },
         _getFavorites: function (filter) {
             var mode = Common.CurrentSearchMode;
@@ -305,6 +302,8 @@ define([
 
             this.changeFilterPanel(Common.CurrentSearchMode);
 
+            console.log(mode);
+
             if (query && mode != 'favorites') {
 
                 // Put query to search input
@@ -320,32 +319,24 @@ define([
                     return;
                 }
 
-                // search
-                if (query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
-                    // no need to search
-                    if (query != "") {
-                        this.showResult(mode);
-                    }
-                } else {
-                    switch (mode) {
-                        case 'provider':
-                            campusCollection.search(query, filter);
-                            break;
-                        case 'course':
-                            courseCollection.search(query, filter);
-                            break;
-                        case 'occupation':
-                            occupationCollection.search(query);
-                            break;
-                        default:
-                            return;
-                    }
-                    this._search_query[mode] = query;
-                    this._search_filter[mode] = filter;
-                    this._search_need_update[mode] = false;
-                    Common.Dispatcher.trigger('sidebar:show_loading', mode);
-                    this.showResult(mode);
+                switch (mode) {
+                    case 'provider':
+                        campusCollection.search(query, filter);
+                        break;
+                    case 'course':
+                        courseCollection.search(query, filter);
+                        break;
+                    case 'occupation':
+                        occupationCollection.search(query);
+                        break;
+                    default:
+                        return;
                 }
+                this._search_query[mode] = query;
+                this._search_filter[mode] = filter;
+                this._search_need_update[mode] = false;
+                Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                this.showResult(mode);
             } else if (mode == 'favorites') {
                 if (query) {
                     filter = query;
@@ -565,7 +556,8 @@ define([
             // Update sidebar
             Common.Dispatcher.trigger('sidebar:clear_search', Common.CurrentSearchMode);
 
-            this.parent.zoomToDefault();
+            if(Common.CurrentSearchMode !== 'favorites')
+                this.parent.zoomToDefault();
         },
         /*--------------------*/
         /* Advanced filter    */
