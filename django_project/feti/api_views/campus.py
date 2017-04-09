@@ -17,7 +17,7 @@ class ApiCampus(CommonSearch, APIView):
         query, options = self.process_request(request)
         search_in_campus_model = True
 
-        if options and 'advance_search' in options:
+        if options['advance_search']:
             search_in_campus_model = False
 
             sqs = self.filter_indexed_campus_course(query)

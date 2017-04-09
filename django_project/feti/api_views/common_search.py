@@ -69,24 +69,23 @@ class CommonSearch(object):
             }
 
         # Advance search
+        options['advance_search'] = True
         if request.GET.get('fos'):
             options['fos'] = request.GET.get('fos')
-        if request.GET.get('sos'):
+        elif request.GET.get('sos'):
             options['sos'] = request.GET.get('sos')
-        if request.GET.get('qt'):
+        elif request.GET.get('qt'):
             options['qt'] = request.GET.get('qt')
-        if request.GET.get('mc'):
+        elif request.GET.get('mc'):
             options['mc'] = request.GET.get('mc')
-        if request.GET.get('nqf'):
+        elif request.GET.get('nqf'):
             options['nqf'] = request.GET.get('nqf')
-        if request.GET.get('nqsf'):
+        elif request.GET.get('nqsf'):
             options['nqsf'] = request.GET.get('nqsf')
-        if request.GET.get('pi'):
+        elif request.GET.get('pi'):
             options['pi'] = request.GET.get('pi')
-
-        if 'fos' or 'sos' or 'qt' or 'mc' or \
-                'nqf' or 'nqsf' or 'pi' in options:
-            options['advance_search'] = True
+        else:
+            options['advance_search'] = False
 
         return query, options
 
