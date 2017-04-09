@@ -537,7 +537,6 @@ define([
             this.clearButton.disable();
         },
         clearLayerMode: function (mode) {
-            console.log(this.map);
             if (this.map.hasLayer(this.modesLayer[mode])) {
                 var layers = this.modesLayer[mode].getLayers();
                 for (var i = 0; i < layers.length; i++) {
