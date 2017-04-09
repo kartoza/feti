@@ -51,4 +51,4 @@ class Command(BaseCommand):
         if options['to_page']:
             to_page = options['to_page']
 
-        scrap_campuses(start_page=from_page, max_page=to_page)
+        scrap_campuses(start_page=int(from_page), max_page=int(to_page))

@@ -3,6 +3,7 @@ import urllib
 import time
 from urllib.error import HTTPError, URLError
 from django.db.utils import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from feti.models.course import Course
 from feti.models.campus import Campus
 from feti.models.provider import Provider
@@ -66,7 +67,9 @@ def create_or_update_course(data):
             try:
                 nqf = NationalQualificationsFramework.objects.get(level=int(data['nqf_level']))
             except NationalQualificationsFramework.DoesNotExist:
-                nqf = None
+                nqf = NationalQualificationsFramework.objects.create(
+                    level=int(data['nqf_level'])
+                )
 
         # SubField of study
         sos = None
@@ -399,6 +402,63 @@ def remove_duplicates(qual_id, course):
     return course
 
 
+def get_course_detail_saqa(saqa_id):
+
+    not_exist_message = 'Details for this qualification are not available'
+
+    print('GET COURSE DETAIL %s' % saqa_id)
+
+    try:
+        course = Course.objects.get(national_learners_records_database=saqa_id)
+        print('Course already exists')
+        return course
+    except ObjectDoesNotExist:
+        # Open saqa qualification from id
+        while True:
+            try:
+                saqa_detail = get_raw_soup('http://regqs.saqa.org.za/viewQualification.php?id=%s' % saqa_id)
+                break
+            except HTTPError as detail:
+                if detail.errno == 500:
+                    time.sleep(1)
+                    continue
+                else:
+                    raise
+
+        if not_exist_message in str(saqa_detail.content):
+            new_saqa_id = fetch_from_saqa_form(int(saqa_id))
+            print('NEW SAQA ID %s' % new_saqa_id)
+            if new_saqa_id:
+                return get_course_detail_saqa(new_saqa_id)
+
+        if saqa_detail:
+            saqa_detail = beautify(saqa_detail.content)
+            print('Processing html element from saqa...')
+            tables = saqa_detail.findAll('table')
+            last_idx = 0
+            parsed_data = {}
+            for idx, table in enumerate(tables):
+                if 'SAQA QUAL ID' in table.get_text():
+                    parsed_data = parse_saqa_qualification_table(table)
+                    last_idx = idx
+                    break
+
+            last_title = None
+            for table in tables[last_idx + 1:len(tables)]:
+                if table.find('b'):
+                    last_title = table.find('b').get_text().replace(' ', '_').lower()
+                    if last_title not in parsed_data:
+                        parsed_data[last_title] = ''
+                else:
+                    if last_title:
+                        parsed_data[last_title] = table.get_text().lstrip()
+                        last_title = None
+            print('Updating course...')
+            print('Course updated')
+            return create_or_update_course(parsed_data)
+        return None
+
+
 def scraping_course_ncap(start_page=0, max_page=0):
     """Scraping courses from ncap.
 
@@ -422,11 +482,16 @@ def scraping_course_ncap(start_page=0, max_page=0):
         return
 
     print("GETTING COURSES FROM http://ncap.careerhelp.org.za/")
-    print("----------------------------------------------------------")
+    print("--------------------------------------------------")
     while True:
         print("processing page %d" % current_page)
-        html = get_soup('http://ncap.careerhelp.org.za/qualifications/search/all/learningfield/all/'
-                        'nqflevel/all/qualificationtype/all/page/%d' % current_page)
+        html = open_saved_html('saqa-course-list', 'page_%s' % current_page)
+        if not html:
+            html = get_raw_soup('http://ncap.careerhelp.org.za/qualifications/search/all/learningfield/all/'
+                                'nqflevel/all/qualificationtype/all/page/%d' % current_page)
+            save_html('saqa-course-list', 'page_%s' % current_page, html.content)
+            html = beautify(html.content)
+
         items = html.findAll("div", {"class": "SearchResultItem"})
         for item in items:
             item_contents = item.text.split('\n')
@@ -438,30 +503,12 @@ def scraping_course_ncap(start_page=0, max_page=0):
 
             # Get saqa qualification id
             regexp = re.compile("SAQA Qualification ID : (.*)$")
-            saqa_id = regexp.search(course_desc).group(1).split(',')[0]
-
-            # Check if id already exist in db
             try:
-                course = Course.objects.get(national_learners_records_database=saqa_id)
-            except Course.DoesNotExist:
-                # Open saqa qualification from id
-                while True:
-                    try:
-                        saqa = get_soup('http://regqs.saqa.org.za/viewQualification.php?id=%s' % saqa_id)
-                        break
-                    except HTTPError as detail:
-                        if detail.errno == 500:
-                            time.sleep(1)
-                            continue
-                        else:
-                            raise
+                saqa_id = regexp.search(course_desc).group(1).split(',')[0]
+            except AttributeError as e:
+                print(e)
 
-                # Add course
-                tables = saqa.findAll('table')
-                if len(tables) == 0:
-                    continue
-                processed_table = parse_saqa_qualification_table(tables[5])
-                course = create_or_update_course(processed_table)
+            course = get_course_detail_saqa(saqa_id)
 
             # Update campus
             try:
@@ -477,14 +524,19 @@ def scraping_course_ncap(start_page=0, max_page=0):
                     campus=campus_name, provider=provider)
             except (Campus.DoesNotExist, Provider.DoesNotExist) as e:
                 # create campus
-                scrap_campus(item)
-                provider = Provider.objects.get(
-                    primary_institution=primary_institution)
-                campus = Campus.objects.get(
-                    campus=campus_name, provider=provider)
+                div = item.find("div", {"class": "LinkResult"})
+                if div:
+                    scrap_campus(div.a.string, div.a.get('href'))
+                    provider = Provider.objects.get(
+                        primary_institution=primary_institution)
+                    campus = Campus.objects.get(
+                        campus=campus_name, provider=provider)
 
-            campus.courses.add(course)
-            campus.save()
+            try:
+                campus.courses.add(course)
+                campus.save()
+            except IntegrityError as e:
+                print(e)
 
         current_page += 1
         if current_page > max_page > 0:
