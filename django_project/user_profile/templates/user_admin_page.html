@@ -25,7 +25,7 @@
             <h1>Primary Institutes</h1>
             {% for prim_inst in providers %}
                 <div class="section-container">
-                    <div class="title-holder"><img src="{% static 'feti/images/default-logo.png' %}"/><h3>{{ prim_inst.primary_institution }}
+                    <div class="title-holder"><img src="{% static 'feti/images/default-provider-logo.png' %}"/><h3>{{ prim_inst.primary_institution }}
                         <a href="/primary-institute/{{ prim_inst.id }}/update/" class="tiny material-icons" style="font-size: 14px">mode_edit</a></h3>
                     </div>
 
