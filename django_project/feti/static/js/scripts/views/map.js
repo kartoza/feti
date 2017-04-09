@@ -188,8 +188,10 @@ define([
             var legend = L.control({position: 'bottomleft'});
             legend.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'legend');
-                div.innerHTML += '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br>';
-                div.innerHTML += '<img src="/static/feti/images/marker_private.png">' + 'Private Institution';
+                div.innerHTML += '<div class="marker-legend">' +
+                                '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br></div>';
+                div.innerHTML += '<div class="marker-legend">' +
+                                '<img src="/static/feti/images/marker_private.png">' + 'Private Institution' + '</div>';
                 return div
             }
             legend.addTo(this.map)
