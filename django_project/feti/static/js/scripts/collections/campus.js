@@ -91,8 +91,14 @@ define([
                     "campus_phone": row["campus_phone"],
                     "public_institution": row["campus_public_institution"]
                 };
-                if (row["campus_icon_url"] != "") {
-                    campus["icon"] = 'media/' + row["campus_icon_url"];
+		if (row["campus_icon_url"] != "") {
+                    var icon = '';
+                    if(row["campus_icon_url"].indexOf('media/') > -1) {
+                        icon = row["campus_icon_url"];
+                    } else {
+                        icon = 'media/' + row["campus_icon_url"];
+                    }
+                    campus["icon"] = icon;
                 }
 
                 return campus;

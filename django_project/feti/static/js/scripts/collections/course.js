@@ -72,8 +72,14 @@ define([
                         "public_institution": row["campus_public_institution"]
                     };
                     if (row["campus_icon"] != "") {
-                        campus["icon"] = 'media/' + row["campus_icon"];
-                    }
+                        var icon = '';
+                        if(row["campus_icon"].indexOf('media/') > -1) {
+                            icon = row["campus_icon"];
+                        } else {
+                            icon = 'media/' + row["campus_icon"];
+                        }
+                        campus["icon"] = icon;
+             	    } 
                     output.push(campus);
                 }
 
