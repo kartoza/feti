@@ -303,15 +303,11 @@ define([
             this.$search_bar_input.val(query);
         },
         search: function (mode, query, filter, changed) {
-            console.log(mode, query, filter, changed);
             this.changeFilterPanel(Common.CurrentSearchMode);
             if (changed == undefined) {
                 changed = true;
             }
             if (mode != 'favorites') {
-                if (query != Common.EmptyString) {
-                    this.$search_bar_input.val(query);
-                }
                 // search
                 if (changed && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
@@ -345,11 +341,6 @@ define([
                     }
                     this.showResult(mode);
                 }
-                this._search_query[mode] = query;
-                this._search_filter[mode] = filter;
-                this._search_need_update[mode] = false;
-                Common.Dispatcher.trigger('sidebar:show_loading', mode);
-                this.showResult(mode);
             } else if (mode == 'favorites') {
                 if (query) {
                     filter = query;
