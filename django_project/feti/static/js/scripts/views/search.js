@@ -309,7 +309,7 @@ define([
             }
             if (mode != 'favorites') {
                 // search
-                if (changed && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
+                if (changed && query != "" && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
                     this.showResult(mode);
                 }
@@ -330,17 +330,18 @@ define([
                         default:
                             return;
                     }
-                    this._search_query[mode] = query;
-                    this._search_filter[mode] = filter;
-                    this._search_need_update[mode] = false;
                     if (changed) {
                         Common.Dispatcher.trigger('sidebar:show_loading', mode);
                     } else {
                         $(".result-title").css("cursor", "progress");
                         $(".result-row").css("cursor", "progress");
                     }
-                    this.showResult(mode);
                 }
+                this._search_query[mode] = query;
+                this._search_filter[mode] = filter;
+                this._search_need_update[mode] = false;
+                console.log(this._search_query);
+                this.showResult(mode);
             } else if (mode == 'favorites') {
                 if (query) {
                     filter = query;

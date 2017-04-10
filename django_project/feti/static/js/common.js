@@ -12,7 +12,6 @@ define([], function () {
         FetchXHR: null,
         Favorites: new_favorite,
         EmbedVersion: typeof is_embed !== "undefined",
-        EmptyString: '<empty>',
         limit_per_page: limit_per_page || 99999
     };
 });
