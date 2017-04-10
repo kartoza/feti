@@ -112,23 +112,28 @@ define([
         },
         initAutocomplete: function () {
             var that = this;
+            var enter_clicked = false;
+
             this.$search_bar_input.autocomplete({
                 source: function (request, response) {
-                    that.$search_bar_input.css("cursor", "wait");
-                    var url = "/api/autocomplete/" + Common.CurrentSearchMode;
-                    $.ajax({
-                        url: url,
-                        data: {
-                            q: request.term
-                        },
-                        success: function (data) {
-                            that.$search_bar_input.css("cursor", "");
-                            response(data);
-                        },
-                        error: function (request, error) {
-                            that.$search_bar_input.css("cursor", "");
-                        }
-                    });
+                    if (!enter_clicked) {
+                        that.$search_bar_input.css("cursor", "wait");
+                        var url = "/api/autocomplete/" + Common.CurrentSearchMode;
+                        $.ajax({
+                            url: url,
+                            data: {
+                                q: request.term
+                            },
+                            success: function (data) {
+                                that.$search_bar_input.css("cursor", "");
+                                response(data);
+                            },
+                            error: function (request, error) {
+                                that.$search_bar_input.css("cursor", "");
+                            }
+                        });
+                    }
+                    enter_clicked = false;
                 },
                 minLength: 3,
                 select: function (event, ui) {
@@ -140,6 +145,10 @@ define([
                 },
                 close: function () {
                     //$(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            }).keyup(function (e) {
+                if (e.which === 13) {
+                    enter_clicked = true;
                 }
             });
             var width = this.$search_bar_input.css('width');
@@ -192,6 +201,7 @@ define([
             // update route based on query and filter
             var new_url = this.getSearchRoute(filter);
             if (Common.Router.is_initiated) {
+                Common.Dispatcher.trigger('sidebar:update_filter_data', this.filtersInMode);
                 Backbone.history.navigate(new_url.join("/"), true);
             }
         },
@@ -204,6 +214,8 @@ define([
                 // Change active button
                 this.changeCategoryButton(mode);
 
+                this.clearFilters(event, true);
+
                 // Trigger category click event
                 Common.Dispatcher.trigger('sidebar:categoryClicked', mode, Common.CurrentSearchMode);
 
@@ -214,6 +226,7 @@ define([
                 if (mode != 'favorites') {
                     // Hide search bar if in favorite mode
                     $('.search-row').show();
+                    Common.Dispatcher.trigger('map:hideShareBar');
                 }
 
                 if (mode != 'occupation') {
@@ -224,7 +237,6 @@ define([
 
                 if (mode == 'occupation' || mode == 'favorites') {
                     this.$filter_tag_label.hide();
-                    $('.filter-button').hide();
                 } else {
                     // Update filters
                     this.updateFilters(mode);
@@ -254,16 +266,13 @@ define([
             }
         },
         _openFavorites: function (filter) {
+            console.log('open favorites');
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';
-            if (!(mode in this._search_query) ||
-                this._search_need_update[mode] ||
-                this._search_filter[mode] != filter
-            ) {
-                Common.CurrentSearchMode = mode;
-                this._getFavorites(filter);
-            }
+            Common.CurrentSearchMode = mode;
+            this._getFavorites(filter);
+            this.parent.repositionMap(mode);
         },
         _getFavorites: function (filter) {
             var mode = Common.CurrentSearchMode;
@@ -294,6 +303,7 @@ define([
             this.$search_bar_input.val(query);
         },
         search: function (mode, query, filter, changed) {
+            console.log(mode, query, filter, changed);
             this.changeFilterPanel(Common.CurrentSearchMode);
             if (changed == undefined) {
                 changed = true;
@@ -335,6 +345,11 @@ define([
                     }
                     this.showResult(mode);
                 }
+                this._search_query[mode] = query;
+                this._search_filter[mode] = filter;
+                this._search_need_update[mode] = false;
+                Common.Dispatcher.trigger('sidebar:show_loading', mode);
+                this.showResult(mode);
             } else if (mode == 'favorites') {
                 if (query) {
                     filter = query;
@@ -408,7 +423,10 @@ define([
             }
         },
         toogleResult: function (event) {
-            if ($(event.target).hasClass('fa-caret-left') || $(event.target).find('.fa-caret-left').length > 0) {
+            if ($(event.target).hasClass('fa-caret-left') ||
+                $(event.target.parentElement).hasClass('fa-caret-left') ||
+                $(event.target).find('.fa-caret-left').length > 0) {
+
                 this.parent.openResultContainer($(event.target));
             } else {
                 this.parent.closeResultContainer($(event.target));
@@ -537,7 +555,8 @@ define([
             // Update sidebar
             Common.Dispatcher.trigger('sidebar:clear_search', Common.CurrentSearchMode);
 
-            this.parent.zoomToDefault();
+            if (Common.CurrentSearchMode !== 'favorites')
+                this.parent.zoomToDefault();
         },
         /*--------------------*/
         /* Advanced filter    */
@@ -768,7 +787,7 @@ define([
             }
 
         },
-        clearFilters: function () {
+        clearFilters: function (event, dontUpdateRoute) {
             var mode = Common.CurrentSearchMode;
             var courseMode = 'course';
             var providerMode = 'provider';
@@ -810,7 +829,9 @@ define([
             }
 
             this.isSearchFromInput = true;
-            this.updateSearchRoute();
+            if (typeof dontUpdateRoute === 'undefined') {
+                this.updateSearchRoute();
+            }
         },
         changeFilterPanel: function (mode) {
             this.$filter_panel_button.show();
@@ -901,7 +922,7 @@ define([
                     $.each(response, function (i, item) {
                         $('#nqf-level-select').append($('<option>', {
                             value: item.id,
-                            text: item.description,
+                            text: item.text,
                             selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
                         }));
                     });

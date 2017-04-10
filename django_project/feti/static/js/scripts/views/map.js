@@ -185,6 +185,17 @@ define([
                 }
             };
 
+            var legend = L.control({position: 'bottomleft'});
+            legend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'legend');
+                div.innerHTML += '<div class="marker-legend">' +
+                                '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br></div>';
+                div.innerHTML += '<div class="marker-legend">' +
+                                '<img src="/static/feti/images/marker_private.png">' + 'Private Institution' + '</div>';
+                return div
+            }
+            legend.addTo(this.map)
+
             this.locationButton = L.easyButton({
                 states: [
                     {
@@ -634,7 +645,6 @@ define([
             this.map.panTo(latLng);
         },
         changeCategory: function (mode) {
-            this.changeSearchLayer(Common.CurrentSearchMode, mode);
             this.searchView.changeCategoryButton(mode);
         },
         search: function (mode, query, filter) {
@@ -776,6 +786,9 @@ define([
             }
             this.sideBarView.showMapCover();
             this.sideBarView.updateOccupationDetail();
+
+            var $height = $("#result-filter-data").height() + /*margin top*/ 60 + /*space margin */ 10;
+            $('#result-container-wrapper').css('padding-top',$height);
         },
         closeResultContainer: function (div) {
             var $mapContainer = $('#feti-map');

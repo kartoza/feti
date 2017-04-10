@@ -304,6 +304,20 @@ scraping:
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course
 	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_occupation
 
+scraping-course:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to scrap course"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_course --from_page=1 --to_page=600 > course_scrape.log
+
+scraping-campus:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running command to scrap campus"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py scraping_campus --from_page=1 --to_page=100 > campus_scrape.log
+
 scrape-occupation:
 	@echo
 	@echo "------------------------------------------------------------------"

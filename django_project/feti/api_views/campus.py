@@ -108,6 +108,7 @@ class ApiCampus(CommonSearch, APIView):
                 campus_object['campus'] = value[0]['campus_campus']
                 campus_object['campus_icon_url'] = value[0]['campus_icon']
                 campus_object['campus_website'] = value[0]['campus_website']
+                campus_object['campus_public_institution'] = value[0]['campus_public_institution']
 
                 courses = []
 

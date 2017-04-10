@@ -70,6 +70,7 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
     )
     campus_public_institution = indexes.BooleanField(
         model_attr='campus__provider__status',
+        null=True
     )
 
     def prepare_field_of_study_id(self, obj):
@@ -101,8 +102,8 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_national_qualifications_framework_id(self, obj):
         try:
-            if isinstance(obj.course.national_qualifications_framework.id, int):
-                return obj.course.national_qualifications_framework.id
+            if isinstance(obj.course.national_qualifications_framework.level, int):
+                return obj.course.national_qualifications_framework.level
             else:
                 return None
         except AttributeError:

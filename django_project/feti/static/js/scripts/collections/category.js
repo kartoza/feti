@@ -96,7 +96,9 @@ define([
                         }
                     }
                     that.enableLoadMore();
-                    Common.Router.is_initiated = true;
+                    if (!that.load_more_enabled) {
+                        Common.Router.is_initiated = true;
+                    }
                 },
                 error: function () {
                     Common.FetchXHR = null;

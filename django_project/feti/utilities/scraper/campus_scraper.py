@@ -147,12 +147,16 @@ def create_provider(data):
             primary_institution=data['primary_institution'])
     except Provider.DoesNotExist:
         provider = Provider()
-    provider.primary_institution = data['primary_institution']
-    provider.website = data['website']
-    # get icon
-    download_provider_icon(provider)
-    provider.save()
-    return provider
+
+    try:
+        provider.primary_institution = data['primary_institution']
+        provider.website = data['website']
+        # get icon
+        download_provider_icon(provider)
+        provider.save()
+        return provider
+    except KeyError:
+        return None
 
 
 def create_campus(data, provider):
@@ -280,9 +284,11 @@ def scrap_campus(campus_name, campus_url):
 
     # save to database
     provider_obj = create_provider(provider)
-    campus_obj = create_campus(campus, provider_obj)
-    address_obj = create_address(address, campus_obj)
-    return campus_obj
+    if provider_obj:
+        campus_obj = create_campus(campus, provider_obj)
+        address_obj = create_address(address, campus_obj)
+        return campus_obj
+    return None
 
 
 def scrap_campuses(start_page=0, max_page=0):

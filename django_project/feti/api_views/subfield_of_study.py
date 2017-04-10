@@ -15,7 +15,7 @@ class SubFieldOfStudyAPIView(APIView):
     Api to list all subfield of study.
     """
     def get(self, request):
-        subfield_of_study = SubFieldOfStudy.objects.all()
+        subfield_of_study = SubFieldOfStudy.objects.order_by('learning_subfield')
 
         serializer = SubFieldOfStudySerializer(subfield_of_study, many=True)
         return Response(serializer.data)
