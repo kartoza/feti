@@ -302,8 +302,6 @@ define([
 
             this.changeFilterPanel(Common.CurrentSearchMode);
 
-            console.log(mode);
-
             if (query && mode != 'favorites') {
 
                 // Put query to search input
@@ -887,6 +885,9 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
+
+                    //update filter data if started from url
+                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
                 }
             });
             $.ajax({
@@ -904,6 +905,8 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
+                    //update filter data
+                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
                 }
             });
             $.ajax({
@@ -921,6 +924,8 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
+                    //update filter data
+                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
                 }
             });
             $.ajax({
@@ -938,6 +943,8 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "50%"
                     });
+                    //update filter data
+                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
                 }
             });
         }
