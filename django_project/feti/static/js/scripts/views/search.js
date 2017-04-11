@@ -302,8 +302,6 @@ define([
 
             this.changeFilterPanel(Common.CurrentSearchMode);
 
-            console.log(mode);
-
             if (query && mode != 'favorites') {
 
                 // Put query to search input

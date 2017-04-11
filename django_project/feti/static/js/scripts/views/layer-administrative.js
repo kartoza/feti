@@ -133,7 +133,7 @@ define([
             });
 
             if(last_polygon) {
-                this.map.map.fitBounds(last_polygon);
+                this.map.map.fitBounds(last_polygon.getBounds());
             }
 
             this.setCurrentAdm();

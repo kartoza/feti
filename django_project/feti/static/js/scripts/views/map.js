@@ -512,6 +512,7 @@ define([
         getCoordinatesQuery: function (mode) {
             if(this.layerAdministrativeView.getCurrentAdminLayer()) {
                 this.clearButton.enable();
+                console.log(this.layerAdministrativeView.getCurrentAdminLayer());
                 return 'administrative=' + this.layerAdministrativeView.getCurrentAdminLayer()
             }
 
@@ -523,7 +524,7 @@ define([
                     var query = '';
                     // check if layer is polygon or circle
                     if (_layer instanceof L.Polygon) {
-                        var coordinates = _layer.getLatLngs();
+                        var coordinates = _layer.getLatLngs()[0];
                         var coordinates_string = JSON.stringify(coordinates);
                         query = 'shape=polygon&coordinates=' + coordinates_string;
                     } else if (_layer instanceof L.Circle) {
@@ -810,7 +811,7 @@ define([
         createPolygon: function (coordinates) {
             var mode = Common.CurrentSearchMode;
 
-            if (typeof this.listDrawnItems[mode] == 'undefined') {
+            if (typeof this.listDrawnItems[mode] === 'undefined') {
                 this.listDrawnItems[mode] = L.featureGroup()
             }
 
@@ -826,17 +827,21 @@ define([
         createCircle: function (coords, radius) {
             var mode = Common.CurrentSearchMode;
 
-            if (typeof this.listDrawnItems[mode] == 'undefined') {
+            if (typeof this.listDrawnItems[mode] === 'undefined') {
                 this.listDrawnItems[mode] = L.featureGroup()
             }
 
             this.clearAllDrawnLayer();
-            this.circleLayer = L.circle([coords['lat'], coords['lng']], radius, this.layerOptions());
+
+            var circleOptions = this.layerOptions();
+            circleOptions['radius'] = radius;
+
+            this.circleLayer = L.circle([coords['lat'], coords['lng']], circleOptions);
 
             this.listDrawnItems[mode].addLayer(this.circleLayer);
             this.addLayer(this.listDrawnItems[mode]);
 
-            this.map.fitBounds(this.circleLayer);
+            this.map.fitBounds(this.circleLayer.getBounds());
             this.clearButton.enable();
 
             var draggable = new L.Draggable(this.circleLayer);
