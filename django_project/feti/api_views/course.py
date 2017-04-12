@@ -14,7 +14,7 @@ class CourseAPIView(CommonSearch, APIView):
     Api to filter course by query
     """
     def get(self, request, format=None):
-        query, options = self.process_request(request)
+        query, options = self.process_request(self.request.GET.dict())
 
         if '=' in query:
             queries = query.split('=')

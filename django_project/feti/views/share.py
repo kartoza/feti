@@ -21,9 +21,12 @@ from feti.models.campus import Campus
 from feti.models.url import URL
 from feti.views.api import (
     ApiCourse,
-    ApiCampus,
     ApiSavedCampus
 )
+from feti.api_views.campus import (
+    ApiCampus
+)
+from feti.api_views.common_search import CommonSearch
 
 
 class SharingMixin(object):
@@ -68,9 +71,7 @@ class SharingMixin(object):
 
     def download_map(self, filename, markers, provider=None):
         osm_static_url = 'http://staticmap.openstreetmap.de/staticmap.php?center=-30.5,24&' \
-                         'zoom=6&size=865x512&maptype=mapnik'
-        check_existence = True
-
+                         'zoom=5&size=865x512&maptype=mapnik'
         if markers:
             osm_static_url += '&markers=' + markers
 
@@ -93,7 +94,7 @@ class SharingMixin(object):
                 )
 
 
-class PDFDownload(TemplateView, SharingMixin):
+class PDFDownload(TemplateView, SharingMixin, CommonSearch):
     template_name = 'feti/pdf_template.html'
 
     def url_fetcher(self, url):
@@ -112,40 +113,44 @@ class PDFDownload(TemplateView, SharingMixin):
         """
 
         slug = self.kwargs.get('provider', None)
-        query = self.kwargs.get('query', None)
-        campuses = self.get_campus(provider=slug, query=query, user=self.request.user)
+        query, options = self.process_request(self.kwargs)
+
         course_names = self.get_course_names()
 
         markers = ''
+        campuses = None
 
         if slug == 'course':
+            campuses = self.filter_by_course(query)
             pdf_data = list(
                 unique_everseen(
                     [{
-                         'campus_provider': x['campus_provider'],
-                         'campus_address': x['campus_address'],
-                         'campus_website': x['campus_website'],
-                         'location': x['campus_location']
+                         'campus_provider': x.get_stored_fields()['campus_provider'],
+                         'campus_address': x.get_stored_fields()['campus_address'],
+                         'campus_website': x.get_stored_fields()['campus_website'],
+                         'location': x.get_stored_fields()['campus_location']
                      }
                      for x in campuses])
             )
-            for idx, campus in enumerate(pdf_data):
-                location = campus['location'].split(',')
-                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+            for campus in pdf_data:
+                location = campus['location']
+                markers += '%s,%s,ol-marker-blue|' % (location.y, location.x)
             campuses = pdf_data
         elif slug == 'provider':
-            for idx, campus in enumerate(campuses):
-                location = campus['campus_location'].split(',')
-                markers += '%s,%s,bluelight%s|' % (location[0], location[1], str(idx))
+            campuses = list(self.filter_indexed_campus(query))
+            for result in campuses:
+                campus = result.get_stored_fields()
+                location = campus['campus_location']
+                markers += '%s,%s,ol-marker-blue|' % (location.y, location.x)
         elif slug == 'favorites':
-            query = self.request.user
-            campuses = list(campuses)
+            api_saved_campus = ApiSavedCampus()
+            campuses = list(api_saved_campus.filter_model(user=self.request.user))
             for idx, campus in enumerate(campuses):
                 location = campus.campus.location.coords
                 campus.campus_website = campus.campus.provider.website
                 campus.campus_provider = campus.campus.provider
                 campus.campus_address = campus.campus.address.address_line
-                markers += '%s,%s,bluelight%s|' % (location[1], location[0], str(idx))
+                markers += '%s,%s,ol-marker-blue|' % (location[1], location[0])
 
         filename = '%s-%s.png' % (query, slug)
 
