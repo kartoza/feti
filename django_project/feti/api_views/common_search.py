@@ -24,9 +24,9 @@ class CommonSearch(object):
         query = None
 
         if 'query' in request_dict:
-            query = request_dict.get('query')
+            query = request_dict.pop('query')
         elif 'q' in request_dict:
-            query = request_dict.get('q')
+            query = request_dict.pop('q')
 
         options = dict()
 
@@ -34,13 +34,13 @@ class CommonSearch(object):
             return Response([])
 
         # Get coordinates from request and create a polygon
-        shape = request_dict.get('shape', None)
+        shape = request_dict.pop('shape', None)
         drawn_polygon = None
         drawn_circle = None
         radius = 0
 
         if shape == 'polygon':
-            coord_string = request_dict.get('coordinates', None)
+            coord_string = request_dict.pop('coordinates', None)
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 poly = []
@@ -49,13 +49,13 @@ class CommonSearch(object):
                 poly.append(poly[0])
                 drawn_polygon = Polygon(poly)
         elif shape == 'circle':
-            coord_string = request_dict.get('coordinates', None)
-            radius = request_dict.get('radius', None)
+            coord_string = request_dict.pop('coordinates', None)
+            radius = request_dict.pop('radius', None)
             if coord_string:
                 coord_obj = json.loads(coord_string)
                 drawn_circle = Point(coord_obj['lng'], coord_obj['lat'])
 
-        boundary = get_boundary(request_dict.get('administrative', None))
+        boundary = get_boundary(request_dict.pop('administrative', None))
         if boundary:
             drawn_polygon = boundary.polygon_geometry
 
@@ -75,21 +75,19 @@ class CommonSearch(object):
             }
 
         # Advance search
-        options['advance_search'] = True
-        if 'fos' in request_dict:
-            options['fos'] = request_dict.get('fos')
-        elif 'sos' in request_dict:
-            options['sos'] = request_dict.get('sos')
-        elif 'qt' in request_dict:
-            options['qt'] = request_dict.get('qt')
-        elif 'mc' in request_dict:
-            options['mc'] = request_dict.get('mc')
-        elif 'nqf' in request_dict:
-            options['nqf'] = request_dict.get('nqf')
-        elif 'nqsf' in request_dict:
-            options['nqsf'] = request_dict.get('nqsf')
-        elif 'pi' in request_dict:
-            options['pi'] = request_dict.get('pi')
+        advance_search_fields = [
+            'fos',  # Field of study
+            'sos',  # Subfield of study
+            'qt',  # Qualification type
+            'mc',  # Minimum credits
+            'nqf',  # National qualification framework
+            'nqsf',  # National qualifications subframework
+            'pi'  # Public institution
+        ]
+        options.update(request_dict)
+
+        if any(field for field in advance_search_fields if field in request_dict):
+            options['advance_search'] = True
         else:
             options['advance_search'] = False
 
