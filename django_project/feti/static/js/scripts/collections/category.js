@@ -26,6 +26,26 @@ define([
                 this.results = [];
             }
         },
+        isAllowEmptySearch: function () {
+            return $.inArray(this.mode, Common.AllowPagingRequest) !== -1;
+        },
+        changeEmptyDataState: function (allow_to_empty_search, is_empty_search) {
+            var that = this;
+            // check load more enabled
+            that.load_more_enabled = false;
+            if (is_empty_search) {
+                if (that.models.length % Common.limit_per_page == 0) {
+                    that.load_more_enabled = true;
+                } else {
+                    that.empty_data['finished'] = true;
+                }
+                that.current_page = Math.floor(
+                    that.empty_data['models'].length / Common.limit_per_page
+                );
+                that.empty_data['last_page'] = that.current_page + 1;
+            }
+
+        },
         search: function (q, drawnLayers) {
             var that = this;
             var allow_to_empty_search = false;
@@ -36,7 +56,7 @@ define([
             }
 
             // change if empty search
-            if ($.inArray(Common.CurrentSearchMode, Common.AllowPagingRequest) !== -1) {
+            if (this.isAllowEmptySearch()) {
                 allow_to_empty_search = true;
                 if (q == "") {
                     is_empty_search = true;
@@ -63,6 +83,8 @@ define([
                     parameters.coord = q;
             }
 
+            this.last_url = this.url;
+
             this.url = this.url_template(parameters);
             this.url = this.url.replace(/&quot;/g, '"');
 
@@ -78,27 +100,18 @@ define([
                 Common.FetchXHR.abort();
             }
             console.log(this.url);
+            if (allow_to_empty_search && !is_empty_search && this.last_url == this.url) {
+                return;
+            }
             that.last_query = q;
             Common.FetchXHR = this.fetch({
                 success: function (collection, response) {
-                    that.current_page += 1;
-
-                    // check load more enabled
-                    that.load_more_enabled = false;
-                    if (is_empty_search) {
-                        that.empty_data['last_page'] = that.current_page;
-                    }
-                    if (allow_to_empty_search) {
-                        if (that.models.length >= Common.limit_per_page) {
-                            that.load_more_enabled = true;
-                        } else {
-                            that.empty_data['finished'] = true;
-                        }
-                    }
-
                     // if change to empty search
                     // get old data
                     if (that.search_changed && is_empty_search) {
+                        if (that.empty_data['finished']) {
+                            that.models = [];
+                        }
                         that.models = $.merge(that.models, that.empty_data['models']);
                         that.empty_data['models'] = [];
                     }
@@ -121,10 +134,11 @@ define([
                         });
                         Common.Dispatcher.trigger('search:finish', true, that.mode, that.results.length);
                     }
+                    that.changeEmptyDataState(allow_to_empty_search, is_empty_search)
 
                     // get campus count
                     var campus_count = that.results.length;
-                    if (campus_count > 0 && that.results[0].model.get('max')) {
+                    if (campus_count >= Common.limit_per_page && that.results[0].model.get('max')) {
                         campus_count = that.results.length + ' / ' + that.results[0].model.get('max');
                     }
                     Common.Dispatcher.trigger('sidebar:update_title', campus_count, that.mode, parameters['coord']);
