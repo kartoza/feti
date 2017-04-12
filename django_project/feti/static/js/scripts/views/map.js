@@ -785,8 +785,7 @@ define([
             this.sideBarView.showMapCover();
             this.sideBarView.updateOccupationDetail();
 
-            var $height = $("#result-filter-data").height() + /*margin top*/ 60 + /*space margin */ 10;
-            $('#result-container-wrapper').css('padding-top',$height);
+
         },
         closeResultContainer: function (div) {
             var $mapContainer = $('#feti-map');
