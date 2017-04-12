@@ -222,6 +222,9 @@ define([
                     radius = radius + " meters"
                 }
                 $result_title_place.html(' in radius ' + radius + ' from [' + coordinate['lat'].toFixed(3) + " , " + coordinate['lng'].toFixed(3) + "]");
+                this.$result_filter_data.css("margin-top",60);
+            } else if(query.indexOf("circle") < 0){
+                this.$result_filter_data.css("margin-top",40);
             }
             else {
                 $result_title_place.html('');
@@ -229,6 +232,11 @@ define([
             $result_title_campus.append($result_title_place);
 
             this.$result_title.append($result_title_campus);
+
+            var $height = this.$result_filter_data.height() +
+                /*space margin */
+                parseInt($("#result-filter-data").css("margin-top")) + 10;
+            $('#result-container-wrapper').css('padding-top',$height);
         },
         showResultTitle: function (newMode, oldMode) {
             $('#result-title-' + oldMode).hide();
