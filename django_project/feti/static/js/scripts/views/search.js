@@ -308,6 +308,15 @@ define([
                 changed = true;
             }
             if (mode != 'favorites') {
+                if (query && mode != 'favorites') {
+                    // Put query to search input
+                    this.updateSearchBarInput(query);
+                    // Update filters
+                    if (mode != 'occupation') {
+                        this.parseFilters(query);
+                        this.updateFilters(mode);
+                    }
+                }
                 // search
                 if (changed && query != "" && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
                     // no need to search
@@ -888,6 +897,9 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
+
+                    //update filter data if started from url
+                    Common.Dispatcher.trigger('sidebar:update_filter_data', that.filtersInMode);
                 }
             });
             $.ajax({
@@ -905,6 +917,8 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
+                    //update filter data
+                    Common.Dispatcher.trigger('sidebar:update_filter_data', that.filtersInMode);
                 }
             });
             $.ajax({
@@ -922,6 +936,8 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "80%"
                     });
+                    //update filter data
+                    Common.Dispatcher.trigger('sidebar:update_filter_data', that.filtersInMode);
                 }
             });
             $.ajax({
@@ -939,6 +955,8 @@ define([
                         no_results_text: "Oops, nothing found!",
                         width: "50%"
                     });
+                    //update filter data
+                    Common.Dispatcher.trigger('sidebar:update_filter_data', that.filtersInMode);
                 }
             });
         }
