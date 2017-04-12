@@ -13,8 +13,12 @@ define([
             this.url_template = this.provider_url_template;
             this.view = ProviderView;
             this.mode = 'provider';
+            Common.Dispatcher.on('empty-data:marker-added', this.addMarkerOfEmptyData, this);
         },
         parse: function (response) {
+            if (this.last_query == "") {
+                $("#result-container-all-data").show();
+            }
             return this.campusCourseParser(response, "campus");
         },
         campusCourseParser: function (response, model) {
@@ -91,9 +95,9 @@ define([
                     "campus_phone": row["campus_phone"],
                     "public_institution": row["campus_public_institution"]
                 };
-		if (row["campus_icon_url"] != "") {
+                if (row["campus_icon_url"] != "") {
                     var icon = '';
-                    if(row["campus_icon_url"].indexOf('media/') > -1) {
+                    if (row["campus_icon_url"].indexOf('media/') > -1) {
                         icon = row["campus_icon_url"];
                     } else {
                         icon = 'media/' + row["campus_icon_url"];

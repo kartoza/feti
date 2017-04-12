@@ -81,9 +81,9 @@ define([
             this.$el.empty();
             this.$el.html(this.template(this.model.attributes));
             var $container = $(this.container);
-            //if(this.empty_search){
-            //    $container = $("#result-container-provider-empty-query")
-            //}
+            if (this.empty_search) {
+                $container = $("#result-container-all-data")
+            }
             $container.append(this.$el);
             $container.append(this.courses_template(this.model.attributes));
             this.$elCourses = $("#" + this.model.attributes.id + "-courses");
@@ -92,6 +92,9 @@ define([
             this.$el.attr("data-toggle", "collapse");
             this.model.renderMarker();
             this.renderCourses();
+            if (this.empty_search) {
+                Common.Dispatcher.trigger('empty-data:marker-added', this.model.get('marker'));
+            }
         },
         renderCourses: function () {
             var that = this;
@@ -107,11 +110,17 @@ define([
             });
         },
         initialize: function (data) {
-            if(data['empty_search']){
+            if (data['empty_search']) {
                 this.empty_search = data['empty_search'];
             }
             this.courses = [];
             this.render();
+        },
+        show: function () {
+            this.model.show();
+        },
+        hide: function () {
+            this.model.hide();
         },
         destroy: function () {
             this.model.destroy();

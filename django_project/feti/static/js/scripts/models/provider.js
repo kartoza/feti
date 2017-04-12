@@ -21,10 +21,10 @@ define([
                 var location = this.attributes.location;
                 var public_institution = this.attributes.public_institution;
                 var markercolor;
-                if(public_institution){
-                    markercolor='blue leaflet-clickable';
-                }else{
-                    markercolor='red leaflet-clickable';
+                if (public_institution) {
+                    markercolor = 'blue leaflet-clickable';
+                } else {
+                    markercolor = 'red leaflet-clickable';
                 }
                 var marker = new L.marker([location.lat, location.lng], {
                     icon: L.ExtraMarkers.icon({
@@ -97,7 +97,7 @@ define([
                     this.openPopup();
                 });
                 marker.on('mouseout', function (e) {
-                    if(!that.get('marker_clicked')) {
+                    if (!that.get('marker_clicked')) {
                         this.closePopup();
                     }
                 });
@@ -131,6 +131,12 @@ define([
             if (this.get('layer')) {
                 this.get('layer').clearLayers();
             }
+        },
+        show: function () {
+            this.renderMarker();
+        },
+        hide: function () {
+            this.removeMarker();
         },
         destroy: function () {
             // destroy by remove layers and delete this object

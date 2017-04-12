@@ -70,6 +70,7 @@ define([
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
             Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
+            Common.Dispatcher.on('map:repositionMapByLayer', this.repositionMapByLayer, this);
 
             Common.Dispatcher.on('map:addLayerToFilterLayers', this.addLayerToFilterLayers, this);
             Common.Dispatcher.on('map:removeLayerFromFilterLayers', this.removeLayerFromFilterLayers, this);
@@ -189,9 +190,9 @@ define([
             legend.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'legend');
                 div.innerHTML += '<div class="marker-legend">' +
-                                '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br></div>';
+                    '<img src="/static/feti/images/marker_public.png">' + 'Public Institution </br></div>';
                 div.innerHTML += '<div class="marker-legend">' +
-                                '<img src="/static/feti/images/marker_private.png">' + 'Private Institution' + '</div>';
+                    '<img src="/static/feti/images/marker_private.png">' + 'Private Institution' + '</div>';
                 return div
             }
             legend.addTo(this.map)
@@ -578,9 +579,12 @@ define([
             }
             this.listDrawnItems[mode].removeLayer(layer);
         },
+        repositionMapByLayer: function (layer) {
+            this.map.fitBounds(layer.getBounds(), {paddingTopLeft: [75, 75]});
+        },
         repositionMap: function (mode) {
             // Reposition map after category changed
-            if(this.listDrawnItems[mode]) {
+            if (this.listDrawnItems[mode]) {
                 return;
             }
 
@@ -788,7 +792,7 @@ define([
             this.sideBarView.updateOccupationDetail();
 
             var $height = $("#result-filter-data").height() + /*margin top*/ 60 + /*space margin */ 10;
-            $('#result-container-wrapper').css('padding-top',$height);
+            $('#result-container-wrapper').css('padding-top', $height);
         },
         closeResultContainer: function (div) {
             var $mapContainer = $('#feti-map');
