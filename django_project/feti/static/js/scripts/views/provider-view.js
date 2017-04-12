@@ -12,6 +12,7 @@ define([
         courses_template: _.template('<div id="<%- id %>-courses" class="collapse"></div>'),
         container: '#result-container-provider',
         model: Provider,
+        empty_search: false,
         events: {
             'click': 'clicked',
             'click .favorites': 'addToFavorites',
@@ -79,8 +80,12 @@ define([
         render: function () {
             this.$el.empty();
             this.$el.html(this.template(this.model.attributes));
-            $(this.container).append(this.$el);
-            $(this.container).append(this.courses_template(this.model.attributes));
+            var $container = $(this.container);
+            //if(this.empty_search){
+            //    $container = $("#result-container-provider-empty-query")
+            //}
+            $container.append(this.$el);
+            $container.append(this.courses_template(this.model.attributes));
             this.$elCourses = $("#" + this.model.attributes.id + "-courses");
             // toogling
             this.$el.attr("href", "#" + this.model.attributes.id + "-courses");
@@ -101,7 +106,10 @@ define([
                 }));
             });
         },
-        initialize: function () {
+        initialize: function (data) {
+            if(data['empty_search']){
+                this.empty_search = data['empty_search'];
+            }
             this.courses = [];
             this.render();
         },

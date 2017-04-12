@@ -55,8 +55,7 @@ class ApiCampus(CommonSearch, APIView):
                 page = 1
                 sqs = paginator.page(page)
             except EmptyPage:
-                page = paginator.num_pages
-                sqs = paginator.page(page)
+                return Response([])
 
         campus_data = []
         campuses = {}
