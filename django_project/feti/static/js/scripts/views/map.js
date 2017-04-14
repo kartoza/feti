@@ -88,7 +88,15 @@ define([
         },
         zoomToDefault: function () {
             // zoom map to default
-            this.map.setView([-32.35, 20], 7);
+            var mode = Common.CurrentSearchMode;
+            var layers = this.modesLayer[mode].getLayers();
+
+            if(layers.length > 0) {
+                this.repositionMap(mode);
+            } else {
+                this.map.setView([-32.35, 20], 7);
+            }
+
         },
         render: function () {
             this.$el.html(this.template());
@@ -497,7 +505,7 @@ define([
         clearAllDrawnLayer: function () {
             var mode = Common.CurrentSearchMode;
             this.layerAdministrativeView.resetBasedLayer();
-            if(typeof this.listDrawnItems[mode] == 'undefined') {
+            if(typeof this.listDrawnItems[mode] === 'undefined') {
                 return;
             }
 
@@ -506,13 +514,10 @@ define([
             this.listDrawnItems[mode].eachLayer(function (layer) {
                 this.listDrawnItems[mode].removeLayer(layer);
             }, this);
-
-            this.zoomToDefault();
         },
         getCoordinatesQuery: function (mode) {
             if(this.layerAdministrativeView.getCurrentAdminLayer()) {
                 this.clearButton.enable();
-                console.log(this.layerAdministrativeView.getCurrentAdminLayer());
                 return 'administrative=' + this.layerAdministrativeView.getCurrentAdminLayer()
             }
 
@@ -549,11 +554,11 @@ define([
         addLayerToModeLayer: function (layer) {
             var mode = Common.CurrentSearchMode;
 
-            if (typeof mode == 'undefined') {
+            if (typeof mode === 'undefined') {
                 return
             }
 
-            var opposite = Common.CurrentSearchMode == 'provider' ? 'course' : 'provider';
+            var opposite = Common.CurrentSearchMode === 'provider' ? 'course' : 'provider';
 
             this.modesLayer[mode].addLayer(layer);
 
@@ -574,14 +579,14 @@ define([
         },
         removeLayerFromFilterLayers: function(layer) {
             var mode = Common.CurrentSearchMode;
-            if (typeof this.listDrawnItems[mode] == 'undefined') {
+            if (typeof this.listDrawnItems[mode] === 'undefined') {
                 return
             }
             this.listDrawnItems[mode].removeLayer(layer);
         },
         repositionMap: function (mode) {
             // Reposition map after category changed
-            if(this.listDrawnItems[mode]) {
+            if(this.layerAdministrativeView.active && this.listDrawnItems[mode]) {
                 return;
             }
 
@@ -647,7 +652,7 @@ define([
         },
         search: function (mode, query, filter) {
             this.searchView.search(mode, query, filter);
-            if (mode == 'favorites') {
+            if (mode === 'favorites') {
                 filter = query;
             }
             if (filter && filter.indexOf('administrative') >= 0) {
@@ -820,7 +825,7 @@ define([
             this.listDrawnItems[mode].addLayer(this.polygonLayer);
             this.addLayer(this.listDrawnItems[mode]);
 
-            this.map.fitBounds(this.polygonLayer);
+            this.map.flyToBounds(this.polygonLayer.getBounds(), {paddingTopLeft: [75, 75]});
             this.clearButton.enable();
         },
         createCircle: function (coords, radius) {
@@ -840,7 +845,7 @@ define([
             this.listDrawnItems[mode].addLayer(this.circleLayer);
             this.addLayer(this.listDrawnItems[mode]);
 
-            this.map.fitBounds(this.circleLayer.getBounds());
+            this.map.flyToBounds(this.circleLayer.getBounds(), {paddingTopLeft: [75, 75]});
             this.clearButton.enable();
 
             var draggable = new L.Draggable(this.circleLayer);
