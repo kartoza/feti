@@ -42,7 +42,19 @@
 {% endblock %}
 
 {% block js_inline %}
+    <script type="text/javascript" src="/static/js/libs/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/jquery-ui-1.12.1.min.js"></script>
     <script>
+        $(document).ready(function () {
+            $('input[type="date"]').datepicker(
+                    {
+                        dateFormat: 'yy-mm-dd',
+                        changeMonth: true,
+                        changeYear: true
+                    }
+            ).attr('type', 'text');
+            $('input[type="date"]').tooltip();
+        });
 
         var map = geodjango_profile_location.map || {};
         var vector = geodjango_profile_location.layers.vector || {};

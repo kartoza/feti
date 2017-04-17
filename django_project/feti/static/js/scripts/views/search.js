@@ -4,8 +4,22 @@ define([
     'scripts/collections/occupation',
     'scripts/collections/campus',
     'scripts/collections/course',
-    'scripts/collections/favorites'
-], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, favoritesCollection) {
+    'scripts/collections/favorites',
+    'backbone',
+    'jquery',
+    'chosen',
+    'jqueryUi',
+    'bootstrapSlider'
+], function (
+    searchbarTemplate,
+    Common,
+    occupationCollection,
+    campusCollection,
+    courseCollection,
+    favoritesCollection,
+    Backbone,
+    $,
+    chosen) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -257,12 +271,11 @@ define([
                     }
                 }
             }
-            if (mode == 'favorites') {
+            if (mode === 'favorites') {
                 this._getFavorites();
             }
         },
         _openFavorites: function (filter) {
-            console.log('open favorites');
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';

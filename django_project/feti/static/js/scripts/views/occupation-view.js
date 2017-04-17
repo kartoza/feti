@@ -2,8 +2,19 @@ define([
     'common',
     'scripts/models/occupation',
     'text!scripts/templates/result-detail.html',
-    'text!scripts/templates/step-detail.html'
-], function (Common, Occupation, Detail, StepDetail) {
+    'text!scripts/templates/step-detail.html',
+    'backbone',
+    'jquery',
+    'underscore'
+], function (
+    Common,
+    Occupation,
+    Detail,
+    StepDetail,
+    Backbone,
+    $,
+    _
+) {
 
     var OccupationView = Backbone.View.extend({
         tagName: 'div',

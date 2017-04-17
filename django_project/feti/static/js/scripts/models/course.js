@@ -1,7 +1,8 @@
 /*global define*/
 define([
-    'common'
-], function (Common) {
+    'common',
+    'backbone'
+], function (Common, Backbone) {
     var Course = Backbone.Model.extend({
         initialize: function (options) {
             this.attributes = options;

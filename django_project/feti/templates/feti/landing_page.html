@@ -13,15 +13,7 @@
             var target = this;
             return target.replace(new RegExp(search, 'g'), replacement);
         };
-    </script>
-    <script>
-        var favorite = "{{ favorite }}";
-        favorite = favorite.replaceAll("&quot;", "\"");
-        favorite = JSON.parse(favorite);
-        var new_favorite = {};
-        _.each(favorite, function (row) {
-            new_favorite[row["campus"]] = row["courses"];
-        });
+        var favorites = "{{ favorite }}";
     </script>
 {% endblock %}
 
@@ -195,7 +187,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-{#                        <label for="clipboard">Copy to clipboard: Ctrl+C, Enter</label>#}
                         <input type="text" class="form-control" id="clipboard">
                         <br>
                         <button id="copy-clipboard" class="btn btn-info"><i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -211,7 +202,6 @@
 
 
 {% block js_inline %}
-    <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
 
     <!-- Backbone Templates -->
     <script type='template' id='login-modal-template'>
@@ -226,7 +216,7 @@
     <script>
         Array.prototype.clean = function (deleteValue) {
             for (var i = 0; i < this.length; i++) {
-                if (this[i] == deleteValue) {
+                if (this[i] === deleteValue) {
                     this.splice(i, 1);
                     i--;
                 }
@@ -234,41 +224,26 @@
             return this;
         };
 
-        $.fn.responsiveTabs = function () {
-            this.addClass('responsive-tabs');
-
-            this.on('click', 'li.active > a, span.fa', function () {
-                this.toggleClass('open');
-            }.bind(this));
-
-            this.on('click', 'li:not(.active) > a', function () {
-                this.removeClass('open');
-            }.bind(this));
-        };
+{#        $.fn.responsiveTabs = function () {#}
+{#            this.addClass('responsive-tabs');#}
+{##}
+{#            this.on('click', 'li.active > a, span.fa', function () {#}
+{#                this.toggleClass('open');#}
+{#            }.bind(this));#}
+{##}
+{#            this.on('click', 'li:not(.active) > a', function () {#}
+{#                this.removeClass('open');#}
+{#            }.bind(this));#}
+{#        };#}
 
         var user_location = "{{ user.profile.location }}";
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
-        var is_login_error = false;
+        var is_login_error = "{{ error }}" == "True";
         {% if error %}
-            $(document).ready(function () {
-                is_login_error = true;
-                window.history.pushState("", "", "/#login");
-            });
+            window.history.pushState("", "", "/#login");
         {% endif %}
     </script>
 
-
-    <script>
-        $(document).ready(function () {
-            // Set interval time for carousel
-            // interval is in milliseconds. 1000 = 1 second - so 1000 * 5 = 5 seconds
-            $('.carousel').carousel({
-                interval: 1000 * 5
-            });
-        });
-    </script>
-
     {% grunt_module "landing_page" %}
-{#    <script data-main="/static/js/main" src="/static/js/libs/require.min.js"></script>#}
 
 {% endblock %}

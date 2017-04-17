@@ -1,7 +1,10 @@
 define([
     'text!scripts/templates/sidebar.html',
-    'common'
-], function (sidebarTemplate, Common) {
+    'common',
+    'backbone',
+    'jquery',
+    'underscore'
+], function (sidebarTemplate, Common, Backbone, $, _) {
     var SideBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#result',

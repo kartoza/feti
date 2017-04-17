@@ -1,7 +1,9 @@
 /*global define*/
 define([
-    'common'
-], function (Common) {
+    'common',
+    'backbone',
+    'underscore'
+], function (Common, Backbone, _) {
     var Occupation = Backbone.Model.extend({
         parse: function (options) {
             var data;

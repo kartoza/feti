@@ -36,7 +36,7 @@ PIPELINE = {
                 'css/bootstrap.min.css',
                 'feti/css/Leaflet-1.0.3/leaflet.css',
                 'css/bootstrap-datetimepicker.min.css',
-                'feti/leaflet-extra-markers/leaflet.extra-markers.css',
+                'js/libs/leaflet-extra-markers/leaflet.extra-markers.css',
                 'feti/font-awesome/css/font-awesome.css',
                 'js/libs/leaflet.draw-0.4.9/leaflet.draw.css',
                 'js/libs/easy-button/easy-button.css',
@@ -81,11 +81,11 @@ PIPELINE = {
         'contrib': {
             'source_filenames': (
                 'js/bootstrap.js',
-                'js/moment.min.js',
+                'js/libs/moment.min.js',
                 'js/libs/Leaflet/1.0.3/leaflet.js',
                 'js/libs/ripples.min.js',
                 'js/libs/validate.js',
-                'leaflet-extra-markers/leaflet.extra-markers.js',
+                'js/libs/leaflet-extra-markers/leaflet.extra-markers.js',
                 'js/libs/underscore-1.8.3.min.js',
                 'js/libs/backbone-1.3.3.min.js',
                 'js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
@@ -97,7 +97,6 @@ PIPELINE = {
         },
         'appjs': {
             'source_filenames': (
-                'js/libs/leaflet.control.share.js',
                 'js/csrf-ajax.js',
             ),
             'output_filename': 'js/appjs.js'

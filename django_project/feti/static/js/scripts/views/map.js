@@ -3,8 +3,14 @@ define([
     'scripts/views/search',
     'scripts/views/sidebar',
     'scripts/views/layer-administrative',
-    'scripts/share'
-], function (Common, SearchView, SidebarView, LayerAdministrativeView, Share) {
+    'scripts/share',
+    'backbone',
+    'leaflet',
+    'underscore',
+    'jquery',
+    'leafletDraw',
+    'easyButton'
+], function (Common, SearchView, SidebarView, LayerAdministrativeView, Share, Backbone, L, _, $, LeafletDraw, EasyButton) {
     var MapView = Backbone.View.extend({
         template: _.template($('#map-template').html()),
         events: {
@@ -89,7 +95,11 @@ define([
         zoomToDefault: function () {
             // zoom map to default
             var mode = Common.CurrentSearchMode;
-            var layers = this.modesLayer[mode].getLayers();
+            var layers = 0;
+
+            if(typeof this.modesLayer[mode] !== 'undefined') {
+                layers = this.modesLayer[mode].getLayers();
+            }
 
             if(layers.length > 0) {
                 this.repositionMap(mode);
