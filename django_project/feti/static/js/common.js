@@ -11,6 +11,7 @@ define(['backbone', 'underscore'], function (Backbone, _) {
         CurrentSearchMode: 'provider',
         FetchXHR: null,
         Favorites: favorites || null,
-        EmbedVersion: typeof is_embed !== "undefined"
+        EmbedVersion: typeof is_embed !== "undefined",
+        DebugMode: is_debug_mode || false,
     };
 });

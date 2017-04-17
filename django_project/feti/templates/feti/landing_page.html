@@ -239,6 +239,8 @@
         var user_location = "{{ user.profile.location }}";
         var is_logged_in = "{{ user.is_authenticated }}" == "True";
         var is_login_error = "{{ error }}" == "True";
+        var is_debug_mode = false;
+
         {% if error %}
             window.history.pushState("", "", "/#login");
         {% endif %}
