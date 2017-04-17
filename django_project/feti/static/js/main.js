@@ -7,8 +7,6 @@ require.config({
         moment: 'libs/moment.min',
         leaflet: 'libs/Leaflet/1.0.3/leaflet',
         leafletExtraMarkers: 'libs/leaflet-extra-markers/leaflet.extra-markers',
-        ripples: 'libs/ripples.min',
-        validate: 'libs/validate',
         jquery: 'libs/jquery-1.11.3.min',
         jqueryUi: 'libs/jquery-ui-1.12.1.min',
         underscore: 'libs/underscore-1.8.3.min',
@@ -24,9 +22,6 @@ require.config({
         },
         underscore: {
             exports: '_'
-        },
-        jqueryUi: {
-            exports: 'JqueryUi'
         },
         backbone: {
             deps: [
