@@ -5,7 +5,7 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: '.',
 
 
     // frameworks to use
@@ -24,9 +24,7 @@ module.exports = function(config) {
     exclude: [
         'feti/static/js/optimized.js',
         'feti/static/js/main.js',
-        'feti/static/js/jasmine-main.js',
-        'feti/static/js/spec/MapSpec.js',
-        'feti/static/js/spec/SearchSpec.js'
+        'feti/static/js/jasmine-main.js'
     ],
 
 
