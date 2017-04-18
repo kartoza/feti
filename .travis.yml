@@ -15,11 +15,18 @@ env:
 python:
   - '3.4.5'
 
+node_js:
+  - "0.10"
+
 addons:
   postgresql: "9.3"
 
 services:
   - elasticsearch
+
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
 
 install:
   - pip install coveralls
@@ -32,6 +39,7 @@ install:
 before_script:
   - psql -c 'create database test_db;' -U postgres
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d test_db
+  - npm install
 
 script:
   # - flake8 --config .flake8 django_project
@@ -39,6 +47,8 @@ script:
   - python manage.py makemigrations
   - python manage.py migrate
   - coverage run manage.py test
+  - node_modules/karma/bin/karma start karma.conf.js --single-run
 
 after_success:
   - coveralls
+

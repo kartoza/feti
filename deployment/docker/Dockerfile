@@ -63,6 +63,13 @@ COPY package.json /home/web/django_project/package.json
 RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-concat grunt-contrib-uglify
 RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
 
+# Install Karma
+RUN npm install karma --save-dev
+RUN npm install -g karma-cli
+RUN npm install jasmine-core --save-dev
+RUN npm install karma-jasmine karma-firefox-launcher --save-dev
+ADD karma.conf.js karma.conf.js
+
 ADD uwsgi.conf /uwsgi.conf
 
 # Open port 8080 as we will be running our uwsgi socket on that
