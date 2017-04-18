@@ -33,7 +33,7 @@ define([
             _.each(response, function (row) {
                 var id = row['campus_id'];
                 var campus_is_favorite = id in Common.Favorites;
-                if (typeof row['campus_popup'] == 'undefined') {
+                if (typeof row['campus_popup'] === 'undefined') {
                     return true;
                 }
                 if (!(id in indexes)) {
@@ -53,7 +53,7 @@ define([
                         }
                     }
                     var campusTitle = row["campus_provider"];
-                    if (model == "campus") {
+                    if (model === "campus") {
                         campusTitle = campusTitle.replace(
                             regex, function (str) {
                                 return '<mark>' + str + '</mark>'
@@ -71,7 +71,7 @@ define([
                         "saved": campus_is_favorite,
                         "public_institution": row["campus_public_institution"]
                     };
-                    if (row["campus_icon"] != "") {
+                    if (row["campus_icon"] !== "") {
                         var icon = '';
                         if(row["campus_icon"].indexOf('media/') > -1) {
                             icon = row["campus_icon"];
@@ -91,7 +91,7 @@ define([
                     courseNldr = "[" + row["course_nlrd"] + "] ";
                 }
                 var courseTitle = courseNldr + row["course_course_description"];
-                if (model == "course") {
+                if (model === "course") {
                     courseTitle = courseTitle.replace(
                         that.getRegex(that.last_query), function (str) {
                             return '<mark>' + str + '</mark>'

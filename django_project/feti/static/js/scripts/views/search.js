@@ -4,8 +4,22 @@ define([
     'scripts/collections/occupation',
     'scripts/collections/campus',
     'scripts/collections/course',
-    'scripts/collections/favorites'
-], function (searchbarTemplate, Common, occupationCollection, campusCollection, courseCollection, favoritesCollection) {
+    'scripts/collections/favorites',
+    'backbone',
+    'jquery',
+    'chosen',
+    'jqueryUi',
+    'bootstrapSlider'
+], function (
+    searchbarTemplate,
+    Common,
+    occupationCollection,
+    campusCollection,
+    courseCollection,
+    favoritesCollection,
+    Backbone,
+    $,
+    chosen) {
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
@@ -33,14 +47,14 @@ define([
             this.render();
             this.$result_toggle = $('#result-toogle');
             this.$search_bar = $(".search-bar");
-            this.$search_bar_input = $("#search-bar-input");
+            this.$search_bar_input = this.$el.find("#search-bar-input");
             this.$search_form = $("#search-form");
             this.$provider_button = $("#where-to-study");
             this.$course_button = $("#what-to-study");
             this.$occupation_button = $("#choose-occupation");
             this.$favorites_button = $("#favorites");
             this.$clear_draw = $("#clear-draw");
-            this.$search_clear = $("#search-clear");
+            this.$search_clear = this.$el.find("#search-clear");
             this.$filter_tag_label = $('#filter-tag');
 
             this.$filter_panel_course = $('.filter-panel-course');
@@ -205,7 +219,15 @@ define([
             event.preventDefault();
             if (!$(event.target).parent().hasClass('active')) {
 
-                var mode = $(event.target).parent().data("mode");
+                var mode = $(event.target).data("mode");
+
+                if(typeof mode === 'undefined') { // If undefined try find the parent
+                     mode = $(event.target).parent().data("mode");
+                }
+
+                if(typeof mode === 'undefined') {
+                    return;
+                }
 
                 // Change active button
                 this.changeCategoryButton(mode);
@@ -257,12 +279,11 @@ define([
                     }
                 }
             }
-            if (mode == 'favorites') {
+            if (mode === 'favorites') {
                 this._getFavorites();
             }
         },
         _openFavorites: function (filter) {
-            console.log('open favorites');
             $('.search-row').hide();
             this.showResult();
             var mode = 'favorites';
@@ -756,7 +777,10 @@ define([
             if(this.filtersInMode[courseMode]['minimum-credits']>0) {
                 this.filtered[courseMode] = true;
             }
-            this.minimumCreditsSlider.bootstrapSlider('setValue', this.filtersInMode[courseMode]['minimum-credits']);
+
+            if(typeof this.minimumCreditsSlider !== 'undefined') {
+                this.minimumCreditsSlider.bootstrapSlider('setValue', this.filtersInMode[courseMode]['minimum-credits']);
+            }
 
             if(this.filtersInMode[providerMode]['public-institution-select']==null) {
                 $('#public-institution-select').val('-');
@@ -805,7 +829,9 @@ define([
             $('#public-institution-select').val('-');
             $('#public-institution-select').trigger("chosen:updated");
 
-            this.minimumCreditsSlider.bootstrapSlider('setValue', 0);
+            if(typeof this.minimumCreditsSlider !== 'undefined') {
+                this.minimumCreditsSlider.bootstrapSlider('setValue', 0);
+            }
 
             if(mode==courseMode){
                 this.filtersInMode[mode] = {
@@ -860,93 +886,95 @@ define([
             });
 
             // Get field of study
-            $.ajax({
-                url: 'api/field_of_study',
-                type: 'GET',
-                success: function (response) {
-                    $.each(response, function (i, item) {
-                        $('#field-of-study-select').append($('<option>', {
-                            value: item.id,
-                            text : item.field_of_study_description,
-                            selected: item.id == that.filtersInMode[courseMode]['field-of-study-select']
-                        }));
-                        $('#field-of-study-provider-select').append($('<option>', {
-                            value: item.id,
-                            text : item.field_of_study_description,
-                            selected: item.id == that.filtersInMode[providerMode]['field-of-study-provider-select']
-                        }));
-                    });
+            if(!Common.DebugMode){
+                $.ajax({
+                    url: 'api/field_of_study',
+                    type: 'GET',
+                    success: function (response) {
+                        $.each(response, function (i, item) {
+                            $('#field-of-study-select').append($('<option>', {
+                                value: item.id,
+                                text : item.field_of_study_description,
+                                selected: item.id == that.filtersInMode[courseMode]['field-of-study-select']
+                            }));
+                            $('#field-of-study-provider-select').append($('<option>', {
+                                value: item.id,
+                                text : item.field_of_study_description,
+                                selected: item.id == that.filtersInMode[providerMode]['field-of-study-provider-select']
+                            }));
+                        });
 
-                    $('#field-of-study-select').chosen({
-                        no_results_text: "Oops, nothing found!",
-                        width: "80%"
-                    });
-                    $('#field-of-study-provider-select').chosen({
-                        no_results_text: "Oops, nothing found!",
-                        width: "80%"
-                    });
+                        $('#field-of-study-select').chosen({
+                            no_results_text: "Oops, nothing found!",
+                            width: "80%"
+                        });
+                        $('#field-of-study-provider-select').chosen({
+                            no_results_text: "Oops, nothing found!",
+                            width: "80%"
+                        });
 
-                    //update filter data if started from url
-                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
-                }
-            });
-            $.ajax({
-                url: 'api/qualification_type',
-                type: 'GET',
-                success: function (response) {
-                    $.each(response, function (i, item) {
-                        $('#qualification-type-select').append($('<option>', {
-                            value: item.id,
-                            text : item.type,
-                            selected: item.id == that.filtersInMode[courseMode]['qualification-type-select']
-                        }));
-                    });
-                    $('#qualification-type-select').chosen({
-                        no_results_text: "Oops, nothing found!",
-                        width: "80%"
-                    });
-                    //update filter data
-                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
-                }
-            });
-            $.ajax({
-                url: 'api/national_qualifications_framework',
-                type: 'GET',
-                success: function (response) {
-                    $.each(response, function (i, item) {
-                        $('#nqf-level-select').append($('<option>', {
-                            value: item.id,
-                            text : item.text,
-                            selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
-                        }));
-                    });
-                    $('#nqf-level-select').chosen({
-                        no_results_text: "Oops, nothing found!",
-                        width: "80%"
-                    });
-                    //update filter data
-                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
-                }
-            });
-            $.ajax({
-                url: 'api/subfield_of_study',
-                type: 'GET',
-                success: function (response) {
-                    $.each(response, function (i, item) {
-                        $('#subfield-of-study-select').append($('<option>', {
-                            value: item.id,
-                            text : item.learning_subfield,
-                            selected: item.id == that.filtersInMode[courseMode]['subfield-of-study-select']
-                        }));
-                    });
-                    $('#subfield-of-study-select').chosen({
-                        no_results_text: "Oops, nothing found!",
-                        width: "50%"
-                    });
-                    //update filter data
-                    Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
-                }
-            });
+                        //update filter data if started from url
+                        Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
+                    }
+                });
+                $.ajax({
+                    url: 'api/qualification_type',
+                    type: 'GET',
+                    success: function (response) {
+                        $.each(response, function (i, item) {
+                            $('#qualification-type-select').append($('<option>', {
+                                value: item.id,
+                                text : item.type,
+                                selected: item.id == that.filtersInMode[courseMode]['qualification-type-select']
+                            }));
+                        });
+                        $('#qualification-type-select').chosen({
+                            no_results_text: "Oops, nothing found!",
+                            width: "80%"
+                        });
+                        //update filter data
+                        Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
+                    }
+                });
+                $.ajax({
+                    url: 'api/national_qualifications_framework',
+                    type: 'GET',
+                    success: function (response) {
+                        $.each(response, function (i, item) {
+                            $('#nqf-level-select').append($('<option>', {
+                                value: item.id,
+                                text : item.text,
+                                selected: item.id == that.filtersInMode[courseMode]['nqf-level-select']
+                            }));
+                        });
+                        $('#nqf-level-select').chosen({
+                            no_results_text: "Oops, nothing found!",
+                            width: "80%"
+                        });
+                        //update filter data
+                        Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
+                    }
+                });
+                $.ajax({
+                    url: 'api/subfield_of_study',
+                    type: 'GET',
+                    success: function (response) {
+                        $.each(response, function (i, item) {
+                            $('#subfield-of-study-select').append($('<option>', {
+                                value: item.id,
+                                text : item.learning_subfield,
+                                selected: item.id == that.filtersInMode[courseMode]['subfield-of-study-select']
+                            }));
+                        });
+                        $('#subfield-of-study-select').chosen({
+                            no_results_text: "Oops, nothing found!",
+                            width: "50%"
+                        });
+                        //update filter data
+                        Common.Dispatcher.trigger('sidebar:update_filter_data',that.filtersInMode);
+                    }
+                });
+            }
         }
     });
 

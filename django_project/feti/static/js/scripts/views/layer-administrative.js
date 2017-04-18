@@ -1,6 +1,7 @@
 define([
-    'common'
-], function (Common) {
+    'common',
+    'backbone'
+], function (Common, Backbone) {
     var LayerAdministrative = Backbone.View.extend({
         MAX_SIZE: 100,
         layer: ['province', 'district', 'municiple'],

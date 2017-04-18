@@ -1,6 +1,8 @@
 define([
-    'common'
-], function (Common) {
+    'common',
+    'backbone',
+    'jquery'
+], function (Common, Backbone, $) {
     var LoginModalView = Backbone.View.extend({
         id: 'login-modal',
         className: 'modal fade',
@@ -37,7 +39,9 @@ define([
         render: function () {
             if (this.template) {
                 this.$el.html(this.template());
-                this.$el.modal({show: false});
+                if(typeof this.$el !== 'undefined') {
+                    this.$el.modal({show: false});
+                }
             }
             return this;
         }
