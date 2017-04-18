@@ -13,6 +13,7 @@ Object.keys(window.__karma__.files).forEach(function (file) {
 })
 
 require.config({
+  basePath: './',
   paths: {
         text: 'libs/text',
         common: 'common',
