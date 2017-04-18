@@ -39,6 +39,8 @@ from feti.api_views.national_qualifications_subframework import (
 )
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
+from feti.views.jasmine import JasmineView
+from django.conf import settings
 
 sqs = SearchQuerySet()
 
@@ -159,3 +161,9 @@ urlpatterns = patterns(
         view=UpdateProviderView.as_view(),
         name='primary_institute_campus'),
 ) + api_urls
+
+if settings.DEBUG:
+    urlpatterns += patterns(
+        '',
+        url(r'jasmine', JasmineView.as_view())
+    )

@@ -177,7 +177,10 @@ define([
             }
         },
         getRegex: function (character) {
-            return new RegExp(character, 'gi');
+            if (typeof character === 'string' || character instanceof String){
+                return new RegExp(character, 'gi');
+            }
+            return new RegExp(character);
         }
     });
 });

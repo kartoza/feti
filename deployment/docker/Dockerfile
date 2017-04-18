@@ -55,6 +55,8 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get -y --force-yes install nodejs
 
+WORKDIR /home/web/django_project
+
 # Install grunt
 RUN npm install -g grunt-cli
 COPY package.json /home/web/django_project/package.json
@@ -66,5 +68,4 @@ ADD uwsgi.conf /uwsgi.conf
 # Open port 8080 as we will be running our uwsgi socket on that
 EXPOSE 8080
 
-WORKDIR /home/web/django_project
 CMD ["uwsgi", "--ini", "/uwsgi.conf"]

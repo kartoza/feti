@@ -1,7 +1,7 @@
 /**
  * Created by Dimas on 12/3/16.
  */
-define([], function () {
+define(['backbone', 'jquery', 'underscore'], function (Backbone, $, _) {
 
     var Share = new function () {
 

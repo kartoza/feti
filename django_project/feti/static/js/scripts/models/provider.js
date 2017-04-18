@@ -1,7 +1,10 @@
 /*global define*/
 define([
-    'common'
-], function (Common) {
+    'common',
+    'backbone',
+    'jquery',
+    'leafletExtraMarkers'
+], function (Common, Backbone, $) {
     var Provider = Backbone.Model.extend({
         parse: function (options) {
             var data;

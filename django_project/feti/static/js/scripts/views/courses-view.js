@@ -3,8 +3,20 @@ define([
     'scripts/models/provider',
     'scripts/views/provider-course-view',
     'scripts/models/course',
-    'text!scripts/templates/provider-detail.html'
-], function (Common, Provider, ProviderCourseView, Course, providerTemplate) {
+    'text!scripts/templates/provider-detail.html',
+    'backbone',
+    'underscore',
+    'jquery',
+    'bootstrap'
+], function (
+    Common,
+    Provider,
+    ProviderCourseView,
+    Course,
+    providerTemplate,
+    Backbone,
+    _,
+    $) {
     var ProviderView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title',

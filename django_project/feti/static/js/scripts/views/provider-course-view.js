@@ -1,8 +1,11 @@
 define([
     'common',
     'scripts/models/course',
-    'text!scripts/templates/course-view.html'
-], function (Common, Course, courseTemplate) {
+    'text!scripts/templates/course-view.html',
+    'backbone',
+    'jquery',
+    'underscore'
+], function (Common, Course, courseTemplate, Backbone, $, _) {
     var CourseView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-row',

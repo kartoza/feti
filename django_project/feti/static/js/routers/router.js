@@ -2,8 +2,10 @@
 define([
     'scripts/views/map',
     'scripts/views/login',
-    'common'
-], function (MapView, LoginView, Common) {
+    'common',
+    'backbone',
+    'jquery'
+], function (MapView, LoginView, Common, Backbone, $) {
     var history = [];
     var AppRouter = Backbone.Router.extend({
         parameters: {
