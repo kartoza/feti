@@ -78,29 +78,6 @@ PIPELINE = {
         }
     },
     'JAVASCRIPT': {
-        'contrib': {
-            'source_filenames': (
-                'js/bootstrap.js',
-                'js/libs/moment.min.js',
-                'js/libs/Leaflet/1.0.3/leaflet.js',
-                'js/libs/ripples.min.js',
-                'js/libs/validate.js',
-                'js/libs/leaflet-extra-markers/leaflet.extra-markers.js',
-                'js/libs/underscore-1.8.3.min.js',
-                'js/libs/backbone-1.3.3.min.js',
-                'js/libs/leaflet.draw-0.4.9/leaflet.draw.js',
-                'js/libs/easy-button/easy-button.js',
-                'js/libs/bootstrap-slider-9.7.2/bootstrap-slider.js',
-                'js/libs/chosen.jquery.min.js',
-            ),
-            'output_filename': 'js/contrib.js',
-        },
-        'appjs': {
-            'source_filenames': (
-                'js/csrf-ajax.js',
-            ),
-            'output_filename': 'js/appjs.js'
-        },
         'grappelli_override': {
             'source_filenames': (
                 'js/libs/grappelli_override.js',

@@ -33,26 +33,22 @@ require.config({
         leafletExtraMarkers: {
             deps: [
                 'leaflet'
-            ],
-            exports: 'LeafletExtraMarkers'
+            ]
         },
         leafletDraw: {
             deps: [
                 'leaflet'
-            ],
-            exports: 'L.Draw'
+            ]
         },
         chosen: {
             deps: [
                 'jquery'
-            ],
-            exports: 'Chosen'
+            ]
         },
         easyButton: {
             deps: [
                 'leaflet'
-            ],
-            exports: 'EasyButton'
+            ]
         }
     }
 });
