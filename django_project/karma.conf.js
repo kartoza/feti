@@ -25,7 +25,8 @@ module.exports = function(config) {
         'feti/static/js/optimized.js',
         'feti/static/js/main.js',
         'feti/static/js/jasmine-main.js',
-        {pattern: 'feti/static/js/spec/*.js', included: false}
+        'feti/static/js/spec/MapSpec.js',
+        'feti/static/js/spec/SearchSpec.js'
     ],
 
 
