@@ -24,7 +24,8 @@ module.exports = function(config) {
     exclude: [
         'feti/static/js/optimized.js',
         'feti/static/js/main.js',
-        'feti/static/js/jasmine-main.js'
+        'feti/static/js/jasmine-main.js',
+        {pattern: 'feti/static/js/spec/*.js', included: false}
     ],
 
 
