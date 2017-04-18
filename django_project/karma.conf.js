@@ -22,7 +22,9 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-        'feti/static/js/optimized.js'
+        'feti/static/js/optimized.js',
+        'feti/static/js/main.js',
+        'feti/static/js/jasmine-main.js'
     ],
 
 
