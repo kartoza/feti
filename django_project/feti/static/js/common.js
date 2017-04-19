@@ -3,15 +3,15 @@
 
 define(['backbone', 'underscore'], function (Backbone, _) {
     return {
-        IsLoggedIn: is_logged_in || false,
-        IsLoginError: is_login_error || false,
-        UserLocation: user_location || 'None',
+        IsLoggedIn: typeof is_logged_in !== 'undefined',
+        IsLoginError: typeof is_login_error !== 'undefined',
+        UserLocation: typeof user_location !== 'undefined' ? user_location : 'None',
         Dispatcher: _.extend({}, Backbone.Events),
         Router: {},
         CurrentSearchMode: 'provider',
         FetchXHR: null,
-        Favorites: favorites || null,
+        Favorites: typeof favorites !== 'undefined' ? favorites : null,
         EmbedVersion: typeof is_embed !== "undefined",
-        DebugMode: is_debug_mode || false,
+        DebugMode: typeof is_debug_mode !== 'undefined'
     };
 });

@@ -1,4 +1,4 @@
-var allTestFiles = []
+var allTestFiles = [];
 var TEST_REGEXP = /(spec|test)\.js$/i
 
 // Get a list of all the test files to include
@@ -10,25 +10,34 @@ Object.keys(window.__karma__.files).forEach(function (file) {
     //var normalizedTestModule = file.replace(".js", '')
     allTestFiles.push(file)
   }
-})
+});
+
+var specs = [
+    //'base/spec/TestSpec.js',
+    'base/spec/SearchSpec.js'
+];
 
 require.config({
-  basePath: '/base/src',
-  paths: {
-        text: 'feti/static/js/libs/text',
-        common: 'feti/static/js/common',
-        bootstrap: 'feti/static/js/libs/bootstrap.min',
-        moment: 'feti/static/js/libs/moment.min',
-        leaflet: 'feti/static/js/libs/Leaflet/1.0.3/leaflet',
-        leafletExtraMarkers: 'feti/static/js/libs/leaflet-extra-markers/leaflet.extra-markers',
-        jquery: 'feti/static/js/libs/jquery-1.11.3.min',
-        jqueryUi: 'feti/static/js/libs/jquery-ui-1.12.1.min',
-        underscore: 'feti/static/js/libs/underscore-1.8.3.min',
-        backbone: 'feti/static/js/libs/backbone-1.3.3.min',
-        leafletDraw: 'feti/static/js/libs/leaflet.draw-0.4.9/leaflet.draw',
-        easyButton: 'feti/static/js/libs/easy-button/easy-button',
-        bootstrapSlider: 'feti/static/js/libs/bootstrap-slider-9.7.2/bootstrap-slider',
-        chosen: 'feti/static/js/libs/chosen.jquery.min'
+    baseUrl: 'base',
+    // paths: maps ids with paths (no extension)
+    paths: {
+        text: 'libs/text',
+        common: 'common',
+        bootstrap: 'libs/bootstrap.min',
+        moment: 'libs/moment.min',
+        leaflet: 'libs/Leaflet/1.0.3/leaflet',
+        leafletExtraMarkers: 'libs/leaflet-extra-markers/leaflet.extra-markers',
+        jquery: 'libs/jquery-1.11.3.min',
+        jqueryUi: 'libs/jquery-ui-1.12.1.min',
+        underscore: 'libs/underscore-1.8.3.min',
+        backbone: 'libs/backbone-1.3.3.min',
+        leafletDraw: 'libs/leaflet.draw-0.4.9/leaflet.draw',
+        easyButton: 'libs/easy-button/easy-button',
+        bootstrapSlider: 'libs/bootstrap-slider-9.7.2/bootstrap-slider',
+        chosen: 'libs/chosen.jquery.min',
+        jasmine: ['libs/jasmine-2.5.2/jasmine'],
+        jasmineHtml: ['libs/jasmine-2.5.2/jasmine-html'],
+        boot: ['libs/jasmine-2.5.2/boot']
     },
     shim: {
         leaflet: {
@@ -65,8 +74,8 @@ require.config({
             ]
         }
     },
-    deps : allTestFiles,
+    deps : specs,
 
     // we have to kickoff jasmine, as it is asynchronous
     callback: window.__karma__.start
-})
+});

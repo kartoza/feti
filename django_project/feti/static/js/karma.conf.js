@@ -15,16 +15,18 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      {pattern: 'feti/static/js/**/*.js', included: false},
-      'jasmine-main.js'
+      {pattern: 'scripts/templates/**/*.html', included: false},
+      {pattern: 'scripts/**/*.js', included: false},
+      {pattern: 'common.js', included: false},
+      {pattern: 'libs/**/*.js', included: false},
+      {pattern: 'routers/**/*.js', included: false},
+      {pattern: 'spec/**/*Spec.js', included: false},
+      'karma-main.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-        'feti/static/js/main.js',
-        'feti/static/js/jasmine-main.js',
-        'feti/static/js/optimized.js'
     ],
 
 

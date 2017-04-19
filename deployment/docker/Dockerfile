@@ -68,7 +68,7 @@ RUN npm install karma --save-dev
 RUN npm install -g karma-cli
 RUN npm install jasmine-core --save-dev
 RUN npm install karma-jasmine karma-firefox-launcher --save-dev
-ADD karma.conf.js karma.conf.js
+# ADD karma.conf.js karma.conf.js
 
 ADD uwsgi.conf /uwsgi.conf
 
