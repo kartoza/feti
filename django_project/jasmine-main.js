@@ -7,9 +7,11 @@ Object.keys(window.__karma__.files).forEach(function (file) {
     // Normalize paths to RequireJS module names.
     // If you require sub-dependencies of test files to be loaded as-is (requiring file extension)
     // then do not normalize the paths
-    //var normalizedTestModule = file.replace(".js", '')
-    allTestFiles.push(file)
+    // var normalizedTestModule = "feti/static/"+file;
+      console.log(file);
+
   }
+  allTestFiles.push(file);
 })
 
 require.config({
@@ -54,17 +56,41 @@ require.config({
                 'leaflet'
             ]
         },
-        chosen: {
-            deps: [
-                'jquery'
-            ]
+        shim: {
+            leaflet: {
+                exports: 'L'
+            },
+            underscore: {
+                exports: '_'
+            },
+            backbone: {
+                deps: [
+                    'underscore',
+                    'jquery'
+                ],
+                exports: 'Backbone'
+            },
+            leafletExtraMarkers: {
+                deps: [
+                    'leaflet'
+                ]
+            },
+            leafletDraw: {
+                deps: [
+                    'leaflet'
+                ]
+            },
+            chosen: {
+                deps: [
+                    'jquery'
+                ]
+            },
+            easyButton: {
+                deps: [
+                    'leaflet'
+                ]
+            }
         },
-        easyButton: {
-            deps: [
-                'leaflet'
-            ]
-        }
-    },
     deps : allTestFiles,
 
     // we have to kickoff jasmine, as it is asynchronous
