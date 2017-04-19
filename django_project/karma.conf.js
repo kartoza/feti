@@ -15,8 +15,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'jasmine-main.js',
-      {pattern: 'feti/static/js/**/*.js', included: false},
+        {pattern: 'feti/static/js/libs/**/*.js', included: false},
+        {pattern: 'feti/static/js/routers/**/*.js', included: false},
+        {pattern: 'feti/static/js/scripts/**/*.js', included: false},
+        {pattern: 'feti/static/js/common.js', included: false},
+        {pattern: 'feti/static/js/spec/*.js', included: false},
+        {pattern: 'jasmine-main.js', included: false},
+
     ],
 
 
