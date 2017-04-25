@@ -424,11 +424,11 @@ footer {
 
 #rcorner {
     border-radius: 25px;
-    border: 2px solid white;
+    border: 1px solid white;
     padding: 5px 0;
     text-align: center;
     width: 150px;
-    height: 40px;
+    height: 37px;
     color: white;
     margin-top: 5px;
     line-height: 25px;
