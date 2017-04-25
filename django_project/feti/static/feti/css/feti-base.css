@@ -421,3 +421,15 @@ footer {
     color: white;
     border: none !important;
 }
+
+#rcorner {
+    border-radius: 25px;
+    border: 2px solid white;
+    padding: 5px 0;
+    text-align: center;
+    width: 150px;
+    height: 40px;
+    color: white;
+    margin-top: 5px;
+    line-height: 25px;
+}

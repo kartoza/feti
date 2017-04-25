@@ -1,8 +1,8 @@
 # coding=utf-8
 """Model class for feedback"""
 
-from django.contrib.gis.db import models
 import datetime
+from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
 __author__ = 'Anita Hapsari <anita@kartoza.com>'
@@ -59,4 +59,4 @@ class Feedback(models.Model):
         return self.__unicode__()
 
     def __unicode__(self):
-        return u'' + self.title
+        return u'%s' % self.title
