@@ -2,6 +2,7 @@
 """Model class for feedback"""
 
 from django.db import models
+from django.utils import timezone
 
 
 class Feedback(models.Model):
@@ -30,6 +31,13 @@ class Feedback(models.Model):
         null=False,
         blank=False
     )
+
+    read = models.BooleanField(
+        help_text='Feedback is read/processed',
+        default=False
+    )
+
+    date = timezone.now()
 
     class Meta:
         ordering = ['title']
