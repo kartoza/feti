@@ -1,8 +1,10 @@
 # coding=utf-8
 
 from braces.views import LoginRequiredMixin
+from django.contrib import messages
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 from feti.models.feedback import Feedback
 from feti.forms.feedback_form import FeedbackForm
 
@@ -25,4 +27,8 @@ class FeedbackInputView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse('feti:landing_page')
+        return reverse('feti:success_view')
+
+
+class FeedbackSubmittedView(TemplateView):
+    template_name = 'feti/success_view.html'

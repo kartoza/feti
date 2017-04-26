@@ -1,8 +1,7 @@
 # coding=utf-8
 
+from django.contrib import messages
 from django.contrib.gis import forms
-import datetime
-from feti.models.feedback import Feedback
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout,
@@ -10,6 +9,7 @@ from crispy_forms.layout import (
     Submit,
     Field,
 )
+from feti.models.feedback import Feedback
 
 __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '25/04/17'
@@ -43,8 +43,4 @@ class FeedbackForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Submit'))
 
     def save(self, commit=True):
-        instance = super(FeedbackForm, self).save(commit=False)
-        instance.read = False
-        instance.date = datetime.date.today()
-        instance.save()
-        return instance
+        super(FeedbackForm, self).save(commit=True)

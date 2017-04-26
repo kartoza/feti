@@ -1,0 +1,17 @@
+{% extends 'main_base.html' %}
+
+{% block content %}
+<html>
+<head>
+  <title>Success view</title>
+</head>
+<body>
+<div class="wrapper" style="text-align: center">
+    <p style="margin-top: 100px; font-size: 20pt">Your feedback is submitted.</p>
+    <p style="font-size: 20pt">Thank you!</p>
+    <a class="btn btn-default btn-mini" href="{% url 'feti:landing_page' %}" style="color: black" >Back to Home</a>
+
+</div>
+</body>
+</html>
+{% endblock %}

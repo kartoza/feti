@@ -201,6 +201,14 @@ class URLAdmin(admin.ModelAdmin):
     readonly_fields = ('date', 'random_string')
 
 
+class FeedbackAdmin(admin.ModelAdmin):
+    """Custom admin class for feedback model."""
+
+    list_display = ('title', 'name', 'date', 'read')
+    list_filter = ['date']
+    ordering = ['-date']
+
+
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
 admin.site.site_title = 'Feti Administration'
@@ -216,4 +224,4 @@ admin.site.register(URL, URLAdmin)
 
 admin.site.register(EducationTrainingQualityAssurance)
 admin.site.register(NationalQualificationsFramework)
-admin.site.register(Feedback, admin.ModelAdmin)
+admin.site.register(Feedback, FeedbackAdmin)
