@@ -13,8 +13,25 @@ class ApiCampus(CommonSearch, APIView):
     """
     Api to filter campus by query
     """
-    def get(self, request, format=None):
-        query, options = self.process_request(request)
+    def get(self, request, *args):
+        """Get the campuses.
+
+        :param request: HTTP request object
+        :type request: HttpRequest
+
+        :param args: Positional arguments
+        :type args: tuple
+        
+        :returns: URL
+        :rtype: HttpResponse
+        """
+        query_dict = self.request.GET.dict()
+        query, options = self.process_request(query_dict)
+        campus_data = self.get_campuses(query, options)
+        return Response(campus_data)
+
+    def get_campuses(self, query, options):
+        """Get campuses based on query and other filters."""
         search_in_campus_model = True
 
         if options['advance_search']:
@@ -28,14 +45,14 @@ class ApiCampus(CommonSearch, APIView):
         if options and 'shape' in options:
             if options['type'] == 'polygon':
                 sqs = self.filter_polygon(
-                    sqs,
-                    options['shape']
+                        sqs,
+                        options['shape']
                 )
             elif options['type'] == 'circle':
                 sqs = self.filter_radius(
-                    sqs,
-                    options['shape'],
-                    options['radius']
+                        sqs,
+                        options['shape'],
+                        options['radius']
                 )
 
         campus_data = []
@@ -50,9 +67,10 @@ class ApiCampus(CommonSearch, APIView):
                 if stored_fields['campus_location']:
                     campus_location = stored_fields['campus_location']
                     stored_fields['campus_location'] = "{0},{1}".format(
-                        campus_location.y, campus_location.x
+                            campus_location.y, campus_location.x
                     )
 
+                # Remove uneeded fields
                 del stored_fields['courses_is_null']
                 del stored_fields['campus_is_null']
                 del stored_fields['campus_location_is_null']
@@ -92,13 +110,13 @@ class ApiCampus(CommonSearch, APIView):
 
                 for course in value:
                     courses.append(
-                        '%s ;; [%s] %s' % (
-                            course['course_id'],
-                            course['course_nlrd'],
-                            course['course_course_description'].replace('\'', '\"')
-                        )
+                            '%s ;; [%s] %s' % (
+                                course['course_id'],
+                                course['course_nlrd'],
+                                course['course_course_description'].replace('\'', '\"')
+                            )
                     )
                 campus_object['courses'] = str(courses)
                 campus_data.append(campus_object)
 
-        return Response(campus_data)
+        return campus_data
