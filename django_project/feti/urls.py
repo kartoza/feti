@@ -7,6 +7,7 @@ from feti.forms.search import DefaultSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import search_view_factory, SearchView
 from feti.views.campus import UpdateCampusView
+from feti.views.feedback import FeedbackInputView, FeedbackSubmittedView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import EmbedPage, LandingPage
 from feti.views.api import (
@@ -148,6 +149,12 @@ urlpatterns = patterns(
     url(regex='^primary-institute/(?P<pk>\d+)/update/$',
         view=UpdateProviderView.as_view(),
         name='primary_institute_campus'),
+    url(regex='^leave-feedback/$',
+        view=FeedbackInputView.as_view(),
+        name='input-feedback'),
+    url(regex='^feedback-submitted/$',
+        view=FeedbackSubmittedView.as_view(),
+        name='success_view'),
 ) + api_urls
 
 if settings.DEBUG:

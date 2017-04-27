@@ -19,6 +19,7 @@ from feti.models.learning_pathway import LearningPathway, Step, StepDetail
 from feti.models.url import URL
 from feti.models.education_training_quality_assurance import EducationTrainingQualityAssurance
 from feti.models.national_qualifications_framework import NationalQualificationsFramework
+from feti.models.feedback import Feedback
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -200,6 +201,14 @@ class URLAdmin(admin.ModelAdmin):
     readonly_fields = ('date', 'random_string')
 
 
+class FeedbackAdmin(admin.ModelAdmin):
+    """Custom admin class for feedback model."""
+
+    list_display = ('title', 'name', 'date', 'read')
+    list_filter = ['date']
+    ordering = ['-date']
+
+
 admin.site.site_header = 'Feti Administration'
 admin.site.site_url = '/'
 admin.site.site_title = 'Feti Administration'
@@ -215,3 +224,4 @@ admin.site.register(URL, URLAdmin)
 
 admin.site.register(EducationTrainingQualityAssurance)
 admin.site.register(NationalQualificationsFramework)
+admin.site.register(Feedback, FeedbackAdmin)
