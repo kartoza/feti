@@ -70,6 +70,7 @@ class SharingMixin(object):
         return None
 
     def download_map(self, filename, markers, provider=None):
+        check_existence = True
         osm_static_url = 'http://staticmap.openstreetmap.de/staticmap.php?center=-30.5,24&' \
                          'zoom=5&size=865x512&maptype=mapnik'
         if markers:
