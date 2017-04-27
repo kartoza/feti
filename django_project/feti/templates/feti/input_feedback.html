@@ -1,4 +1,10 @@
 {% extends "main_base.html" %}
+{% block navbar %}
+    <div id="navigation_bar">
+        {% include 'feti/navigation_bar.html' %}
+    </div>
+{% endblock %}
+
 {% load crispy_forms_tags %}
 
 {% block extra_head %}
@@ -8,12 +14,18 @@
 
 {% endblock %}
 
+{% block title %}
+    FORD 2 - Input Feedback
+{% endblock title %}
+
 {% block page_title %}
     <h1>Input Feedback</h1>
 {% endblock page_title %}
 
 {% block content %}
 
+    <div class="vertical-space"></div>
+    <hr/>
     <section id="forms">
         <div class='container'>
             {% crispy form %}

@@ -12,7 +12,7 @@ __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '25/04/17'
 
 
-class FeedbackInputView(LoginRequiredMixin, CreateView):
+class FeedbackInputView(CreateView):
     context_object_name = 'feedback'
     template_name = 'feti/input_feedback.html'
     form_class = FeedbackForm
