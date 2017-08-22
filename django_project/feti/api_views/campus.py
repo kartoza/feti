@@ -63,7 +63,7 @@ class ApiCampus(CommonSearch, APIView):
         campuses = {}
 
         if not sqs:
-            return Response(None)
+            return None
 
         for result in sqs:
             stored_fields = result.get_stored_fields()
