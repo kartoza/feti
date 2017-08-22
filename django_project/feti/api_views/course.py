@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from feti.api_views.common_search import CommonSearch
+from django.conf import settings
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '13/02/17'
@@ -14,7 +15,11 @@ class CourseAPIView(CommonSearch, APIView):
     Api to filter course by query
     """
     def get(self, request, format=None):
-        query, options = self.process_request(self.request.GET.dict())
+        query_dict = self.request.GET.dict()
+        if 'administrative' not in query_dict:
+            if settings.ADMINISTRATIVE:
+                query_dict['administrative'] = settings.ADMINISTRATIVE
+        query, options = self.process_request(query_dict)
 
         if '=' in query:
             queries = query.split('=')
