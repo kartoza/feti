@@ -4,7 +4,7 @@ define([
 ], function (Common, Backbone) {
     var LayerAdministrative = Backbone.View.extend({
         MAX_SIZE: 100,
-        layer: ['province', 'district', 'municiple'],
+        layer: ['district', 'municiple'],
         polygons: {},
         cache: {},
         currentAdminLayer: {},

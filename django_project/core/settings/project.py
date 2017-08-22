@@ -100,3 +100,6 @@ GRUNT_MODULES = {
         'optimized': 'js/optimized.js',
     }
 }
+
+# Set administrative
+ADMINISTRATIVE = 'Western Cape'

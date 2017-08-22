@@ -3,6 +3,7 @@ from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.management.base import BaseCommand
 from map_administrative.models.province import Province
 from map_administrative.models.district import District
+from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -21,6 +22,12 @@ class Command(BaseCommand):
             district_name = feature['DISTRICT_N'].value
 
             if province_name in self.provinces:
+
+                if settings.ADMINISTRATIVE:
+                    if self.provinces[province_name] != \
+                            settings.ADMINISTRATIVE:
+                        continue
+
                 geometry = feature.geom
 
                 try:
