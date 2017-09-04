@@ -27,9 +27,6 @@ class ApiCampus(CommonSearch, APIView):
         :rtype: HttpResponse
         """
         query_dict = self.request.GET.dict()
-        if 'administrative' not in query_dict:
-            if settings.ADMINISTRATIVE:
-                query_dict['administrative'] = settings.ADMINISTRATIVE
         query, options = self.process_request(query_dict)
         campus_data = self.get_campuses(query, options)
         return Response(campus_data)

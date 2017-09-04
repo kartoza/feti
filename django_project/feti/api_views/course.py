@@ -16,9 +16,6 @@ class CourseAPIView(CommonSearch, APIView):
     """
     def get(self, request, format=None):
         query_dict = self.request.GET.dict()
-        if 'administrative' not in query_dict:
-            if settings.ADMINISTRATIVE:
-                query_dict['administrative'] = settings.ADMINISTRATIVE
         query, options = self.process_request(query_dict)
 
         if '=' in query:

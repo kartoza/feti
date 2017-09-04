@@ -1,6 +1,10 @@
 # coding=utf-8
 from feti.models.campus_course_entry import CampusCourseEntry
+from feti.models.campus import Campus
 from haystack import indexes
+
+from django.conf import settings
+from map_administrative.views import get_boundary
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '24/07/15'
@@ -132,4 +136,12 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
 
     def index_queryset(self, using=None):
         """Used to reindex model"""
+
+        if settings.ADMINISTRATIVE:
+            boundary = get_boundary(settings.ADMINISTRATIVE)
+            if boundary:
+                polygon = boundary.polygon_geometry
+                campus = Campus.objects.filter(location__within=polygon)
+                return self.get_model().objects.filter(campus__in=campus)
+
         return self.get_model().objects.all()

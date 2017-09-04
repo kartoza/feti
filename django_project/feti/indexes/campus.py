@@ -3,6 +3,8 @@ from django.conf import settings
 from feti.models.campus import Campus
 from haystack import indexes
 
+from map_administrative.views import get_boundary
+
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '24/04/15'
 
@@ -100,4 +102,12 @@ class CampusIndex(indexes.SearchIndex, indexes.Indexable):
 
     def index_queryset(self, using=None):
         """Used to reindex model"""
+
+        if settings.ADMINISTRATIVE:
+            boundary = get_boundary(settings.ADMINISTRATIVE)
+            if boundary:
+                drawn_polygon = boundary.polygon_geometry
+                return self.get_model().objects.filter(
+                        location__within=drawn_polygon)
+
         return self.get_model().objects.all()

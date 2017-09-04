@@ -385,13 +385,16 @@ class ApiAutocomplete(APIView):
                 campus_location_is_null='false',
                 courses_is_null='false'
             ).models(Campus)[:10]
-            suggestions = list(set([result.campus if q in result.object.campus.lower()
-                           else result.campus_provider for result in sqs]))
+            suggestions = list(set([
+                result.campus if q in result.object.campus.lower()
+                else result.campus_provider for result in sqs]))
+
         elif model == 'course':
             sqs = SearchQuerySet().autocomplete(
                     course_course_description=q
             ).models(CampusCourseEntry)[:10]
-            suggestions = list(set([result.course_course_description for result in sqs]))
+            suggestions = list(set([
+                result.course_course_description for result in sqs]))
         elif model == 'occupation':
             api = ApiOccupation()
             sqs = api.filter_model(query=q)
