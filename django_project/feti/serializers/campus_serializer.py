@@ -28,7 +28,7 @@ class CampusSerializer(serializers.ModelSerializer):
                 if item.campus.id == res['id']:
                     res['saved'] = True
                     course_context['course_saved'] = list(
-                            item.courses.all().values_list('id', flat=True)
+                        item.courses.all().values_list('id', flat=True)
                     )
 
         if self.context.get("courses"):
@@ -72,3 +72,22 @@ class CampusSerializer(serializers.ModelSerializer):
                 'lng': instance.location.x}
         res['model'] = 'campus'
         return res
+
+
+class CampusSummarySerializer(serializers.ModelSerializer):
+    address = serializers.SerializerMethodField()
+    phone = serializers.SerializerMethodField()
+    provider = serializers.SerializerMethodField()
+
+    def get_phone(self, obj):
+        return 'N/A' if not obj.address.phone else obj.address.phone
+
+    def get_address(self, obj):
+        return obj.address.__unicode__()
+
+    def get_provider(self, obj):
+        return obj.provider.__unicode__()
+
+    class Meta:
+        model = Campus
+        fields = ('id', 'address', 'phone', 'campus', 'provider', 'location')

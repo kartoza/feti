@@ -11,16 +11,17 @@ from feti.views.feedback import FeedbackInputView, FeedbackSubmittedView
 from feti.views.provider import UpdateProviderView
 from feti.views.landing_page import EmbedPage, LandingPage
 from feti.views.api import (
-    ApiCourse,
     ApiAutocomplete,
     ApiOccupation,
     ApiSavedCampus
 )
 from feti.api_views.campus import (
-    ApiCampus
+    ApiCampus,
+    CampusSummary
 )
 from feti.api_views.course import (
-    CourseAPIView
+    CourseAPIView,
+    ApiCourseIds
 )
 from feti.api_views.subfield_of_study import (
     SubFieldOfStudyAPIView
@@ -62,6 +63,7 @@ api_urls = patterns(
         r'^api/occupation',
         ApiOccupation.as_view(),
         name='api-occupation'),
+
     url(
         r'^api/autocomplete/(?P<model>.+)',
         ApiAutocomplete.as_view(),
@@ -82,6 +84,16 @@ api_urls = patterns(
         r'^api/generate-random-string/',
         ApiRandomString.as_view(),
         name="api-get-random-string"
+    ),
+    url(
+        r'^api/get-courses/',
+        ApiCourseIds.as_view(),
+        name='api-get-courses'
+    ),
+    url(
+        r'^api/detail-campus/',
+        CampusSummary.as_view(),
+        name='api-get-campus-detail'
     ),
     url(
         r'^url/(?P<random>[\w\d]+)',
