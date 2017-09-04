@@ -31,15 +31,23 @@ class Command(BaseCommand):
             try:
                 if 'MultiPolygon' not in geometry.geojson:
                     multipolygon = MultiPolygon(
-                        [Polygon(coords) for coords in
+                        [Polygon(coords).simplify(
+                            tolerance=0.001,
+                            preserve_topology=True) for coords in
                          municipality.polygon_geometry.coords[0]] +
-                        [Polygon(geometry.coords[0])])
+                        [Polygon(geometry.coords[0]).simplify(
+                            tolerance=0.001,
+                            preserve_topology=True)])
                     geometry = multipolygon.geojson
                 else:
                     multipolygon = MultiPolygon(
-                        [Polygon(coords) for coords in
+                        [Polygon(coords).simplify(
+                            tolerance=0.001,
+                            preserve_topology=True) for coords in
                          municipality.polygon_geometry.coords[0]] +
-                        [Polygon(coords) for coords in geometry.coords[0]])
+                        [Polygon(coords).simplify(
+                            tolerance=0.001,
+                            preserve_topology=True) for coords in geometry.coords[0]])
                     geometry = multipolygon.geojson
                 municipality.polygon_geometry = geometry
             except:
