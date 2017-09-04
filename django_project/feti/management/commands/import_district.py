@@ -37,19 +37,34 @@ class Command(BaseCommand):
 
                 try:
                     if 'MultiPolygon' not in geometry.geojson:
-                        geometry = MultiPolygon(
-                            [Polygon(coords) for coords in
-                             district.polygon_geometry.coords[0]] +
-                            [Polygon(geometry.coords[0])]).geojson
+                        multipolygon = MultiPolygon(
+                                [Polygon(coords).simplify(
+                                        tolerance=0.005,
+                                        preserve_topology=True) for coords in
+                                    district.polygon_geometry.coords[0]] +
+                                [Polygon(geometry.coords[0]).simplify(
+                                        tolerance=0.005,
+                                        preserve_topology=True)])
+                        geometry = multipolygon.geojson
                     else:
-                        geometry = MultiPolygon(
-                            [Polygon(coords) for coords in
-                             district.polygon_geometry.coords[0]] +
-                            [Polygon(coords) for coords in geometry.coords[0]]).geojson
+                        multipolygon = MultiPolygon(
+                                [Polygon(coords).simplify(
+                                        tolerance=0.005,
+                                        preserve_topology=True) for coords in
+                                    district.polygon_geometry.coords[0]] +
+                                [Polygon(coords).simplify(
+                                        tolerance=0.005,
+                                        preserve_topology=True) for coords in
+                                    geometry.coords[0]])
+                        geometry = multipolygon.geojson
                     district.polygon_geometry = geometry
                 except:
                     if 'MultiPolygon' not in geometry.geojson:
-                        geometry = MultiPolygon(Polygon(geometry.coords[0])).geojson
+                        multipolygon = MultiPolygon(
+                                Polygon(geometry.coords[0]).simplify(
+                                        tolerance=0.005,
+                                        preserve_topology=True))
+                        geometry = multipolygon.geojson
                     else:
                         geometry = geometry.geojson
                     district.polygon_geometry = geometry
