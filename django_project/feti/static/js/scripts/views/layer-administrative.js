@@ -72,7 +72,7 @@ define([
                             that.polygons[data.layer] = polygon;
                         }
                         that.setCurrentAdm();
-                        if (that.getCurrentAdminLayer() == "") {
+                        if (that.getCurrentAdminLayer() === "") {
                             Common.Dispatcher.trigger('search:updateRouter', '');
                         } else {
                             Common.Dispatcher.trigger('search:updateRouter', 'administrative=' + that.getCurrentAdminLayer());

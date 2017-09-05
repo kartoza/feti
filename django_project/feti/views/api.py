@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import abc
 import json
-from itertools import chain
-from more_itertools import unique_everseen
-from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.serializers.json import DjangoJSONEncoder
+from django.conf import settings
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.measure import Distance
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.core.exceptions import MultipleObjectsReturned
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from haystack.query import SQ, SearchQuerySet
@@ -16,7 +16,6 @@ from haystack.inputs import Clean, Exact
 from haystack.utils.geo import Point, D
 
 from feti.models.campus_course_entry import CampusCourseEntry
-from feti.serializers.campus_serializer import CampusSerializer
 from feti.serializers.occupation_serializer import OccupationSerializer
 from feti.serializers.favorite_serializer import FavoriteSerializer
 from user_profile.models import CampusCoursesFavorite
@@ -31,6 +30,7 @@ __copyright__ = 'kartoza.com'
 
 
 class SearchCampus(APIView):
+    page_limit = settings.LIMIT_PER_PAGE
     additional_context = {}
     courses_name = []
 
@@ -42,6 +42,7 @@ class SearchCampus(APIView):
         if query and len(query) < 3:
             return Response([])
         self.additional_context['query'] = query
+        self.page = request.GET.get('page', 0)
 
         # Get coordinates from request and create a polygon
         shape = request.GET.get('shape')
@@ -104,9 +105,9 @@ class SearchCampus(APIView):
         if polygon.geom_type == 'MultiPolygon':
             for p in polygon:
                 sqs = sqs.polygon(
-                            'campus_location',
-                            p
-                        )
+                    'campus_location',
+                    p
+                )
                 if len(sqs) > 0:
                     return sqs
             return None
@@ -142,17 +143,26 @@ class ApiCampus(SearchCampus):
     """
     Api to filter campus by query
     """
+
     def get(self, request, format=None):
         return SearchCampus.get(self, request)
 
     def filter_model(self, query, options=None):
         q = Clean(query)
-        sqs = SearchQuerySet()
-        sqs = sqs.filter(
-            long_description=q,
-            campus_location_is_null='false',
-            courses_is_null='false'
-        ).models(Campus)
+        if query:
+            q = Clean(query)
+            sqs = SearchQuerySet()
+            sqs = sqs.filter(
+                long_description=q,
+                campus_location_is_null='false',
+                courses_is_null='false'
+            ).models(Campus)
+        else:
+            sqs = SearchQuerySet()
+            sqs = sqs.filter(
+                campus_location_is_null='false',
+                courses_is_null='false'
+            ).models(Campus)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':
@@ -166,6 +176,16 @@ class ApiCampus(SearchCampus):
                     options['shape'],
                     options['radius']
                 )
+
+        paginator = Paginator(sqs, self.page_limit)
+        try:
+            sqs = paginator.page(self.page)
+        except PageNotAnInteger:
+            page = 1
+            sqs = paginator.page(page)
+        except EmptyPage:
+            page = paginator.num_pages
+            sqs = paginator.page(page)
 
         campus_data = []
 
@@ -223,9 +243,9 @@ class ApiCourse(SearchCampus):
                     sqs = self.filter_polygon(sqs, options['shape'])
                 elif options['type'] == 'circle':
                     sqs = self.filter_radius(
-                            sqs,
-                            options['shape'],
-                            options['radius']
+                        sqs,
+                        options['shape'],
+                        options['radius']
                     )
 
             for result in sqs:
@@ -258,9 +278,9 @@ class ApiCourse(SearchCampus):
                 sqs = self.filter_polygon(sqs, options['shape'])
             elif options['type'] == 'circle':
                 sqs = self.filter_radius(
-                        sqs,
-                        options['shape'],
-                        options['radius']
+                    sqs,
+                    options['shape'],
+                    options['radius']
                 )
 
         campus_data = []
@@ -297,7 +317,6 @@ class ApiOccupation(APIView):
 
 
 class ApiSavedCampus(APIView):
-
     def filter_model(self, user, options=None, query=None):
         drawn_polygon = None
         drawn_circle = None
@@ -334,15 +353,15 @@ class ApiSavedCampus(APIView):
                 drawn_polygon = boundary.polygon_geometry
 
         campus_course_fav = CampusCoursesFavorite.objects.filter(
-                user=user)
+            user=user)
 
         if drawn_polygon:
             campus_course_fav = campus_course_fav.filter(
-                    campus__location__within=drawn_polygon
+                campus__location__within=drawn_polygon
             )
         elif drawn_circle:
             campus_course_fav = campus_course_fav.filter(
-                    campus__location__distance_lt=(drawn_circle, Distance(m=radius))
+                campus__location__distance_lt=(drawn_circle, Distance(m=radius))
             )
 
         return campus_course_fav
@@ -373,7 +392,6 @@ class ApiSavedCampus(APIView):
 
 
 class ApiAutocomplete(APIView):
-
     def get(self, request, model):
         q = request.GET.get('q')
         q = q.lower()
@@ -391,7 +409,7 @@ class ApiAutocomplete(APIView):
 
         elif model == 'course':
             sqs = SearchQuerySet().autocomplete(
-                    course_course_description=q
+                course_course_description=q
             ).models(CampusCourseEntry)[:10]
             suggestions = list(set([
                 result.course_course_description for result in sqs]))

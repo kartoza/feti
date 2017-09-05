@@ -76,6 +76,7 @@ define([
             Common.Dispatcher.on('map:showShareBar', this.showShareBar, this);
             Common.Dispatcher.on('map:hideShareBar', this.hideShareBar, this);
             Common.Dispatcher.on('map:repositionMap', this.repositionMap, this);
+            Common.Dispatcher.on('map:repositionMapByLayer', this.repositionMapByLayer, this);
 
             Common.Dispatcher.on('map:addLayerToFilterLayers', this.addLayerToFilterLayers, this);
             Common.Dispatcher.on('map:removeLayerFromFilterLayers', this.removeLayerFromFilterLayers, this);
@@ -207,9 +208,9 @@ define([
             legend.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'legend');
                 div.innerHTML += '<div class="marker-legend">' +
-                                '<img src="/static/feti/images/marker_public.png">' +'Public Institution </br></div>';
+                    '<img src="/static/feti/images/marker_public.png">' + 'Public Institution </br></div>';
                 div.innerHTML += '<div class="marker-legend">' +
-                                '<img src="/static/feti/images/marker_private.png">' + 'Private Institution' + '</div>';
+                    '<img src="/static/feti/images/marker_private.png">' + 'Private Institution' + '</div>';
                 return div
             }
             legend.addTo(this.map)
@@ -515,7 +516,7 @@ define([
         clearAllDrawnLayer: function () {
             var mode = Common.CurrentSearchMode;
             this.layerAdministrativeView.resetBasedLayer();
-            if(typeof this.listDrawnItems[mode] === 'undefined') {
+            if (typeof this.listDrawnItems[mode] == 'undefined') {
                 return;
             }
 
@@ -526,7 +527,7 @@ define([
             }, this);
         },
         getCoordinatesQuery: function (mode) {
-            if(this.layerAdministrativeView.getCurrentAdminLayer()) {
+            if (this.layerAdministrativeView.getCurrentAdminLayer()) {
                 this.clearButton.enable();
                 return 'administrative=' + this.layerAdministrativeView.getCurrentAdminLayer()
             }
@@ -579,7 +580,7 @@ define([
                 this.map.addLayer(this.modesLayer[mode]);
             }
         },
-        addLayerToFilterLayers: function(layer) {
+        addLayerToFilterLayers: function (layer) {
             var mode = Common.CurrentSearchMode;
             if (typeof this.listDrawnItems[mode] === 'undefined') {
                 this.listDrawnItems[mode] = L.featureGroup();
@@ -587,24 +588,31 @@ define([
             this.listDrawnItems[mode].addLayer(layer);
             this.map.addLayer(this.listDrawnItems[mode]);
         },
-        removeLayerFromFilterLayers: function(layer) {
+        removeLayerFromFilterLayers: function (layer) {
             var mode = Common.CurrentSearchMode;
             if (typeof this.listDrawnItems[mode] === 'undefined') {
                 return
             }
             this.listDrawnItems[mode].removeLayer(layer);
         },
+        repositionMapByLayer: function (layer) {
+            this.map.fitBounds(layer.getBounds(), {paddingTopLeft: [75, 75]});
+        },
         repositionMap: function (mode) {
             // Reposition map after category changed
+
             if(this.layerAdministrativeView.active && this.listDrawnItems[mode]) {
                 return;
             }
 
-            if (!this.modesLayer[mode]) {
-                return;
+            if (Common.Router.is_initiated) {
+                if (!this.modesLayer[mode]) {
+                    return;
+                }
+                if (typeof this.modesLayer[mode].getBounds()._northEast != 'undefined') {
+                    this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
+                }
             }
-            if (typeof this.modesLayer[mode].getBounds()._northEast !== 'undefined')
-                this.map.fitBounds(this.modesLayer[mode].getBounds(), {paddingTopLeft: [75, 75]});
         },
         addLayer: function (layer) {
             this.map.addLayer(layer);
@@ -618,7 +626,7 @@ define([
                 this.map.removeLayer(this.listDrawnItems[fromMode]);
             }
             if (!this.map.hasLayer(this.listDrawnItems[toMode])) {
-                if(typeof this.listDrawnItems[toMode] != 'undefined') {
+                if (typeof this.listDrawnItems[toMode] != 'undefined') {
                     this.repositionMap(toMode);
                     this.map.addLayer(this.listDrawnItems[toMode]);
                 }
@@ -673,7 +681,7 @@ define([
             }
         },
         exitAllFullScreen: function () {
-            this.searchView.exitOccupation();
+            this.sideBarView.exitOccupation(true);
         },
         fullScreenMap: function (speed) {
             var d = {};
@@ -764,7 +772,7 @@ define([
                     _map._onResize();
                     that.isFullScreen = false;
                     that.searchView.mapResize(false, that.animationSpeed);
-                    that.searchView.exitOccupation(e);
+                    that.sideBarView.exitOccupation(true);
                     $('#feti-map').css('width', '100%');
                 });
 
@@ -799,7 +807,6 @@ define([
             }
             this.sideBarView.showMapCover();
             this.sideBarView.updateOccupationDetail();
-
 
         },
         closeResultContainer: function (div) {

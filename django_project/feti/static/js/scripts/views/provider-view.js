@@ -25,6 +25,7 @@ define([
         courses_template: _.template('<div id="<%- id %>-courses" class="collapse"></div>'),
         container: '#result-container-provider',
         model: Provider,
+        empty_search: false,
         events: {
             'click': 'clicked',
             'click .favorites': 'addToFavorites',
@@ -57,7 +58,7 @@ define([
                         'courses_id': course_id
                     }),
                     success: function (response) {
-                        if (response == 'added') {
+                        if (response === 'added') {
                             Common.Dispatcher.trigger('favorites:added', 'provider');
                             $(e.target).removeClass('fa-star-o');
                             $(e.target).addClass('fa-star filled');
@@ -85,21 +86,28 @@ define([
         },
         gotoMap: function (event) {
             $('#toogle-button').click();
-            this.clicked()
+            this.clicked();
             event.stopPropagation();
             return false;
         },
         render: function () {
             this.$el.empty();
             this.$el.html(this.template(this.model.attributes));
-            $(this.container).append(this.$el);
-            $(this.container).append(this.courses_template(this.model.attributes));
+            var $container = $(this.container);
+            if (this.empty_search) {
+                $container = $("#result-container-all-data")
+            }
+            $container.append(this.$el);
+            $container.append(this.courses_template(this.model.attributes));
             this.$elCourses = $("#" + this.model.attributes.id + "-courses");
             // toogling
             this.$el.attr("href", "#" + this.model.attributes.id + "-courses");
             this.$el.attr("data-toggle", "collapse");
             this.model.renderMarker();
             this.renderCourses();
+            if (this.empty_search) {
+                Common.Dispatcher.trigger('empty-data:marker-added', this.model.get('marker'));
+            }
         },
         renderCourses: function () {
             var that = this;
@@ -114,9 +122,18 @@ define([
                 }));
             });
         },
-        initialize: function () {
+        initialize: function (data) {
+            if (data['empty_search']) {
+                this.empty_search = data['empty_search'];
+            }
             this.courses = [];
             this.render();
+        },
+        show: function () {
+            this.model.show();
+        },
+        hide: function () {
+            this.model.hide();
         },
         destroy: function () {
             this.model.destroy();

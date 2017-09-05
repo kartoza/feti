@@ -8,13 +8,19 @@ define([
 
     var CampusCollection = Category.extend({
         model: Provider,
-        provider_url_template: _.template("/api/campus?q=<%- q %>&<%- coord %>"),
+        provider_url_template: _.template("/api/campus?page=<%- page %>&q=<%- q %>&<%- coord %>"),
         initialize: function () {
             this.url_template = this.provider_url_template;
             this.view = ProviderView;
             this.mode = 'provider';
+            Common.Dispatcher.on('empty-data:marker-added', this.addMarkerOfEmptyData, this);
+            Common.Dispatcher.on('empty-data:clear', this.clearEmptyData, this);
         },
         parse: function (response) {
+            if (this.last_query === "") {
+                $("#result-container-all-data").show();
+                $("#result-container-provider").hide();
+            }
             return this.campusCourseParser(response, "campus");
         },
         campusCourseParser: function (response, model) {
@@ -34,7 +40,7 @@ define([
             _.each(response, function (row) {
                 var id = row['campus_id'];
                 if (!(id in indexes)) {
-                    var campusIsMarked = (model == "campus" && that.last_query != "");
+                    var campusIsMarked = (model === "campus" && that.last_query !== "");
                     var campus = that.campusParser(row, campusIsMarked);
                     if (campus) {
                         // put campus is success
@@ -48,8 +54,8 @@ define([
                  * Push course to campus course list
                  */
                 var campusIndex = indexes[id];
-                if (campusIndex != undefined) {
-                    var courseIsMarked = (model == "course" && that.last_query != "");
+                if (campusIndex !== undefined) {
+                    var courseIsMarked = (model === "course" && that.last_query !== "");
                     that.courseParser(row, courseIsMarked, output[campusIndex]["courses"]);
                 }
             });
@@ -91,14 +97,17 @@ define([
                     "campus_phone": row["campus_phone"],
                     "public_institution": row["campus_public_institution"]
                 };
-		if (row["campus_icon_url"] != "") {
+                if (row["campus_icon_url"] !== "") {
                     var icon = '';
-                    if(row["campus_icon_url"].indexOf('media/') > -1) {
+                    if (row["campus_icon_url"].indexOf('media/') > -1) {
                         icon = row["campus_icon_url"];
                     } else {
                         icon = 'media/' + row["campus_icon_url"];
                     }
                     campus["icon"] = icon;
+                }
+                if (row["max"]) {
+                    campus["max"] = row["max"];
                 }
 
                 return campus;

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from .contrib import *  # noqa
 
-# Exclude elastic result which have a _score less than the minimum specified in min_score
+# Exclude elastic result which have a _score less than the minimum
+# specified in min_score
 ELASTIC_MIN_SCORE = 3.5
 
 DATABASES = {
@@ -103,3 +104,5 @@ GRUNT_MODULES = {
 
 # Set administrative
 ADMINISTRATIVE = 'Western Cape'
+
+LIMIT_PER_PAGE = 50

@@ -13,6 +13,8 @@
             var target = this;
             return target.replace(new RegExp(search, 'g'), replacement);
         };
+
+        var limit_per_page = "{{ limit_per_page }}";
         var favorites = "{{ favorite }}";
     </script>
 {% endblock %}

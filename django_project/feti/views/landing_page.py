@@ -1,4 +1,6 @@
 import json
+
+from django.conf import settings
 from django.views.generic import TemplateView
 from feti.models.course import Course
 from feti.models.occupation import Occupation
@@ -17,6 +19,7 @@ class LandingPage(TemplateView):
         context['courses'] = Course.objects.count()
         context['occupations'] = Occupation.objects.count()
         context['favorite'] = []
+        context['limit_per_page'] = settings.LIMIT_PER_PAGE
         if self.request.user.is_authenticated():
             #  check save campus/course
             campus_course_fav = CampusCoursesFavorite.objects.filter(
