@@ -14,6 +14,7 @@ define([
             this.view = ProviderView;
             this.mode = 'provider';
             Common.Dispatcher.on('empty-data:marker-added', this.addMarkerOfEmptyData, this);
+            Common.Dispatcher.on('empty-data:clear', this.clearEmptyData, this);
         },
         parse: function (response) {
             if (this.last_query === "") {

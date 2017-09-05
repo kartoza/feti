@@ -34,15 +34,14 @@ class ApiCampus(CommonSearch, APIView):
         search_in_campus_model = True
         campus_count = None
 
-        if not query:
-            sqs = self.filter_indexed_campus(query)
-        elif options and 'advance_search' in options:
-            search_in_campus_model = False
+        sqs = self.filter_indexed_campus(query)
 
-            sqs = self.filter_indexed_campus_course(query)
-            sqs = self.advanced_filter(sqs, options)
-        else:
-            sqs = self.filter_indexed_campus(query)
+        if options and 'advance_search' in options:
+            if options['advance_search']:
+                search_in_campus_model = False
+
+                sqs = self.filter_indexed_campus_course(query)
+                sqs = self.advanced_filter(sqs, options)
 
         if options and 'shape' in options:
             if options['type'] == 'polygon':

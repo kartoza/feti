@@ -17,6 +17,15 @@ define([
             finished: false,
             filtered: false
         },
+        clearEmptyData: function () {
+            this.empty_data = {
+                markers: L.featureGroup(),
+                views: [],
+                last_page: 1,
+                finished: false,
+                filtered: false
+            }
+        },
         url: function () {
             return this.url;
         },
@@ -25,12 +34,12 @@ define([
                 var that = this;
                 var filtered = that.empty_data['filtered'];
 
+                if(filtered) {
+                    this.clearEmptyData();
+                }
+
                 _.each(this.results, function (view) {
-                    if (view.empty_search && !filtered) {
-                        view.hide();
-                    } else {
-                        view.destroy();
-                    }
+                    view.destroy();
                 });
 
                 Common.Dispatcher.trigger('map:removeLayer', this.empty_data['markers']);
@@ -46,10 +55,6 @@ define([
                     } else if(this.empty_data['views'].length === 0) {
                         Common.Dispatcher.trigger('map:repositionMap', this.mode);
                     }
-                }
-                if(filtered) {
-                    this.empty_data['views'] = [];
-                    this.empty_data['markers'] = L.featureGroup();
                 }
             }
         },

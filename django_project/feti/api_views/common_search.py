@@ -136,10 +136,9 @@ class CommonSearch(object):
                 campus_location_isnull='false'
             ).models(CampusCourseEntry)
         else:
-            # sqs = SearchQuerySet().filter(
-            #     campus_location_isnull='false'
-            # ).models(CampusCourseEntry)
-            sqs = SearchQuerySet().models(CampusCourseEntry)
+            sqs = SearchQuerySet().filter(
+                campus_location_isnull='false'
+            ).models(CampusCourseEntry)
         return sqs
 
     def filter_fos(self, sqs, fos):

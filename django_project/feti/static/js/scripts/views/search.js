@@ -473,6 +473,7 @@ define([
             this.parent.enableCircleDrawer();
         },
         clearAllDraw: function () {
+            Common.Dispatcher.trigger('empty-data:clear');
             this.parent.clearAllDrawnLayer();
             this.updateSearchRoute();
         },
@@ -565,6 +566,9 @@ define([
         clearSearch: function (e) {
             e.preventDefault();
 
+            // Clear filter
+            this.clearFilters(e, true);
+
             // Clear search input
             this.$search_bar_input.val('');
 
@@ -623,7 +627,7 @@ define([
 
             var $filterPanel = $('.filter-panel');
 
-            if ($filterPanel.css('display') == 'none') {
+            if ($filterPanel.css('display') === 'none') {
                 $filterPanel.animate({
                     height: "toggle"
                 }, 500)

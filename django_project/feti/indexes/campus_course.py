@@ -19,7 +19,9 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='campus__long_description',
         indexed=True
     )
-    campus_location_isnull = indexes.BooleanField()
+    campus_location_isnull = indexes.BooleanField(
+        indexed=True
+    )
     campus_id = indexes.IntegerField(
         model_attr='campus__id',
         null=True
