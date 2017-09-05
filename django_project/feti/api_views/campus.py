@@ -57,7 +57,10 @@ class ApiCampus(CommonSearch, APIView):
                         options['radius']
                 )
         if not query:
-            campus_count = sqs.count()
+            if sqs:
+                campus_count = sqs.count()
+            else:
+                campus_count = 0
 
         if 'page' in options:
             paginator = Paginator(sqs, self.page_limit)
@@ -66,7 +69,7 @@ class ApiCampus(CommonSearch, APIView):
             except PageNotAnInteger:
                 page = 1
                 sqs = paginator.page(page)
-            except EmptyPage:
+            except (EmptyPage, TypeError):
                 return []
 
         campus_data = []

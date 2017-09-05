@@ -58,7 +58,7 @@ define([
                         'courses_id': course_id
                     }),
                     success: function (response) {
-                        if (response == 'added') {
+                        if (response === 'added') {
                             Common.Dispatcher.trigger('favorites:added', 'provider');
                             $(e.target).removeClass('fa-star-o');
                             $(e.target).addClass('fa-star filled');
@@ -86,7 +86,7 @@ define([
         },
         gotoMap: function (event) {
             $('#toogle-button').click();
-            this.clicked()
+            this.clicked();
             event.stopPropagation();
             return false;
         },

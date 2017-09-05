@@ -39,7 +39,7 @@ define([
             _.each(response, function (row) {
                 var id = row['campus_id'];
                 if (!(id in indexes)) {
-                    var campusIsMarked = (model == "campus" && that.last_query != "");
+                    var campusIsMarked = (model === "campus" && that.last_query !== "");
                     var campus = that.campusParser(row, campusIsMarked);
                     if (campus) {
                         // put campus is success
@@ -53,8 +53,8 @@ define([
                  * Push course to campus course list
                  */
                 var campusIndex = indexes[id];
-                if (campusIndex != undefined) {
-                    var courseIsMarked = (model == "course" && that.last_query != "");
+                if (campusIndex !== undefined) {
+                    var courseIsMarked = (model === "course" && that.last_query !== "");
                     that.courseParser(row, courseIsMarked, output[campusIndex]["courses"]);
                 }
             });
@@ -96,7 +96,7 @@ define([
                     "campus_phone": row["campus_phone"],
                     "public_institution": row["campus_public_institution"]
                 };
-                if (row["campus_icon_url"] != "") {
+                if (row["campus_icon_url"] !== "") {
                     var icon = '';
                     if (row["campus_icon_url"].indexOf('media/') > -1) {
                         icon = row["campus_icon_url"];

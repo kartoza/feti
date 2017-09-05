@@ -177,7 +177,7 @@ define([
 
             if (this.isSearchFromInput) {
                 query = that.$search_bar_input.val();
-                if (mode != 'occupation' && mode != 'favorites')
+                if (mode !== 'occupation' && mode !== 'favorites')
                     query += that.getAdvancedFilters();
                 this.isSearchFromInput = false;
             } else {
@@ -339,9 +339,14 @@ define([
                     }
                 }
                 // search
-                if (changed && query != "" && query == this._search_query[mode] && filter == this._search_filter[mode] && !this._search_need_update[mode]) {
+                if (changed && query !== "" &&
+                    query === this._search_query[mode] &&
+                    filter === this._search_filter[mode] &&
+                    !this._search_need_update[mode]) {
+
                     // no need to search
                     this.showResult(mode);
+
                 }
                 else {
                     switch (mode) {
@@ -370,7 +375,6 @@ define([
                 this._search_query[mode] = query;
                 this._search_filter[mode] = filter;
                 this._search_need_update[mode] = false;
-                console.log(this._search_query);
                 this.showResult(mode);
             } else if (mode == 'favorites') {
                 if (query) {
@@ -396,7 +400,7 @@ define([
                     this.parent.createCircle(coords, radius);
                 }
             }
-            if (mode == 'occupation' || mode == 'favorites') {
+            if (mode === 'occupation' || mode === 'favorites') {
                 this.hideFilterPanel();
                 $('.filter-button').hide();
             } else {

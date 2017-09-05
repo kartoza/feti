@@ -66,7 +66,12 @@ class Command(BaseCommand):
                                         preserve_topology=True))
                         geometry = multipolygon.geojson
                     else:
-                        geometry = geometry.geojson
+                        multipolygon = MultiPolygon([
+                                Polygon(coords[0]).simplify(
+                                        tolerance=0.005,
+                                        preserve_topology=True) for coords in
+                                geometry.coords])
+                        geometry = multipolygon.geojson
                     district.polygon_geometry = geometry
 
                 try:
