@@ -39,7 +39,9 @@ define([
                 }
 
                 _.each(this.results, function (view) {
-                    view.destroy();
+                    if(view.model) {
+                        view.destroy();
+                    }
                 });
 
                 Common.Dispatcher.trigger('map:removeLayer', this.empty_data['markers']);
