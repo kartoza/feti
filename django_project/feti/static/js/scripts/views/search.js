@@ -431,7 +431,7 @@ define([
             }
 
             this.hideFilterPanel();
-            if (num > 0 && mode != 'occupation') {
+            if (num > 0 && mode !== 'occupation' && this._search_query[mode]) {
                 // Show share bar
                 Common.Dispatcher.trigger('map:showShareBar');
             } else {
