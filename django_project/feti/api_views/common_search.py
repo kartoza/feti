@@ -51,7 +51,7 @@ class CommonSearch(object):
                 poly.append(poly[0])
                 drawn_polygon = Polygon(poly)
         elif shape == 'circle':
-            coord_string = request_dict.pop('coordinates', None)
+            coord_string = request_dict.pop('coordinate', None)
             radius = request_dict.pop('radius', None)
             if coord_string:
                 coord_obj = json.loads(coord_string)
