@@ -48,80 +48,80 @@ sqs = SearchQuerySet()
 api_urls = patterns(
     '',
     url(
-        r'^api/saved-campus/',
+        r'^api/v1/saved-campus/',
         ApiSavedCampus.as_view(),
         name='api-saved-campus'),
     url(
-        r'^api/campus',
+        r'^api/v1/campus',
         ApiCampus.as_view(),
         name='api-campus'),
     url(
-        r'^api/course',
+        r'^api/v1/course',
         CourseAPIView.as_view(),
         name='api-course'),
     url(
-        r'^api/occupation',
+        r'^api/v1/occupation',
         ApiOccupation.as_view(),
         name='api-occupation'),
 
     url(
-        r'^api/autocomplete/(?P<model>.+)',
+        r'^api/v1/autocomplete/(?P<model>.+)',
         ApiAutocomplete.as_view(),
         name='api-campus-autocomplete'),
     url(
-        r'^api/travel-time/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
+        r'^api/v1/travel-time/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
         TravelTime.as_view(),
         name='api-travel-time'),
     url(
-        r'^api/travel-time/(?P<origin>[/(-?\d+\.\d+),(-?\d+\.\d+)/]+)/(?P<destination>[/(-?\d+\.\d+),(-?\d+\.\d+)/]+)',
+        r'^api/v1/travel-time/(?P<origin>[/(-?\d+\.\d+),(-?\d+\.\d+)/]+)/(?P<destination>[/(-?\d+\.\d+),(-?\d+\.\d+)/]+)',
         TravelTime.as_view(),
         name='api-travel-time-coordinates'),
     url(
-        r'^api/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
+        r'^api/v1/travel-time-seconds/(?P<origin>[\w\d]+)/(?P<destination>[\w\d]+)',
         TravelTime.as_view(response_type='data'),
         name='api-travel-time-seconds'),
     url(
-        r'^api/generate-random-string/',
+        r'^api/v1/generate-random-string/',
         ApiRandomString.as_view(),
         name="api-get-random-string"
     ),
     url(
-        r'^api/get-courses/',
+        r'^api/v1/get-courses/',
         ApiCourseIds.as_view(),
         name='api-get-courses'
     ),
     url(
-        r'^api/detail-campus/',
+        r'^api/v1/detail-campus/',
         CampusSummary.as_view(),
         name='api-get-campus-detail'
     ),
     url(
-        r'^url/(?P<random>[\w\d]+)',
+        r'^url/v1/(?P<random>[\w\d]+)',
         ApiGetURL.as_view(),
         name="api-get-url"
     ),
     url(
-        r'^api/subfield_of_study',
+        r'^api/v1/subfield_of_study',
         SubFieldOfStudyAPIView.as_view(),
         name="api-get-subfield-of-study"
     ),
     url(
-        r'^api/field_of_study',
+        r'^api/v1/field_of_study',
         FieldOfStudyAPIView.as_view(),
         name="api-get-field-of-study"
     ),
     url(
-        r'^api/qualification_type',
+        r'^api/v1/qualification_type',
         QualificationTypeAPIView.as_view(),
         name="api-get-qualification-type"
     ),
     url(
-        r'^api/national_qualifications_framework',
+        r'^api/v1/national_qualifications_framework',
         NationalQualificationsFrameworkAPIView.as_view(),
         name="api-get-nqf"
     ),
     url(
-        r'^api/national_qualifications_subframework',
+        r'^api/v1/national_qualifications_subframework',
         NationalQualificationsSubFrameworkAPIView.as_view(),
         name="api-get-nqsf"
     ),
