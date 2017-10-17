@@ -71,6 +71,7 @@ target/
 # Virtual env
 venv
 nenv
+feti3
 
 # Node
 django_project/static
