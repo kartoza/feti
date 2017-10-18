@@ -301,7 +301,7 @@ class ApiCourse(SearchCampus):
 class ApiOccupation(APIView):
     def get(self, request, format=None):
         query = request.GET.get('q')
-        if len(query) < 3:
+        if query is None or len(query) < 3:
             return Response([])
 
         occupation = self.filter_model(query)
