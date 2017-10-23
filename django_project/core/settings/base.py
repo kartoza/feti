@@ -57,6 +57,7 @@ from .secret import SECRET_KEY  # noqa
 
 # default middleware classes
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
@@ -64,6 +65,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware'
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = ['*']
 
 ROOT_URLCONF = 'core.urls'
 
@@ -85,7 +89,8 @@ INSTALLED_APPS = (
     'grappelli',
     'django.contrib.admin',
     'django_forms_bootstrap',
-    'django.contrib.sites'
+    'django.contrib.sites',
+    'corsheaders',
 )
 
 # AUTH_USER_MODEL = 'users.User'
