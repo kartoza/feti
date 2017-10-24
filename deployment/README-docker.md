@@ -93,12 +93,12 @@ Firstly you need to be in the project **deployment** directory.
 cd /path/to/feti/deployment/
 ``` 
 
-Then after you may need to start the containers independently with the commands below, if your docker setup requires sudo privileges do include it.
+Then after you may need to start the containers independently with the commands below.
 
 ```
-sudo docker start feti_rabbitmq_1
-sudo docker start feti_worker_1
-sudo docker start feti-dev-web
+docker start feti_rabbitmq_1
+docker start feti_worker_1
+docker start feti-dev-web
 ```
 Then to start the docker development environment. 
 
