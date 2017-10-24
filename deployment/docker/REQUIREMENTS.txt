@@ -29,3 +29,5 @@ celery<3.2
 more_itertools
 # Django haystack support
 git+https://github.com/dimasciput/django-haystack.git
+# Cors header
+django-cors-headers==2.1.0
