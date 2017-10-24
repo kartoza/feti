@@ -108,7 +108,7 @@ make devweb
 This should allow you to start the debug server within pycharm.
 But **elasticsearch** engine need to be aware of the current data index to search from, with that in mind run the following commands if your data search is not working.
 
-Assuming you have the **.dmp** database dump file, copy it under the following project directory
+Assuming you have the **latest.dmp** database dump file, copy it under the following project directory
 
 ```
 feti/deployment/backups/
