@@ -43,4 +43,4 @@ class OccupationListSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Occupation
-        fields = '__all__'
+        fields = ['id', 'occupation']

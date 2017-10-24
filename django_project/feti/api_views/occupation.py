@@ -15,7 +15,7 @@ class OccupationListApiView(APIView):
     Api to list all available occupations.
     """
     def get(self, request):
-        occupations = Occupation.objects.all()
+        occupations = Occupation.objects.only('occupation')
 
         serializer = OccupationListSerializer(occupations, many=True)
         return Response(serializer.data)
