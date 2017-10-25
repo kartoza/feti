@@ -38,6 +38,30 @@ from feti.api_views.national_qualifications_framework import (
 from feti.api_views.national_qualifications_subframework import (
     NationalQualificationsSubFrameworkAPIView
 )
+from feti.api_views.feedback import (
+    FeedbackApiView
+)
+from feti.api_views.abet_band import (
+    AbetBandApiView
+)
+from feti.api_views.address import (
+    AddressApiView
+)
+from feti.api_views.course_provider_link import (
+    CourseProviderLinkApiView
+)
+from feti.api_views.qual_class import (
+    QualClassApiView
+)
+from feti.api_views.education_training_quality_assurance import (
+    EducationTrainingQualityAssuranceApiView
+)
+from feti.api_views.national_graduate_school_in_education import (
+    NationalGraduateSchoolInEducationApiView
+)
+from feti.api_views.national_certificate_vocational import (
+    NationalCertificateVocationalApiView
+)
 from feti.views.share import PDFDownload, EmailShare, ApiRandomString, ApiGetURL
 from feti.views.travel_time import TravelTime
 from feti.views.jasmine import JasmineView
@@ -125,6 +149,42 @@ api_urls = patterns(
         NationalQualificationsSubFrameworkAPIView.as_view(),
         name="api-get-nqsf"
     ),
+    url(
+        r'^api/feedback/',
+        FeedbackApiView.as_view(),
+        name='api-get-feedback'
+    ),
+    url(
+        r'^api/abet_band/',
+        AbetBandApiView.as_view(),
+        name='api-get-abet-band'
+    ),
+    url(
+        r'^api/address/',
+        AddressApiView.as_view(),
+        name='api-get-address'
+    ),
+    url(
+        r'^api/provider_link/',
+        CourseProviderLinkApiView.as_view(),
+        name='api-get-course-provider-link'
+    ),
+    url(r'^api/qual_class/',
+        QualClassApiView.as_view(),
+        name='api-get-qual-class'
+    ),
+    url(r'^api/education_training_quality_assurance/',
+        EducationTrainingQualityAssuranceApiView.as_view(),
+        name='api-get-education-training-quality-assurance'
+    ),
+    url('^api/national_graduate-school_in_education/',
+        NationalGraduateSchoolInEducationApiView.as_view(),
+        name='api-get-national-graduate-school-in-education'
+    ),
+    url('^api/national_certificate_vocation/',
+        NationalCertificateVocationalApiView.as_view(),
+        name='api-get-national-certificate-vocation'
+        ),
 )
 
 urlpatterns = patterns(
