@@ -10,6 +10,10 @@ __copyright__ = 'kartoza.com'
 
 
 class NationalCertificateVocational(models.Model):
+    """
+    The level description for a
+    national certificate vocational.
+    """
     id = models.AutoField(primary_key=True)
     national_certificate_vocational_level = models.IntegerField()
     national_certificate_vocational_description = models.CharField(

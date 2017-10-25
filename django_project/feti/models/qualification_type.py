@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 
 
 class QualificationType(models.Model):
+    """Model for a type of qualification."""
     type = models.CharField(
         max_length=150,
         blank=False,

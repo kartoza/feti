@@ -10,6 +10,7 @@ __copyright__ = 'kartoza.com'
 
 
 class FieldOfStudy(models.Model):
+    """Describes a field of study"""
     id = models.AutoField(primary_key=True)
     field_of_study_class = models.IntegerField()
     field_of_study_description = models.CharField(

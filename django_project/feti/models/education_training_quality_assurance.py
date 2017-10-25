@@ -9,6 +9,9 @@ __copyright__ = 'kartoza.com'
 
 
 class EducationTrainingQualityAssurance(models.Model):
+    """
+    Defines a quality assuring body in educational training.
+    """
     acronym = models.CharField(max_length=30)
     body_name = models.CharField(max_length=255)
     url = models.URLField(blank=True, null=True)

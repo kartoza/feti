@@ -2,6 +2,9 @@ from django.contrib.gis.db import models
 
 
 class AbetBand(models.Model):
+    """
+    Defining an Abet Band.
+    """
     band = models.CharField(
         max_length=150,
         blank=False,
