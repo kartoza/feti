@@ -20,9 +20,10 @@ class TestCampusViews(TestCase):
         self.client = Client()
         self.user = UserFactory.create(**{
             'username': 'dimas',
-            'password': 'password',
             'is_staff': True
         })
+        self.user.set_password('password')
+        self.user.save()
         with patch('feti.celery.update_search_index.delay') as mock:
             self.campus = CampusFactory.create()
 
@@ -55,9 +56,10 @@ class TestProviderViews(TestCase):
         self.client = Client()
         self.user = UserFactory.create(**{
             'username': 'dimas',
-            'password': 'password',
             'is_staff': True
         })
+        self.user.set_password('password')
+        self.user.save()
         self.provider = ProviderFactory.create()
 
     def tearDown(self):
