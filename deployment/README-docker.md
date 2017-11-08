@@ -85,6 +85,46 @@ e.g.
 ```
 sudo /etc/init.d/nginx restart
 ```
+### Run  project in development environment
+
+Firstly you need to be in the project **deployment** directory.
+
+```
+cd /path/to/feti/deployment/
+``` 
+
+Then after you may need to start the containers independently with the commands below.
+
+```
+docker start feti_rabbitmq_1
+docker start feti_worker_1
+docker start feti-dev-web
+```
+Then to start the docker development environment. 
+
+```
+make devweb
+```
+This should allow you to start the debug server within pycharm.
+But **elasticsearch** engine need to be aware of the current data index to search from, with that in mind run the following commands if your data search is not working.
+
+Assuming you have the **latest.dmp** database dump file, copy it under the following project directory
+
+```
+feti/deployment/backups/
+```
+Having done so, you need to populate your empty database with some sample data from the dump file, to do so run the following command from within the **deployment** directory
+
+```
+make dbrestore
+```
+Then after you can rebuild the elasticsearch data index to search from as below (from within the **deployment** directory)
+
+```
+make rebuildindex
+make rebuildindex-devweb
+```
+After that rebuild the search from the project home page should now work just fine. Enjoy! 
 
 
 ### Managing containers
