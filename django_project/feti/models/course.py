@@ -31,6 +31,9 @@ __copyright__ = 'kartoza.com'
 
 
 class Course(models.Model):
+    """
+    Course description and its many other components.
+    """
     id = models.AutoField(primary_key=True)
     # nlrd_regex = RegexValidator(
     #     regex=r'^\d{15,15}$',

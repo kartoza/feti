@@ -13,6 +13,11 @@ __copyright__ = 'kartoza.com'
 
 
 class CourseProviderLink(models.Model):
+    """
+    Integrated model of relationships between course and campus.
+
+    Used for indexing purposes.
+    """
     id = models.AutoField(primary_key=True)
     course = models.ForeignKey(Course)
     campus = models.ForeignKey(Campus)
