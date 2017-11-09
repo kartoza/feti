@@ -50,9 +50,6 @@ from feti.api_views.abet_band import (
 from feti.api_views.address import (
     AddressApiView
 )
-from feti.api_views.course_provider_link import (
-    CourseProviderLinkApiView
-)
 from feti.api_views.qual_class import (
     QualClassApiView
 )
@@ -166,11 +163,6 @@ api_urls = patterns(
         r'^api/address/',
         AddressApiView.as_view(),
         name='api-get-address'
-    ),
-    url(
-        r'^api/provider_link/',
-        CourseProviderLinkApiView.as_view(),
-        name='api-get-course-provider-link'
     ),
     url(
         r'^api/qual_class/',
