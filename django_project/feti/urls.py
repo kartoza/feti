@@ -172,22 +172,27 @@ api_urls = patterns(
         CourseProviderLinkApiView.as_view(),
         name='api-get-course-provider-link'
     ),
-    url(r'^api/qual_class/',
+    url(
+        r'^api/qual_class/',
         QualClassApiView.as_view(),
         name='api-get-qual-class'
     ),
-    url(r'^api/education_training_quality_assurance/',
+    url(
+        r'^api/education_training_quality_assurance/',
         EducationTrainingQualityAssuranceApiView.as_view(),
         name='api-get-education-training-quality-assurance'
     ),
-    url('^api/national_graduate-school_in_education/',
+    url(
+        r'^api/national_graduate-school_in_education/',
         NationalGraduateSchoolInEducationApiView.as_view(),
         name='api-get-national-graduate-school-in-education'
     ),
-    url('^api/national_certificate_vocation/',
+    url(
+        r'^api/national_certificate_vocation/',
         NationalCertificateVocationalApiView.as_view(),
         name='api-get-national-certificate-vocation'
         ),
+    url(
         r'^api/list_occupation/',
         OccupationListApiView.as_view(),
         name='api-get-occupation-list'),
