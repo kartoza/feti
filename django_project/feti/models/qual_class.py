@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 
 
 class QualClass(models.Model):
+    """Model to define a Qualification class."""
     title = models.CharField(
         max_length=150,
         blank=False,

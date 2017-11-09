@@ -4,6 +4,7 @@ from django.contrib.gis.db import models
 
 
 class SubFieldOfStudy(models.Model):
+    """Model for a sub-field of study."""
     learning_subfield = models.CharField(
         max_length=150,
         blank=False,

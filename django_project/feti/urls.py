@@ -23,6 +23,9 @@ from feti.api_views.course import (
     CourseAPIView,
     ApiCourseIds
 )
+from feti.api_views.occupation import(
+    OccupationListApiView
+)
 from feti.api_views.subfield_of_study import (
     SubFieldOfStudyAPIView
 )
@@ -185,6 +188,9 @@ api_urls = patterns(
         NationalCertificateVocationalApiView.as_view(),
         name='api-get-national-certificate-vocation'
         ),
+        r'^api/list_occupation/',
+        OccupationListApiView.as_view(),
+        name='api-get-occupation-list'),
 )
 
 urlpatterns = patterns(

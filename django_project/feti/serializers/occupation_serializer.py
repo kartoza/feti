@@ -35,3 +35,12 @@ class OccupationSerializer(serializers.ModelSerializer):
                 res['pathways'][pathway.pathway_number][step.step_number] = \
                     StepDetailSerializer(detail).data
         return res
+
+
+class OccupationListSerializer(serializers.ModelSerializer):
+    """
+    API to list all the available occupations.
+    """
+    class Meta:
+        model = Occupation
+        fields = ['id', 'occupation']

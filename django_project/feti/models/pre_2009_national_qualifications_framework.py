@@ -2,7 +2,9 @@ from django.contrib.gis.db import models
 
 
 class Pre2009NationalQualificationsFramework(models.Model):
-
+    """
+    Model for the pre 2009 national qualifications Framework.
+    """
     level = models.CharField(
         max_length=150,
         blank=False,
