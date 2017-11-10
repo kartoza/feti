@@ -41,12 +41,6 @@ from feti.api_views.national_qualifications_framework import (
 from feti.api_views.national_qualifications_subframework import (
     NationalQualificationsSubFrameworkAPIView
 )
-from feti.api_views.feedback import (
-    FeedbackApiView
-)
-from feti.api_views.abet_band import (
-    AbetBandApiView
-)
 from feti.api_views.address import (
     AddressApiView
 )
@@ -148,16 +142,6 @@ api_urls = patterns(
         r'^api/national_qualifications_subframework',
         NationalQualificationsSubFrameworkAPIView.as_view(),
         name="api-get-nqsf"
-    ),
-    url(
-        r'^api/feedback/',
-        FeedbackApiView.as_view(),
-        name='api-get-feedback'
-    ),
-    url(
-        r'^api/abet_band/',
-        AbetBandApiView.as_view(),
-        name='api-get-abet-band'
     ),
     url(
         r'^api/address/',

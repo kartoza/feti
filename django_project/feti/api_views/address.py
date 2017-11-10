@@ -17,9 +17,9 @@ class AddressApiView(APIView):
     """
 
     def get(self, request):
-        bands = Address.objects.all()
+        addresses = Address.objects.all()
 
-        serializer = AddressSerializer(bands, many=True)
+        serializer = AddressSerializer(addresses, many=True)
         return Response(serializer.data)
 
 
