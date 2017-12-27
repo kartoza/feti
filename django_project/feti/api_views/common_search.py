@@ -137,7 +137,8 @@ class CommonSearch(object):
             ).models(CampusCourseEntry)
         else:
             sqs = SearchQuerySet().filter(
-                campus_location_isnull='false'
+                campus_location_isnull='false',
+                courses_isnull='false',
             ).models(CampusCourseEntry)
         return sqs
 
