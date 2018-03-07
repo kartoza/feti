@@ -813,3 +813,10 @@ a#search-icon {
     margin-right: 10px !important;
     width: 16px;
 }
+
+.occupation-detail-loading {
+    text-align: center;
+    opacity: 0.4;
+    padding-top: 10px;
+    filter: alpha(opacity=40);
+}

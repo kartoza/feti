@@ -19,28 +19,36 @@ define([
     var OccupationView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title result-title-occupation',
-        template: _.template('<div class="selected-indicator-right"><i class="fa fa-caret-right" aria-hidden="true"></i> </div><div class="title"><%- title %></div>'),
+        template: _.template('<div class="selected-indicator-right"><i class="fa fa-caret-right" aria-hidden="true"></i> </div><div class="title"><%- occupation %></div>'),
         detailTemplate: _.template(Detail),
         stepDetailTemplate: _.template(StepDetail),
         container: '#result-container-occupation',
         model: Occupation,
+        occupationDetail: null,
         events: {
             'click': 'clicked'
         },
         clicked: function () {
-            Common.Dispatcher.trigger('occupation:clicked', this.model.attributes.id);
+            // Common.Dispatcher.trigger('occupation:clicked', this.model.attributes.id);
             this.update_detail();
         },
         update_detail: function () {
-            if (this.model) {
-                this.$detail.html(this.detailTemplate(this.model.attributes));
-                if (!this.$detail.is(":visible")) {
-                    this.$detail.show("slide", {direction: "right"}, 500);
-                }
-                this.renderPathways();
-                $('.selected-indicator-right .fa').hide();
-                this.$el.find('.fa').show();
+            // Get occupation detail
+            var that = this;
+            $('.selected-indicator-right .fa').hide();
+            that.$el.find('.fa').show();
+            that.$detail.html('<div class="occupation-detail-loading"><img height="100%" src="/static/feti/images/spinner.gif"></div>');
+            if(!that.$detail.is(":visible")) {
+                that.$detail.show("slide", {direction: "right"}, 500);
             }
+            $.ajax({
+                url: '/api/occupation?id=' + that.model.attributes.id,
+                success: function (response) {
+                    that.occupationDetail = response;
+                    that.$detail.html(that.detailTemplate(that.occupationDetail));
+                    that.renderPathways();
+                }
+            });
         },
         render: function () {
             this.$el.empty();
@@ -50,6 +58,7 @@ define([
         initialize: function () {
             this.render();
             this.$detail = $('#result-detail');
+            // console.log(this.$detail);
             Common.Dispatcher.on('occupation-' + this.model.attributes.id + ':routed', this.update_detail, this);
         },
         destroy: function () {
@@ -62,8 +71,8 @@ define([
             var that = this;
             var $pathways = this.$detail.find('#pathways');
             $pathways.html('<ul id="tabs"><ul>');
-            var pathways = this.model.attributes.pathways;
-            var pathway_keys = Object.keys(this.model.attributes.pathways);
+            var pathways = this.occupationDetail.pathways;
+            var pathway_keys = Object.keys(this.occupationDetail.pathways);
             // sort by number
             pathway_keys.sort(function (a, b) {
                 if (isNaN(a) || isNaN(b)) {

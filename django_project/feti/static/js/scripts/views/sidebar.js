@@ -27,7 +27,7 @@ define([
             Common.Dispatcher.on('sidebar:clear_search', this.clearSidebar, this);
         },
         showOccupationDetail: function () {
-            this.$result_detail.show("slide", {direction: "right"}, 300);
+           this.$result_detail.show("slide", {direction: "right"}, 300);
         },
         hideOccupationDetail: function () {
             if (this.$result_detail.is(":visible")) {
@@ -36,7 +36,7 @@ define([
         },
         updateOccupationDetail: function () {
             if (!Common.Router.selected_occupation) {
-                this.hideOccupationDetail()
+                this.hideOccupationDetail();
             }
         },
         render: function () {
