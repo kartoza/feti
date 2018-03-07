@@ -96,7 +96,7 @@ define([
                 $pathways.append(html);
 
                 $('#tab-' + key).click(function () {
-                    Common.Dispatcher.trigger('occupation:clicked', that.model.attributes.id, key);
+                    // Common.Dispatcher.trigger('occupation:clicked', that.model.attributes.id, key);
                 });
             });
             $pathways.tabs();

@@ -12,6 +12,9 @@ define([
             this.url_template = this.provider_url_template;
             this.view = OccupationView;
             this.mode = 'occupation';
+        },
+        parse: function (response, model) {
+            return response['data'];
         }
     });
 

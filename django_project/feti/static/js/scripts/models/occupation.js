@@ -18,8 +18,7 @@ define([
             delete this;
         },
         renderMarker: function () {
-
-        },
+        }
     });
 
     return Occupation;

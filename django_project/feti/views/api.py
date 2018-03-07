@@ -322,12 +322,18 @@ class ApiOccupation(APIView):
         if page:
             occupation = paginator.page(page)
         else:
-            occupation = paginator.page(1)
+            page = 1
+            occupation = paginator.page(page)
 
         serializer = OccupationListSerializer(
                 [x.object for x in occupation],
                 many=True)
-        return Response(serializer.data)
+        return Response({
+            'total_page': paginator.num_pages,
+            'results_per_page': limit_page,
+            'current_page': int(page),
+            'data': serializer.data
+        })
 
     def filter_model(self, query):
         if query:

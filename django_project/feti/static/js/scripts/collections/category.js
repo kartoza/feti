@@ -164,9 +164,15 @@ define([
                         Common.Dispatcher.trigger('search:finish', false, that.mode, 0);
                     } else {
                         _.each(that.models, function (model) {
+                            var model_id;
+                            if('id' in model) {
+                                model_id = model.id;
+                            } else {
+                                model_id = model.get('id');
+                            }
                             var data = {
                                 model: model,
-                                id: "search_" + model.get('id'),
+                                id: "search_" + model_id,
                                 empty_search: false
                             };
                             data['empty_search'] = is_empty_search;
