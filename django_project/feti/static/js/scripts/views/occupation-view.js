@@ -29,7 +29,7 @@ define([
             'click': 'clicked'
         },
         clicked: function () {
-            // Common.Dispatcher.trigger('occupation:clicked', this.model.attributes.id);
+            Common.Dispatcher.trigger('occupation:clicked', this.model.attributes.id);
             this.update_detail();
         },
         update_detail: function () {
@@ -58,7 +58,6 @@ define([
         initialize: function () {
             this.render();
             this.$detail = $('#result-detail');
-            // console.log(this.$detail);
             Common.Dispatcher.on('occupation-' + this.model.attributes.id + ':routed', this.update_detail, this);
         },
         destroy: function () {
@@ -96,7 +95,7 @@ define([
                 $pathways.append(html);
 
                 $('#tab-' + key).click(function () {
-                    // Common.Dispatcher.trigger('occupation:clicked', that.model.attributes.id, key);
+                    Common.Dispatcher.trigger('occupation:clicked', that.model.attributes.id, key);
                 });
             });
             $pathways.tabs();

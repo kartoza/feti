@@ -188,7 +188,7 @@ define([
             if (!query && mode in this._search_query && !is_allow_paging_request) {
                 query = this._search_query[mode];
             }
-            if (!is_allow_paging_request && query == "" && mode != 'favorites') {
+            if(mode === 'course' && query === '') {
                 this.parent.closeResultContainer($('#result-toogle'));
             }
             new_url.push(mode);
