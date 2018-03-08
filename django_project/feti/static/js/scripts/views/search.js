@@ -23,6 +23,7 @@ define([
     var SearchBarView = Backbone.View.extend({
         tagName: 'div',
         container: '#map-search',
+        subfieldOfStudyDefaultOptions: [],
         template: _.template(searchbarTemplate),
         events: {
             'click #where-to-study': '_categoryClicked',
@@ -635,13 +636,41 @@ define([
         },
         filterChanged: function (e) {
             // Filter dropdown selected
+            var that = this;
             var id = $('#' + e.target.id + ' option:selected').val();
             var mode = Common.CurrentSearchMode;
-            if (id != '-') {
+            if (id !== '-') {
                 this.filtersInMode[mode][e.target.id] = id;
             } else {
                 this.filtersInMode[mode][e.target.id] = null;
             }
+
+            if(e.target.id === 'field-of-study-select') {
+                $('#subfield-of-study-select').empty();
+                $('#subfield-of-study-select').trigger('chosen:updated');
+                var field_parameter = '';
+                if(id !== '-') {
+                    field_parameter = '?field=' + id;
+                }
+                $.ajax({
+                    url: 'api/subfield_of_study'+field_parameter,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#subfield-of-study-select').append($('<option value="-">-</option>'));
+                        $.each(response, function (i, item) {
+                            $('#subfield-of-study-select').append($('<option>', {
+                                value: item.id,
+                                text: item.learning_subfield,
+                                selected: item.id == that.filtersInMode[mode]['subfield-of-study-select']
+                            }));
+                            that.filtersInMode[mode]['subfield-of-study-select'] = null;
+                            $('#subfield-of-study-select').val('-');
+                            $('#subfield-of-study-select').trigger('chosen:updated');
+                        });
+                    }
+                });
+            }
+
         },
         hideFilterPanel: function (e) {
             $('#hide-filter-button').hide();
@@ -837,8 +866,7 @@ define([
             $('#nqf-level-select').val('-');
             $('#nqf-level-select').trigger("chosen:updated");
 
-            $('#subfield-of-study-select').val('-');
-            $('#subfield-of-study-select').trigger("chosen:updated");
+            this.resetSubfieldOfStudy();
 
             $('#field-of-study-provider-select').val('-');
             $('#field-of-study-provider-select').trigger("chosen:updated");
@@ -982,12 +1010,14 @@ define([
                     type: 'GET',
                     success: function (response) {
                         $.each(response, function (i, item) {
+                            that.subfieldOfStudyDefaultOptions.push(item);
                             $('#subfield-of-study-select').append($('<option>', {
                                 value: item.id,
                                 text : item.learning_subfield,
                                 selected: item.id == that.filtersInMode[courseMode]['subfield-of-study-select']
                             }));
                         });
+
                         $('#subfield-of-study-select').chosen({
                             no_results_text: "Oops, nothing found!",
                             width: "50%"
@@ -997,6 +1027,21 @@ define([
                     }
                 });
             }
+        },
+        resetSubfieldOfStudy: function () {
+            var that = this;
+            var mode = Common.CurrentSearchMode;
+            $('#subfield-of-study-select').empty();
+            $('#subfield-of-study-select').append($('<option value="-">-</option>'));
+            $.each(this.subfieldOfStudyDefaultOptions, function (i, item) {
+                $('#subfield-of-study-select').append($('<option>', {
+                    value: item.id,
+                    text : item.learning_subfield,
+                    selected: item.id == that.filtersInMode[mode]['subfield-of-study-select']
+                }));
+            });
+            $('#subfield-of-study-select').val('-');
+            $('#subfield-of-study-select').trigger("chosen:updated");
         }
     });
 
