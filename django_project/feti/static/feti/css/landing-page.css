@@ -532,6 +532,7 @@
     margin-left: 14px;
     border-bottom: none;
     cursor: pointer;
+    text-overflow: ellipsis;
 }
 
 .result-title h3 {
@@ -609,6 +610,7 @@
     margin-top: 6px;
     margin-bottom: 0;
     float: left;
+    max-width: 400px;
 }
 
 .leaflet-top {
@@ -812,4 +814,18 @@ a#search-icon {
 .legend img {
     margin-right: 10px !important;
     width: 16px;
+}
+
+.occupation-detail-loading {
+    text-align: center;
+    opacity: 0.4;
+    padding-top: 10px;
+    filter: alpha(opacity=40);
+}
+
+.result-load-more {
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: rgba(29, 104, 179, 0.9);
 }

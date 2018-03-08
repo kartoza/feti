@@ -10,6 +10,7 @@ define([
         current_page: 1,
         load_more_enabled: false,
         mode: '',
+        max_page: null,
         empty_data: {
             markers: L.featureGroup(),
             views: [],
@@ -164,9 +165,15 @@ define([
                         Common.Dispatcher.trigger('search:finish', false, that.mode, 0);
                     } else {
                         _.each(that.models, function (model) {
+                            var model_id;
+                            if('id' in model) {
+                                model_id = model.id;
+                            } else {
+                                model_id = model.get('id');
+                            }
                             var data = {
                                 model: model,
-                                id: "search_" + model.get('id'),
+                                id: "search_" + model_id,
                                 empty_search: false
                             };
                             data['empty_search'] = is_empty_search;
@@ -177,6 +184,7 @@ define([
                             }
                         });
                         Common.Dispatcher.trigger('search:finish', true, that.mode, that.results.length);
+                        Common.Dispatcher.trigger('collections:finishCreate', that.results.length);
                     }
                     if(parameters['coord']) {
                         increment_page = false;
@@ -185,8 +193,12 @@ define([
 
                     // get campus count
                     var campus_count = that.results.length;
-                    if (campus_count >= Common.limit_per_page && that.results[0].model.get('max')) {
-                        campus_count = that.results.length + ' / ' + that.results[0].model.get('max');
+                    if(that.results[0].model.get('max')) {
+                        that.max_page = that.results[0].model.get('max');
+                    }
+
+                    if (campus_count >= Common.limit_per_page && that.max_page){
+                        campus_count = that.results.length + ' / ' + that.max_page;
                     }
                     Common.Dispatcher.trigger('sidebar:update_title', campus_count, that.mode, parameters['coord']);
                     if (!that.load_more_enabled) {

@@ -16,10 +16,14 @@ from haystack.inputs import Clean, Exact
 from haystack.utils.geo import Point, D
 
 from feti.models.campus_course_entry import CampusCourseEntry
-from feti.serializers.occupation_serializer import OccupationSerializer
+from feti.serializers.occupation_serializer import (
+    OccupationSerializer,
+    OccupationListSerializer,
+)
 from feti.serializers.favorite_serializer import FavoriteSerializer
 from user_profile.models import CampusCoursesFavorite
 from feti.models.campus import Campus
+from feti.models.occupation import Occupation
 
 from map_administrative.views import get_boundary
 
@@ -300,20 +304,55 @@ class ApiCourse(SearchCampus):
 
 class ApiOccupation(APIView):
     def get(self, request, format=None):
+        limit_page = 100
         query = request.GET.get('q')
-        if query is None or len(query) < 3:
+        page = request.GET.get('page')
+        occupation_id = request.GET.get('id')
+
+        if occupation_id:
+            return self.get_detail(occupation_id)
+
+        if query and len(query) < 3:
             return Response([])
 
         occupation = self.filter_model(query)
+        total_occupations = len(occupation)
 
-        serializer = OccupationSerializer([x.object for x in occupation], many=True)
-        return Response(serializer.data)
+        paginator = Paginator(occupation, limit_page)
+
+        if page:
+            occupation = paginator.page(page)
+        else:
+            page = 1
+            occupation = paginator.page(page)
+
+        serializer = OccupationListSerializer(
+                [x.object for x in occupation],
+                many=True)
+        return Response({
+            'total_page': paginator.num_pages,
+            'results_per_page': limit_page,
+            'current_page': int(page),
+            'data': serializer.data,
+            'max': total_occupations,
+        })
 
     def filter_model(self, query):
-        sqs = SearchQuerySet().filter(
-            occupation__icontains=Clean(query)
-        )
+        if query:
+            sqs = SearchQuerySet().filter(
+                occupation__icontains=Clean(query)
+            )
+        else:
+            sqs = SearchQuerySet().all().models(Occupation)
         return sqs
+
+    def get_detail(self, occupation_id):
+        try:
+            occupation = Occupation.objects.get(id=occupation_id)
+        except Occupation.DoesNotExist:
+            return Response([])
+        serializer = OccupationSerializer(occupation, many=False)
+        return Response(serializer.data)
 
 
 class ApiSavedCampus(APIView):
