@@ -22,6 +22,8 @@ define([
         },
         onFinishedCreateRow: function (resultsLength) {
             var that = this;
+            console.log(this.current_page);
+            console.log(this.total_page);
             if(this.current_page < this.total_page) {
                 $('#result-container-occupation').append('<div id="result-load-more" class="result-title result-load-more" style="cursor: pointer;">\n' +
                                                             '<div class="title">Load More</div>\n' +
@@ -32,6 +34,8 @@ define([
                     that.search(that.last_query);
                     $(this).remove();
                 })
+            } else {
+                $('#result-container-occupation').find('.result-load-more').remove();
             }
         }
 

@@ -147,9 +147,9 @@ define([
             }
             that.last_query = q;
             this.reset();
-            // if (Common.FetchXHR !== null) {
-            //     Common.FetchXHR.abort();
-            // }
+            if (Common.FetchXHR !== null) {
+                Common.FetchXHR.abort();
+            }
 
             if (this.last_query !== "") {
                 $("#result-container-all-data").hide();
