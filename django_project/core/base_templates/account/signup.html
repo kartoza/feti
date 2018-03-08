@@ -16,14 +16,18 @@
                 {{ form.as_p }}
                 <input type="hidden" name="{{ redirect_field_name }}" value="/" />
                 <input type="submit" name="login" class="login loginmodal-submit" value="Sign Up">
-
             </form>
 
         </div>
     </div>
 
-
-
+        <style>
+            .errorlist {
+                        background-color: #f66;
+                        color: white;
+                        padding: 10px;
+            }
+      </style>
     <script type="application/javascript">
 
         $(document).ready(function () {
