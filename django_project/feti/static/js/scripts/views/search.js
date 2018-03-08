@@ -1037,7 +1037,7 @@ define([
                 $('#subfield-of-study-select').append($('<option>', {
                     value: item.id,
                     text : item.learning_subfield,
-                    selected: item.id == that.filtersInMode[mode]['subfield-of-study-select']
+                    selected: item.id == that.filtersInMode['course']['subfield-of-study-select']
                 }));
             });
             $('#subfield-of-study-select').val('-');
