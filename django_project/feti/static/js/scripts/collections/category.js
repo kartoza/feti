@@ -147,9 +147,9 @@ define([
             }
             that.last_query = q;
             this.reset();
-            if (Common.FetchXHR !== null) {
-                Common.FetchXHR.abort();
-            }
+            // if (Common.FetchXHR !== null) {
+            //     Common.FetchXHR.abort();
+            // }
 
             if (this.last_query !== "") {
                 $("#result-container-all-data").hide();
@@ -183,6 +183,7 @@ define([
                             }
                         });
                         Common.Dispatcher.trigger('search:finish', true, that.mode, that.results.length);
+                        Common.Dispatcher.trigger('collections:finishCreate', that.results.length);
                     }
                     if(parameters['coord']) {
                         increment_page = false;
