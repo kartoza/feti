@@ -376,7 +376,10 @@ define([
                 this._search_query[mode] = query;
                 this._search_filter[mode] = filter;
                 this._search_need_update[mode] = false;
-                this.showResult(mode);
+                if(query === '' && mode === 'course') {
+                } else {
+                    this.showResult(mode);
+                }
             } else if (mode == 'favorites') {
                 if (query) {
                     filter = query;
