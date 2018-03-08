@@ -18,12 +18,11 @@ define([
         parse: function (response, model) {
             this.total_page = response['total_page'];
             this.current_page = response['current_page'];
+            this.max_page = response['max'];
             return response['data'];
         },
         onFinishedCreateRow: function (resultsLength) {
             var that = this;
-            console.log(this.current_page);
-            console.log(this.total_page);
             if(this.current_page < this.total_page) {
                 $('#result-container-occupation').append('<div id="result-load-more" class="result-title result-load-more" style="cursor: pointer;">\n' +
                                                             '<div class="title">Load More</div>\n' +

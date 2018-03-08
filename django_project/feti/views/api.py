@@ -316,6 +316,7 @@ class ApiOccupation(APIView):
             return Response([])
 
         occupation = self.filter_model(query)
+        total_occupations = len(occupation)
 
         paginator = Paginator(occupation, limit_page)
 
@@ -332,7 +333,8 @@ class ApiOccupation(APIView):
             'total_page': paginator.num_pages,
             'results_per_page': limit_page,
             'current_page': int(page),
-            'data': serializer.data
+            'data': serializer.data,
+            'max': total_occupations,
         })
 
     def filter_model(self, query):
