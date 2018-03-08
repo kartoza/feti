@@ -20,6 +20,7 @@ from feti.models.url import URL
 from feti.models.education_training_quality_assurance import EducationTrainingQualityAssurance
 from feti.models.national_qualifications_framework import NationalQualificationsFramework
 from feti.models.feedback import Feedback
+from feti.models.field_subfield_of_study import FieldSubfieldOfStudy
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -225,3 +226,4 @@ admin.site.register(URL, URLAdmin)
 admin.site.register(EducationTrainingQualityAssurance)
 admin.site.register(NationalQualificationsFramework)
 admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(FieldSubfieldOfStudy)
