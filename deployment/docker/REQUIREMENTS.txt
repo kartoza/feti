@@ -23,7 +23,7 @@ setuptools==18.5
 WeasyPrint
 requests<2.12
 beautifulsoup4
-django-allauth
+django-allauth==0.33.0
 django-betterforms
 celery<3.2
 more_itertools
