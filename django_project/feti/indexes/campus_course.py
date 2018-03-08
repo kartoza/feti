@@ -20,6 +20,7 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         indexed=True
     )
     campus_location_isnull = indexes.BooleanField(
+        model_attr='campus__location',
         indexed=True
     )
     campus_id = indexes.IntegerField(
@@ -45,7 +46,9 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr='campus__location',
         null=True
     )
-    courses_isnull = indexes.BooleanField()
+    courses_isnull = indexes.BooleanField(
+        indexed=True
+    )
     campus_provider = indexes.NgramField(
         model_attr='campus__provider',
         indexed=True
@@ -128,7 +131,12 @@ class CampusCourseIndex(indexes.SearchIndex, indexes.Indexable):
         return obj.campus.location is None
 
     def prepare_courses_isnull(self, obj):
-        return obj.campus.courses is None
+        if obj.campus.courses is None:
+            return True
+        else:
+            if len(obj.campus.courses.filter(national_learners_records_database__isnull=False)) == 0:
+                return True
+        return False
 
     class Meta:
         app_label = 'feti'
