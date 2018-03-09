@@ -224,6 +224,8 @@ define([
             event.preventDefault();
             if (!$(event.target).parent().hasClass('active')) {
 
+                this.clearAllDraw();
+
                 var mode = $(event.target).data("mode");
 
                 if(typeof mode === 'undefined') { // If undefined try find the parent
