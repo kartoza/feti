@@ -549,7 +549,7 @@ define([
                 // zoom control animation
                 var $zoom_control = $('.leaflet-control-zoom');
                 $zoom_control.animate({
-                    marginTop: '-=5px'
+                    marginTop: '-=55px'
                 }, 50);
 
                 // now it is shown
