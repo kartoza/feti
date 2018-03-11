@@ -194,7 +194,8 @@ define([
                     // get campus count
                     var campus_count = that.results.length;
                     try {
-                        that.max_page = that.results[0].model.get('max');
+                        if(typeof that.results[0].model.get('max') !== 'undefined')
+                            that.max_page = that.results[0].model.get('max');
                     } catch(err) {
                     }
 
