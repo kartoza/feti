@@ -58,7 +58,13 @@ define([
                         'courses_id': course_id
                     }),
                     success: function (response) {
-                        if (response === 'added') {
+                        if (response) {
+                             var favorites = JSON.parse(response);
+                             var parsed_favorites = {};
+                            _.each(favorites, function (row) {
+                                parsed_favorites[row["campus"]] = row["courses"];
+                            });
+                            Common.Favorites = parsed_favorites;
                             Common.Dispatcher.trigger('favorites:added', 'provider');
                             $(e.target).removeClass('fa-star-o');
                             $(e.target).addClass('fa-star filled');
