@@ -29,7 +29,7 @@ class CourseAPIView(CommonSearch, APIView):
         if not query and not options['advance_search']:
             return Response([])
 
-        sqs = self.filter_indexed_campus_course(query)
+        sqs = self.filter_by_course(query)
         sqs = self.advanced_filter(sqs, options)
 
         if options and 'shape' in options:

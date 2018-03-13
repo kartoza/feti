@@ -40,7 +40,7 @@ class ApiCampus(CommonSearch, APIView):
             if options['advance_search']:
                 search_in_campus_model = False
 
-                sqs = self.filter_by_course(query)
+                sqs = self.filter_indexed_campus_course(query)
                 sqs = self.advanced_filter(sqs, options)
 
         if options and 'shape' in options:
