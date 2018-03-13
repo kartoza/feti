@@ -120,10 +120,16 @@ class CommonSearch(object):
         """Filter by course description
         :param query: Course query
         """
-        sqs = SearchQuerySet().filter(
-            course_course_description=query,
-            campus_location_isnull='false',
-        ).models(CampusCourseEntry)
+        if not query:
+            sqs = SearchQuerySet().filter(
+                    campus_location_isnull='false',
+                    courses_isnull='false',
+            ).models(CampusCourseEntry)
+        else:
+            sqs = SearchQuerySet().filter(
+                course_course_description=query,
+                campus_location_isnull='false',
+            ).models(CampusCourseEntry)
         return sqs
 
     def filter_indexed_campus_course(self, query):
