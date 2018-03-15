@@ -36,8 +36,6 @@ before_script:
 
 script:
   # - flake8 --config .flake8 django_project
-  - elasticsearch -v
-  - curl http://127.0.0.1:9200/
   - cd django_project
   - python manage.py makemigrations
   - python manage.py migrate
