@@ -105,7 +105,7 @@ define([
             if(layers.length > 0) {
                 this.repositionMap(mode);
             } else {
-                this.map.setView([0, 0], 0);
+                this.map.setView([-32.35, 20], 7);
             }
 
         },
@@ -128,8 +128,8 @@ define([
 
             L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGltYXNjaXB1dCIsImEiOiJjaXNqczJmNW8wMmt4MnRvY25hNTlobnlyIn0.TAdOiFVlAdeKMi5TKzueoQ', {
                 zoomControl:true,
-                maxZoom:16,
-                minZoom:5,
+                maxZoom:10,
+                minZoom:6,
                 attribution: "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
             }).addTo(this.map);
             this.$('#feti-map').parent().css('height', '100%');
@@ -467,7 +467,7 @@ define([
                 this.map.fire('finishedDrawing', {'layerType': 'circle'});
             }
             this._enableOtherControlButtons();
-            this.map.fitBounds([[-36.1223800982,14.8006558107],[-20.8368199018,34.5962141893]]);
+            this.map.fitBounds(layer.getBounds(), {paddingTopLeft: [100, 100]});
         },
         drawStop: function (e) {
             Common.Dispatcher.trigger('search:updateRouter');
