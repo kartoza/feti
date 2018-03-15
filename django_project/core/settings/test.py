@@ -2,6 +2,7 @@
 from .project import *  # noqa
 
 PIPELINE['PIPELINE_ENABLED'] = False
+ELASTIC_MIN_SCORE = 0.5
 
 # Use default Django test runner
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'

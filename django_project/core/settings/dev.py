@@ -111,3 +111,7 @@ try:
     )
 except ImportError:
     pass
+
+# Exclude elastic result which have a _score less than the minimum
+# specified in min_score
+ELASTIC_MIN_SCORE = 3.5

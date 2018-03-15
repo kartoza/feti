@@ -1,6 +1,6 @@
 # coding=utf-8
 from haystack.backends.elasticsearch_backend import ElasticsearchSearchBackend
-from core.settings.project import ELASTIC_MIN_SCORE
+from django.conf import settings
 
 __author__ = 'Rizky Maulana Nugraha "lucernae" <lana.pcfre@gmail.com>'
 __date__ = '13/05/15'
@@ -34,7 +34,7 @@ class FuzzyElasticBackend(ElasticsearchSearchBackend):
 
         if 'query_string' in search_kwargs['query']['filtered']['query']:
             if 'min_score' not in search_kwargs:
-                search_kwargs["min_score"] = ELASTIC_MIN_SCORE
+                search_kwargs["min_score"] = settings.ELASTIC_MIN_SCORE
 
             search_kwargs['query']['filtered']['query']['query_string'][
                 'fuzziness'] = 'AUTO'
