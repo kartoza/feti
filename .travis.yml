@@ -29,7 +29,8 @@ install:
   - pip install -r REQUIREMENTS-dev.txt
   - nodeenv -p --node=0.10.31
   - npm -g install yuglify
-  - pip install git+https://github.com/django-haystack/django-haystack
+  - pip install git+https://github.com/dimasciput/django-haystack.git
+  - pip install Django==1.8.14
 
 
 before_script:
