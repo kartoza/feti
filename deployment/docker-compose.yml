@@ -40,6 +40,8 @@ elasticsearch:
   hostname: elasticsearch
   environment:
     - HAYSTACK_PORT=9200
+  ports:
+    - "9200:9200"
 
 db:
   # Note you cannot scale if you use conteiner_name
@@ -173,7 +175,7 @@ devweb:
     - DATABASE_USERNAME=docker
     - DATABASE_PASSWORD=docker
     - DATABASE_HOST=db
-    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+    - DJANGO_SETTINGS_MODULE=core.settings.dev_docker
     - PYTHONPATH=/home/web/django_project
     - VIRTUAL_HOST=feti.kartoza.com
     - VIRTUAL_PORT=8080

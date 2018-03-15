@@ -51,7 +51,13 @@ define([
                         'courses_id': course_id
                     }),
                     success: function(response) {
-                        if(response=='deleted') {
+                        if(response) {
+                             var favorites = JSON.parse(response);
+                             var parsed_favorites = {};
+                            _.each(favorites, function (row) {
+                                parsed_favorites[row["campus"]] = row["courses"];
+                            });
+                            Common.Favorites = parsed_favorites;
                             Common.Dispatcher.trigger('favorites:deleted', 'favorites');
                         }
                     },

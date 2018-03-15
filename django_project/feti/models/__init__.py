@@ -20,6 +20,7 @@ from feti.models.learning_pathway import LearningPathway  # noqa
 from feti.models.occupation import Occupation  # noqa
 from feti.models.url import URL  # noqa
 from feti.models.feedback import Feedback
+from feti.models.field_subfield_of_study import FieldSubfieldOfStudy
 
 __author__ = 'Christian Christelis <christian@kartoza.com>'
 __date__ = '04/2015'

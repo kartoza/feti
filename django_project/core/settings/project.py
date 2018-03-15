@@ -105,4 +105,4 @@ GRUNT_MODULES = {
 # Set administrative
 ADMINISTRATIVE = 'Western Cape'
 
-LIMIT_PER_PAGE = 50
+LIMIT_PER_PAGE = 100

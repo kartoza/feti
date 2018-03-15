@@ -8,7 +8,7 @@ var campus_features = [];
 var campus_layer;
 var highlighted_feature;
 var fit_bounds_options = {
-    maxZoom: 10
+    maxZoom: 6
 };
 var markerIcon = L.ExtraMarkers.icon({
     icon: 'fa-graduation-cap',

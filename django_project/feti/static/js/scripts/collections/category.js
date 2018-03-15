@@ -193,8 +193,10 @@ define([
 
                     // get campus count
                     var campus_count = that.results.length;
-                    if(that.results[0].model.get('max')) {
-                        that.max_page = that.results[0].model.get('max');
+                    try {
+                        if(typeof that.results[0].model.get('max') !== 'undefined')
+                            that.max_page = that.results[0].model.get('max');
+                    } catch(err) {
                     }
 
                     if (campus_count >= Common.limit_per_page && that.max_page){

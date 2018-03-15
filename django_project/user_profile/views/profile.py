@@ -8,6 +8,7 @@ from feti.models.campus import Campus
 from feti.models.course import Course
 from user_profile.forms.profile_form import UserEditMultiForm
 from user_profile.models import CampusCoursesFavorite
+from feti.serializers.favorite_serializer import BaseFavoriteSerializer
 
 __author__ = 'Dimas Ciputra <dimas@kartoza.com>'
 __date__ = '21/09/16'
@@ -104,6 +105,15 @@ class UpdateUserFavoritesView(LoginRequiredMixin, UpdateView):
             else:
                 continue
 
+        if self.request.user.is_authenticated():
+            #  check save campus/course
+            campus_course_fav = CampusCoursesFavorite.objects.filter(
+                user=self.request.user)
+
+            serializer = BaseFavoriteSerializer(campus_course_fav, many=True)
+            favorites = json.dumps(serializer.data)
+            return HttpResponse(favorites)
+
         return HttpResponse(status)
 
 
@@ -159,5 +169,14 @@ class DeleteUserFavoritesView(LoginRequiredMixin, UpdateView):
 
         if not list(campus_course.courses.all()):
             campus_course.delete()
+
+        if self.request.user.is_authenticated():
+            #  check save campus/course
+            campus_course_fav = CampusCoursesFavorite.objects.filter(
+                user=self.request.user)
+
+            serializer = BaseFavoriteSerializer(campus_course_fav, many=True)
+            favorites = json.dumps(serializer.data)
+            return HttpResponse(favorites)
 
         return HttpResponse(status)
