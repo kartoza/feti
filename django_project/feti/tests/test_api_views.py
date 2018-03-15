@@ -11,10 +11,10 @@ from feti.tests.model_factories import (
     EducationTrainingQualityAssuranceFactory
 )
 from feti.views.api import (
-    ApiCampus,
-    ApiCourse,
-    ApiAutocomplete
+    ApiAutocomplete,
 )
+from feti.api_views.campus import ApiCampus
+from feti.api_views.course import CourseAPIView
 
 
 class TestApiView(TestCase):
@@ -40,7 +40,7 @@ class TestApiView(TestCase):
         self.assertEqual(self.campus.campus, response.data[0]['campus'])
 
     def test_get_course_by_query(self):
-        view = ApiCourse.as_view()
+        view = CourseAPIView.as_view()
         request = self.factory.get('/api/course?q=science')
         response = view(request)
 

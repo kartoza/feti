@@ -5,6 +5,10 @@ from .project import *  # noqa
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['*']
 
+# Exclude elastic result which have a _score less than the minimum
+# specified in min_score
+ELASTIC_MIN_SCORE = 3.5
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',

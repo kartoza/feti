@@ -37,7 +37,10 @@ class Address(models.Model):
     # Foreign key link to campus
     # needed for inline admin interface
     campus_fk = models.OneToOneField(
-        'Campus', related_name='address_fk', null=True)
+        'Campus',
+        related_name='address_fk',
+        null=True,
+        on_delete=models.SET_NULL)
 
     objects = models.GeoManager()
 
