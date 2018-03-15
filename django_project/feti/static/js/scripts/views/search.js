@@ -552,7 +552,7 @@ define([
                 var $zoom_control = $('.leaflet-control-zoom');
                 $zoom_control.animate({
                     marginTop: '-=55px'
-                }, 500);
+                }, 50);
 
                 // now it is shown
                 this.search_bar_hidden = true;

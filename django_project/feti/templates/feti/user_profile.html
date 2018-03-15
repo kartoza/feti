@@ -99,6 +99,8 @@
                     })
                 }).bindPopup("<b>My location</b>").addTo(map);
                 map.panTo(marker._latlng);
+                map._layersMaxZoom=5;
+                map._layersMinZoom=5;
             }
         });
     </script>

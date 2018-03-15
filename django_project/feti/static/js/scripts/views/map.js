@@ -127,7 +127,9 @@ define([
             });
 
             L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGltYXNjaXB1dCIsImEiOiJjaXNqczJmNW8wMmt4MnRvY25hNTlobnlyIn0.TAdOiFVlAdeKMi5TKzueoQ', {
-                maxZoom: 20,
+                zoomControl:true,
+                maxZoom:10,
+                minZoom:6,
                 attribution: "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
             }).addTo(this.map);
             this.$('#feti-map').parent().css('height', '100%');
@@ -465,7 +467,7 @@ define([
                 this.map.fire('finishedDrawing', {'layerType': 'circle'});
             }
             this._enableOtherControlButtons();
-            this.map.fitBounds(layer.getBounds(), {paddingTopLeft: [75, 75]});
+            this.map.fitBounds(layer.getBounds(), {paddingTopLeft: [100, 100]});
         },
         drawStop: function (e) {
             Common.Dispatcher.trigger('search:updateRouter');
