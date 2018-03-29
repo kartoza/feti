@@ -17,6 +17,7 @@ INSTALLED_APPS += (
     'allauth.account',
     'allauth.socialaccount',
     'celery',
+    'django_prometheus',
 )
 
 SITE_ID = 1
@@ -31,8 +32,13 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
 )
+MIDDLEWARE_CLASSES = (
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
+) + MIDDLEWARE_CLASSES
+
 MIDDLEWARE_CLASSES += (
     'django.middleware.gzip.GZipMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',

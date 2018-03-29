@@ -6,6 +6,7 @@ from feti.models.course import Course
 from feti.models.occupation import Occupation
 from user_profile.models import CampusCoursesFavorite
 from feti.serializers.favorite_serializer import BaseFavoriteSerializer
+from feti.prometheus.counter import PrometheusCounter
 
 __author__ = 'Dimas Tri Ciputra'
 
@@ -14,6 +15,7 @@ class LandingPage(TemplateView):
     template_name = 'feti/landing_page.html'
 
     def get_context_data(self, **kwargs):
+        PrometheusCounter.increase_landing_page_view()
         context = super(LandingPage, self).get_context_data(**kwargs)
         context['next'] = '/'
         context['courses'] = Course.objects.count()
