@@ -25,7 +25,7 @@ urlpatterns = patterns(
     # allauth
     url(r'^accounts/', include('allauth.urls')),
 
-    # prometheus
+    # prometheus_feti
     url(r'', include('django_prometheus.urls')),
 )
 
