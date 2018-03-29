@@ -31,3 +31,4 @@ more_itertools==4.1.0
 git+https://github.com/dimasciput/django-haystack.git
 # Cors header
 django-cors-headers==2.1.0
+django-prometheus

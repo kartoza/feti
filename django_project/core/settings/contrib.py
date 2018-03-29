@@ -17,6 +17,7 @@ INSTALLED_APPS += (
     'allauth.account',
     'allauth.socialaccount',
     'celery',
+    'django_prometheus',
 )
 
 SITE_ID = 1
