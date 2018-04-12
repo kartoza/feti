@@ -7,17 +7,15 @@ from feti.models.occupation import Occupation
 from user_profile.models import CampusCoursesFavorite
 from feti.serializers.favorite_serializer import BaseFavoriteSerializer
 from ..prometheus_feti.counter import PrometheusCounter
-from ..prometheus_feti.response_time import ResponseTimeMixin
 
 __author__ = 'Dimas Tri Ciputra'
 
 
-class LandingPage(PrometheusCounter, ResponseTimeMixin, TemplateView):
+class LandingPage(PrometheusCounter, TemplateView):
     template_name = 'feti/landing_page.html'
 
     def get_context_data(self, **kwargs):
         self.increase_landing_page_view()
-        self.get_response_time(request = self.request)
         context = super(LandingPage, self).get_context_data(**kwargs)
         context['next'] = '/'
         context['courses'] = Course.objects.count()

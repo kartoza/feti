@@ -1,35 +1,61 @@
+from __future__ import print_function
+
 # coding: utf-8
 __author__ = 'Alison Mukoma <alison@kartoza.com>'
 __copyright__ = 'kartoza.com'
 
 import time
-from prometheus_client import Summary
-
-# Create a metric to track time spent and requests made.
-PAGE_REQUEST_TIME = Summary('get_view_response_time',
-                            'Time the request took to respond.')
+from prometheus_client import Summary, Counter
 
 
-class ResponseTimeMixin(object):
-    """Gets the response time a decorated function process took."""
+from prometheus_client.process_collector import ProcessCollector
 
-    @PAGE_REQUEST_TIME.time()
-    def get_response_time(self, request, *args, **kwargs):
-        """Method to calculate the response-time for a request."""
-
-        # start the timer
-        request.start_time = time.time()
-
-        # stop timer when object is done and return time value
-        duration = int((time.time() - request.start_time) * 1000)
-        # Add the header.
-        return duration
+ProcessCollector(namespace='mydaemonCustomCollector', pid=lambda: open(
+        '/proc/cpuinfo').read())
 
 
-# Create a metric to track time spent and requests made.
-SYSTEM_RESOURCE_STATS = Summary('get_system_resource_statistics',
-                            'System resource statistics.')
+import random
+import time
 
-class ProcessGaugeDispatch(object):
-    """Get system statistics where the project is running."""
+from prometheus_client import generate_latest, REGISTRY, PROCESS_COLLECTOR, \
+    Counter, Gauge, \
+    Histogram
+
+
+# Count the total number of HTTP requests that feti is recieving.
+REQUESTS = Counter('http_requests_total', 'Total HTTP Requests (count)', ['method', 'endpoint', 'status_code'])
+
+# A gauge to monitor the total number of in progress requests
+IN_PROGRESS = Gauge('http_requests_inprogress', 'Number of in progress HTTP requests')
+
+# A histogram to measure the latency of the HTTP requests
+TIME_DELAY = Histogram('http_request_duration_seconds',
+                       'HTTP request latency (seconds)')
+
+
+@IN_PROGRESS.track_inprogress()
+@TIME_DELAY.time()
+def count_200():
+    REQUESTS.labels(method='GET', status_code=200).inc()
+    return generate_latest(REGISTRY)
+
+@IN_PROGRESS.track_inprogress()
+@TIME_DELAY.time()
+def count_404():
+    REQUESTS.labels(method='GET', status_code=404).inc()
+    return generate_latest(REGISTRY)
+
+@IN_PROGRESS.track_inprogress()
+@TIME_DELAY.time()
+def count_500():
+    REQUESTS.labels(method='GET', status_code=500).inc()
+    return generate_latest(REGISTRY)
+
+PROCESS_COLLECTION = Gauge('collect_running_process',
+                       'Collect running processes')
+
+@PROCESS_COLLECTION.track_inprogress()
+def running_processes():
+    PROCESS_COLLECTOR.collect()
+    return generate_latest(REGISTRY)
 
