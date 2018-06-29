@@ -63,7 +63,7 @@ COPY package.json /home/web/django_project/package.json
 RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-concat grunt-contrib-uglify
 RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
 
-COPY django_project:/home/web/
+COPY django_project /home/web/
 ADD uwsgi.conf /uwsgi.conf
 
 # Open port 8080 as we will be running our uwsgi socket on that
