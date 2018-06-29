@@ -28,7 +28,7 @@ RUN npm -g install yuglify
 RUN rpl "env node" "env nodejs" /usr/local/lib/node_modules/yuglify/bin/yuglify
 
 # Install django requirements
-ADD REQUIREMENTS.txt /REQUIREMENTS.txt
+ADD deployment/docker/REQUIREMENTS.tx /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
 RUN pip install uwsgi
 
