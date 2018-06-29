@@ -53,7 +53,7 @@ WORKDIR /home/web/django_project
 
 # Install grunt
 RUN npm install -g grunt-cli
-COPY package.json /home/web/django_project/package.json
+COPY deployment/docker/package.json /home/web/django_project/package.json
 RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-concat grunt-contrib-uglify
 RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
 
