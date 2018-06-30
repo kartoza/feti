@@ -58,7 +58,7 @@ RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-co
 RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
 
 COPY django_project /home/web/
-ADD uwsgi.conf /uwsgi.conf
+ADD deployment/docker/uwsgi.conf /uwsgi.conf
 
 # Open port 8080 as we will be running our uwsgi socket on that
 EXPOSE 8080
