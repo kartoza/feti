@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
@@ -7,11 +7,11 @@ module.exports = function(grunt) {
         requirejs: {
             compile: {
                 options: {
-                    baseUrl: 'feti/static/js',
-                    mainConfigFile: 'feti/static/js/main.js',
+                    baseUrl: '/home/web/django_project/feti/static/js',
+                    mainConfigFile: '/home/web/django_project/feti/static/js/main.js',
                     name: 'libs/almond/almond',
                     include: ['main.js'],
-                    out: 'feti/static/js/optimized.js'
+                    out: '/home/web/django_project/feti/static/js/optimized.js'
                 }
             }
         }
