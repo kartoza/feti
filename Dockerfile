@@ -58,6 +58,8 @@ RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-co
 RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
 
 COPY django_project /home/web/
+# Used by the nginx container to get specific configs for feti
+COPY deployment/sites-enabled /etc/nginx/conf.d/
 ADD deployment/docker/uwsgi.conf /uwsgi.conf
 
 # Open port 8080 as we will be running our uwsgi socket on that
