@@ -33,6 +33,7 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 
+# this is not used
 class SearchCampus(APIView):
     page_limit = settings.LIMIT_PER_PAGE
     additional_context = {}
@@ -222,6 +223,7 @@ class ApiCampus(SearchCampus):
             Q(provider__primary_institution__icontains=query))
 
 
+# this is not used
 class ApiCourse(SearchCampus):
     """
     Api to filter courses by query
@@ -362,6 +364,16 @@ class ApiSavedCampus(APIView):
         shape = None
         administrative = None
         radius = 0
+
+        # hack for PDF rendering
+        # the pdf request goes through CommonSearch.process_request
+        # that already creates a Polygon (or a Point) object
+        if 'shape' in options and 'type' in options:
+            if options['type'] == 'polygon':
+                drawn_polygon = options['shape']
+            if options['type'] == 'circle':
+                drawn_circle = options['shape']
+                radius = options['radius']
 
         if options:
             if 'shape' in options:

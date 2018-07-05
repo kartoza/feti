@@ -12,6 +12,17 @@
         all courses.
     {% endif %}
     </h2>
+
+    <a href="{{ url }}" target="_blank">Website</a>
+{% endif %}
+
+{% if options %}
+    <h2>Options</h2>
+    <ul>
+    {% for option in options %}
+        <li>{{ option }}</li>
+    {% endfor %}
+    </ul>
 {% endif %}
 
 {% if type == 'pdf' %}
@@ -22,6 +33,7 @@
     <h2>Link : </h2>
     <strong>{{ link }}</strong>
 {% endif %}
+
 <h2>List Campus :</h2>
 <ul>
 {% for campus in campuses %}

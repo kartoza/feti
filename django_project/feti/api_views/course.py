@@ -16,48 +16,22 @@ class CourseAPIView(CommonSearch, APIView):
     """
 
     def get(self, request, format=None):
+        """Get the courses.
+
+        :param request: HTTP request object
+        :type request: HttpRequest
+
+        :param args: Positional arguments
+        :type args: tuple
+
+        :returns: URL
+        :rtype: HttpResponse
+        """
+
         query_dict = self.request.GET.dict()
         query, options = self.process_request(query_dict)
-
-        if '=' in query:
-            queries = query.split('=')
-            # search by saqa id
-            if 'saqa_id' in queries[0] and len(queries) > 1:
-                saqa_ids = queries[1].split(',')
-                return Response(self.filter_by_saqa_ids(saqa_ids, options))
-
-        if not query and not options['advance_search']:
-            return Response([])
-
-        sqs = self.filter_by_course(query)
-        sqs = self.advanced_filter(sqs, options)
-
-        if options and 'shape' in options:
-            if options['type'] == 'polygon':
-                sqs = self.filter_polygon(sqs, options['shape'])
-            elif options['type'] == 'circle':
-                sqs = self.filter_radius(
-                    sqs,
-                    options['shape'],
-                    options['radius']
-                )
-
-        campus_data = []
-
-        if sqs:
-            for result in sqs:
-                stored_fields = result.get_stored_fields()
-                if stored_fields['campus_location']:
-                    campus_location = stored_fields['campus_location']
-                    stored_fields['campus_location'] = "{0},{1}".format(
-                        campus_location.y, campus_location.x
-                    )
-                del stored_fields['courses_isnull']
-                del stored_fields['campus_location_isnull']
-
-                campus_data.append(stored_fields)
-
-        return Response(campus_data)
+        course_data = self.search_courses(query, options)
+        return Response(course_data)
 
 
 class ApiCourseIds(APIView):

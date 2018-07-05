@@ -437,8 +437,13 @@ define([
             }
 
             this.hideFilterPanel();
-            if (num > 0 && mode !== 'occupation' && this._search_query[mode]) {
-                // Show share bar
+
+            // do not show the share bar when:
+            // - there is no result
+            // - the mode (view) is occupation 
+            // pierrealixt commented this: && this._search_query[mode]
+            // share bar appears in favorites mode and provider mode
+            if (num > 0 && mode !== 'occupation') {
                 Common.Dispatcher.trigger('map:showShareBar');
             } else {
                 Common.Dispatcher.trigger('map:hideShareBar');

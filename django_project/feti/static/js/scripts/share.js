@@ -1,20 +1,35 @@
 /**
  * Created by Dimas on 12/3/16.
  */
-define(['backbone', 'jquery', 'underscore'], function (Backbone, $, _) {
+
+
+define([
+    'backbone',
+    'jquery',
+    'underscore',
+    'common'
+], function (Backbone, $, _, Common) {
 
     var Share = new function () {
 
         this.sharePDF = function () {
-            var url = '/pdf_report/';
+            var query = Common.Router.parameters.query;
             var currentRoute = Backbone.history.getFragment().split('/');
-            if (currentRoute.length > 2) {
-                window.location = url + currentRoute[1] + '/' + currentRoute[2];
-            } else if (currentRoute.indexOf('favorites') > 0) {
-                window.location = url + currentRoute[1] + '/all';
+            var resource = currentRoute[1] || 'provider';
+            var url = '/pdf_report/' + resource + '?export=pdf';
+            // this is not pretty
+            if (resource === 'favorites')
+                url += '&' + query;
+            else {
+                if (typeof(currentRoute[2]) !== 'undefined')
+                    url += '&q=' + currentRoute[2];
+
+                if (typeof(currentRoute[3]) !== 'undefined')
+                    url += '&' + currentRoute[3];
+
             }
-        }
-        ;
+            window.location = url;
+        };
 
         this.shareEmail = function () {
             var currentRoute = Backbone.history.getFragment().split('/');
