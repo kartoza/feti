@@ -50,6 +50,7 @@ RUN bash nodesource_setup.sh
 RUN apt-get -y --force-yes install nodejs
 
 WORKDIR /home/web/django_project
+COPY django_project /home/web/django_project
 
 # Install grunt
 RUN npm install -g grunt-cli
@@ -57,7 +58,6 @@ COPY deployment/docker/package.json /home/web/django_project/package.json
 RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-concat grunt-contrib-uglify
 RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
 
-COPY django_project /home/web/
 # Used by the nginx container to get specific configs for feti
 COPY deployment/sites-enabled /etc/nginx/conf.d/
 COPY deployment/setup_data /home/setup/
