@@ -3,13 +3,19 @@ from .prod import *  # noqa
 import os
 print(os.environ)
 
-ALLOWED_HOSTS = ['*']
+try:
+    # try to parse python notation, default in dockerized env
+    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
+except ValueError:
+    # fallback to regular list of values separated with misc chars
+    ALLOWED_HOSTS = ['localhost', 'django', 'geonode'] \
+    if os.getenv('ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
-ADMINS = (
-    ('Christian Christelis', 'christian@kartoza.com'),
-    ('Dimas Tri Ciputra', 'dimas@kartoza.com'),
-    ('Irwan Fathurrahman', 'irwan@kartoza.com'))
-
+if os.getenv('ADMIN') is none:
+    ADMINS = None
+else:
+    ADMINS = (os.environ['ADMIN'],)
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
