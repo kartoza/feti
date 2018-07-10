@@ -13,7 +13,7 @@ except ValueError:
     if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
-if os.getenv('ADMIN') is none:
+if os.getenv('ADMIN') is None:
     ADMINS = None
 else:
     ADMINS = (os.environ['ADMIN'],)
