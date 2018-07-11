@@ -55,13 +55,14 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get -y --force-yes install nodejs
 
-WORKDIR /home/web/django_project
 
 # Install grunt
 RUN npm install -g grunt-cli
-COPY package.json /home/web/django_project/package.json
-RUN cd /home/web/django_project && npm install --save-dev grunt grunt-contrib-concat grunt-contrib-uglify
-RUN cd /home/web/django_project && npm install --save-dev grunt-contrib-requirejs
+ADD package.json /package.json
+ADD Gruntfile.js /Gruntfile.js
+RUN cd / && npm install
+
+WORKDIR /home/web/django_project
 
 ADD uwsgi.conf /uwsgi.conf
 

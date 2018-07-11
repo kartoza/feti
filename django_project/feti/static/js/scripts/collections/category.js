@@ -1,6 +1,7 @@
 define([
-    'common'
-], function (Common) {
+    'common',
+    'leaflet'
+], function (Common, L) {
     return CategoryCollection = Backbone.Collection.extend({
         subviews: {},
         results: [],
