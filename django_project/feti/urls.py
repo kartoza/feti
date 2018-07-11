@@ -46,6 +46,9 @@ from feti.views.travel_time import TravelTime
 from feti.views.jasmine import JasmineView
 from django.conf import settings
 
+# custom metrics -- from prometheus_feti app
+from .prometheus_feti.counter import PrometheusCounter
+# from .prometheus_feti.response_time import cpuinfo
 sqs = SearchQuerySet()
 
 api_urls = patterns(
@@ -174,6 +177,13 @@ urlpatterns = patterns(
     url(regex='^feedback-submitted/$',
         view=FeedbackSubmittedView.as_view(),
         name='success_view'),
+        #
+        # # custom metric exporters
+        # url(regex = '^metrics/$',
+        #     view = cpuinfo,
+        #     name = 'process_uptime_total_custom'),
+        # #
+
 ) + api_urls
 
 if settings.DEBUG:

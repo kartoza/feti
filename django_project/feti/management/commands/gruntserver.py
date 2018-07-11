@@ -6,7 +6,6 @@ from core.settings.utils import ABS_PATH
 
 
 class Command(BaseCommand):
-
     def __init__(self):
         super(Command, self).__init__()
         self.grunt_process = None
@@ -19,9 +18,9 @@ class Command(BaseCommand):
 
         self.grunt_process = subprocess.call([
             'grunt',
-            '--gruntfile={0}/Gruntfile.js'.format(ABS_PATH()),
-            '--base=.'],
-                shell=True)
+            '--gruntfile=/Gruntfile.js',
+            '--base=/'],
+            shell=True)
 
         self.stdout.write('>>> Collectstatic')
         call_command('collectstatic', verbosity=0, interactive=False)
