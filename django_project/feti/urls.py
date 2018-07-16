@@ -23,6 +23,7 @@ from feti.api_views.course import (
     CourseAPIView,
     ApiCourseIds
 )
+from feti.api_views.occupation_provider import ApiOccupationCampus
 from feti.api_views.occupation import(
     OccupationListApiView
 )
@@ -51,19 +52,19 @@ sqs = SearchQuerySet()
 api_urls = patterns(
     '',
     url(
-        r'^api/saved-campus/',
+        r'^api/saved-campus/$',
         ApiSavedCampus.as_view(),
         name='api-saved-campus'),
     url(
-        r'^api/campus',
+        r'^api/campus$',
         ApiCampus.as_view(),
         name='api-campus'),
     url(
-        r'^api/course',
+        r'^api/course$',
         CourseAPIView.as_view(),
         name='api-course'),
     url(
-        r'^api/occupation',
+        r'^api/occupation$',
         ApiOccupation.as_view(),
         name='api-occupation'),
 
@@ -104,27 +105,27 @@ api_urls = patterns(
         name="api-get-url"
     ),
     url(
-        r'^api/subfield_of_study',
+        r'^api/subfield_of_study$',
         SubFieldOfStudyAPIView.as_view(),
         name="api-get-subfield-of-study"
     ),
     url(
-        r'^api/field_of_study',
+        r'^api/field_of_study$',
         FieldOfStudyAPIView.as_view(),
         name="api-get-field-of-study"
     ),
     url(
-        r'^api/qualification_type',
+        r'^api/qualification_type$',
         QualificationTypeAPIView.as_view(),
         name="api-get-qualification-type"
     ),
     url(
-        r'^api/national_qualifications_framework',
+        r'^api/national_qualifications_framework$',
         NationalQualificationsFrameworkAPIView.as_view(),
         name="api-get-nqf"
     ),
     url(
-        r'^api/national_qualifications_subframework',
+        r'^api/national_qualifications_subframework$',
         NationalQualificationsSubFrameworkAPIView.as_view(),
         name="api-get-nqsf"
     ),
@@ -132,6 +133,10 @@ api_urls = patterns(
         r'^api/list_occupation/',
         OccupationListApiView.as_view(),
         name='api-get-occupation-list'),
+    url(
+        r'api/course-by-occupation$',
+        ApiOccupationCampus.as_view(),
+        name='api-occupation-course')
 )
 
 urlpatterns = patterns(

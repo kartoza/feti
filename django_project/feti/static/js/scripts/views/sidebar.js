@@ -58,9 +58,9 @@ define([
         },
         exitOccupation: function (exitMap) {
             var that = this;
-            var $cover = $('#shadow-map');
+            var $cover = $('#result-detail');
             if ($cover.is(":visible")) {
-                $cover.fadeOut(500);
+                // $cover.fadeOut(500);
                 $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
                     that.exitResult(exitMap);
                 });
@@ -87,9 +87,9 @@ define([
         showMapCover: function () {
             if (Common.CurrentSearchMode == 'occupation') {
                 var $cover = $('#shadow-map');
-                if (!$cover.is(":visible")) {
-                    $cover.fadeIn(200);
-                }
+                // if (!$cover.is(":visible")) {
+                //     $cover.fadeIn(200);
+                // }
             }
         },
         hideMapCover: function () {
