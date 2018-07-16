@@ -33,7 +33,7 @@ define([
             this.model.hide();
         },
         occupationClicked: function () {
-            this.model.removeMarker();
+            this.model.removeAllMarkers();
             var that = this;
             $('.selected-indicator-right .fa').hide();
             that.$el.find('.fa').show();
