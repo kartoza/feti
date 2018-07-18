@@ -20,6 +20,7 @@
             z-index: 9999 !important;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'js/libs/datepicker/datepicker.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -44,11 +45,13 @@
 {% block js_inline %}
     <script type="text/javascript" src="/static/js/libs/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="/static/js/libs/jquery-ui-1.12.1.min.js"></script>
+    <script src="{% static 'js/libs/datepicker/datepicker.js' %}"></script>
+    <script src="{% static 'js/libs/datepicker/i18n/datepicker.en.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('input[type="date"]').datepicker(
                     {
-                        dateFormat: 'yy-mm-dd',
+                        dateFormat: 'yyyy-mm-dd',
                         changeMonth: true,
                         changeYear: true
                     }
