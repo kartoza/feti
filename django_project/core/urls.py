@@ -24,7 +24,8 @@ urlpatterns = patterns(
 
     # allauth
     url(r'^accounts/', include('allauth.urls')),
-
+    # prometheus_feti
+    url(r'', include('django_prometheus.urls')),
 )
 
 # expose static files and uploded media if DEBUG is active
