@@ -11,11 +11,12 @@ class StepDetailSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         res = super(StepDetailSerializer, self).to_representation(instance)
-        if not instance.course.all():
+        courses = instance.course.all()
+        if not courses:
             return res
 
         course_details = []
-        for course in instance.course.all():
+        for course in courses:
 
             title_exists = [i for i, v in
                             enumerate(course_details)

@@ -13,6 +13,9 @@ class ProviderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         res = super(ProviderSerializer, self).to_representation(instance)
-        campus = Campus.objects.filter(provider=instance)
+        campus = (
+            Campus.objects.filter(
+                provider=instance).prefetch_related('provider')
+        )
         res['campus'] = CampusSerializer(campus, many=True).data
         return res
