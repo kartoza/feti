@@ -8,6 +8,12 @@
     </style>
 {% endblock %}
 
+{% block js_head %}
+    <script type="text/javascript" src="/static/js/libs/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/jquery-ui-1.12.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/bootstrap.min.js"></script>
+{% endblock %}
+
 {% block content %}
 
     <div class="container">
@@ -77,6 +83,7 @@
 {% endblock %}
 
 {% block js_inline %}
+    <script type="text/javascript" src="/static/js/libs/Leaflet/1.0.3/leaflet.js"></script>
     <script type="text/javascript" src='/static/feti/leaflet-extra-markers/leaflet.extra-markers.js'></script>
     <script>
         $(document).ready(function () {
