@@ -66,6 +66,7 @@ define([
             } else {
                 that.exitResult(exitMap);
             }
+            Common.Dispatcher.trigger('occupation:removeAllMarker');
         },
         exitResult: function (exitMap) {
             if ($('#result').is(":visible")) {
@@ -115,6 +116,7 @@ define([
         clearSidebar: function (mode) {
             $('#result-container-' + mode).empty();
             this.$result_title.find('#result-title-' + mode).remove();
+            Common.Dispatcher.trigger('occupation:removeAllMarker');
         },
         showEmptyResult: function (mode) {
             var $_empty_result_div = this.$empty_result_div.clone();
@@ -249,6 +251,7 @@ define([
             $('#result-container-wrapper').css('padding-top',$height);
         },
         showResultTitle: function (newMode, oldMode) {
+            Common.Dispatcher.trigger('occupation:removeAllMarker');
             $('#result-title-' + oldMode).hide();
             $('#result-title-' + newMode).show();
         }

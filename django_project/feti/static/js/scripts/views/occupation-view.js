@@ -82,6 +82,7 @@ define([
             this.render();
             this.$detail = $('#result-detail');
             Common.Dispatcher.on('occupation-' + this.model.attributes.id + ':routed', this.update_detail, this);
+            Common.Dispatcher.on('occupation:removeAllMarker', this.model.removeAllMarkers, this);
         },
         destroy: function () {
             this.model.destroy();
