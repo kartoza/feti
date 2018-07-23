@@ -78,6 +78,8 @@ class CampusSummarySerializer(serializers.ModelSerializer):
     address = serializers.SerializerMethodField()
     phone = serializers.SerializerMethodField()
     provider = serializers.SerializerMethodField()
+    public_institution = serializers.SerializerMethodField()
+    website = serializers.SerializerMethodField()
 
     def get_phone(self, obj):
         return 'N/A' if not obj.address.phone else obj.address.phone
@@ -88,6 +90,21 @@ class CampusSummarySerializer(serializers.ModelSerializer):
     def get_provider(self, obj):
         return obj.provider.__unicode__()
 
+    def get_public_institution(self, obj):
+        return obj.provider.status
+
+    def get_website(self, obj):
+        return obj.provider.website
+
     class Meta:
         model = Campus
-        fields = ('id', 'address', 'phone', 'campus', 'provider', 'location')
+        fields = (
+            'id',
+            'address',
+            'phone',
+            'campus',
+            'provider',
+            'location',
+            'public_institution',
+            'website'
+        )

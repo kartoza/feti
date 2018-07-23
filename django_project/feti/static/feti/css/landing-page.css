@@ -499,10 +499,10 @@
 
 #result-detail {
     position: absolute;
-    top: 55px;
-    left: 0px;
+    top: 110px;
+    left: 0;
     background: white !important;
-    padding: 55px 20px 20px 20px !important;
+    padding: 0 20px 20px 20px !important;
     display: none;
     z-index: 99;
     overflow-y: scroll;
@@ -829,4 +829,15 @@ a#search-icon {
     padding-top: 10px;
     padding-bottom: 10px;
     color: rgba(29, 104, 179, 0.9);
+}
+
+.info-occupation-summary {
+    color: cadetblue;
+    font-size: 10pt;
+    font-weight: normal;
+    margin: 0;
+}
+
+.info-occupation-summary.selected {
+    font-weight: bolder !important;
 }
