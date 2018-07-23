@@ -18,19 +18,20 @@ class OccupationSerializer(serializers.ModelSerializer):
         # get pathway
         res['pathways'] = {}
 
-        learning_pathways = LearningPathway.objects.filter(
-            occupation=instance
-        ).order_by(
-            'pathway_number'
+        learning_pathways = (
+            LearningPathway.objects.filter(
+                occupation=instance).order_by(
+                'pathway_number').prefetch_related('occupation')
         )
 
         for pathway in learning_pathways:
             res['pathways'][pathway.pathway_number] = {}
-            for step in Step.objects.filter(
-                    learning_pathway=pathway
-            ).order_by(
-                'step_number'
-            ):
+            steps = (
+                Step.objects.filter(
+                    learning_pathway=pathway).order_by(
+                    'step_number').prefetch_related('learning_pathway')
+            )
+            for step in steps:
                 detail = step.step_detail
                 res['pathways'][pathway.pathway_number][step.step_number] = \
                     StepDetailSerializer(detail).data
