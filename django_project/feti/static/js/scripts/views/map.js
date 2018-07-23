@@ -726,7 +726,7 @@ define([
                 });
 
                 this.mapContainerWidth = this.$mapContainer.width();
-                this.mapContainerHeight = 600;
+                this.mapContainerHeight = 620;
 
                 this.$mapContainer.animate(d, _speed, function () {
                     _map._onResize();
@@ -744,10 +744,6 @@ define([
             var that = this;
 
             if (this.isFullScreen) {
-                this.$mapContainer.css({
-                    'padding-right': '15px',
-                    'padding-left': '15px'
-                });
 
                 this.$header.slideDown(this.animationSpeed);
                 this.$aboutSection.slideDown(this.animationSpeed);
@@ -757,18 +753,6 @@ define([
                 d.width = this.mapContainerWidth;
                 d.height = this.mapContainerHeight;
 
-                this.$mapContainer.css('padding-top', 0);
-
-                this.$mapSection.css({
-                    'padding-top': '50px',
-                    'padding-bottom': '50px',
-                    'height': this.mapContainerHeight + 100
-                });
-
-                $('.search-category').css({
-                    'border-top-left-radius': '8px',
-                    'border-top-right-radius': '8px'
-                });
 
                 this.$mapContainer.animate(d, this.animationSpeed, function () {
                     _map._onResize();
