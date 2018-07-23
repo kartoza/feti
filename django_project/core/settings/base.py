@@ -65,8 +65,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware'
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
+    'pyinstrument.middleware.ProfilerMiddleware',
 )
+
+PYINSTRUMENT_PROFILE_DIR = 'profiles'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = ['*']

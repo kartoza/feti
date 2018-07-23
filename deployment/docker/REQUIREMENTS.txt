@@ -34,3 +34,5 @@ django-cors-headers==2.1.0
 # prometheus monitoring support
 django-prometheus
 prometheus_client
+#profiling
+pyinstrument
