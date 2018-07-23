@@ -88,6 +88,7 @@ define([
             this.set('layer', this.layerGroup);
             markersCollection.push(this.layerGroup);
             Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
+            Common.Dispatcher.trigger('map:pan', [location.coordinates[1], location.coordinates[0]]);
             this.set('layer', null)
         },
         removeAllMarkers: function () {
