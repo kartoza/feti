@@ -45,7 +45,8 @@ class ProfileForm(forms.ModelForm):
         widget=
         CustomOSMWidget(
             attrs={'map_width': 1140, 'map_height': 500}
-        )
+        ),
+        required=False
     )
 
     def __init__(self, *args, **kwargs):
