@@ -498,10 +498,10 @@
 
 #result-detail {
     position: absolute;
-    top: 55px;
-    left: 0px;
+    top: 110px;
+    left: 0;
     background: white !important;
-    padding: 55px 20px 20px 20px !important;
+    padding: 0 20px 20px 20px !important;
     display: none;
     z-index: 99;
     overflow-y: scroll;

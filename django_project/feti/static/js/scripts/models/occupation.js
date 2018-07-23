@@ -1,12 +1,14 @@
 /*global define*/
 define([
     'common',
+    'text!scripts/templates/campus-popup.html',
     'backbone',
     'underscore',
     'leafletExtraMarkers'
-], function (Common, Backbone, _) {
+], function (Common, popupTemplate, Backbone, _) {
     var markersCollection = [];
     var Occupation = Backbone.Model.extend({
+        template: _.template(popupTemplate),
         parse: function (options) {
             var data;
             if (_.isObject(options.results)) {
@@ -56,20 +58,8 @@ define([
                     });
 
                     var popup = '';
-                    var campus = 'Campus : ' + object['campus'];
-                    var phone = object['phone'];
-
-                    popup = '<div class="leaflet-header"><h3>' +
-                        object['provider'] +
-                        '</h3></div>' +
-                        '<div class="leaflet-place"><strong> ' +
-                        campus +
-                        '</strong></div>' +
-                        '<div class="leaflet-content">' +
-                        '<div><i class="fa fa-map-marker"></i> ' + object['address'] + ' </div>' +
-                        '<div><i class="fa fa-link"></i> <a href="' + object['website'] + '" target="_blank">' + object['website'] + '</a> </div>' +
-                        '<div><i class="fa fa-phone"></i> ' + phone + '</div>' +
-                        '</div>';
+                    object['campus'] = 'Campus : ' + object['campus'];
+                    popup = this.template(object);
 
                     var that = this;
 
