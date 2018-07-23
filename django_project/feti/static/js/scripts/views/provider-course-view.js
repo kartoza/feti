@@ -44,7 +44,13 @@ define([
                     'courses_id': courses_id
                 }),
                 success: function(response) {
-                    if(response=='added') {
+                    if(response) {
+                        var favorites = JSON.parse(response);
+                         var parsed_favorites = {};
+                        _.each(favorites, function (row) {
+                            parsed_favorites[row["campus"]] = row["courses"];
+                        });
+                        Common.Favorites = parsed_favorites;
                         Common.Dispatcher.trigger('favorites:added', Common.CurrentSearchMode);
 
                         $(e.target).removeClass('fa-star-o');

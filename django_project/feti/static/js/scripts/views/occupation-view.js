@@ -19,18 +19,41 @@ define([
     var OccupationView = Backbone.View.extend({
         tagName: 'div',
         className: 'result-title result-title-occupation',
-        template: _.template('<div class="selected-indicator-right"><i class="fa fa-caret-right" aria-hidden="true"></i> </div><div class="title"><%- occupation %></div>'),
+        template: _.template('<div class="selected-indicator-right"><i class="fa fa-caret-right" aria-hidden="true"></i> </div><div class="title"><%- occupation %><p><span class="info-occupation-summary">details</span></p></div>'),
         detailTemplate: _.template(Detail),
         stepDetailTemplate: _.template(StepDetail),
         container: '#result-container-occupation',
         model: Occupation,
         occupationDetail: null,
         events: {
-            'click': 'clicked'
+            'click .info-occupation-summary': 'occupationDetailsClicked',
+            'click': 'occupationClicked'
         },
-        clicked: function () {
+        hide: function () {
+            this.model.hide();
+        },
+        occupationClicked: function () {
+            this.model.removeAllMarkers();
+            var that = this;
+            $('.selected-indicator-right .fa').hide();
+            that.$el.find('.fa').show();
+            var $occupationInfo = that.$el.find('.info-occupation-summary');
+            if(!$occupationInfo.hasClass('selected')) {
+                $('.info-occupation-summary').removeClass('selected');
+                this.$detail.hide("slide", {direction: "right"}, 500);
+            }
+            this.get_campus_provider(this.model.attributes.id);
             Common.Dispatcher.trigger('occupation:clicked', this.model.attributes.id);
-            this.update_detail();
+        },
+        occupationDetailsClicked: function (e) {
+            Common.Dispatcher.trigger('occupation:clicked', this.model.attributes.id);
+            if(!$(e.currentTarget).hasClass('selected')) {
+                $('.info-occupation-summary').removeClass('selected');
+                this.update_detail();
+            }else {
+                this.$detail.hide("slide", {direction: "right"}, 500);
+            }
+            $(e.currentTarget).toggleClass('selected');
         },
         update_detail: function () {
             // Get occupation detail
@@ -104,7 +127,16 @@ define([
             if (Common.Router.selected_pathway) {
                 $('#tab-' + Common.Router.selected_pathway).click();
             }
-        }
+        },
+        get_campus_provider: function (occupation_id) {
+            var that = this;
+            $.ajax({
+                url: '/api/course-by-occupation?id=' + that.model.attributes.id,
+                success: function (data) {
+                    that.model.renderMarker(data)
+                }
+            })
+        },
     });
 
     return OccupationView;

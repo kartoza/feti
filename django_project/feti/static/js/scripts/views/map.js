@@ -126,11 +126,11 @@ define([
             this.map.on('dblclick', function (e) {
             });
 
-            L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGltYXNjaXB1dCIsImEiOiJjaXNqczJmNW8wMmt4MnRvY25hNTlobnlyIn0.TAdOiFVlAdeKMi5TKzueoQ', {
+            L.tileLayer('https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
                 zoomControl:true,
                 maxZoom:10,
                 minZoom:6,
-                attribution: "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                attribution: "Imagery from <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
             }).addTo(this.map);
             this.$('#feti-map').parent().css('height', '100%');
 
@@ -726,7 +726,7 @@ define([
                 });
 
                 this.mapContainerWidth = this.$mapContainer.width();
-                this.mapContainerHeight = 600;
+                this.mapContainerHeight = 620;
 
                 this.$mapContainer.animate(d, _speed, function () {
                     _map._onResize();
@@ -744,10 +744,6 @@ define([
             var that = this;
 
             if (this.isFullScreen) {
-                this.$mapContainer.css({
-                    'padding-right': '15px',
-                    'padding-left': '15px'
-                });
 
                 this.$header.slideDown(this.animationSpeed);
                 this.$aboutSection.slideDown(this.animationSpeed);
@@ -757,18 +753,6 @@ define([
                 d.width = this.mapContainerWidth;
                 d.height = this.mapContainerHeight;
 
-                this.$mapContainer.css('padding-top', 0);
-
-                this.$mapSection.css({
-                    'padding-top': '50px',
-                    'padding-bottom': '50px',
-                    'height': this.mapContainerHeight + 100
-                });
-
-                $('.search-category').css({
-                    'border-top-left-radius': '8px',
-                    'border-top-right-radius': '8px'
-                });
 
                 this.$mapContainer.animate(d, this.animationSpeed, function () {
                     _map._onResize();
