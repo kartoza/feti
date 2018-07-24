@@ -356,6 +356,21 @@ define([
                 ]
             });
 
+            this.shareFacebook = L.easyButton({
+                id: 'share-facebokk-button',
+                position: 'topright',
+                states: [
+                    {
+                        stateName: 'shareFacebook',
+                        icon: 'fa-facebook',
+                        title: 'Post to Facebook',
+                        onClick: function (btn, map) {
+                            Share.shareToFacebook();
+                        }
+                    }
+                ]
+            });
+
             this.shareURL = L.easyButton({
                 id: 'share-url-button',
                 states: [
@@ -388,6 +403,7 @@ define([
                 this.sharePDF,
                 this.shareEmail,
                 this.shareTwitter,
+                this.shareFacebook,
                 this.shareURL,
                 this.shareEmbedCode
             ]);
