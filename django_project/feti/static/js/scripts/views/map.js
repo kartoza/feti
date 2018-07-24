@@ -739,32 +739,7 @@ define([
             }
         },
         exitFullScreen: function (e) {
-            var d = {};
-            var _map = this.map;
-            var that = this;
-
             if (this.isFullScreen) {
-
-                this.$header.slideDown(this.animationSpeed);
-                this.$aboutSection.slideDown(this.animationSpeed);
-                this.$partnerSection.show();
-                this.$footerSection.show();
-
-                d.width = this.mapContainerWidth;
-                d.height = this.mapContainerHeight;
-
-
-                this.$mapContainer.animate(d, this.animationSpeed, function () {
-                    _map._onResize();
-                    that.isFullScreen = false;
-                    that.searchView.mapResize(false, that.animationSpeed);
-                    that.sideBarView.exitOccupation(true);
-                    $('#feti-map').css('width', '100%');
-                });
-
-                // set body content to previous
-                this.$bodyContent.css('height', 'auto');
-
                 // edit url
                 Backbone.history.navigate('/');
             }

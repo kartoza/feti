@@ -55,7 +55,7 @@ sqs = SearchQuerySet()
 api_urls = patterns(
     '',
     url(
-        r'^api/saved-campus/$',
+        r'^api/saved-campus/',
         ApiSavedCampus.as_view(),
         name='api-saved-campus'),
     url(

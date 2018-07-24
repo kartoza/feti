@@ -5,6 +5,11 @@
     letter-spacing: 2px;
 }
 
+#content {
+    margin-top: 0;
+    height: 100%;
+}
+
 .content-section-a {
     padding: 30px 0;
     background-color: #f8f8f8;
@@ -171,7 +176,7 @@
 }
 
 #map-container {
-    padding-top: 62px;
+    padding-top: 60px;
     padding-right: 0;
     padding-left: 0;
     width: 100% !important;
