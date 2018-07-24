@@ -60,18 +60,18 @@ define([
             var that = this;
             $('.selected-indicator-right .fa').hide();
             that.$el.find('.fa').show();
-            that.$detail.html('<div class="occupation-detail-loading"><img height="100%" src="/static/feti/images/spinner.gif"></div>');
             if(!that.$detail.is(":visible")) {
+                that.$detail.html('<div class="occupation-detail-loading"><img height="100%" src="/static/feti/images/spinner.gif"></div>');
                 that.$detail.show("slide", {direction: "right"}, 500);
+                $.ajax({
+                    url: '/api/occupation?id=' + that.model.attributes.id,
+                    success: function (response) {
+                        that.occupationDetail = response;
+                        that.$detail.html(that.detailTemplate(that.occupationDetail));
+                        that.renderPathways();
+                    }
+                });
             }
-            $.ajax({
-                url: '/api/occupation?id=' + that.model.attributes.id,
-                success: function (response) {
-                    that.occupationDetail = response;
-                    that.$detail.html(that.detailTemplate(that.occupationDetail));
-                    that.renderPathways();
-                }
-            });
         },
         render: function () {
             this.$el.empty();
