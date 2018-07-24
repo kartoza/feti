@@ -69,7 +69,10 @@ MIDDLEWARE_CLASSES = (
     'pyinstrument.middleware.ProfilerMiddleware',
 )
 
-PYINSTRUMENT_PROFILE_DIR = 'profiles'
+# Directory where the result of api profiling is being stored.
+# To enable it, uncomment code below and change the directory
+# (related to the project path).
+# PYINSTRUMENT_PROFILE_DIR = 'profiles'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = ['*']
