@@ -128,7 +128,7 @@ define([
 
             L.tileLayer('https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
                 zoomControl:true,
-                maxZoom:10,
+                maxZoom:17,
                 minZoom:6,
                 attribution: "Imagery from <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
             }).addTo(this.map);
