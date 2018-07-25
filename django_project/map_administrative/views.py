@@ -15,16 +15,14 @@ def get_boundary(administrative):
     boundary = None
     if (administrative):
         administratives = administrative.split(",")
-        index = 0
         try:
-            for administrative in administratives:
+            for index, administrative in enumerate(administratives):
                 if index == 0:
                     boundary = Province.objects.get(name=administrative)
                 elif index == 1:
                     boundary = District.objects.get(name=administrative, province=boundary)
                 elif index == 2:
                     boundary = Municipality.objects.get(name=administrative, district=boundary)
-                index += 1
         except Country.DoesNotExist:
             pass
         except Province.DoesNotExist:
