@@ -68,6 +68,19 @@ define(['backbone', 'jquery', 'underscore'], function (Backbone, $, _) {
                 windowReference.location = twitter_intent;
             });
         };
+        
+        this.shareToFacebook = function () {
+            // get url
+            var host = Backbone.history.location.host;
+            var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+
+            _generateURL(function (data) {
+                var facebook_sharer = 'https://www.facebook.com/sharer/sharer.php?s=100&p' +
+                    '[url]=' + host + '/url/' + data;
+                // open facebook share window
+                windowReference.location = facebook_sharer;
+            })
+        };
 
         this.shareURL = function () {
             // get url
