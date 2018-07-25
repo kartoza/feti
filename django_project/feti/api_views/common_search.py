@@ -274,6 +274,9 @@ class CommonSearch(object):
                         options['radius']
                     )
 
+            if not sqs:
+                continue
+
             sqs = self.advanced_filter(sqs, options)
 
             for result in sqs:
