@@ -158,9 +158,6 @@ class CommonSearch(object):
         campus_data = []
         campuses = {}
 
-        # i'm doing this
-        # it used to return None
-        # test api views campus
         if not sqs:
             return []
 

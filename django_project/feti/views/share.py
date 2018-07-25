@@ -17,6 +17,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect
+from haystack.inputs import Clean, Exact
 from feti.models.campus import Campus
 from feti.models.field_of_study import FieldOfStudy
 from feti.models.subfield_of_study import SubFieldOfStudy
@@ -32,7 +33,8 @@ from feti.api_views.campus import (
 )
 from feti.api_views.common_search import CommonSearch
 from feti.serializers.favorite_serializer import FavoritePDFSerializer
-from haystack.inputs import Clean, Exact
+
+
 class SharingMixin(object):
     """Mixin class to query campus and download map"""
     courses_name = []
@@ -40,7 +42,6 @@ class SharingMixin(object):
     def get_course_names(self):
         return self.courses_name
 
-    # used by email_share
     def get_campus(self, provider, query, user=None):
         api = None
         # Get data
@@ -81,7 +82,6 @@ class SharingMixin(object):
         if markers:
             osm_static_url += '&markers=' + markers
 
-        # what is check_existence?
         # if provider:
         #     if provider == 'favorites':
         #         check_existence = False
@@ -136,8 +136,7 @@ class PDFDownload(TemplateView, SharingMixin, CommonSearch, ApiSavedCampus):
             "provider": resource,
             "query": query,
             "campuses": data,
-            "options": self.advanced_search_options_to_string(options),
-            "url": self.feti_url(resource, self.request)
+            "options": self.advanced_search_options_to_string(options)
         }
 
         self.download_map(filename=map_image, markers=markers, provider=resource)
@@ -157,7 +156,6 @@ class PDFDownload(TemplateView, SharingMixin, CommonSearch, ApiSavedCampus):
         return weasyprint.default_url_fetcher(url)
 
     def advanced_search_options_to_string(self, options):
-        # this should go somewhere else.
         result = []
         if 'fos' in options:
             field_of_study_class = FieldOfStudy.objects.get(field_of_study_class=options['fos'])
@@ -180,11 +178,6 @@ class PDFDownload(TemplateView, SharingMixin, CommonSearch, ApiSavedCampus):
             elif options['pi'] == '0':
                 result.append('Private institution')
         return result
-
-    def feti_url(self, resource, request):
-        query_string = request.META['QUERY_STRING'].replace('export=pdf', '')
-        return "http://159.69.42.250:63100/#map/{}/{}".format(
-            resource, query_string)
 
 
 class EmailShare(UpdateView, SharingMixin):
