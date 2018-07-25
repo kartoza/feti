@@ -579,7 +579,7 @@ define([
             this.$search_bar_input.val('');
 
             // Clear saved query
-            this._search_query[Common.CurrentSearchMode] = '';
+            this._search_query = {};
 
             // Clear saved marker
             this.parent.clearLayerMode(Common.CurrentSearchMode);
