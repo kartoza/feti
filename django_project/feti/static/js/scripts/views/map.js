@@ -126,11 +126,11 @@ define([
             this.map.on('dblclick', function (e) {
             });
 
-            L.tileLayer('https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
                 zoomControl:true,
-                maxZoom:10,
+                maxZoom:17,
                 minZoom:6,
-                attribution: "Imagery from <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                attribution: "&copy; Openstreetmap France | &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
             }).addTo(this.map);
             this.$('#feti-map').parent().css('height', '100%');
 
