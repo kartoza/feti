@@ -8,6 +8,13 @@ DOMAIN := staging.feti.kartoza.com
 
 default: web
 
+status:
+	@echo
+	@echo "--------------------------"
+	@echo "Show status of all containers"
+	@echo "--------------------------"
+	@docker-compose -p $(PROJECT_ID) ps
+
 run: build permissions web migrate collectstatic
 
 deploy: run

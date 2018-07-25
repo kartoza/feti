@@ -11,27 +11,26 @@ class StepDetailSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         res = super(StepDetailSerializer, self).to_representation(instance)
-        if not instance.course.all():
-            return res
+        courses = instance.course.all()
+        if courses:
+            course_details = []
+            for course in courses:
 
-        course_details = []
-        for course in instance.course.all():
+                title_exists = [i for i, v in
+                                enumerate(course_details)
+                                if v['title'] == course.course_description]
 
-            title_exists = [i for i, v in
-                            enumerate(course_details)
-                            if v['title'] == course.course_description]
+                if title_exists:
+                    course_detail = course_details[title_exists[0]]
+                    course_detail['saqa_id'] = course_detail['saqa_id'] + ',' + \
+                                               course.national_learners_records_database
 
-            if title_exists:
-                course_detail = course_details[title_exists[0]]
-                course_detail['saqa_id'] = course_detail['saqa_id'] + ',' + \
-                                           course.national_learners_records_database
+                else:
+                    data = {
+                        'saqa_id': course.national_learners_records_database,
+                        'title': course.course_description
+                    }
+                    course_details.append(data)
 
-            else:
-                data = {
-                    'saqa_id': course.national_learners_records_database,
-                    'title': course.course_description
-                }
-                course_details.append(data)
-
-        res['course_detail'] = course_details
+            res['course_detail'] = course_details
         return res
