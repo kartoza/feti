@@ -357,7 +357,7 @@ define([
             });
 
             this.shareFacebook = L.easyButton({
-                id: 'share-facebokk-button',
+                id: 'share-facebook-button',
                 position: 'topright',
                 states: [
                     {
@@ -421,6 +421,7 @@ define([
             $('#share-pdf-button').hide();
             $('#share-email-button').hide();
             $('#share-twitter-button').hide();
+            $('#share-facebook-button').hide();
             $('#share-url-button').hide();
             $('#share-embed-code').hide();
         },
@@ -430,9 +431,11 @@ define([
             // No need to share link and twitter in favorites
             if (mode != 'favorites') {
                 $('#share-twitter-button').show();
+                $('#share-facebook-button').show();
                 $('#share-url-button').show();
             } else {
                 $('#share-twitter-button').hide();
+                $('#share-facebook-button').hide();
                 $('#share-url-button').hide();
             }
             $('#share-pdf-button').show();
