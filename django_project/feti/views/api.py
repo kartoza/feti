@@ -222,6 +222,7 @@ class ApiCampus(SearchCampus):
             Q(provider__primary_institution__icontains=query))
 
 
+# this is not used
 class ApiCourse(SearchCampus):
     """
     Api to filter courses by query
@@ -357,11 +358,36 @@ class ApiOccupation(APIView):
 
 class ApiSavedCampus(APIView):
     def filter_model(self, user, options=None, query=None):
+        """
+        Filter user's favoutites campus from query and options.
+        Added an hack for PDF rendering: if 'shape' and 'type' in
+        options, don't need to re-create a Polygon object (or a Point)
+
+        :param user: self.request.user
+        :type user: User
+
+        :param options: from the GET request
+        :type options: dict
+
+        :param query: the search query
+        :type query: string
+
+        :returns: user's favourites campus
+        :rtype: list
+        """
+
         drawn_polygon = None
         drawn_circle = None
         shape = None
         administrative = None
         radius = 0
+
+        if 'shape' in options and 'type' in options:
+            if options['type'] == 'polygon':
+                drawn_polygon = options['shape']
+            if options['type'] == 'circle':
+                drawn_circle = options['shape']
+                radius = options['radius']
 
         if options:
             if 'shape' in options:
@@ -409,7 +435,6 @@ class ApiSavedCampus(APIView):
         if not self.request.user.is_authenticated():
             return HttpResponse('Unauthorized', status=401)
 
-        # Get coordinates from request and create a polygon
         shape = request.GET.get('shape')
         options = dict()
 

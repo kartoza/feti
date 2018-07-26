@@ -12,6 +12,16 @@ class BaseFavoriteSerializer(serializers.ModelSerializer):
         model = CampusCoursesFavorite
         fields = '__all__'
 
+class FavoritePDFSerializer(BaseFavoriteSerializer):
+    def to_representation(self, instance):
+        res = super(FavoritePDFSerializer, self).to_representation(instance)
+
+        campus = instance.campus
+        res['campus_website'] = campus.provider.website
+        res['campus_provider'] = campus.provider.__unicode__()
+        res['campus_adress'] = campus.address.__unicode__()
+        res['campus_location'] = '{},{}'.format(campus.location.y, campus.location.x)
+        return res
 
 class FavoriteSerializer(BaseFavoriteSerializer):
     def to_representation(self, instance):

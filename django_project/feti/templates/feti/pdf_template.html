@@ -14,6 +14,15 @@
     </h2>
 {% endif %}
 
+{% if options %}
+    <h2>Options</h2>
+    <ul>
+    {% for option in options %}
+        <li>{{ option }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
 {% if type == 'pdf' %}
     <h2>Map :</h2>
     <img src="assets:{{ image }}" style="width: 100%;"/>
@@ -22,6 +31,7 @@
     <h2>Link : </h2>
     <strong>{{ link }}</strong>
 {% endif %}
+
 <h2>List Campus :</h2>
 <ul>
 {% for campus in campuses %}

@@ -17,8 +17,13 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect
+from haystack.inputs import Clean, Exact
 from feti.models.campus import Campus
+from feti.models.field_of_study import FieldOfStudy
+from feti.models.subfield_of_study import SubFieldOfStudy
+from feti.models.qualification_type import QualificationType
 from feti.models.url import URL
+
 from feti.views.api import (
     ApiCourse,
     ApiSavedCampus
@@ -27,6 +32,7 @@ from feti.api_views.campus import (
     ApiCampus
 )
 from feti.api_views.common_search import CommonSearch
+from feti.serializers.favorite_serializer import FavoritePDFSerializer
 
 
 class SharingMixin(object):
@@ -76,27 +82,72 @@ class SharingMixin(object):
         if markers:
             osm_static_url += '&markers=' + markers
 
-        if provider:
-            if provider == 'favorites':
-                check_existence = False
+        # if provider:
+        #     if provider == 'favorites':
+        #         check_existence = False
 
         path = os.path.join(settings.MEDIA_ROOT, filename)
 
         # Check if file already exists
-        if not check_existence and default_storage.exists(path):
+        # if not check_existence and default_storage.exists(path):
+        if default_storage.exists(path):
             os.remove(path)
 
         if not default_storage.exists(path):
             try:
                 urllib.request.urlretrieve(osm_static_url, path)
             except urllib.error.URLError:
-                raise Http404(
-                    'File not found'
-                )
+                raise Http404('File not found')
 
 
-class PDFDownload(TemplateView, SharingMixin, CommonSearch):
+class PDFDownload(TemplateView, SharingMixin, CommonSearch, ApiSavedCampus):
     template_name = 'feti/pdf_template.html'
+
+    def render_to_response(self, context, **response_kwargs):
+        """
+
+        """
+        query, options = self.process_request(self.request.GET.dict())
+        resource = self.kwargs.get('resource', None)
+        
+        if resource == 'provider':
+            data = list(self.search_campuses(query, options))
+        elif resource == 'course':
+            data = self.search_courses(query, options)
+        elif resource == 'favorites':
+            if self.request.user.is_authenticated():
+                favorites = self.filter_model(user=self.request.user, options=options)
+                serializer = FavoritePDFSerializer(favorites, many=True)
+                data = serializer.data
+            else:
+                print('not authenticated')
+
+        map_image = 'feti.png'
+
+        markers = ''
+        for result in data:
+            y, x = result['campus_location'].split(',')
+            markers += '%s,%s,ol-marker-blue|' % (y, x)
+
+        context = {
+            "type": "pdf",
+            "image": map_image,
+            "title": "Feti Report",
+            "provider": resource,
+            "query": query,
+            "campuses": data,
+            "options": self.advanced_search_options_to_string(options)
+        }
+
+        self.download_map(filename=map_image, markers=markers, provider=resource)
+        template = get_template("feti/pdf_template.html")
+
+        html = template.render(RequestContext(self.request, context))
+
+        response = HttpResponse(content_type="application/pdf")
+        response['Content-Disposition'] = 'attachment; filename="feti.pdf"'
+        weasyprint.HTML(string=html, url_fetcher=self.url_fetcher).write_pdf(response)
+        return response
 
     def url_fetcher(self, url):
         if url.startswith('assets:'):
@@ -104,79 +155,29 @@ class PDFDownload(TemplateView, SharingMixin, CommonSearch):
             url = "file://" + safe_join(settings.MEDIA_ROOT, url)
         return weasyprint.default_url_fetcher(url)
 
-    def render_to_response(self, context, **response_kwargs):
-        """
-        Returns a pdf report
-
-        :param context:
-        :param response_kwargs: Keyword arguments
-        :return: HTTPResponse
-        """
-
-        slug = self.kwargs.get('provider', None)
-        query, options = self.process_request(self.kwargs)
-
-        course_names = self.get_course_names()
-
-        markers = ''
-        campuses = None
-
-        if slug == 'course':
-            campuses = self.filter_by_course(query)
-            pdf_data = list(
-                unique_everseen(
-                    [{
-                         'campus_provider': x.get_stored_fields()['campus_provider'],
-                         'campus_address': x.get_stored_fields()['campus_address'],
-                         'campus_website': x.get_stored_fields()['campus_website'],
-                         'location': x.get_stored_fields()['campus_location']
-                     }
-                     for x in campuses])
-            )
-            for campus in pdf_data:
-                location = campus['location']
-                markers += '%s,%s,ol-marker-blue|' % (location.y, location.x)
-            campuses = pdf_data
-        elif slug == 'provider':
-            campuses = list(self.filter_indexed_campus(query))
-            for result in campuses:
-                campus = result.get_stored_fields()
-                location = campus['campus_location']
-                markers += '%s,%s,ol-marker-blue|' % (location.y, location.x)
-        elif slug == 'favorites':
-            api_saved_campus = ApiSavedCampus()
-            campuses = list(api_saved_campus.filter_model(user=self.request.user))
-            for idx, campus in enumerate(campuses):
-                location = campus.campus.location.coords
-                campus.campus_website = campus.campus.provider.website
-                campus.campus_provider = campus.campus.provider
-                campus.campus_address = campus.campus.address.address_line
-                markers += '%s,%s,ol-marker-blue|' % (location[1], location[0])
-
-        filename = '%s-%s.png' % (query, slug)
-
-        self.download_map(filename=filename, markers=markers, provider=slug)
-
-        template = get_template("feti/pdf_template.html")
-
-        if course_names:
-            query = ", ".join(course_names)
-
-        context = {
-            "type": "pdf",
-            "image": filename,
-            "title": "Feti Report",
-            "provider": slug,
-            "query": query,
-            "campuses": campuses
-        }
-
-        html = template.render(RequestContext(self.request, context))
-        response = HttpResponse(content_type="application/pdf")
-        response['Content-Disposition'] = 'attachment; filename="%s.pdf"' % query
-        weasyprint.HTML(string=html, url_fetcher=self.url_fetcher).write_pdf(response)
-
-        return response
+    def advanced_search_options_to_string(self, options):
+        result = []
+        if 'fos' in options:
+            field_of_study_class = FieldOfStudy.objects.get(field_of_study_class=options['fos'])
+            result.append('Field of study: {}'.format(field_of_study_class))
+        if 'sos' in options:
+            subfield_of_study_class = SubFieldOfStudy.objects.get(id=int(options['sos']))
+            result.append('Subfield of study: {}'.format(subfield_of_study_class))
+        if 'qt' in options:
+            qualification_type = QualificationType.objects.get(id=int(options['qt']))
+            result.append('Qualification type: {}'.format(qualification_type))
+        if 'mc' in options:
+            result.append('Minimum credits: {}'.format(options['mc']))
+        if 'nqf' in options:
+            result.append('NQF level: {}'.format(options['nqf']))
+        if 'nqsf' in options:
+            result.append('NQSF level: {}'.format(options['nqsf']))
+        if 'pi' in options:
+            if options['pi'] == '1':
+                result.append('Public institution')
+            elif options['pi'] == '0':
+                result.append('Private institution')
+        return result
 
 
 class EmailShare(UpdateView, SharingMixin):

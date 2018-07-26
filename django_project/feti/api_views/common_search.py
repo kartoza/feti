@@ -5,6 +5,7 @@ from haystack.query import SearchQuerySet
 from haystack.inputs import Clean, Exact
 from django.contrib.gis.geos import Polygon
 from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from map_administrative.views import get_boundary
 from feti.models.campus import Campus
@@ -21,6 +22,11 @@ class CommonSearch(object):
 
     def process_request(self, request_dict):
         """Process get request from site.
+
+        :param request_dict: request.GET.dict()
+        :type request_dict: dict
+
+        :returns: query and options
         """
 
         query = None
@@ -35,7 +41,6 @@ class CommonSearch(object):
         if query and len(query) < 3:
             return Response([])
 
-        # Get coordinates from request and create a polygon
         shape = request_dict.pop('shape', None)
         drawn_polygon = None
         drawn_circle = None
@@ -76,7 +81,6 @@ class CommonSearch(object):
                 'radius': radius
             }
 
-        # Advance search
         advance_search_fields = [
             'fos',  # Field of study
             'sos',  # Subfield of study
@@ -95,7 +99,179 @@ class CommonSearch(object):
 
         page = request_dict.pop('page', None)
         options['page'] = page
+
+        if 'export' in request_dict:
+            options['export'] = request_dict.pop('export')
+
         return query, options
+
+    def search_campuses(self, query, options):
+        """Get campuses based on query and other filters.
+
+        :param query: the argument query (or q) from the GET request
+        :type query: str
+
+        :param options: options available: type, shape, radius, advance_search,
+        page, export
+        :type options: hash
+
+        :returns: campuses matching the query and options
+        :rtype: array
+        """
+        search_in_campus_model = True
+        campus_count = None
+        sqs = self.filter_indexed_campus(query)
+        
+        if options and 'advance_search' in options:
+            if options['advance_search']:
+                search_in_campus_model = False
+                sqs = self.filter_indexed_campus_course(query)
+                sqs = self.advanced_filter(sqs, options)
+
+        if options and 'shape' in options:
+            if options['type'] == 'polygon':
+                sqs = self.filter_polygon(
+                    sqs, 
+                    options['shape'])
+            elif options['type'] == 'circle':
+                sqs = self.filter_radius(
+                        sqs,
+                        options['shape'],
+                        options['radius'])
+
+        if not query:
+            if sqs:
+                campus_count = sqs.count()
+            else:
+                campus_count = 0
+
+        if 'page' in options:
+            paginator = Paginator(sqs, self.page_limit)
+            try:
+                sqs = paginator.page(options['page'])
+            except PageNotAnInteger:
+                page = 1
+                sqs = paginator.page(page)
+            except (EmptyPage, TypeError):
+                return []
+
+        campus_data = []
+        campuses = {}
+
+        if not sqs:
+            return []
+
+        for result in sqs:
+            stored_fields = result.get_stored_fields()
+            if search_in_campus_model:
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x)
+                if campus_count:
+                    stored_fields['max'] = campus_count
+
+                del stored_fields['courses_is_null']
+                del stored_fields['campus_is_null']
+                del stored_fields['campus_location_is_null']
+                del stored_fields['courses_id']
+                del stored_fields['provider_primary_institution']
+                del stored_fields['campus_auto']
+                del stored_fields['long_description']
+                del stored_fields['text']
+                del stored_fields['campus_popup']
+
+                campus_data.append(stored_fields)
+            else:
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x)
+
+                if stored_fields['campus_id'] not in campuses:
+                    campuses[stored_fields['campus_id']] = []
+
+                campuses[stored_fields['campus_id']].append(stored_fields)
+        if campuses:
+            for key, value in campuses.items():
+                campus_object = dict()
+                campus_object['campus_id'] = key
+                campus_object['campus_location'] = value[0]['campus_location']
+                campus_object['campus_provider'] = value[0]['campus_provider']
+                campus_object['campus_address'] = value[0]['campus_address']
+                campus_object['campus'] = value[0]['campus_campus']
+                campus_object['campus_icon_url'] = value[0]['campus_icon']
+                campus_object['campus_website'] = value[0]['campus_website']
+                campus_object['campus_public_institution'] = value[0][
+                    'campus_public_institution']
+
+                courses = []
+
+                for course in value:
+                    courses.append(
+                        '%s ;; [%s] %s' % (
+                            course['course_id'],
+                            course['course_nlrd'],
+                            course['course_course_description'].replace(
+                                '\'', '\"')))
+                
+                campus_object['courses'] = str(courses)
+                campus_data.append(campus_object)
+
+        return campus_data
+    
+    def search_courses(self, query, options):
+        """Search courses based on query and options.
+
+        :param query: the argument query (or q) from the GET request
+        :type query: str
+
+        :param options: options available: type, shape, radius, advance_search,
+        page, export
+        :type options: hash
+
+        :returns: courses matching the query and options
+        :rtype: array
+        """
+        if '=' in query:
+            queries = query.split('=')
+            if 'saqa_id' in queries[0] and len(queries) > 1:
+                saqa_ids = queries[1].split(',')
+                return(self.filter_by_saqa_ids(saqa_ids, options))
+        else:
+            sqs = self.filter_by_course(query)
+            sqs = self.advanced_filter(sqs, options)
+
+        if not query and not options['advance_search']:
+            return []
+        
+        if options and 'shape' in options:
+            if options['type'] == 'polygon':
+                sqs = self.filter_polygon(
+                    sqs, 
+                    options['shape'])
+            
+            elif options['type'] == 'circle':
+                sqs = self.filter_radius(
+                    sqs,
+                    options['shape'],
+                    options['radius'])
+
+
+        campus_data = []
+        if sqs:
+            for result in sqs:
+                stored_fields = result.get_stored_fields()
+                if stored_fields['campus_location']:
+                    campus_location = stored_fields['campus_location']
+                    stored_fields['campus_location'] = "{0},{1}".format(
+                        campus_location.y, campus_location.x
+                    )
+                del stored_fields['courses_isnull']
+                del stored_fields['campus_location_isnull']
+
+                campus_data.append(stored_fields)
+        return campus_data
 
     def filter_indexed_campus(self, query):
         """
