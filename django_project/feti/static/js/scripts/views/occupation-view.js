@@ -86,7 +86,7 @@ define([
         },
         destroy: function () {
             this.model.destroy();
-            this.model = null;
+            this.model = this.model ? this.model : null;
             this.$el.remove();
             return Backbone.View.prototype.remove.call(this);
         },
