@@ -225,6 +225,7 @@ define([
             if (!$(event.target).parent().hasClass('active')) {
 
                 this.clearAllDraw();
+                this.parent.resetButtonState();
 
                 var mode = $(event.target).data("mode");
 
