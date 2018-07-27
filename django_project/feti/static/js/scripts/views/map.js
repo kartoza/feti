@@ -442,6 +442,17 @@ define([
             $('#share-email-button').show();
             $('#share-embed-code').show();
         },
+        resetButtonState: function () {
+            for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
+                var button = this.locationFilterBar._buttons[i];
+                var default_state_name = button.options.states[0].stateName;
+                var current_state_name = button._currentState.stateName;
+                if (default_state_name != current_state_name) {
+                    button.state(default_state_name);
+                }
+            this._enableOtherControlButtons('clear');
+            }
+        },
         _disableOtherControlButtons: function (currentControl) {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
                 if (this.locationFilterBar._buttons[i] != currentControl) {
