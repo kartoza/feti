@@ -70,8 +70,7 @@ define([
         },
         exitResult: function (exitMap) {
             if ($('#result').is(":visible")) {
-                $('#result-toogle').removeClass('fa-caret-right');
-                $('#result-toogle').addClass('fa-caret-left');
+                $('#feti-map').css('width', '100%');
                 $('#result').hide("slide", {direction: "right"}, 500, function () {
                     if (exitMap) {
                         Common.Dispatcher.trigger('map:exitFullScreen');

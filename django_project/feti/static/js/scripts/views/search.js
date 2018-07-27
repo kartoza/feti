@@ -30,7 +30,6 @@ define([
             'click #what-to-study': '_categoryClicked',
             'click #choose-occupation': '_categoryClicked',
             'click #favorites': '_categoryClicked',
-            'click #result-toogle': 'toogleResult',
             'click #search-clear': 'clearSearch',
             'click #show-filter-button': 'showFilterPanel',
             'click #hide-filter-button': 'hideFilterPanel',
@@ -69,7 +68,6 @@ define([
             this.$result_toggle.hide();
             this.parent = options.parent;
             this.initAutocomplete();
-            Common.Dispatcher.on('toogle:result', this.toogleResult, this);
             Common.Dispatcher.on('search:finish', this.onFinishedSearch, this);
             Common.Dispatcher.on('search:loadMore', this.onStartSearch, this);
             Common.Dispatcher.on('occupation:clicked', this.occupationClicked, this);
@@ -189,9 +187,7 @@ define([
             if (!query && mode in this._search_query && !is_allow_paging_request) {
                 query = this._search_query[mode];
             }
-            if(mode === 'course' && query === '') {
-                this.parent.closeResultContainer($('#result-toogle'));
-            }
+
             new_url.push(mode);
             new_url.push(query);
 
@@ -462,16 +458,6 @@ define([
                 }
             }
         },
-        toogleResult: function (event) {
-            if ($(event.target).hasClass('fa-caret-left') ||
-                $(event.target.parentElement).hasClass('fa-caret-left') ||
-                $(event.target).find('.fa-caret-left').length > 0) {
-
-                this.parent.openResultContainer($(event.target));
-            } else {
-                this.parent.closeResultContainer($(event.target));
-            }
-        },
         _initializeDrawPolygon: function () {
             $('#draw-polygon').hide();
             $('#cancel-draw-polygon').show();
@@ -522,7 +508,6 @@ define([
             if (is_resizing) { // To fullscreen
                 this.$('#back-home').show();
                 this.$('#result-toogle').show();
-                this.parent.closeResultContainer($('#result-toogle'));
                 var mode = Common.CurrentSearchMode;
                 if (mode in this._search_results) {
                     if (this._search_results[mode] > 0)
@@ -631,12 +616,6 @@ define([
             $('#show-filter-button').hide();
             $('#hide-filter-button').show();
 
-            // Hide side panel
-            var resultToggle = $('#result-toogle');
-            this.parent.closeResultContainer(resultToggle);
-            resultToggle.removeClass('fa-caret-right');
-            resultToggle.addClass('fa-caret-left');
-
             var $filterPanel = $('.filter-panel');
 
             if ($filterPanel.css('display') === 'none') {
@@ -691,8 +670,6 @@ define([
             var resultToggle = $('#result-toogle');
             if (typeof e != 'undefined' && typeof this._search_query[Common.CurrentSearchMode] != 'undefined') {
                 this.parent.openResultContainer(resultToggle);
-                resultToggle.removeClass('fa-caret-left');
-                resultToggle.addClass('fa-caret-right');
             }
 
             var $filterPanel = $('.filter-panel');

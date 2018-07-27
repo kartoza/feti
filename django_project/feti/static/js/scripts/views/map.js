@@ -804,10 +804,6 @@ define([
             var $mapContainer = $('#feti-map');
 
             if (this.sideBarView.is_open()) {
-                if (!Common.EmbedVersion) {
-                    div.removeClass('fa-caret-right');
-                    div.addClass('fa-caret-left');
-                }
                 this.sideBarView.close();
                 var d = {};
                 d.width = '100%';
