@@ -57,31 +57,9 @@ define([
             this.exitOccupation();
         },
         exitOccupation: function (exitMap) {
-            var that = this;
-            var $cover = $('#result-detail');
-            if ($cover.is(":visible")) {
-                $('#result-detail').hide("slide", {direction: "right"}, 500, function () {
-                    that.exitResult(exitMap);
-                });
-            } else {
-                that.exitResult(exitMap);
-            }
             Common.Dispatcher.trigger('occupation:removeAllMarker');
         },
         exitResult: function (exitMap) {
-            if ($('#result').is(":visible")) {
-                $('#feti-map').css('width', '100%');
-                $('#result').hide("slide", {direction: "right"}, 500, function () {
-                    if (exitMap) {
-                        Common.Dispatcher.trigger('map:exitFullScreen');
-                    }
-                });
-            } else {
-                if (exitMap) {
-                    Common.Dispatcher.trigger('map:exitFullScreen');
-                }
-            }
-            this._isOpen = false;
         },
         showMapCover: function () {
             if (Common.CurrentSearchMode == 'occupation') {
