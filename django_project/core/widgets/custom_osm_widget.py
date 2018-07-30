@@ -13,9 +13,9 @@ class CustomOSMWidget(BaseGeometryWidget):
     class Media:
         css = {'all': ['/static/grappelli/jquery/ui/jquery-ui.min.css', '/static/feti/css/custom-osm.css']}
         js = (
-            '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js',
-            '/static/feti/js/libs/OpenLayers-2.13.1/OpenStreetMapSSL.js',
-            '/static/feti/js/libs/OLMapWidget.js'
+            '/static/js/libs/OpenLayers-2.13.1/OpenLayers.js',
+            '/static/js/libs/OpenLayers-2.13.1/OpenStreetMapSSL.js',
+            '/static/js/libs/OLMapWidget.js'
         )
 
     def __init__(self, attrs=None):
