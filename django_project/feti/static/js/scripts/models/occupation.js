@@ -48,40 +48,42 @@ define([
                         markercolor = 'red leaflet-clickable';
                     }
 
-                    var marker = new L.marker([location.coordinates[1], location.coordinates[0]], {
-                        icon: L.ExtraMarkers.icon({
-                            markerColor: markercolor,
-                            icon: 'true',
-                            extraClasses: 'fa fa-graduation-cap',
-                            iconColor: 'white'
-                        })
-                    });
+                    if(location !== undefined) {
+                        var marker = new L.marker([location.coordinates[1], location.coordinates[0]], {
+                            icon: L.ExtraMarkers.icon({
+                                markerColor: markercolor,
+                                icon: 'true',
+                                extraClasses: 'fa fa-graduation-cap',
+                                iconColor: 'white'
+                            })
+                        });
 
-                    var popup = '';
-                    object['campus'] = 'Campus : ' + object['campus'];
-                    popup = this.template(object);
+                        var popup = '';
+                        object['campus'] = 'Campus : ' + object['campus'];
+                        popup = this.template(object);
 
-                    var that = this;
+                        var that = this;
 
-                    // Events on marker and popup
-                    marker.bindPopup(popup);
-                    marker.off('click');
-                    marker.on('click', function (e) {
-                        e.originalEvent.preventDefault();
-                        that.set('marker_clicked', true);
-                        this.openPopup();
-                    });
-                    marker.on('popupclose', function (e) {
-                        that.set('marker_clicked', false);
-                    });
-                    this.set('marker', marker);
-                    this.layerGroup.addLayer(marker);
+                        // Events on marker and popup
+                        marker.bindPopup(popup);
+                        marker.off('click');
+                        marker.on('click', function (e) {
+                            e.originalEvent.preventDefault();
+                            that.set('marker_clicked', true);
+                            this.openPopup();
+                        });
+                        marker.on('popupclose', function (e) {
+                            that.set('marker_clicked', false);
+                        });
+                        this.set('marker', marker);
+                        this.layerGroup.addLayer(marker);
+                        Common.Dispatcher.trigger('map:pan', [location.coordinates[1], location.coordinates[0]]);
+                    }
                 }
             }
             this.set('layer', this.layerGroup);
             markersCollection.push(this.layerGroup);
             Common.Dispatcher.trigger('map:addLayer', this.get('layer'));
-            Common.Dispatcher.trigger('map:pan', [location.coordinates[1], location.coordinates[0]]);
             this.set('layer', null)
         },
         removeAllMarkers: function () {
