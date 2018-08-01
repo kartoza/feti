@@ -217,80 +217,91 @@ define([
             }
             legend.addTo(this.map)
 
+            // Define default state for each button.
+            var locationButtonState = {
+                stateName: 'locationButton',
+                icon: 'fa-globe',
+                title: 'Filter map by location',
+                onClick: function (btn, map) {
+                    btn.state('deactivate');
+                    _this.searchView.clearAllDraw();
+                    _this.enableLocationFilter();
+                    _this._disableOtherControlButtons(btn);
+                }
+            };
+
             this.locationButton = L.easyButton({
-                states: [
-                    {
-                        stateName: 'locationButton',
-                        icon: 'fa-globe',
-                        title: 'Filter map by location',
-                        onClick: function (btn, map) {
-                            btn.state('deactivate');
-                            _this.searchView.clearAllDraw();
-                            _this.enableLocationFilter();
-                            _this._disableOtherControlButtons(btn);
-                        }
-                    },
-                    deactivateState('locationButton')
-                ]
+                states: [locationButtonState, deactivateState('locationButton')],
+                defaultState: locationButtonState,
+                disableAction: function () {
+                    _this.disableLocationFilter();
+                }
             });
+
+            var polygonButtonState = {
+                stateName: 'polygonButton',
+                icon: 'fa-square-o',
+                title: 'Filter map by polygon',
+                onClick: function (btn, map) {
+                    btn.state('deactivate');
+                    _this.searchView.clearAllDraw();
+                    _this.enablePolygonDrawer();
+                    _this._disableOtherControlButtons(btn);
+                    btn._map.on('finishedDrawing', function (e) {
+                        if (e.layerType == 'polygon') {
+                            btn.state('polygonButton');
+                        }
+                    });
+                }
+            };
 
             this.polygonButton = L.easyButton({
-                states: [
-                    {
-                        stateName: 'polygonButton',
-                        icon: 'fa-square-o',
-                        title: 'Filter map by polygon',
-                        onClick: function (btn, map) {
-                            btn.state('deactivate');
-                            _this.searchView.clearAllDraw();
-                            _this.enablePolygonDrawer();
-                            _this._disableOtherControlButtons(btn);
-                            btn._map.on('finishedDrawing', function (e) {
-                                if (e.layerType == 'polygon') {
-                                    btn.state('polygonButton');
-                                }
-                            });
-                        }
-                    },
-                    deactivateState('polygonButton')
-                ]
+                states: [polygonButtonState, deactivateState('polygonButton')],
+                defaultState: polygonButtonState,
+                disableAction: function () {
+                    _this.disablePolygonDrawer();
+                }
             });
+
+            var circleButtonState = {
+                stateName: 'circleButton',
+                icon: 'fa-circle-o',
+                title: 'Filter map by circle',
+                onClick: function (btn, map) {
+                    btn.state('deactivate');
+                    _this.searchView.clearAllDraw();
+                    _this.enableCircleDrawer();
+                    _this._disableOtherControlButtons(btn);
+                    btn._map.on('finishedDrawing', function (e) {
+                        if (e.layerType == 'circle') {
+                            btn.state('circleButton');
+                        }
+                    });
+                }
+            };
 
             this.circleButton = L.easyButton({
-                states: [
-                    {
-                        stateName: 'circleButton',
-                        icon: 'fa-circle-o',
-                        title: 'Filter map by circle',
-                        onClick: function (btn, map) {
-                            btn.state('deactivate');
-                            _this.searchView.clearAllDraw();
-                            _this.enableCircleDrawer();
-                            _this._disableOtherControlButtons(btn);
-                            btn._map.on('finishedDrawing', function (e) {
-                                if (e.layerType == 'circle') {
-                                    btn.state('circleButton');
-                                }
-                            });
-                        }
-                    },
-                    deactivateState('circleButton')
-                ]
+                states: [circleButtonState, deactivateState('circleButton')],
+                defaultState: circleButtonState,
+                disableAction: function () {
+                    _this.disableCircleDrawer();
+                }
             });
 
+            var clearButtonState = {
+                stateName: 'clearButton',
+                icon: 'fa-trash-o',
+                title: 'Clear filter',
+                onClick: function (btn, map) {
+                    btn.disable();
+                    _this.clearAllDrawnLayer();
+                    Common.Dispatcher.trigger('search:updateRouter');
+                }
+            };
+
             this.clearButton = L.easyButton({
-                states: [
-                    {
-                        stateName: 'clearButton',
-                        icon: 'fa-trash-o',
-                        title: 'Clear filter',
-                        onClick: function (btn, map) {
-                            btn.disable();
-                            _this.clearAllDrawnLayer();
-                            Common.Dispatcher.trigger('search:updateRouter');
-                        }
-                    }
-                ]
+                states: [clearButtonState],
+                defaultState: clearButtonState
             });
 
             this.clearButton.disable();
@@ -445,12 +456,12 @@ define([
         resetButtonState: function () {
             for (var i = 0; i < this.locationFilterBar._buttons.length; i++) {
                 var button = this.locationFilterBar._buttons[i];
-                var default_state_name = button.options.states[0].stateName;
-                var current_state_name = button._currentState.stateName;
-                if (default_state_name != current_state_name) {
-                    button.state(default_state_name);
+                if (button.options.defaultState.stateName != 'clearButton') {
+                    // Reset state
+                    button.state(button.options.defaultState.stateName);
+                    button.options.disableAction();
+                    this._enableOtherControlButtons('clear');
                 }
-            this._enableOtherControlButtons('clear');
             }
         },
         _disableOtherControlButtons: function (currentControl) {
