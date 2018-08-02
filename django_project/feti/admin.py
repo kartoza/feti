@@ -53,7 +53,7 @@ class AddressAdminInline(admin.StackedInline):
 
 class CampusAdmin(admin.OSMGeoAdmin):
     """Admin Class for Campus Model."""
-    openlayers_url = '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js'
+    openlayers_url = '/static/js/libs/OpenLayers-2.13.1/OpenLayers.js'
     inlines = [AddressAdminInline]
     list_display = ('id', 'campus', 'primary_institution', '_complete', '_campus_popup')
     list_filter = ['provider__primary_institution', '_complete']
@@ -121,7 +121,7 @@ class CampusAdminInline(OSMGeoStackedInline):
 class ProviderAdmin(admin.OSMGeoAdmin):
     """Admin Class for Provider Model."""
     inlines = [CampusAdminInline]
-    openlayers_url = '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js'
+    openlayers_url = '/static/js/libs/OpenLayers-2.13.1/OpenLayers.js'
 
     fieldsets = (
         ('General', {
