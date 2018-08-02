@@ -34,11 +34,11 @@ class CustomOSMWidget(BaseGeometryWidget):
             '/static/grappelli/jquery/jquery-2.1.4.min.js',
             '/static/grappelli/jquery/ui/jquery-ui.min.js',
             '/static/grappelli/js/grappelli.js',
-            '/static/feti/js/libs/grappelli_override.js',
+            '/static/js/libs/grappelli_override.js',
             '/static/admin/js/SelectBox.js',
             '/static/admin/js/SelectFilter2.js',
-            '/static/feti/js/libs/OpenLayers-2.13.1/OpenLayers.js',
-            '/static/feti/js/libs/OpenLayers-2.13.1/OpenStreetMapSSL.js',
+            '/static/js/libs/OpenLayers-2.13.1/OpenLayers.js',
+            '/static/js/libs/OpenLayers-2.13.1/OpenStreetMapSSL.js',
             'gis/js/OLMapWidget.js'
         )
 
