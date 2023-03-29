@@ -19,8 +19,9 @@ RUN apt-get update -y; apt-get -y --force-yes install yui-compressor
 RUN apt-get install -y python3-pip
 RUN apt-get install -y python-gdal
 RUN apt-get install -y python-geoip
-RUN apt-get install -y npm
-RUN apt-get install -y nodejs
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y nodejs \
+    npm
 RUN apt-get install -y rpl
 RUN apt-get -y  --force-yes install yui-compressor
 RUN apt-get install -y python3-setuptools
