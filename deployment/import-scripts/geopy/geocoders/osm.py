@@ -149,7 +149,7 @@ class Nominatim(Geocoder):
             params = {
                 key: val
                 for key, val
-                in query.items()
+                in list(query.items())
                 if key in self.structured_query_params
             }
         else:

@@ -2,18 +2,23 @@
 
 # Needs GeoPy :: https://github.com/geopy/geopy
 
-import urllib
-import urllib2
-import psycopg2
 import json
+import urllib.error
+import urllib.error
+import urllib.parse
+import urllib.parse
+import urllib.request
+import urllib.request
+
+import psycopg2
+
 from geopy.geocoders import GoogleV3
 
-USER = '#####'
-PASSWORD = '#####'
+USER = 'admire@kartoza.com'
+PASSWORD = 'KH.hy6LUpd19\2!$rrVP3yYBk'
 
 
 class OneMap(object):
-
     SERVER = 'http://www.1map.co.za'
     PATH_LOGIN = '/api/auth/login'
     PATH_LOGOUT = '/api/auth/logout'
@@ -28,16 +33,16 @@ class OneMap(object):
         self.login()
 
     def _request(self, url):
-        raw_json_content = urllib2.urlopen(url, timeout=30).read()
+        raw_json_content = urllib.request.urlopen(url, timeout=30).read()
         json_content = json.loads(raw_json_content)
         return json_content
 
     def _query_string(self, dic):
         string = ''
-        for key in dic.keys():
+        for key in list(dic.keys()):
             string += '"' + key + '":"' + str(dic[key]) + '",'
         string = string[:-1]
-        return '?json={' + urllib.quote(string) + '}'
+        return '?json={' + urllib.parse.quote(string) + '}'
 
     def login(self):
         url = self.SERVER + self.PATH_LOGIN
@@ -104,18 +109,19 @@ def get_sql(wkt, pkey, source):
 def process():
     # Geocoding
     geocode = OneMap(USER, PASSWORD)
-    #print geocode.search('20, Bella Road, Bellville 7530')
+    # print geocode.search('20, Bella Road, Bellville 7530')
     geolocator = GoogleV3(timeout=20)
 
     try:
         conn = psycopg2.connect(
             "dbname='demacia' user='etienne' host='localhost' password='azerty'")
-        print "Connected to the database"
+        print("Connected to the database")
     except:
-        print "I am unable to connect to the database"
+        print("I am unable to connect to the database")
 
     cur = conn.cursor()
-    cur.execute("""SELECT id, no_street, street_name, suburb, city, postal_code FROM feti WHERE source IS NULL AND id IS NOT NULL;""")
+    cur.execute(
+        """SELECT id, no_street, street_name, suburb, city, postal_code FROM feti WHERE source IS NULL AND id IS NOT NULL;""")
     rows = cur.fetchall()
 
     for row in rows:
@@ -127,14 +133,15 @@ def process():
             if len(results):
                 wkt = get_wkt(results[0]['cent_long'], results[0]['cent_lat'])
                 sql = get_sql(wkt, row[0], 'onemap')
-                print 'onemap', address_str
+                print('onemap', address_str)
                 cur.execute(sql)
                 conn.commit()
             else:
-                location = geolocator.geocode(address_str, components={'country':'south africa'}, bounds=[-35.299, 17.314, -30.183, 24.851])
+                location = geolocator.geocode(address_str, components={'country': 'south africa'},
+                                              bounds=[-35.299, 17.314, -30.183, 24.851])
                 if location:
                     sql = get_sql(location.wkt, row[0], 'google')
-                    print 'google', address_str
+                    print('google', address_str)
                     cur.execute(sql)
                     conn.commit()
                 else:
@@ -145,20 +152,21 @@ def process():
                         if len(results):
                             wkt = get_wkt(results[0]['cent_long'], results[0]['cent_lat'])
                             sql = get_sql(wkt, row[0], 'onemap')
-                            print 'onemap', address_str
+                            print('onemap', address_str)
                             cur.execute(sql)
                             conn.commit()
                         else:
-                            location = geolocator.geocode(address_str, components={'country':'south africa'}, bounds=[-35.299, 17.314, -30.183, 24.851])
+                            location = geolocator.geocode(address_str, components={'country': 'south africa'},
+                                                          bounds=[-35.299, 17.314, -30.183, 24.851])
                             if location:
                                 sql = get_sql(location.wkt, row[0], 'google')
-                                print 'google', address_str
+                                print('google', address_str)
                                 cur.execute(sql)
                                 conn.commit()
                             else:
                                 not_found = True
                                 address = get_address(row, 2)
-                                print address
+                                print(address)
                                 while not_found:
                                     if len(address) == 0:
                                         break
@@ -169,15 +177,17 @@ def process():
                                     if len(results):
                                         wkt = get_wkt(results[0]['cent_long'], results[0]['cent_lat'])
                                         sql = get_sql(wkt, row[0], 'onemap')
-                                        print 'onemap', address_str
+                                        print('onemap', address_str)
                                         cur.execute(sql)
                                         conn.commit()
                                         not_found = False
                                     else:
-                                        location = geolocator.geocode(address_str, components={'country':'south africa'}, bounds=[-35.299, 17.314, -30.183, 24.851])
+                                        location = geolocator.geocode(address_str,
+                                                                      components={'country': 'south africa'},
+                                                                      bounds=[-35.299, 17.314, -30.183, 24.851])
                                         if location:
                                             sql = get_sql(location.wkt, row[0], 'google')
-                                            print 'google', address_str
+                                            print('google', address_str)
                                             cur.execute(sql)
                                             conn.commit()
                                             not_found = False
@@ -191,9 +201,10 @@ def process():
 def test():
     geolocator = GoogleV3()
     result = geolocator.geocode("KALKFONTEIN, KALKFONTEIN, KUILSRIVIER")
-    print result.raw
+    print(result.raw)
 
-#test()
+
+# test()
 process()
 
-#geocode.logout()
+# geocode.logout()

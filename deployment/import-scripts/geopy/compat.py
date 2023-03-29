@@ -9,7 +9,7 @@ py3k = sys.version_info >= (3, 0)
 if py3k: # pragma: no cover
     string_compare = str
 else: # pragma: no cover
-    string_compare = (str, unicode)
+    string_compare = (str, str)
 
 # Unicode compatibility, borrowed from 'six'
 if py3k: # pragma: no cover
@@ -23,7 +23,7 @@ else: # pragma: no cover
         """
         Convert to Unicode with unicode escaping
         """
-        return unicode(s.replace(r'\\', r'\\\\'), 'unicode_escape')
+        return str(s.replace(r'\\', r'\\\\'), 'unicode_escape')
 
 if py3k: # pragma: no cover
     from urllib.parse import urlencode, quote # pylint: disable=W0611,F0401,W0611,E0611
@@ -40,17 +40,17 @@ if py3k: # pragma: no cover
         renaming between Python 2 and 3 versions
         For Python2
         """
-        return iter(d.values())
+        return iter(list(d.values()))
     def iteritems(d):
         """
         Function for iterating on items due to methods
         renaming between Python 2 and 3 versions
         For Python2
         """
-        return iter(d.items())
+        return iter(list(d.items()))
 
 else: # pragma: no cover
-    from urllib import urlencode as original_urlencode, quote # pylint: disable=W0611,F0401,W0611,E0611
+    from urllib.parse import urlencode as original_urlencode, quote # pylint: disable=W0611,F0401,W0611,E0611
     from urllib2 import (Request, HTTPError,   # pylint: disable=W0611,F0401,W0611,E0611
                          ProxyHandler, URLError, urlopen,
                          build_opener, install_opener,
@@ -61,7 +61,7 @@ else: # pragma: no cover
         """
         Python2-only, ensures that a string is encoding to a str.
         """
-        if isinstance(str_or_unicode, unicode):
+        if isinstance(str_or_unicode, str):
             return str_or_unicode.encode('utf-8')
         else:
             return str_or_unicode
@@ -75,7 +75,7 @@ else: # pragma: no cover
         Based on the urlencode from django.utils.http
         """
         if hasattr(query, 'items'):
-            query = query.items()
+            query = list(query.items())
         return original_urlencode(
             [(force_str(k),
               [force_str(i) for i in v]
@@ -89,11 +89,11 @@ else: # pragma: no cover
         renaming between Python 2 and 3 versions
         For Python3
         """
-        return d.itervalues()
+        return iter(d.values())
     def iteritems(d):
         """
         Function for iterating on items due to methods
         renaming between Python 2 and 3 versions
         For Python3
         """
-        return d.iteritems()
+        return iter(d.items())

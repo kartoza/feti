@@ -133,7 +133,7 @@ class GoogleV3(Geocoder):  # pylint: disable=R0902
         """
         return "|".join(
             (":".join(item)
-             for item in components.items()
+             for item in list(components.items())
             )
         )
 

@@ -1,7 +1,7 @@
 # For pip packaging
 dist
 MANIFEST
-
+*.py.bak
 # Vim leftovers
 *.*~
 

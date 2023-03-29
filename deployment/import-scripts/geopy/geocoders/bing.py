@@ -130,7 +130,7 @@ class Bing(Geocoder):
             params = {
                 key: val
                 for key, val
-                in query.items()
+                in list(query.items())
                 if key in self.structured_query_params
             }
             params['key'] = self.api_key
