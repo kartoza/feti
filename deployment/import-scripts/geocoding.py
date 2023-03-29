@@ -14,8 +14,8 @@ import psycopg2
 
 from geopy.geocoders import GoogleV3
 
-USER = 'admire@kartoza.com'
-PASSWORD = 'KH.hy6LUpd19\2!$rrVP3yYBk'
+USER = ''
+PASSWORD = ''
 
 
 class OneMap(object):
